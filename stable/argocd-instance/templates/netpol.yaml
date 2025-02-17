@@ -1,0 +1,74 @@
+{{- if .Values.netpol.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-same-namespace
+  labels:
+    {{- include "argocd-foundation.labels" $ | nindent 4 }}
+spec:
+  podSelector: {}
+  ingress:
+    - from:
+        - podSelector: {}
+  egress:
+    - to:
+        - podSelector: {}
+  policyTypes:
+    - Ingress
+    - Egress
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-egress-to-azuremetadataapi-from-argo-repo-server
+  labels:
+    {{- include "argocd-foundation.labels" $ | nindent 4 }}
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: argocd-repo-server
+  egress:
+    - ports:
+        - protocol: TCP
+          port: 80
+      to:
+        - ipBlock:
+            cidr: 169.254.169.254/32
+  policyTypes:
+    - Egress
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-egress-to-internet-from-argo
+  labels:
+    {{- include "argocd-foundation.labels" $ | nindent 4 }}
+spec:
+  podSelector: {}
+  egress:
+    - ports:
+        - protocol: TCP
+          port: 443
+      to:
+        - ipBlock:
+            cidr: 0.0.0.0/0
+  policyTypes:
+    - Egress
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-ingress-from-internet-to-argo
+  labels:
+    {{- include "argocd-foundation.labels" $ | nindent 4 }}
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: argocd-server
+  ingress:
+    - from:
+        - ipBlock:
+            cidr: 0.0.0.0/0
+  policyTypes:
+    - Ingress
+{{- end }}

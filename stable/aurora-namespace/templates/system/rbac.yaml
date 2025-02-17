@@ -1,0 +1,26 @@
+{{- if has .Values.namespace.type (list "system" "gateway") }}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: platform-operator-maintenance
+  namespace: {{ .Release.Name }}
+  labels:
+    {{- include "aurora-namespace.labels" . | nindent 4 }}
+  annotations:
+    kubernetes.io/description: |
+      Provides platform operators with permissions to perform maintenance operations.
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: platform-operator-maintenances
+{{- if .Values.rbac.groups }}
+subjects:
+  {{- range .Values.rbac.groups }}
+  - apiGroup: rbac.authorization.k8s.io
+    kind: Group
+    name: "{{ . }}"
+  {{- end }}
+{{- else }}
+subjects: []
+{{- end }}
+{{- end }}

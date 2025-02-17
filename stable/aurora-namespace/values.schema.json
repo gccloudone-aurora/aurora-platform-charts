@@ -1,0 +1,241 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "properties": {
+        "aadPodIdentities": {
+            "properties": {},
+            "type": "object"
+        },
+        "information": {
+            "properties": {
+                "FRC": {
+                    "type": [
+                        "integer"
+                    ]
+                },
+                "PE": {
+                    "type": [
+                        "integer"
+                    ]
+                },
+                "authorityToOperate": {
+                    "type": [
+                        "string"
+                    ]
+                },
+                "division": {
+                    "type": [
+                        "string"
+                    ]
+                },
+                "gitGroupURL": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "onboardingEpic": {
+                    "type": [
+                        "string"
+                    ]
+                },
+                "priority": {
+                    "type": [
+                        "string"
+                    ]
+                },
+                "productID": {
+                    "type": [
+                        "integer"
+                    ]
+                },
+                "projectLead": {
+                    "type": [
+                        "string"
+                    ]
+                },
+                "projectName": {
+                    "type": [
+                        "string"
+                    ]
+                },
+                "team": {
+                    "type": [
+                        "string"
+                    ]
+                },
+                "technicalLead": {
+                    "type": [
+                        "string"
+                    ]
+                },
+                "workloadID": {
+                    "type": [
+                        "integer"
+                    ]
+                }
+            },
+            "required": [
+                "division",
+                "team",
+                "projectName",
+                "projectLead",
+                "priority",
+                "technicalLead",
+                "onboardingEpic",
+                "gitGroupURL",
+                "FRC",
+                "PE",
+                "workloadID",
+                "productID"
+            ],
+            "type": "object"
+        },
+        "namespace": {
+            "properties": {
+                "labels": {
+                    "properties": {},
+                    "type": "object"
+                },
+                "type": {
+                    "enum": [
+                        "gateway",
+                        "solution",
+                        "system"
+                    ],
+                    "type": [
+                        "string"
+                    ]
+                }
+            },
+            "required": [
+                "type"
+            ],
+            "type": "object"
+        },
+        "netpol": {
+            "properties": {
+                "allowSameNamespace": {
+                    "type": "boolean"
+                }
+            },
+            "type": "object"
+        },
+        "policies": {
+            "properties": {
+                "allowedHosts": {
+                    "type": [
+                        "array"
+                    ]
+                },
+                "istioInjection": {
+                    "type": "boolean"
+                },
+                "podSecurityAdmission": {
+                    "properties": {
+                        "audit": {
+                            "properties": {
+                                "level": {
+                                    "enum": [
+                                        "privileged",
+                                        "baseline",
+                                        "restricted"
+                                    ],
+                                    "type": "string"
+                                },
+                                "version": {
+                                    "type": "string"
+                                }
+                            },
+                            "type": "object"
+                        },
+                        "enforce": {
+                            "properties": {
+                                "level": {
+                                    "enum": [
+                                        "privileged",
+                                        "baseline",
+                                        "restricted"
+                                    ],
+                                    "type": "string"
+                                },
+                                "version": {
+                                    "type": "string"
+                                }
+                            },
+                            "type": "object"
+                        },
+                        "warn": {
+                            "properties": {
+                                "level": {
+                                    "enum": [
+                                        "privileged",
+                                        "baseline",
+                                        "restricted"
+                                    ],
+                                    "type": "string"
+                                },
+                                "version": {
+                                    "type": "string"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    },
+                    "type": "object"
+                }
+            },
+            "type": "object"
+        },
+        "raw": {
+            "properties": {
+                "resources": {
+                    "type": "array"
+                }
+            },
+            "type": "object"
+        },
+        "rbac": {
+            "properties": {
+                "groups": {
+                    "type": "array",
+                    "uniqueItems": true
+                }
+            },
+            "required": [
+                "groups"
+            ],
+            "type": "object"
+        },
+        "resourceQuotas": {
+            "properties": {
+                "pods": {
+                    "minimum": 0,
+                    "type": "integer"
+                },
+                "services": {
+                    "properties": {
+                        "loadbalancers": {
+                            "minimum": 0,
+                            "type": "integer"
+                        },
+                        "nodeports": {
+                            "minimum": 0,
+                            "type": "integer"
+                        }
+                    },
+                    "type": "object"
+                },
+                "storage": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "pods",
+                "services",
+                "storage"
+            ],
+            "type": "object"
+        }
+    },
+    "type": "object"
+}

@@ -1,0 +1,96 @@
+{{- range $clusterName, $cluster := .Values.clusters }}
+
+{{- $policies := $.Values.policies }}
+{{- if and (hasKey $cluster "policies") (hasKey $.Values "policies") }}
+{{- $policies = merge $cluster.policies $.Values.policies }}
+{{- end }}
+
+{{- $aadPodIdentities := $.Values.aadPodIdentities }}
+{{- if and (hasKey $cluster "aadPodIdentities") (hasKey $.Values "aadPodIdentities") }}
+{{- $aadPodIdentities = merge $cluster.aadPodIdentities $.Values.aadPodIdentities }}
+{{- end }}
+
+{{- $resourceQuotas := $.Values.resourceQuotas }}
+{{- if and (hasKey $cluster "resourceQuotas") (hasKey $.Values "resourceQuotas") }}
+{{- $resourceQuotas = merge $cluster.resourceQuotas $.Values.resourceQuotas }}
+{{- end }}
+
+---
+
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "solution-{{ $.Release.Name }}-{{ $clusterName }}-namespace"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+  labels:
+    app.kubernetes.io/name: namespace
+    app.kubernetes.io/instance: {{ $.Release.Name }}
+spec:
+  project: {{ $.Values.global.project }}
+  source:
+    chart: {{ default "aurora-namespace" $.Values.global.helm.chart }}
+    {{- if $.Values.global.helm.repository }}
+    repoURL: {{ default $.Values.global.helm.repository $.Values.global.helm.repository }}
+    {{- else }}
+    repoURL: {{ default "https://artifactory.ssc-spc.gc.ca/artifactory/gccloudone-aurora-helm-local" $.Values.global.helm.repository }}
+    {{- end }}
+    targetRevision: {{ default "0.0.1" $.Values.global.helm.targetRevision }}
+    helm:
+      releaseName: {{ $.Release.Name }}
+      values: |
+        information: {{ toYaml $.Values.information | nindent 10 }}
+
+        namespace: {{ toYaml $.Values.namespace | nindent 10 }}
+
+        netpol:
+          allowSameNamespace: true
+
+        policies:
+          # List of host/path that can be exposed from the namespace.
+          allowedHosts: {{ toYaml $policies.allowedHosts | nindent 12 }}
+            # - www.example.ca/service
+            # - www.example.ca/
+            # - www.example.ca
+
+          # Boolean which defines if the namespace should have Istio injection.
+          istioInjection: {{ $policies.istioInjection }}
+
+          # Refer to https://kubernetes.io/docs/concepts/security/pod-security-admission/
+          podSecurityAdmission:
+            enforce:
+              level: {{ $policies.podSecurityAdmission.enforce.level }}
+              version: {{ $policies.podSecurityAdmission.enforce.version }}
+            audit:
+              level: {{ $policies.podSecurityAdmission.audit.level }}
+              version: {{ $policies.podSecurityAdmission.enforce.version }}
+            warn:
+              level: {{ $policies.podSecurityAdmission.warn.level }}
+              version: {{ $policies.podSecurityAdmission.enforce.version }}
+
+        rbac: {{ toYaml $.Values.rbac | nindent 10 }}
+
+        resourceQuotas:
+          # The maximum number of pods that can be in the namespace.
+          pods: {{ $resourceQuotas.pods }}
+          # Quotas related to services and external traffic.
+          services:
+            # The maximum number of loadbalancers that can be configured.
+            loadbalancers: {{ $resourceQuotas.services.loadbalancers }}
+            # The maximum number of NodePorts that can be configured.
+            nodeports: {{ $resourceQuotas.services.nodeports }}
+          # The upper limit of storage that can be requested across all persistent volumes.
+          # Expects a string value of a number with or without units (uses SI units).
+          storage: {{ $resourceQuotas.storage }}
+
+        raw: {{ toYaml $.Values.raw | nindent 10 }}
+
+        aadPodIdentities: {{ toYaml $aadPodIdentities | nindent 10 }}
+  destination:
+    name: {{ $clusterName }}
+    namespace: {{ $.Release.Name }}
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+{{- end }}

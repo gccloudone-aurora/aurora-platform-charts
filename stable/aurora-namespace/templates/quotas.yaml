@@ -1,0 +1,48 @@
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: service-quota
+  namespace: {{ .Release.Name }}
+  annotations:
+    kubernetes.io/description: >-
+      Defines quotas around advanced features that can expose open network flows into the cluster.
+  labels:
+    {{- include "aurora-namespace.labels" . | nindent 4 }}
+spec:
+  hard:
+    services.loadbalancers: {{ default 0 .Values.resourceQuotas.services.loadbalancers }}
+    services.nodeports: {{ default 0 .Values.resourceQuotas.services.nodeports }}
+---
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: limit-storage
+  namespace: {{ .Release.Name }}
+  annotations:
+    kubernetes.io/description: >-
+      To limit additional costs to the cloud project, this policy is in place to
+      prevent the use of more storage than is already in use. If you require
+      additional storage, please obtain CIO (IT requests) or BRM (business
+      requests) approval and submit a Cloud Jira to have the quota increased.
+  labels:
+    {{- include "aurora-namespace.labels" . | nindent 4 }}
+spec:
+  hard:
+    requests.storage: {{ default 0 .Values.resourceQuotas.storage }}
+---
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: block-azurefile-storage-class
+  namespace: {{ .Release.Name }}
+  annotations:
+    kubernetes.io/description: >-
+      To block the automatic creation of Azure Files.
+  labels:
+    {{- include "aurora-namespace.labels" . | nindent 4 }}
+spec:
+  hard:
+    azurefile.storageclass.storage.k8s.io/requests.storage: 0Gi
+    azurefile-csi.storageclass.storage.k8s.io/requests.storage: 0Gi
+    azurefile-csi-premium.storageclass.storage.k8s.io/requests.storage: 0Gi
+    azurefile-premium.storageclass.storage.k8s.io/requests.storage: 0Gi

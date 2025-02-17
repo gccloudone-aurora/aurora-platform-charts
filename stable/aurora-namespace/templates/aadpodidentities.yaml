@@ -1,0 +1,25 @@
+{{- range $identityName, $identity := .Values.aadPodIdentities }}
+---
+apiVersion: aadpodidentity.k8s.io/v1
+kind: AzureIdentity
+metadata:
+  name: {{ $identityName }}
+  namespace: {{ $.Release.Name }}
+  labels:
+    {{- include "aurora-namespace.labels" $ | nindent 4 }}
+spec:
+  clientID: {{ $identity.clientID }}
+  resourceID: {{ $identity.resourceID }}
+  type: 0
+---
+apiVersion: aadpodidentity.k8s.io/v1
+kind: AzureIdentityBinding
+metadata:
+  name: {{ $identityName }}
+  namespace: {{ $.Release.Name }}
+  labels:
+    {{- include "aurora-namespace.labels" $ | nindent 4 }}
+spec:
+  azureIdentity: {{ $identityName }}
+  selector: {{ $identityName }}
+{{- end }}

@@ -1,0 +1,36 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: {{ include "aurora-namespace.namespaceName" . }}
+  labels:
+    namespace.ssc-spc.gc.ca/purpose: {{ .Values.namespace.type | quote }}
+    finance.ssc-spc.gc.ca/workload-id: {{ .Values.information.workloadID | quote }}
+    project.ssc-spc.gc.ca/financial-responsibility-centre: {{ .Values.information.FRC | quote }}
+    project.ssc-spc.gc.ca/priority: {{ .Values.information.priority | quote }}
+    project.ssc-spc.gc.ca/program-element: {{ .Values.information.PE | quote }}
+    project.ssc-spc.gc.ca/product-id: {{ .Values.information.productID | int64 | quote }}
+    {{- if .Values.namespace.labels }}
+    {{- toYaml .Values.namespace.labels | nindent 4 }}
+    {{- end }}
+    istio-injection: {{ ternary "enabled" "disabled" .Values.policies.istioInjection }}
+  annotations:
+    project.ssc-spc.gc.ca/division: {{ .Values.information.division | quote }}
+    {{- if .Values.information.gitGroupURL }}
+    project.ssc-spc.gc.ca/git-group: {{ .Values.information.gitGroupURL | quote }}
+    {{- end }}
+    project.ssc-spc.gc.ca/lead: {{ .Values.information.projectLead | quote }}
+    project.ssc-spc.gc.ca/name: {{ .Values.information.projectName | quote }}
+    project.ssc-spc.gc.ca/onboarding: {{ .Values.information.onboardingEpic | quote }}
+    project.ssc-spc.gc.ca/authority-to-operate: {{ .Values.information.authorityToOperate | quote }}
+    project.ssc-spc.gc.ca/team: {{ .Values.information.team | quote }}
+    project.ssc-spc.gc.ca/technical-lead: {{ .Values.information.technicalLead | quote }}
+    {{- /*
+    Policy configurations on the namespace.
+    */}}
+    {{- if .Values.policies.allowedHosts }}
+    ingress.ssc-spc.gc.ca/allowed-hosts: {{ printf "[%s]" (include "aurora-namespace.allowedHosts" .) | quote }}
+    {{- end }}
+    {{- range $mode, $value := .Values.policies.podSecurityAdmission }}
+    pod-security.kubernetes.io/{{ $mode }}: {{ .level }}
+    pod-security.kubernetes.io/{{ $mode }}-version: {{ .version }}
+    {{- end }}

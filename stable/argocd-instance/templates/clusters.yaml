@@ -1,0 +1,22 @@
+{{- range $cluster, $saSecrets := .Values.register.clusters }}
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ $cluster }}
+  labels:
+    argocd.argoproj.io/secret-type: cluster
+    {{- include "argocd-foundation.labels" $ | nindent 4 }}
+type: Opaque
+stringData:
+  name: {{ $cluster }}
+  server: {{ $saSecrets.server }}
+  config: |
+    {
+      "bearerToken": {{ $saSecrets.token | quote }},
+      "tlsClientConfig": {
+        "insecure": false,
+        "caData": {{ $saSecrets.caData | quote }}
+      }
+    }
+{{- end }}

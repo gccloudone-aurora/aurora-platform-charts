@@ -1,0 +1,96 @@
+# Information about the namespace.
+information:
+  # Organisational information.
+  division:              # @schema type:[string];required:true
+  team:                  # @schema type:[string];required:true
+  projectName:           # @schema type:[string];required:true
+  projectLead:           # @schema type:[string];required:true
+  # The priority of the workload. Can be critical or medium.
+  priority: "medium"     # @schema type:[string];required:true
+  technicalLead:         # @schema type:[string];required:true
+  # The Jira ticket ID of the Epic used to onboard the project.
+  onboardingEpic:        # @schema type:[string];required:true
+  # The link to the authority to operate.
+  authorityToOperate:    # @schema type:[string]
+
+  # Information about tooling.
+  gitGroupURL:        # @schema type:[string, null];required:true
+
+  # Financial and organizational identifiers.
+  FRC:                   # @schema type:[integer];required:true
+  PE:                    # @schema type:[integer];required:true
+  workloadID:            # @schema type:[integer];required:true
+  productID:             # @schema type:[integer];required:true
+
+# Configurations about the namespace.
+namespace:
+ # Extra labels to add to the namespace.
+  labels: {}
+  # The type of namespace.
+  # Can be one of [gateway, solution, system].
+  type:                  # @schema type:[string];enum:[gateway, solution, system];required:true
+
+# Network policy configurations.
+netpol:
+  allowSameNamespace: true
+
+# Policy configurations on the namespace.
+policies:
+  # List of host/path that can be exposed from the namespace.
+  allowedHosts: []              # @schema type:[array]
+    # - www.example.ca/service  # @schema pattern:[a-z0-9\\.\\-]+(?:/[a-zA-Z0-9%/_-]+)?
+    # - www.example.ca/
+    # - www.example.ca
+
+  # Boolean which defines if the namespace should have Istio injection.
+  istioInjection: false
+
+  # Refer to https://kubernetes.io/docs/concepts/security/pod-security-admission/
+  podSecurityAdmission:
+    enforce:
+      level: baseline    # @schema enum:[privileged, baseline, restricted]
+      version: v1.27
+    audit:
+      level: baseline    # @schema enum:[privileged, baseline, restricted]
+      version: v1.27
+    warn:
+      level: baseline    # @schema enum:[privileged, baseline, restricted];
+      version: v1.27
+
+# Defines the access control on the namespace.
+# Roles will be assigned based on the namespace type.
+rbac:
+  groups: []             # @schema uniqueItems:true;required:true
+
+# Defines resource quotas on the namespace.
+resourceQuotas:
+  # The maximum number of pods that can be in the namespace.
+  pods: 60               # @schema minimum:0;required:true
+  # Quotas related to services and external traffic.
+  services:              # @schema required:true
+    # The maximum number of loadbalancers that can be configured.
+    loadbalancers: 0     # @schema minimum:0
+    # The maximum number of NodePorts that can be configured.
+    nodeports: 0         # @schema minimum:0
+  # The upper limit of storage that can be requested across all persistent volumes.
+  # Expects a string value of a number with or without units (uses SI units).
+  storage: '0'           # @schema required:true
+
+# Defines resources to be created in the namespace.
+raw:
+  resources: []
+  #
+  #  - apiVersion: scheduling.k8s.io/v1beta1
+  #    kind: PriorityClass
+  #    metadata:
+  #      name: common-critical
+  #    value: 100000000
+  #    globalDefault: false
+  #    description: "This priority class should only be used for critical priority common pods."
+  #
+
+# Define AAD Pod Identity information.
+aadPodIdentities: {}
+  # identityName:
+  #   clientID: ""     # @schema type:[string]
+  #   resourceID: ""   # @schema type:[string]

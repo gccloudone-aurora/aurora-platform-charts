@@ -1,0 +1,24 @@
+{{- if eq .Values.namespace.type "solution" }}
+{{- if .Values.netpol.allowSameNamespace }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-same-namespace
+  namespace: {{ .Release.Name }}
+  annotations:
+    kubernetes.io/description: Network Policy to allow communication between pods in the same namespace.
+  labels:
+    {{- include "aurora-namespace.labels" . | nindent 4 }}
+spec:
+  podSelector: {}
+  ingress:
+    - from:
+        - podSelector: {}
+  egress:
+    - to:
+        - podSelector: {}
+  policyTypes:
+    - Ingress
+    - Egress
+{{- end }}
+{{- end }}

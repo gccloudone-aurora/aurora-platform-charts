@@ -1,0 +1,120 @@
+argocdInstance:
+  applicationInstanceLabelKey: "platform.ssc-spc.gc.ca/application-name"
+  nodeSelector: {}
+  tolerations: []
+  argocdVaultPlugin:
+    image:
+      name: "platform/argocd"
+      version: "v1.0.0"
+    configMapName: "cmp-plugin"
+    AADPodIdentity:
+      enabled: false
+      identityName: "argocd-vault-plugin"
+      managedIdentity:
+        clientID: ""
+        resourceID: ""
+    credentials:
+      avpType: ""
+      azureTenantID: ""
+      azureClientID: ""
+      azureClientSecret: ""
+  disableAdmin: false
+  imageRegistry:
+    host: "artifactory.ssc-spc.gc.ca"
+    repository: "docker"
+  image:
+    name: "argoproj/argocd"
+    version: "v2.4.12"
+  ingressDomain: ""
+  logLevel: "info"
+  notifications:
+    enabled: false
+  oidcAuthSP:
+    tenantID: ""
+    clientID: ""
+    clientSecret: ""
+
+  applicationSet:
+    resources: {}
+      # limits:
+      #   cpu: ""
+      #   memory: ""
+      # requests:
+      #   cpu: ""
+      #   memory: ""
+
+  controller:
+    resources: {}
+      # limits:
+      #   cpu: ""
+      #   memory: ""
+      # requests:
+      #   cpu: ""
+      #   memory: ""
+
+  redis:
+    image:
+      name: "redis"
+      version: "6.2.6"
+    resources: {}
+      # limits:
+      #   cpu: ""
+      #   memory: ""
+      # requests:
+      #   cpu: ""
+      #   memory: ""
+
+  repo:
+    image:
+      name: "argoproj/argocd"
+      version: "v2.4.12"
+    resources: {}
+      # limits:
+      #   cpu: ""
+      #   memory: ""
+      # requests:
+      #   cpu: ""
+      #   memory: ""
+
+  server:
+    autoscale:
+      enabled: false
+    service:
+      type: NodePort
+    resources: {}
+      # limits:
+      #   cpu: ""
+      #   memory: ""
+      # requests:
+      #   cpu: ""
+      #   memory: ""
+
+register:
+  clusters: {}
+    # mgmt-dev-cc-00:
+    #   server:
+    #   token:
+    #   caData:
+
+  repositories: {}
+    # aurora-clusters:
+    #   type: git
+    #   url: https://github.com/gccloudone-aurora/clusters.git
+    # aurora-namespaces:
+    #   type: git
+    #   url: https://github.com/gccloudone-aurora/namespaces.git
+
+  repositoryCreds: {}
+    # platform:
+    #   type: git
+    #   url: https://github.com/gccloudone-aurora/clusters.git
+    #   username: ""
+    #   password: ""
+    # aurora-helm:
+    #   type: helm
+    #   url: https://artifactory.ssc-spc.gc.ca/artifactory/gccloudone-aurora-helm
+    #   username: ""
+    #   password: ""
+
+netpol:
+  enabled: false

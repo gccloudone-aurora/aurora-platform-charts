@@ -1,0 +1,40 @@
+{{- if eq .Values.namespace.type "solution" }}
+{{- $mediumPriorityClasses := list "business-value-medium" }}
+{{- $criticalPriorityClasses := append $mediumPriorityClasses "business-value-critical" }}
+{{- $priorityClassNamesByPriority := dict "medium" $mediumPriorityClasses "critical" $criticalPriorityClasses }}
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: pod-limits
+  namespace: {{ .Release.Name }}
+  annotations:
+    kubernetes.io/description: Defines the amount of pods the namespace can define and which priority classes they have access to.
+  labels:
+    {{- include "aurora-namespace.labels" . | nindent 4 }}
+spec:
+  hard:
+    pods: {{ .Values.resourceQuotas.pods }}
+  scopeSelector:
+    matchExpressions:
+    - operator : In
+      scopeName: PriorityClass
+      values: {{ if hasKey $priorityClassNamesByPriority .Values.information.priority }}{{ get $priorityClassNamesByPriority .Values.information.priority | toJson }}{{else}}{{fail (printf "Priority class names have not been defined for the specified priority: %s" .Values.information.priority)}}{{end}}
+---
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: restrict-priority-classes
+  namespace: {{ .Release.Name }}
+  annotations:
+    kubernetes.io/description: Restricts access to only the priority classes that the namespace has access to.
+  labels:
+    {{- include "aurora-namespace.labels" . | nindent 4 }}
+spec:
+  hard:
+    pods: 0
+  scopeSelector:
+    matchExpressions:
+    - operator : NotIn
+      scopeName: PriorityClass
+      values: {{ if hasKey $priorityClassNamesByPriority .Values.information.priority }}{{ get $priorityClassNamesByPriority .Values.information.priority | toJson }}{{else}}{{fail (printf "Priority class names have not been defined for the specified priority: %s" .Values.information.priority)}}{{end}}
+{{- end }}

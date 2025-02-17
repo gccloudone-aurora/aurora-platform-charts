@@ -1,0 +1,6 @@
+dependencies:
+- name: raw
+  repository: file://../raw
+  version: 0.0.1
+digest: sha256:f5ec3371fd93efd13b9e75530fae1ebf8447061b4e18c8dfd47086e391cfb8f2
+generated: "2025-02-09T19:58:22.747746932-05:00"

@@ -1,0 +1,21 @@
+{{- if .Values.argocdInstance.ingressDomain }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  labels:
+    {{- include "argocd-foundation.labels" $ | nindent 4 }}
+  name: argocd-instance-server
+spec:
+  ingressClassName: ingress-istio-controller
+  rules:
+  - host: {{ printf "platform-argocd.%s" .Values.argocdInstance.ingressDomain }}
+    http:
+      paths:
+      - backend:
+          service:
+            name: argocd-server
+            port:
+              name: http
+        path: /
+        pathType: Prefix
+{{- end }}

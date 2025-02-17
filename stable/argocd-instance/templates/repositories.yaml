@@ -1,0 +1,30 @@
+{{- range $name, $value := .Values.register.repositories }}
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ $name }}
+  labels:
+    argocd.argoproj.io/secret-type: repository
+    {{- include "argocd-foundation.labels" $ | nindent 4 }}
+stringData:
+  type: {{ $value.type }}
+  url: {{ $value.url }}
+{{- end }}
+
+{{- range $name, $value := .Values.register.repositoryCreds }}
+---
+
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ $name }}
+  labels:
+    argocd.argoproj.io/secret-type: repo-creds
+    {{- include "argocd-foundation.labels" $ | nindent 4 }}
+stringData:
+  type: {{ $value.type }}
+  url: {{ $value.url }}
+  username: {{ $value.username }}
+  password: {{ $value.password }}
+{{- end }}
