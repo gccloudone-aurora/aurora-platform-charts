@@ -1,0 +1,70 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-prometheus-manifests"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    chart: {{ .Values.global.raw.helm.chart }}
+    repoURL: {{ default .Values.global.helm.repository .Values.global.raw.helm.repository }}
+    targetRevision: {{ .Values.global.raw.helm.targetRevision }}
+    plugin:
+      env:
+        - name: HELM_RELEASE_NAME
+          value: "prometheus-manifests"
+        - name: HELM_VALUES
+          value: |
+            resources:
+              - apiVersion: v1
+                kind: Secret
+                metadata:
+                  name: auth-azuread-oauth-secret
+                  namespace: prometheus-system
+                  labels:
+                    app.kubernetes.io/name: "prometheus-manifests"
+                    app.kubernetes.io/instance: "{{ .Values.global.cluster }}"
+                    app.kubernetes.io/component: auth
+                    app.kubernetes.io/part-of: prometheus-system
+                    app.kubernetes.io/managed-by: argo
+                    helm.sh/chart: {{ printf "%s-%s" .Chart.Name .Chart.Version }}
+                data:
+                  client_id: {{ required "prometheus.azure.clientId is required" .Values.components.prometheus.azure.clientId | b64enc }}
+                  client_secret: {{ required "prometheus.azure.clientPassword is required" .Values.components.prometheus.azure.clientPassword | b64enc }}
+                type: Opaque
+              {{- if .Values.components.prometheus.alertmanager.enabled }}
+              - apiVersion: v1
+                kind: Secret
+                metadata:
+                  name: alertmanager-config
+                  namespace: prometheus-system
+                  labels:
+                    app.kubernetes.io/managed-by: argo
+                    app.kubernetes.io/name: grafana-destination-rule
+                    app.kubernetes.io/part-of: prometheus-system
+                data:
+                  alertmanager.yaml: {{ include "alertmanager.config" . | b64enc }}
+                  email_template.html: {{ .Files.Get "conf/alertmanager_notification_templates/email.html" | b64enc }}
+                type: Opaque
+              {{- end }}
+              - apiVersion: v1
+                kind: ServiceAccount
+                metadata:
+                  name: cluster-api-health-check
+                  namespace: prometheus-system
+              - apiVersion: v1
+                kind: Secret
+                metadata:
+                  name: cluster-api-health-check
+                  namespace: prometheus-system
+                  annotations:
+                    kubernetes.io/service-account.name: cluster-api-health-check
+                type: kubernetes.io/service-account-token
+  destination:
+    name: {{ .Values.global.cluster }}
+    namespace: platform-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

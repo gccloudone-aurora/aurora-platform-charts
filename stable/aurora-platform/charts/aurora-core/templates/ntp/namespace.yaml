@@ -1,0 +1,81 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-ntp-namespace"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    chart: {{ .Values.global.namespace.helm.chart }}
+    repoURL: {{ default .Values.global.helm.repository .Values.global.namespace.helm.repository }}
+    targetRevision: {{ .Values.global.namespace.helm.targetRevision }}
+    helm:
+      releaseName: ntp-system
+      values: |
+        # Information about the namespace.
+        information:
+          # Organisational information.
+          division: "Aurora"
+          team: "Aurora Solutions"
+          projectName: "Aurora Platform"
+          projectLead: "Albert Abdullah Kouri"
+          # The priority of the workload. Can be critical or medium.
+          priority: "medium"
+          technicalLead: "William Hearn"
+          # The Jira ticket ID of the Epic used to onboard the project.
+          onboardingEpic: "CN-2915"
+          # The link to the authority to operate.
+          authorityToOperate: "https://gcdocs.gc.ca/ssc-spc/example"
+
+          # Information about tooling.
+          gitGroupURL: "https://github.com/gccloudone-aurora"
+
+          # Financial and organizational identifiers.
+          FRC: 0001
+          PE: 001
+          workloadID: 0000001
+          productID: 00001
+
+        # Configurations about the namespace.
+        namespace:
+        # Extra labels to add to the namespace.
+          labels: {}
+          # The type of namespace.
+          # Can be one of [gateway, solution, system].
+          type: "system"
+
+        # Policy configurations on the namespace.
+        policies:
+          # List of host/path that can be exposed from the namespace.
+          allowedHosts: []
+
+          # Boolean which defines if the namespace should have Istio injection.
+          # TODO: Needs to be set to true
+          istioInjection: false
+
+        # Defines the access control on the namespace.
+        # Roles will be assigned based on the namespace type.
+        rbac:
+          groups: {{ toYaml .Values.rbac.platformOperator.groups | nindent 12 }}
+
+        # Defines resource quotas on the namespace.
+        resourceQuotas:
+          # The maximum number of pods that can be in the namespace.
+          pods: 60
+          # Quotas related to services and external traffic.
+          services:
+            # The maximum number of loadbalancers that can be configured.
+            loadbalancers: 0
+            # The maximum number of NodePorts that can be configured.
+            nodeports: 0
+          # The upper limit of storage that can be requested across all persistent volumes.
+          # Expects a string value of a number with or without units (uses SI units).
+          storage: '0'
+  destination:
+    name: {{ .Values.global.cluster }}
+    namespace: platform-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

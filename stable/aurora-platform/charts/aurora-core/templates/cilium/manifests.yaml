@@ -1,0 +1,41 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-cilium-manifests"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    chart: {{ .Values.global.raw.helm.chart }}
+    repoURL: {{ default .Values.global.helm.repository .Values.global.raw.helm.repository }}
+    targetRevision: {{ .Values.global.raw.helm.targetRevision }}
+    plugin:
+      env:
+        - name: HELM_RELEASE_NAME
+          value: "cilium-manifests"
+        - name: HELM_VALUES
+          value: |
+            resources:
+              - apiVersion: v1
+                kind: Secret
+                metadata:
+                  name: cilium-image-pull-secret
+                  namespace: cilium-system
+                  labels:
+                    app.kubernetes.io/name: "cilium-manifests"
+                    app.kubernetes.io/instance: "{{ .Values.global.cluster }}"
+                    app.kubernetes.io/component: config
+                    app.kubernetes.io/part-of: cilium-system
+                    app.kubernetes.io/managed-by: argo
+                    helm.sh/chart: {{ printf "%s-%s" .Chart.Name .Chart.Version }}
+                type: kubernetes.io/dockerconfigjson
+                data:
+                  .dockerconfigjson: {{ required "cilium.secretDockerConfigJson is required" .Values.components.cilium.secretDockerConfigJson | b64enc }}
+  destination:
+    name: {{ .Values.global.cluster }}
+    namespace: platform-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

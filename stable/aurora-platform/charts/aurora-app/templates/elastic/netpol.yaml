@@ -1,0 +1,70 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-elastic-netpol"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    chart: {{ .Values.global.raw.helm.chart }}
+    repoURL: {{ default .Values.global.helm.repository .Values.global.raw.helm.repository }}
+    targetRevision: {{ .Values.global.raw.helm.targetRevision }}
+    helm:
+      releaseName: elastic-netpol
+      values: |
+        resources:
+          - apiVersion: cilium.io/v2
+            kind: CiliumClusterwideNetworkPolicy
+            metadata:
+              name: allow-ingress-from-elastic-to-elastic-instances
+            spec:
+              endpointSelector:
+                matchExpressions:
+                  - key: common.k8s.elastic.co/type
+                    operator: Exists
+              ingress:
+                - fromEndpoints:
+                    - matchLabels:
+                        io.kubernetes.pod.namespace: elastic-system
+          - apiVersion: networking.k8s.io/v1
+            kind: NetworkPolicy
+            metadata:
+              name: allow-same-namespace
+              namespace: elastic-system
+            spec:
+              podSelector: {}
+              policyTypes:
+                - Ingress
+                - Egress
+              ingress:
+                - from:
+                  - podSelector: {}
+              egress:
+                - to:
+                  - podSelector: {}
+          - apiVersion: networking.k8s.io/v1
+            kind: NetworkPolicy
+            metadata:
+              name: allow-egress-to-elastic-instances-from-elastic
+              namespace: elastic-system
+            spec:
+              egress:
+              - to:
+                - namespaceSelector:
+                    matchLabels: {}
+                  podSelector:
+                    matchExpressions:
+                      - key: common.k8s.elastic.co/type
+                        operator: Exists
+              podSelector:
+                matchLabels: {}
+              policyTypes:
+              - Egress
+  destination:
+    name: {{ .Values.global.cluster }}
+    namespace: platform-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

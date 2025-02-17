@@ -1,0 +1,83 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-kubernetes-event-exporter-netpol"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    chart: {{ .Values.global.raw.helm.chart }}
+    repoURL: {{ default .Values.global.helm.repository .Values.global.raw.helm.repository }}
+    targetRevision: {{ .Values.global.raw.helm.targetRevision }}
+    helm:
+      releaseName: kubernetes-event-exporter-netpol
+      values: |
+        resources:
+          - apiVersion: networking.k8s.io/v1
+            kind: NetworkPolicy
+            metadata:
+              name: allow-same-namespace
+              namespace: event-logging-system
+            spec:
+              podSelector: {}
+              policyTypes:
+                - Ingress
+                - Egress
+              ingress:
+                - from:
+                  - podSelector: {}
+              egress:
+                - to:
+                  - podSelector: {}
+          - apiVersion: networking.k8s.io/v1
+            kind: NetworkPolicy
+            metadata:
+              name: allow-egress-from-kubernetes-event-export-to-central-logging
+              namespace: event-logging-system
+            spec:
+              egress:
+              {{- range (required "global.loggingCidrs is required" .Values.global.loggingCidrs) }}
+                - ports:
+                    - protocol: TCP
+                      port: 443
+                  to:
+                    - ipBlock:
+                        cidr: {{ . | quote }}
+              {{- end }}
+              podSelector:
+                matchLabels:
+                  app.kubernetes.io/name: kubernetes-event-exporter
+              policyTypes:
+              - Egress
+          {{ if .Values.global.clusterHasLoki }}
+          - apiVersion: networking.k8s.io/v1
+            kind: NetworkPolicy
+            metadata:
+              name: allow-egress-to-loki-from-event-logging
+              namespace: event-logging-system
+            spec:
+              egress:
+              - ports:
+                - port: 8080
+                  protocol: TCP
+                to:
+                - namespaceSelector:
+                    matchLabels:
+                      kubernetes.io/metadata.name: loki
+                  podSelector:
+                    matchLabels:
+                      app.kubernetes.io/component: gateway
+              podSelector:
+                matchLabels:
+                  app.kubernetes.io/name: kubernetes-event-exporter
+              policyTypes:
+              - Egress
+          {{- end }}
+  destination:
+    name: {{ .Values.global.cluster }}
+    namespace: platform-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

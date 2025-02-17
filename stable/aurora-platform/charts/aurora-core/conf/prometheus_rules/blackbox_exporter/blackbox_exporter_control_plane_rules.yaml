@@ -1,0 +1,12 @@
+groups:
+  - name: controlplane.rules
+    rules:
+      - alert: ControlPlaneProbeFailure
+        expr: sum by (target, instance) (probe_success{target=~"control-plane.*"}) != 1
+        for: 15s
+        labels:
+          severity: P1-Critical
+          scope: cluster
+        annotations:
+          message: 'The {{ $labels.target }} probe is failing. Port-forward into 9115 on the blackbox pod in the monitoring namespace for {{ $labels.instance }} debug information. Scroll to the bottom for older failures.'
+

@@ -1,0 +1,49 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-gatekeeper-restrict-hostnames"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+  annotations:
+    kubernetes.io/description: |
+      Ensures that hostnames and/or paths in Ingress, VirtualService, and DestinationRule resources are permitted, and do not conflict with those of other namespaces unless explicitly allowed.
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    chart: {{ .Values.global.raw.helm.chart }}
+    repoURL: {{ default .Values.global.helm.repository .Values.global.raw.helm.repository }}
+    targetRevision: {{ .Values.global.raw.helm.targetRevision }}
+    helm:
+      releaseName: gatekeeper-restrict-hostnames
+      values: |
+        resources:
+          - apiVersion: constraints.gatekeeper.sh/v1beta1
+            kind: RestrictHostnames
+            metadata:
+              name: restrict-hostnames
+            spec:
+              match:
+                kinds:
+                  - kinds: ["Ingress"]
+                    apiGroups: ["networking.k8s.io"]
+                  - kinds: ["VirtualService", "DestinationRule"]
+                    apiGroups: ["networking.istio.io"]
+                excludedNamespaces: {{ toYaml .Values.components.gatekeeper.constraints.restrictHostnames.excludedNamespaces | nindent 18 }}
+              parameters:
+                errorMsgAdditionalDetails: >-
+                  Refer to https://aurora.gccloudone.ca/en/documentation/security/policies/restrict-hostname/
+                  for more information.
+                exemptions:
+                {{- $clusterEnvironmentExemption := print "*." .Values.global.ingressDomain }}
+                {{- list $clusterEnvironmentExemption | toYaml | nindent 18 }}
+                {{- if .Values.components.gatekeeper.constraints.restrictHostnames.exemptions }}
+                  {{- toYaml .Values.components.gatekeeper.constraints.restrictHostnames.exemptions | nindent 18 }}
+                {{- end }}
+              enforcementAction: {{ .Values.components.gatekeeper.constraints.restrictHostnames.enforcementAction }}
+  destination:
+    name: {{ .Values.global.cluster }}
+    namespace: platform-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

@@ -1,0 +1,265 @@
+global:
+  helm: {}
+    # Override all Helm applications to pull
+    # their helm chart from the following
+    # repository.
+    #
+    # You can override specific charts below
+    # in the components section.
+    # repository: https://myrepo.example.ca
+
+  container: {}
+    # Override all applications to pull
+    # their container from the following
+    # registry.
+    #
+    # You can override specific charts below
+    # in the components section.
+    # registry: artifactory.example.ca
+
+  namespace:
+    helm:
+      chart:
+      targetRevision:
+      repository:
+
+  raw:
+    helm:
+      chart:
+      targetRevision:
+      repository:
+
+  # Cluster name for the Application targets.
+  cluster: in-cluster
+
+  # Which project to place applications in.
+  project: aurora-app
+
+  # Ingress Domain
+  ingressDomain: example.ca
+
+  # Ingress Class Name
+  # ingressClassName: ingress-istio-controller
+
+  # The Azure subscription ID used for the cluster
+  # subscriptionId: ""
+
+  # The Azure tenant ID used for the cluster
+  # tenantId: ""
+
+  # Load Balancer Subnet Name for all Load Balancers
+  # load_balancer_subnet_name: ""
+
+data:
+  mgmt:
+    enabled: true
+
+# Components
+components:
+  argoFoundation:
+
+    argocdInstance:
+      helm: {}
+      # chart: argocd-instance
+      # repository: https://artifactory.ssc-spc.gc.ca/artifactory/gccloudone-aurora-helm-local
+      # targetRevision: 0.0.1
+
+      # disableAdmin: true
+      # ingressDomain: ""
+
+      nodeSelector:
+        kubernetes.io/os: linux
+        node.ssc-spc.gc.ca/purpose: system
+      tolerations:
+        - key: CriticalAddonsOnly
+          operator: Exists
+
+      argocdVaultPlugin:
+        credentials: {}
+      #     azureTenantID: ""
+      #     azureClientID: ""
+      #     azureClientSecret: ""
+
+      oidcAuthSP:
+        credentials: {}
+      #     tenantID: ""
+      #     clientID: ""
+      #     clientSecret: ""
+
+      aadPodIdentity: {}
+        # enabled: false
+
+      netpol: {}
+        # enabled: false
+
+      notifications: {}
+        # enabled: false
+
+      server:
+        service: {}
+          # type: ""
+
+      # credentials:
+      #   repository:
+      #     url: ""
+      #     username: ""
+      #     password: ""
+      #   helm:
+      #     url: ""
+      #     username: ""
+      #     password: ""
+
+      repo:
+        resources: {}
+          # limits:
+          #   cpu: ""
+          #   memory: ""
+          # requests:
+          #   cpu: ""
+          #   memory: ""
+
+      controller:
+        resources: {}
+          # limits:
+          #   cpu: ""
+          #   memory: ""
+          # requests:
+          #   cpu: ""
+          #   memory: ""
+      applicationSet:
+        resources: {}
+          # limits:
+          #   cpu: ""
+          #   memory: ""
+          # requests:
+          #   cpu: ""
+          #   memory: ""
+
+      redis:
+        resources: {}
+          # limits:
+          #   cpu: ""
+          #   memory: ""
+          # requests:
+          #   cpu: ""
+          #   memory: ""
+
+      register:
+        clusters: {}
+
+    argocdProjects:
+      platform:
+        # applicationSet:
+        #   generator:
+        #     git:
+        #       files:
+
+      solutions:
+        # applicationSet:
+        #   generator:
+        #     git:
+        #       files:
+
+      syncWindows:
+        - clusters:
+            - '*'
+          duration: 5h
+          kind: allow
+          manualSync: true
+          schedule: '* 19 * * 2,4'
+          timeZone: America/Toronto
+
+  argoOperator:
+    helm: {}
+      # chart: argocd-operator
+      # repository: https://gccloudone-aurora.github.io/charts
+      # targetRevision: 0.4.1
+
+    imagePullSecrets: []
+    image:
+      # registry: quay.io
+      repository: argoprojlabs/argocd-operator
+      tag: "v0.4.0"
+      # pullPolicy: IfNotPresent
+
+    priorityClassName: platform-cluster-medium
+
+    replicas: 1
+    resources: {}
+      # limits:
+      #   cpu: ""
+      #   memory: ""
+      # requests:
+      #   cpu: ""
+      #   memory: ""
+    nodeSelector:
+      kubernetes.io/os: linux
+      node.ssc-spc.gc.ca/purpose: system
+    tolerations:
+      - key: CriticalAddonsOnly
+        operator: Exists
+    affinity: {}
+
+  billOfLanding:
+    enabled: true
+
+    helm: {}
+      # chart: bol
+      # repository: https://artifactory.ssc-spc.gc.ca/artifactory/gccloudone-aurora-helm-local
+      # targetRevision: 0.0.1
+
+    image:
+      # registry: artifactory.ssc-spc.gc.ca/gccloudone-aurora-docker-local
+      repository: bol
+      # tag: v0.0.1
+
+    nodeSelector:
+      kubernetes.io/os: linux
+      node.ssc-spc.gc.ca/purpose: system
+    tolerations:
+      - key: CriticalAddonsOnly
+        operator: Exists
+
+    config:
+      artifactRepository: {}
+        # provider: azure
+        # azure:
+        #   storageAccountName: <storage-account-name>
+        #   storageAccountContainerName: <container-name>
+        #   useAzureCliCredentials: false
+
+      clusters: []
+        # - name:
+        #   subscription:
+        #   kubecostURL:
+        #   kubernetesAuth:
+        #     method: manual
+        #     manual:
+        #       host:
+        #       bearerToken:
+        #       tlsClientConfig:
+        #         insecure: true
+        #         caData:
+
+      # fileNameSuffix: ""
+      # maximumReportingWindowInDays: 30
+
+    aadPodIdentity:
+      azureManagedIdentity: {}
+        # clientId:
+        # resourceId:
+
+rbac:
+  # Groups and users that should be bound to the platform-admin role.
+  # Note: if using AKS with AAD enabled, this is not necessary since admins
+  #       will be defined in the configuration.
+  platformAdmin:
+    groups: []
+    users: []
+  # Configurations for the platform-operator-daily role.
+  # A read-only aggregated role which uses the
+  # 'rbac.ssc-spc.gc.ca/aggregate-to-platform-operator-view: "true"'
+  # label as the selector.
+  platformOperator:
+    groups: []
+    users: []

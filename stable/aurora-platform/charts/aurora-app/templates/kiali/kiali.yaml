@@ -1,0 +1,110 @@
+{{- range .Values.components.kiali.instances }}
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ $.Values.global.cluster }}-kiali-instance-{{ .name }}"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ $.Values.global.project }}
+  source:
+    chart: {{ $.Values.global.raw.helm.chart }}
+    repoURL: {{ default $.Values.global.helm.repository $.Values.global.raw.helm.repository }}
+    targetRevision: {{ $.Values.global.raw.helm.targetRevision }}
+    plugin:
+      env:
+        - name: HELM_RELEASE_NAME
+          value: kiali-instance-{{ .name }}
+        - name: HELM_VALUES
+          value: |
+            resources:
+              - apiVersion: networking.istio.io/v1alpha3
+                kind: DestinationRule
+                metadata:
+                  name: {{ .name }}
+                  namespace: kiali-system
+                  labels:
+                    app.kubernetes.io/name: "kiali-instance-{{ .name }}"
+                    app.kubernetes.io/instance: "{{ $.Values.global.cluster }}"
+                    app.kubernetes.io/component: network
+                    app.kubernetes.io/part-of: kiali-system
+                    app.kubernetes.io/managed-by: argo
+                    helm.sh/chart: {{ printf "%s-%s" $.Chart.Name $.Chart.Version }}
+                spec:
+                  host: {{ .name }}.kiali-system.svc.cluster.local
+                  trafficPolicy:
+                    tls:
+                      mode: DISABLE
+              - apiVersion: kiali.io/v1alpha1
+                kind: Kiali
+                metadata:
+                  name: {{ .name }}
+                  namespace: kiali-system
+                  labels:
+                    app.kubernetes.io/name: "kiali-instance-{{ .name }}"
+                    app.kubernetes.io/instance: "{{ $.Values.global.cluster }}"
+                    app.kubernetes.io/component: config
+                    app.kubernetes.io/part-of: kiali-system
+                    app.kubernetes.io/managed-by: argo
+                    helm.sh/chart: {{ printf "%s-%s" $.Chart.Name $.Chart.Version }}
+                spec:
+                  deployment:
+                    accessible_namespaces:
+                      - '**'
+                    image_name: {{ include "kiali.instance.image" (dict "instance" . "values" $.Values) | quote }}
+                    image_pull_secrets: {{ toYaml $.Values.components.kiali.imagePullSecrets | nindent 22 }}
+                    image_version: operator_version
+                    ingress:
+                      class_name: {{ $.Values.global.ingressClassName }}
+                      enabled: true
+                      override_yaml:
+                        spec:
+                          rules:
+                            - host: {{ .name }}.{{ $.Values.global.ingressDomain }}
+                              http:
+                                paths:
+                                  - backend:
+                                      service:
+                                        name: {{ .name }}
+                                        port:
+                                          number: 20001
+                                    path: /
+                                    pathType: Prefix
+                    node_selector: {{ toYaml $.Values.components.kiali.nodeSelector | nindent 22 }}
+                    tolerations: {{ toYaml $.Values.components.kiali.tolerations | nindent 22 }}
+                    affinity: {{ toYaml $.Values.components.kiali.nodeSelector | nindent 22 }}
+                    priority_class_name: {{ $.Values.components.kiali.priorityClassName }}
+                    view_only_mode: true
+                  external_services:
+                    grafana:
+                      auth:
+                        token: {{ required "kiali.instances[].grafana.token is required" .grafana.token | quote }}
+                        type: bearer
+                      in_cluster_url: http://kube-prometheus-stack-grafana.prometheus-system:80
+                      url: https://grafana.{{ $.Values.global.ingressDomain }}
+                    istio:
+                      component_status:
+                        components:
+                          - app_label: istiod
+                            is_core: true
+                            namespace: istio-system
+                          - app_label: general
+                            is_core: true
+                            namespace: ingress-general-system
+                        enabled: true
+                      url_service_version: http://istiod.istio-system:15014/version
+                    prometheus:
+                      url: http://kube-prometheus-stack-prometheus.prometheus-system:9090
+                    tracing:
+                      enabled: false
+                  istio_namespace: istio-system
+                  server:
+                    web_fqdn: {{ .name }}.{{ $.Values.global.ingressDomain }}
+  destination:
+    name: {{ $.Values.global.cluster }}
+    namespace: platform-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+{{- end }}

@@ -1,0 +1,49 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-elastic-operator"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    chart: {{ default "eck-operator" .Values.components.elastic.helm.chart }}
+    {{- if .Values.components.elastic.helm.repository }}
+    repoURL: {{ .Values.components.elastic.helm.repository }}
+    {{- else }}
+    repoURL: {{ default "https://helm.elastic.co" .Values.global.helm.repository }}
+    {{- end }}
+    targetRevision: {{ default "2.3.0" .Values.components.elastic.helm.targetRevision }}
+    helm:
+      releaseName: elastic-operator
+      values: |
+        image: {{ default "{}" (include "elastic.image" .) | nindent 10 }}
+        imagePullSecrets: {{ toYaml .Values.components.elastic.imagePullSecrets | nindent 10 }}
+
+        replicaCount: {{ .Values.components.argoController.replicas }}
+        resources: {{ toYaml .Values.components.elastic.resources | nindent 10 }}
+
+        nodeSelector: {{ toYaml .Values.components.elastic.nodeSelector | nindent 10 }}
+        tolerations: {{ toYaml .Values.components.elastic.tolerations | nindent 10 }}
+        affinity: {{ toYaml .Values.components.elastic.affinity | nindent 10 }}
+
+        installCRDs: true
+        managedNamespaces: []
+        createClusterScopedResources: true
+
+        webhook:
+          enabled: true
+
+        podAnnotations:
+          sidecar.istio.io/inject: "true"
+          traffic.sidecar.istio.io/includeInboundPorts: "*"
+          traffic.sidecar.istio.io/excludeInboundPorts: "9443"
+
+        priorityClassName: {{ .Values.components.elastic.priorityClassName }}
+  destination:
+    name: {{ .Values.global.cluster }}
+    namespace: elastic-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

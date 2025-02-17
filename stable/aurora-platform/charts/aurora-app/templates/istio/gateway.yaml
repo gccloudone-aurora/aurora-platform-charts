@@ -1,0 +1,116 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-istio-ingress-gateway-general"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    chart: {{ default "istio-ingress-gateway" .Values.components.istio.gateway.helm.chart }}
+    {{- if .Values.components.istio.gateway.helm.repository }}
+    repoURL: {{ .Values.components.istio.gateway.helm.repository }}
+    {{- else }}
+    repoURL: {{ default "https://gccloudone-aurora.github.io/charts" .Values.global.helm.repository }}
+    {{- end }}
+    targetRevision: {{ default "3.1.0" .Values.components.istio.gateway.helm.targetRevision }}
+    plugin:
+      env:
+        - name: HELM_RELEASE_NAME
+          value: "general"
+        - name: HELM_VALUES
+          value: |
+            gateway:
+              imagePullSecrets: {{ toYaml .Values.components.istio.imagePullSecrets | nindent 16 }}
+
+              replicaCount: {{ .Values.components.istio.gateway.replicas }}
+              resources: {{ toYaml .Values.components.istio.gateway.resources | nindent 16 }}
+
+              nodeSelector: {{ toYaml .Values.components.istio.gateway.nodeSelector | nindent 16 }}
+              tolerations: {{ toYaml .Values.components.istio.gateway.tolerations | nindent 16 }}
+              affinity: {{ toYaml .Values.components.istio.gateway.affinity | nindent 16 }}
+
+              autoscaling:
+                enabled: true
+                minReplicas: 3
+                maxReplicas: 5
+                targetCPUUtilizationPercentage: 80
+
+              service:
+                # Defines the type of Service to deploy
+                type: LoadBalancer
+                annotations:
+                  # Defines if an "internal" or "external" Azure load-balancer is deployed for the service.
+                  service.beta.kubernetes.io/azure-load-balancer-internal: "true"
+                  service.beta.kubernetes.io/azure-load-balancer-internal-subnet: "{{ required ".Values.global.load_balancer_subnet_name is required" .Values.global.load_balancer_subnet_name }}"
+                # Specifies the IP that the LoadBalancer should use. Skipped if empty.
+                loadBalancerIP: ""
+                # Describes how nodes distribute service traffic
+                # TODO: Due to a currently unidentified issue with Cilium, it is unable to process traffic sent to the Load Balancer from a pod within the cluster.
+                #       Switching to externalTrafficPolicy: Cluster restores that connectivity. The impact to other workloads is low (such as not getting the true client IP address).
+                externalTrafficPolicy: "Cluster"
+                # Toggle for NodePorts when deploying many ingress gateways
+                ports:
+                  - name: status-port
+                    protocol: TCP
+                    port: 15021
+                    targetPort: 15021
+                    nodePort: 31813
+                  - name: http
+                    protocol: TCP
+                    port: 80
+                    targetPort: 80
+                    nodePort: 30540
+                  - name: https
+                    protocol: TCP
+                    port: 443
+                    targetPort: 443
+                    nodePort: 31607
+
+            # Configures HTTPS on the ingress gateway.
+            https:
+              # Toggles HTTPS configurations on the ingress gateway.
+              enabled: true
+              # The hosts to which the ingress gateway should route traffic to.
+              hosts: ["*"]
+              httpsRedirect: true
+
+              # Configures if HSTS headers should be added to all responses which do not have it.
+              hsts:
+                enabled: true
+                # Sets the values of the header.
+                # Defaults to only setting the max-age to one year.
+                value: max-age=31536000
+
+              # Configures a cert-manager Certificate for automated certificate generation.
+              certificate:
+                # Defines the name of the secret that will contain the certificates.
+                secretName: wildcard-tls
+                # Defines list of DNS names for the certificate.
+                # Note: The first entry is set as the common name.
+                dnsNames:
+                  - "*.{{ .Values.global.ingressDomain }}"
+                  {{- range .Values.components.istio.gateway.additionalDnsNames }}
+                  - "{{ . }}"
+                  {{- end }}
+                # Toggles if the Azure DNS solver should be used.
+                useAzureDNSSolver: true
+                # Defines the type of Issuer to use.
+                issuerRef:
+                  # Can be ClusterIssuer or Issuer.
+                  kind: ClusterIssuer
+                  # The name of the Issuer to use.
+                  name: letsencrypt
+            # Configures Telemetry on the ingress gateway.
+            telemetry:
+              # Enable access logging
+              accessLogging:
+                enabled: true
+
+  destination:
+    name: '{{ .Values.global.cluster }}'
+    namespace: ingress-general-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

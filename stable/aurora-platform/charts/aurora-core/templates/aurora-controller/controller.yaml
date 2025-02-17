@@ -1,0 +1,44 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-aurora-controller"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    chart: {{ default "aurora-controller" .Values.components.auroraController.helm.chart }}
+    {{- if .Values.components.auroraController.helm.repository }}
+    repoURL: {{ .Values.components.auroraController.helm.repository }}
+    {{- else }}
+    repoURL: {{ default "https://gccloudone-aurora.github.io/charts" .Values.global.helm.repository }}
+    {{- end }}
+    targetRevision: {{ default "0.0.1" .Values.components.auroraController.helm.targetRevision }}
+    plugin:
+      env:
+        - name: HELM_RELEASE_NAME
+          value: "aurora-controller"
+        - name: HELM_VALUES
+          value: |
+            image: {{ default "{}" (include "auroraController.image" .) | nindent 14 }}
+            imagePullSecrets: {{ toYaml .Values.components.auroraController.imagePullSecrets | nindent 14 }}
+
+            replicaCount: {{ .Values.components.auroraController.replicas }}
+            resources: {{ toYaml .Values.components.auroraController.resources | nindent 14 }}
+
+            nodeSelector: {{ toYaml .Values.components.auroraController.nodeSelector | nindent 14 }}
+            tolerations: {{ toYaml .Values.components.auroraController.tolerations | nindent 14 }}
+            affinity: {{ toYaml .Values.components.auroraController.affinity | nindent 14 }}
+
+            aurora:
+              secretName: "{{ .Values.components.auroraController.aurora.secretName }}"
+              secretDockerConfigJson: {{ required "auroraController.aurora.secretDockerConfigJson is required" .Values.components.auroraController.aurora.secretDockerConfigJson | quote }}
+
+            priorityClassName: {{ .Values.components.auroraController.priorityClassName }}
+  destination:
+    name: {{ .Values.global.cluster }}
+    namespace: aurora-controller-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

@@ -1,0 +1,110 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-argo-foundation-platform-project"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    chart: {{ .Values.global.raw.helm.chart }}
+    repoURL: {{ default .Values.global.helm.repository .Values.global.raw.helm.repository }}
+    targetRevision: {{ .Values.global.raw.helm.targetRevision }}
+    helm:
+      releaseName: argocd-foundation-platform-projects
+      values: |
+        resources:
+          - apiVersion: argoproj.io/v1alpha1
+            kind: AppProject
+            metadata:
+              name: aurora
+              namespace: platform-management-system
+            spec:
+              description: "App Project for Aurora"
+              sourceRepos:
+                - '*'
+              destinations:
+                - namespace: '*'
+                  server: '*'
+              orphanedResources:
+                warn: true
+              clusterResourceWhitelist:
+                - group: '*'
+                  kind: '*'
+              syncWindows: {{ toYaml .Values.components.argoFoundation.argocdProjects.syncWindows | nindent 16 }}
+          - apiVersion: argoproj.io/v1alpha1
+            kind: ApplicationSet
+            metadata:
+              name: aurora-platform
+              namespace: platform-management-system
+            spec:
+              generators:
+                - git:
+                    repoURL: "https://github.com/gccloudone-aurora/clusters.git"
+                    revision: main
+                    files: {{ toYaml .Values.components.argoFoundation.argocdProjects.platform.applicationSet.generator.git.files | nindent 22 }}
+              syncPolicy:
+                preserveResourcesOnDeletion: true
+              template:
+                metadata:
+                  name: 'platform-{{ "{{" }} path.basename }}'
+                spec:
+                  destination:
+                    name: in-cluster
+                    namespace: platform-management-system
+                  project: aurora
+                  source:
+                    chart: aurora-platform
+                    helm:
+                      releaseName: '{{ "{{" }} path.basename }}'
+                      values: |
+                        {{ "{{" }} settings }}
+                    repoURL: https://artifactory.ssc-spc.gc.ca/artifactory/gccloudone-aurora-helm
+                    targetRevision: '{{ "{{" }} version }}'
+                  syncPolicy:
+                    automated:
+                      prune: false
+                      selfHeal: true
+          - apiVersion: argoproj.io/v1alpha1
+            kind: AppProject
+            metadata:
+              name: aurora-core
+              namespace: platform-management-system
+            spec:
+              description: "App Project for Aurora Core"
+              sourceRepos:
+                - '*'
+              destinations:
+                - namespace: '*'
+                  server: '*'
+              orphanedResources:
+                warn: true
+              clusterResourceWhitelist:
+                - group: '*'
+                  kind: '*'
+              syncWindows: {{ toYaml .Values.components.argoFoundation.argocdProjects.syncWindows | nindent 16 }}
+          - apiVersion: argoproj.io/v1alpha1
+            kind: AppProject
+            metadata:
+              name: aurora-app
+              namespace: platform-management-system
+            spec:
+              description: "App Project for Aurora App"
+              sourceRepos:
+                - '*'
+              destinations:
+                - namespace: '*'
+                  server: '*'
+              orphanedResources:
+                warn: true
+              clusterResourceWhitelist:
+                - group: '*'
+                  kind: '*'
+              syncWindows: {{ toYaml .Values.components.argoFoundation.argocdProjects.syncWindows | nindent 16 }}
+  destination:
+    name: {{ .Values.global.cluster }}
+    namespace: platform-management-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

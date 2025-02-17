@@ -1,0 +1,119 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-argoworkflow-rbac"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    chart: {{ .Values.global.raw.helm.chart }}
+    repoURL: {{ default .Values.global.helm.repository .Values.global.raw.helm.repository }}
+    targetRevision: {{ .Values.global.raw.helm.targetRevision }}
+    helm:
+      releaseName: argoworkflow-rbac
+      values: |
+        resources:
+          - apiVersion: v1
+            kind: ServiceAccount
+            metadata:
+              name: user-default-login
+              namespace: argo-workflow-system
+              annotations:
+                workflows.argoproj.io/rbac-rule: 'true'
+                workflows.argoproj.io/rbac-rule-precedence: '0'
+          - apiVersion: v1
+            kind: Secret
+            metadata:
+              name: user-default-login.service-account-token
+              namespace: argo-workflow-system
+              annotations:
+                kubernetes.io/service-account.name: user-default-login
+            type: kubernetes.io/service-account-token
+          - apiVersion: rbac.authorization.k8s.io/v1
+            kind: ClusterRole
+            metadata:
+              name: solution-builder-argoworkflow
+              labels:
+                rbac.ssc-spc.gc.ca/aggregate-to-solution-builder: "true"
+                app.kubernetes.io/name: "argoworkflow-rbac"
+                app.kubernetes.io/instance: "{{ .Values.global.cluster }}"
+                app.kubernetes.io/part-of: solution-builder-rbac
+                app.kubernetes.io/managed-by: argo
+                helm.sh/chart: {{ printf "%s-%s" .Chart.Name .Chart.Version }}
+            rules:
+              - apiGroups:
+                  - argoproj.io
+                resources:
+                  - eventsources
+                  - eventsources/finalizers
+                  - sensors
+                  - sensors/finalizers
+                  - workflows
+                  - workflows/finalizers
+                  - workfloweventbindings
+                  - workfloweventbindings/finalizers
+                  - workflowtemplates
+                  - workflowtemplates/finalizers
+                  - cronworkflows
+                  - cronworkflows/finalizers
+                  - clusterworkflowtemplates
+                  - clusterworkflowtemplates/finalizers
+                verbs:
+                  - create
+                  - delete
+                  - deletecollection
+                  - get
+                  - list
+                  - patch
+                  - update
+                  - watch
+                  - edit
+                  - exec
+          - apiVersion: rbac.authorization.k8s.io/v1
+            kind: ClusterRoleBinding
+            metadata:
+              name: hosting-k8s
+              labels:
+                app.kubernetes.io/name: "argoworkflow-rbac"
+                app.kubernetes.io/instance: "{{ .Values.global.cluster }}"
+                app.kubernetes.io/part-of: workflow-rbac
+                app.kubernetes.io/managed-by: argo
+                helm.sh/chart: {{ printf "%s-%s" .Chart.Name .Chart.Version }}
+            subjects:
+              - kind: ServiceAccount
+                name: hosting-k8s
+                namespace: argo-workflow-system
+            roleRef:
+              apiGroup: rbac.authorization.k8s.io
+              kind: ClusterRole
+              name: solution-builder-argoworkflow
+          - apiVersion: rbac.authorization.k8s.io/v1
+            kind: ClusterRole
+            metadata:
+              name: argo-view-all
+              annotations:
+                kubernetes.io/description: "Allows viewing of all argo CRDs."
+              labels:
+                rbac.ssc-spc.gc.ca/aggregate-to-platform-operator-view: "true"
+                app.kubernetes.io/name: "argoworkflow-rbac"
+                app.kubernetes.io/instance: "{{ .Values.global.cluster }}"
+                app.kubernetes.io/part-of: platform-operator-rbac
+                app.kubernetes.io/managed-by: argo
+                helm.sh/chart: {{ printf "%s-%s" .Chart.Name .Chart.Version }}
+            rules:
+              - apiGroups:
+                  - argoproj.io
+                resources:
+                  - "*"
+                verbs:
+                  - get
+                  - list
+                  - watch
+  destination:
+    name: {{ .Values.global.cluster }}
+    namespace: platform-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

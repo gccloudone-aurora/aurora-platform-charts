@@ -1,0 +1,74 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-cert-manager-rbac"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    chart: {{ .Values.global.raw.helm.chart }}
+    repoURL: {{ default .Values.global.helm.repository .Values.global.raw.helm.repository }}
+    targetRevision: {{ .Values.global.raw.helm.targetRevision }}
+    helm:
+      releaseName: cert-manager-rbac
+      values: |
+        resources:
+          - apiVersion: rbac.authorization.k8s.io/v1
+            kind: ClusterRole
+            metadata:
+              name: solution-builder-cert-manager
+              labels:
+                rbac.ssc-spc.gc.ca/aggregate-to-solution-builder: "true"
+                app.kubernetes.io/name: "cert-manager-rbac"
+                app.kubernetes.io/instance: "{{ .Values.global.cluster }}"
+                app.kubernetes.io/part-of: solution-builder-rbac
+                app.kubernetes.io/managed-by: argo
+                helm.sh/chart: {{ printf "%s-%s" .Chart.Name .Chart.Version }}
+            rules:
+              - apiGroups:
+                  - cert-manager.io
+                resources:
+                  - certificaterequests
+                  - certificates
+                  - challenges
+                  - issuers
+                  - orders
+                verbs:
+                  - get
+                  - list
+                  - watch
+                  - create
+                  - update
+                  - patch
+                  - delete
+          - apiVersion: rbac.authorization.k8s.io/v1
+            kind: ClusterRole
+            metadata:
+              name: cert-manager-view-all
+              annotations:
+                kubernetes.io/description: "Allows the ability to read all cert-manager CRDs."
+              labels:
+                rbac.ssc-spc.gc.ca/aggregate-to-platform-operator-view: "true"
+                app.kubernetes.io/name: "cert-manager-rbac"
+                app.kubernetes.io/instance: "{{ .Values.global.cluster }}"
+                app.kubernetes.io/part-of: platform-operator-rbac
+                app.kubernetes.io/managed-by: argo
+                helm.sh/chart: {{ printf "%s-%s" .Chart.Name .Chart.Version }}
+            rules:
+              - apiGroups:
+                  - cert-manager.io
+                  - acme.cert-manager.io
+                resources:
+                  - "*"
+                verbs:
+                  - get
+                  - list
+                  - watch
+  destination:
+    name: {{ .Values.global.cluster }}
+    namespace: platform-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

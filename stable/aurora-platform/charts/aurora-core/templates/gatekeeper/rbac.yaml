@@ -1,0 +1,50 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-gatekeeper-rbac"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    chart: {{ .Values.global.raw.helm.chart }}
+    repoURL: {{ default .Values.global.helm.repository .Values.global.raw.helm.repository }}
+    targetRevision: {{ .Values.global.raw.helm.targetRevision }}
+    helm:
+      releaseName: gatekeeper-rbac
+      values: |
+        resources:
+          - apiVersion: rbac.authorization.k8s.io/v1
+            kind: ClusterRole
+            metadata:
+              name: gatekeeper-view-all
+              annotations:
+                kubernetes.io/description: "Allows to view all gatekeeper CRDs."
+              labels:
+                rbac.ssc-spc.gc.ca/aggregate-to-platform-operator-view: "true"
+                app.kubernetes.io/name: "gatekeeper-rbac"
+                app.kubernetes.io/instance: "{{ .Values.global.cluster }}"
+                app.kubernetes.io/part-of: platform-operator-rbac
+                app.kubernetes.io/managed-by: argo
+                helm.sh/chart: {{ printf "%s-%s" .Chart.Name .Chart.Version }}
+            rules:
+              - apiGroups:
+                  - config.gatekeeper.sh
+                  - constraints.gatekeeper.sh
+                  - externaldata.gatekeeper.sh
+                  - mutations.gatekeeper.sh
+                  - status.gatekeeper.sh
+                  - templates.gatekeeper.sh
+                resources:
+                  - "*"
+                verbs:
+                  - get
+                  - list
+                  - watch
+  destination:
+    name: {{ .Values.global.cluster }}
+    namespace: platform-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

@@ -1,0 +1,36 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-gatekeeper-block-wildcard-ingress"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    chart: {{ .Values.global.raw.helm.chart }}
+    repoURL: {{ default .Values.global.helm.repository .Values.global.raw.helm.repository }}
+    targetRevision: {{ .Values.global.raw.helm.targetRevision }}
+    helm:
+      releaseName: gatekeeper-block-wildcard-ingress-constraint
+      values: |
+        resources:
+          - apiVersion: constraints.gatekeeper.sh/v1beta1
+            kind: K8sBlockWildcardIngress
+            metadata:
+              name: block-wildcard-ingress
+            spec:
+              match:
+                kinds:
+                - apiGroups: ["networking.k8s.io"]
+                  kinds: ["Ingress"]
+                labelSelector: {{ toYaml .Values.components.gatekeeper.constraints.k8sBlockWildcardIngress.labelSelector | nindent 18 }}
+                excludedNamespaces: {{ toYaml .Values.components.gatekeeper.constraints.k8sBlockWildcardIngress.excludedNamespaces | nindent 18 }}
+              enforcementAction: {{ .Values.components.gatekeeper.constraints.k8sBlockWildcardIngress.enforcementAction }}
+
+  destination:
+    name: {{ .Values.global.cluster }}
+    namespace: platform-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

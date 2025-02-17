@@ -1,0 +1,12 @@
+groups:
+  - name: istio.rules
+    rules:
+      - alert: IstioIngressGatewayProbeFailure
+        expr: sum by (target, instance) (probe_success{target=~"istio-ingress-gateway.*"}) != 1
+        for: 15s
+        labels:
+          severity: P1-Critical
+          scope: cluster
+        annotations:
+          message: 'The {{`{{ $$labels.target }}`}} probe is failing. Port-forward into 9115 on the blackbox pod in the monitoring namespace for {{`{{ $$labels.instance }}`}} debug information. Scroll to the bottom for older failures.'
+          grafanaDashboard: 'https://grafana.{{ .Values.global.ingressDomain }}/d/prometheus-blackbox-exporter/prometheus-blackbox-exporter?orgId=1&refresh=10s&var-target={{`{{ $$labels.target }}`}}'

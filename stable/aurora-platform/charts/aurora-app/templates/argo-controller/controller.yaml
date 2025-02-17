@@ -1,0 +1,49 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-argo-controller"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    chart: {{ default "argo-controller" .Values.components.argoController.helm.chart }}
+    {{- if .Values.components.argoController.helm.repository }}
+    repoURL: {{ .Values.components.argoController.helm.repository }}
+    {{- else }}
+    repoURL: {{ default "https://gccloudone-aurora.github.io/charts" .Values.global.helm.repository }}
+    {{- end }}
+    targetRevision: {{ default "0.0.1" .Values.components.argoController.helm.targetRevision }}
+    helm:
+      releaseName: argo-controller
+      values: |
+        image: {{ default "{}" (include "argoController.image" .) | nindent 10 }}
+        imagePullSecrets: {{ toYaml .Values.components.argoController.imagePullSecrets | nindent 10 }}
+
+        replicaCount: {{ .Values.components.argoController.replicas }}
+        resources: {{ toYaml .Values.components.argoController.resources | nindent 10 }}
+
+        nodeSelector: {{ toYaml .Values.components.argoController.nodeSelector | nindent 10 }}
+        tolerations: {{ toYaml .Values.components.argoController.tolerations | nindent 10 }}
+        affinity: {{ toYaml .Values.components.argoController.affinity | nindent 10 }}
+
+        componentsImagePullSecretName: {{ .Values.components.argoController.componentsImagePullSecretName }}
+
+        storageAccount:
+            existingSecret: argo-controller-storage-credentials
+
+        priorityClassName: {{ .Values.components.argoController.priorityClassName }}
+
+        workflows:
+          args:
+            namespaceAdminsRoleBindingName: "solution-builder"
+            userInterfaceClusterRoleName: {{ include "argoController.userInterfaceClusterRoleName" . }}
+            argoWorkflowsClusterRoleName: {{ include "argoController.argoWorkflowsClusterRoleName" . }}
+
+  destination:
+    name: {{ .Values.global.cluster }}
+    namespace: argo-controller-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

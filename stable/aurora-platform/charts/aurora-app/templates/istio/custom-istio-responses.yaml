@@ -1,0 +1,33 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-custom-istio-responses"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    chart: {{ default "custom-istio-responses" .Values.components.istio.customIstioResponses.helm.chart }}
+    {{- if .Values.components.istio.customIstioResponses.helm.repository }}
+    repoURL: {{ .Values.components.istio.customIstioResponses.helm.repository }}
+    {{- else }}
+    repoURL: {{ default "https://gccloudone-aurora.github.io/charts" .Values.global.helm.repository }}
+    {{- end }}
+    targetRevision: {{ default "0.0.1" .Values.components.istio.customIstioResponses.helm.targetRevision }}
+    helm:
+      releaseName: custom-responses
+      values: |
+        workloadSelector:
+          labels:
+            app: general
+            istio: general
+  destination:
+    name: '{{ .Values.global.cluster }}'
+    namespace: ingress-general-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      # https://github.com/argoproj/argo-cd/issues/11074
+      - ServerSideApply=true

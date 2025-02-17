@@ -1,0 +1,387 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-prometheus-kube-prometheus-stack"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    chart: {{ default "kube-prometheus-stack" .Values.components.prometheus.helm.chart }}
+    {{- if .Values.components.prometheus.helm.repository}}
+    repoURL: {{ .Values.components.prometheus.helm.repository }}
+    {{- else }}
+    repoURL: {{ default "https://prometheus-community.github.io/helm-charts" .Values.global.helm.repository }}
+    {{- end }}
+    targetRevision: {{ default "44.3.0" .Values.components.prometheus.helm.targetRevision }}
+    plugin:
+      env:
+        - name: HELM_RELEASE_NAME
+          value: "kube-prometheus-stack"
+        - name: HELM_VALUES
+          value: |
+            global:
+              imageRegistry: {{ toYaml .Values.components.prometheus.imageRegistry | nindent 16 }}
+              imagePullSecrets: {{ toYaml .Values.components.prometheus.imagePullSecrets | nindent 16 }}
+
+            prometheusOperator:
+              image: {{ default "{}" (include "prometheus.operator.image" .) | nindent 16 }}
+              resources: {{ toYaml .Values.components.prometheus.operator.resources | nindent 16 }}
+
+              admissionWebhooks:
+                patch:
+                  image: {{ default "{}" (include "prometheus.operator.admissionWebhooks.image" .) | nindent 20 }}
+                  resources: {{ toYaml .Values.components.prometheus.operator.admissionWebhooks.resources | nindent 20 }}
+                  priorityClassName: {{ .Values.components.prometheus.priorityClassName }}
+                  tolerations:
+                  - key: CriticalAddonsOnly
+                    operator: Exists
+
+              prometheusConfigReloader:
+                image: {{ default "{}" (include "prometheus.operator.prometheusConfigReloader.image" .) | nindent 18 }}
+                resources: {{ toYaml .Values.components.prometheus.operator.prometheusConfigReloader.resources | nindent 18 }}
+
+              thanosImage: {{ default "{}" (include "prometheus.operator.thanos.image" .) | nindent 16 }}
+
+              tolerations:
+              - key: CriticalAddonsOnly
+                operator: Exists
+
+              priorityClassName: {{ .Values.components.prometheus.priorityClassName }}
+
+            prometheus:
+              ingress:
+                enabled: true
+                hosts:
+                  - "prometheus.{{ .Values.global.ingressDomain }}"
+                paths:
+                  - /
+                pathType: Prefix
+                annotations: {}
+                ingressClassName: "{{ .Values.global.ingressClassName }}"
+
+              prometheusSpec:
+                image: {{ default "{}" (include "prometheus.prometheus.prometheusSpec.image" .) | nindent 18 }}
+
+                replicas: {{ .Values.components.prometheus.prometheus.prometheusSpec.replicas }}
+                resources: {{ toYaml .Values.components.prometheus.prometheus.prometheusSpec.resources | nindent 18 }}
+
+                nodeSelector: {{ toYaml .Values.components.prometheus.prometheus.prometheusSpec.nodeSelector | nindent 18 }}
+                tolerations: {{ toYaml .Values.components.prometheus.prometheus.prometheusSpec.tolerations | nindent 18 }}
+                affinity: {{ toYaml .Values.components.prometheus.prometheus.prometheusSpec.affinity | nindent 18 }}
+
+                storageSpec:
+                  volumeClaimTemplate:
+                    spec:
+                      accessModes: ["ReadWriteOnce"]
+                      storageClassName: default
+                      resources:
+                        requests:
+                          storage: {{ .Values.components.prometheus.prometheus.prometheusSpec.storage }}
+
+                externalLabels:
+                  cluster: "{{ .Values.global.cluster }}"
+                additionalScrapeConfigs: []
+                {{- if .Values.components.prometheus.prometheus.prometheusSpec.additionalAlertManagerHosts }}
+                additionalAlertManagerConfigs:
+                  - scheme: https
+                    static_configs:
+                      - targets: {{ toYaml .Values.components.prometheus.prometheus.prometheusSpec.additionalAlertManagerHosts | nindent 24 }}
+                {{- end }}
+                additionalAlertRelabelConfigs:
+                - source_labels: [severity]
+                  regex: '(info|warning|critical)'
+                  action: drop
+
+                ## If true, a nil or {} value for prometheus.prometheusSpec.serviceMonitorSelector will cause the
+                ## prometheus resource to be created with selectors based on values in the helm deployment,
+                ## which will also match the servicemonitors created
+                ##
+                serviceMonitorSelectorNilUsesHelmValues: false
+
+                ## ServiceMonitors to be selected for target discovery.
+                ## If {}, select all ServiceMonitors
+                ##
+                serviceMonitorSelector: {}
+
+                ## Namespaces to be selected for ServiceMonitor discovery.
+                ##
+                serviceMonitorNamespaceSelector:
+                  matchLabels:
+                    namespace.ssc-spc.gc.ca/purpose: system
+
+                ## If true, a nil or {} value for prometheus.prometheusSpec.podMonitorSelector will cause the
+                ## prometheus resource to be created with selectors based on values in the helm deployment,
+                ## which will also match the podmonitors created
+                ##
+                podMonitorSelectorNilUsesHelmValues: false
+
+                ## PodMonitors to be selected for target discovery.
+                ## If {}, select all PodMonitors
+                ##
+                podMonitorSelector: {}
+
+                ## Namespaces to be selected for PodMonitor discovery.
+                ## See https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentation/api.md#namespaceselector for usage
+                ##
+                podMonitorNamespaceSelector:
+                  matchLabels:
+                    namespace.ssc-spc.gc.ca/purpose: system
+
+                ## If true, a nil or {} value for prometheus.prometheusSpec.probeSelector will cause the
+                ## prometheus resource to be created with selectors based on values in the helm deployment,
+                ## which will also match the probes created
+                ##
+                probeSelectorNilUsesHelmValues: false
+
+                ## Probes to be selected for target discovery.
+                ## If {}, select all Probes
+                ##
+                probeSelector: {}
+
+                ## Namespaces to be selected for Probe discovery.
+                ## See https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentation/api.md#namespaceselector for usage
+                ##
+                probeNamespaceSelector:
+                  matchLabels:
+                    namespace.ssc-spc.gc.ca/purpose: system
+
+                ## Namespaces to be selected for PrometheusRules discovery.
+                ## If nil, select own namespace. Namespaces to be selected for ServiceMonitor discovery.
+                ## See https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentation/api.md#namespaceselector for usage
+                ##
+                ruleNamespaceSelector:
+                  matchLabels:
+                    namespace.ssc-spc.gc.ca/purpose: system
+
+                ## If true, a nil or {} value for prometheus.prometheusSpec.ruleSelector will cause the
+                ## prometheus resource to be created with selectors based on values in the helm deployment,
+                ## which will also match the PrometheusRule resources created
+                ##
+                ruleSelectorNilUsesHelmValues: false
+                priorityClassName: {{ .Values.components.prometheus.priorityClassName }}
+
+              thanosRulerSpec:
+                image: {{ default "{}" (include "prometheus.thanosRuler.thanosRulerSpec.image" .) | nindent 18 }}
+
+                replicas: {{ .Values.components.prometheus.thanosRuler.thanosRulerSpec.replicas }}
+                resources: {{ toYaml .Values.components.prometheus.thanosRuler.thanosRulerSpec.resources | nindent 18 }}
+
+                nodeSelector: {{ toYaml .Values.components.prometheus.thanosRuler.thanosRulerSpec.nodeSelector | nindent 18 }}
+                tolerations: {{ toYaml .Values.components.prometheus.thanosRuler.thanosRulerSpec.tolerations | nindent 18 }}
+                affinity: {{ toYaml .Values.components.prometheus.thanosRuler.thanosRulerSpec.affinity | nindent 18 }}
+                priorityClassName: {{ .Values.components.prometheus.priorityClassName }}
+
+            grafana:
+              priorityClassName: {{ .Values.components.prometheus.priorityClassName }}
+              ingress:
+                enabled: true
+                hosts:
+                  - "grafana.{{ .Values.global.ingressDomain }}"
+                paths:
+                  - /
+                pathType: Prefix
+                annotations: {}
+                ingressClassName: "{{ .Values.global.ingressClassName }}"
+
+              image: {{ default "{}" (include "prometheus.grafana.image" .) | nindent 16 }}
+
+              deploymentStrategy:
+                type: {{ toYaml .Values.components.prometheus.grafana.deploymentStrategy.type | nindent 18 }}
+
+              replicas: {{ .Values.components.prometheus.grafana.replicas }}
+              resources: {{ toYaml .Values.components.prometheus.grafana.resources | nindent 16 }}
+
+              nodeSelector: {{ toYaml .Values.components.prometheus.grafana.nodeSelector | nindent 16 }}
+              tolerations: {{ toYaml .Values.components.prometheus.grafana.tolerations | nindent 16 }}
+              affinity: {{ toYaml .Values.components.prometheus.grafana.affinity | nindent 16 }}
+
+              downloadDashboardsImage:
+                {{- default "{}" (include "prometheus.grafana.downloadDashboards.image" .) | nindent 16 }}
+                resources: {{ toYaml .Values.components.prometheus.grafana.downloadDashboards.resources | nindent 18 }}
+
+              initChownData:
+                image: {{ default "{}" (include "prometheus.grafana.initChownData.image" .) | nindent 18 }}
+                resources: {{ toYaml .Values.components.prometheus.grafana.initChownData.resources | nindent 18 }}
+
+              sidecar:
+                image: {{ default "{}" (include "prometheus.grafana.sidecar.image" .) | nindent 18 }}
+                resources: {{ toYaml .Values.components.prometheus.grafana.sidecar.resources | nindent 18 }}
+
+                dashboards:
+                  searchNamespace: ALL
+                datasources:
+                  defaultDataSourceEnabled: false
+
+              {{- if .Values.global.clusterHasLoki }}
+              additionalDataSources:
+              - name: Loki
+                type: loki
+                url: {{ required "prometheus.grafana.lokiDataSource.url is required" .Values.components.prometheus.grafana.lokiDataSource.url }}
+                access: proxy
+                basicAuth: true
+                basicAuthUser: {{ required "prometheus.grafana.lokiDataSource.user is required" .Values.components.prometheus.grafana.lokiDataSource.user }}
+                secureJsonData:
+                  basicAuthPassword: {{ required "prometheus.grafana.lokiDataSource.password is required" .Values.components.prometheus.grafana.lokiDataSource.password }}
+              {{- end }}
+
+              adminPassword: {{ required "prometheus.grafana.adminPassword is required" .Values.components.prometheus.grafana.adminPassword | quote }}
+
+              dashboardProviders:
+                dashboardproviders.yaml:
+                  apiVersion: 1
+                  providers:
+                    - name: monitoring
+                      orgId: 1
+                      folder: monitoring
+                      type: file
+                      disableDeletion: true
+                      editable: false
+                      options:
+                        path: /tmp/dashboards/monitoring
+
+              grafana.ini:
+                server:
+                  root_url: "https://grafana.{{ .Values.global.ingressDomain }}"
+                auth.ldap:
+                  enabled: false
+                auth.azuread:
+                  enabled: true
+                  name: "Azure AD"
+                  allow_sign_up: true
+                  client_id: "$$__file{/etc/secrets/auth_azuread/client_id}"
+                  client_secret: "$$__file{/etc/secrets/auth_azuread/client_secret}"
+                  scopes: "openid email profile"
+                  auth_url: {{ .Values.components.prometheus.grafana.authUrl | default (printf "https://login.microsoftonline.com/%s/oauth2/v2.0/authorize" .Values.global.tenantId) | quote }}
+                  token_url: {{ .Values.components.prometheus.grafana.tokenUrl | default (printf "https://login.microsoftonline.com/%s/oauth2/v2.0/token" .Values.global.tenantId) | quote }}
+                  allowed_domains: ""
+                  allowed_groups: {{ .Values.components.prometheus.grafana.allowedGroups | quote }}
+                  role_attribute_strict: false
+
+              ldap:
+                enabled: false
+
+              persistence:
+                enabled: true
+                storageClassName: default
+                accessModes: ["ReadWriteOnce"]
+                size: {{ .Values.components.prometheus.grafana.persistence.size }}
+                selectorLabels: {}
+
+              extraSecretMounts:
+                - name: auth-azuread-oauth-secret-mount
+                  secretName: auth-azuread-oauth-secret
+                  defaultMode: 0440
+                  mountPath: /etc/secrets/auth_azuread
+                  readOnly: true
+
+            kube-state-metrics:
+              image: {{ default "{}" (include "prometheus.kubeStateMetrics.image" .) | nindent 16 }}
+
+              replicas: {{ .Values.components.prometheus.kubeStateMetrics.replicas }}
+              resources: {{ toYaml .Values.components.prometheus.kubeStateMetrics.resources | nindent 16 }}
+
+              nodeSelector: {{ toYaml .Values.components.prometheus.kubeStateMetrics.nodeSelector | nindent 16 }}
+              tolerations: {{ toYaml .Values.components.prometheus.kubeStateMetrics.tolerations | nindent 16 }}
+              affinity: {{ toYaml .Values.components.prometheus.kubeStateMetrics.affinity | nindent 16 }}
+
+              metricLabelsAllowlist:
+                - nodes=[agentpool]
+
+            prometheus-node-exporter:
+              image: {{ default "{}" (include "prometheus.prometheusNodeExporter.image" .) | nindent 16 }}
+
+              replicas: {{ .Values.components.prometheus.prometheusNodeExporter.replicas }}
+              resources: {{ toYaml .Values.components.prometheus.prometheusNodeExporter.resources | nindent 16 }}
+
+              nodeSelector: {{ toYaml .Values.components.prometheus.prometheusNodeExporter.nodeSelector | nindent 16 }}
+              tolerations: {{ toYaml .Values.components.prometheus.prometheusNodeExporter.tolerations | nindent 16 }}
+              affinity: {{ toYaml .Values.components.prometheus.prometheusNodeExporter.affinity | nindent 16 }}
+
+              service:
+                port: 9751
+                targetPort: 9751
+
+              prometheus:
+                monitor:
+                  relabelings:
+                    - sourceLabels: [__meta_kubernetes_pod_node_name]
+                      action: replace
+                      targetLabel: kubernetes_node
+
+              priorityClassName: "platform-node-critical"
+
+            {{ if not .Values.components.prometheus.alertmanager.enabled -}}
+            alertmanager:
+              enabled: false
+            {{ else }}
+            alertmanager:
+              ingress:
+                enabled: true
+                hosts:
+                  - "alertmanager.{{ .Values.global.ingressDomain }}"
+                paths:
+                  - /
+                pathType: Prefix
+                annotations: {}
+                ingressClassName: "{{ .Values.global.ingressClassName }}"
+
+              # Configuration for creating a separate Service for each statefulset Alertmanager replica
+              servicePerReplica:
+                enabled: true
+
+              # Configuration for creating an Ingress that will map to each Prometheus replica service
+              ingressPerReplica:
+                enabled: true
+                ingressClassName: "{{ .Values.global.ingressClassName }}"
+
+                # Final form of the hostname for each per replica ingress is
+                # <ingressPerReplica.hostPrefix>-<$replicaNumber>.<ingressPerReplica.hostDomain>
+                hostPrefix: "alertmanager"
+                hostDomain: "{{ .Values.global.ingressDomain }}"
+                paths:
+                  - /
+                pathType: Prefix
+
+              alertmanagerSpec:
+                image: {{ default "{}" (include "prometheus.alertmanager.alertmanagerSpec.image" .) | nindent 18 }}
+
+                replicas: {{ .Values.components.prometheus.alertmanager.alertmanagerSpec.replicas }}
+                resources: {{ toYaml .Values.components.prometheus.alertmanager.alertmanagerSpec.resources | nindent 18 }}
+
+                nodeSelector: {{ toYaml .Values.components.prometheus.alertmanager.alertmanagerSpec.nodeSelector | nindent 18 }}
+                tolerations: {{ toYaml .Values.components.prometheus.alertmanager.alertmanagerSpec.tolerations | nindent 18 }}
+                affinity: {{ toYaml .Values.components.prometheus.alertmanager.alertmanagerSpec.affinity | nindent 18 }}
+
+                storage:
+                  volumeClaimTemplate:
+                    spec:
+                      accessModes: ["ReadWriteOnce"]
+                      storageClassName: default
+                      resources:
+                        requests:
+                          storage: {{ .Values.components.prometheus.alertmanager.alertmanagerSpec.storage }}
+                retention: 168h
+
+                ## If true then the user will be responsible to provide a secret with alertmanager configuration
+                ## So when true the config part will be ignored (including templateFiles) and the one in the secret will be used
+                ##
+                useExistingSecret: true
+
+                ## ConfigSecret is the name of a Kubernetes Secret in the same namespace as the Alertmanager object, which contains configuration for
+                ## this Alertmanager instance. Defaults to 'alertmanager-' The secret is mounted into /etc/alertmanager/config.
+                ##
+                configSecret: alertmanager-config
+                priorityClassName: {{ .Values.components.prometheus.priorityClassName }}
+
+            {{- end }}
+  destination:
+    name: {{ .Values.global.cluster }}
+    namespace: prometheus-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      # https://github.com/argoproj/argo-cd/issues/11074
+      - ServerSideApply=true

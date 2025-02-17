@@ -1,0 +1,47 @@
+{{ if .Values.components.billOfLanding.enabled -}}
+
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-bill-of-landing"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    chart: {{ default "bol" .Values.components.billOfLanding.helm.chart }}
+    {{- if .Values.global.helm.repository }}
+    repoURL: {{ default .Values.components.billOfLanding.helm.repository .Values.global.helm.repository }}
+    {{- else }}
+    repoURL: {{ default "https://artifactory.ssc-spc.gc.ca/artifactory/gccloudone-aurora-helm" .Values.components.billOfLanding.helm.repository }}
+    {{- end }}
+    targetRevision: {{ default "0.0.1" .Values.components.billOfLanding.helm.targetRevision }}
+    plugin:
+      env:
+        - name: HELM_RELEASE_NAME
+          value: "bill-of-landing"
+        - name: HELM_VALUES
+          value: |
+            fullnameOverride: "bill-of-landing"
+
+            image: {{ default "{}" (include "billOfLanding.image" .) | nindent 14 }}
+
+            config: {{ toYaml .Values.components.billOfLanding.config | nindent 14 }}
+
+            aadPodIdentity:
+              azureManagedIdentity:
+                clientId: {{ .Values.components.billOfLanding.aadPodIdentity.azureManagedIdentity.clientId }}
+                resourceId: {{ .Values.components.billOfLanding.aadPodIdentity.azureManagedIdentity.resourceId }}
+
+            nodeSelector: {{ toYaml .Values.components.billOfLanding.nodeSelector | nindent 14 }}
+            tolerations: {{ toYaml .Values.components.billOfLanding.tolerations | nindent 14 }}
+
+  destination:
+    name: {{ .Values.global.cluster }}
+    namespace: bill-of-landing-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+
+{{- end }}

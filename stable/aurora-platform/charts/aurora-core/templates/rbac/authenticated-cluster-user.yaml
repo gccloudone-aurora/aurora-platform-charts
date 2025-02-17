@@ -1,0 +1,76 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-rbac-authenticated-cluster-user"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    chart: {{ .Values.global.raw.helm.chart }}
+    repoURL: {{ default .Values.global.helm.repository .Values.global.raw.helm.repository }}
+    targetRevision: {{ .Values.global.raw.helm.targetRevision }}
+    helm:
+      releaseName: rbac-authenticated-cluster-user
+      values: |
+        resources:
+          - apiVersion: rbac.authorization.k8s.io/v1
+            kind: ClusterRole
+            metadata:
+              name: authenticated-cluster-user
+              labels:
+                app.kubernetes.io/name: rbac-authenticated-cluster-user
+                app.kubernetes.io/instance: "{{ .Values.global.cluster }}"
+                app.kubernetes.io/part-of: rbac
+                app.kubernetes.io/managed-by: argo
+                helm.sh/chart: {{ printf "%s-%s" .Chart.Name .Chart.Version }}
+            rules:
+              - apiGroups:
+                  - ""
+                resources:
+                  - namespaces 
+                  - nodes                 
+                verbs: [list, get, watch] 
+              - apiGroups:
+                  - networking.k8s.io
+                resources:
+                  - ingressclasses
+                verbs: [get, list, watch]
+              - apiGroups:
+                  - storage.k8s.io
+                resources:
+                  - storageclasses
+                verbs: [get, list, watch]
+              - apiGroups:
+                  - apiextensions.k8s.io
+                resources:
+                  - customresourcedefinitions
+                verbs: [get, list, watch]
+          - apiVersion: rbac.authorization.k8s.io/v1
+            kind: ClusterRoleBinding
+            metadata:
+              name: authenticated-cluster-user
+              annotations:
+                kubernetes.io/description: Permissions for all identities that have successfully authenticated with the cluster
+              labels:
+                app.kubernetes.io/name: rbac-authenticated-cluster-user
+                app.kubernetes.io/instance: {{ .Values.global.cluster | quote }}
+                app.kubernetes.io/part-of: rbac
+                app.kubernetes.io/managed-by: argo
+                helm.sh/chart: {{ printf "%s-%s" .Chart.Name .Chart.Version | quote }}
+            roleRef:
+              apiGroup: rbac.authorization.k8s.io
+              kind: ClusterRole
+              name: authenticated-cluster-user
+            subjects:
+              - kind: Group
+                apiGroup: rbac.authorization.k8s.io
+                name: system:authenticated
+
+  destination:
+    name: {{ .Values.global.cluster }}
+    namespace: platform-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

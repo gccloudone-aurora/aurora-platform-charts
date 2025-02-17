@@ -1,0 +1,1806 @@
+global:
+  helm: {}
+    # Override all Helm applications to pull
+    # their helm chart from the following
+    # repository.
+    #
+    # You can override specific charts below
+    # in the components section.
+    # repository: https://myrepo.example.ca
+
+  container: {}
+    # Override all applications to pull
+    # their container from the following
+    # registry.
+    #
+    # You can override specific charts below
+    # in the components section.
+    # registry: artifactory.example.ca
+
+  namespace:
+    helm:
+      chart:
+      targetRevision:
+      repository:
+
+  raw:
+    helm:
+      chart:
+      targetRevision:
+      repository:
+
+  # Cluster name for the Application targets.
+  cluster: in-cluster
+
+  # Which project to place applications in.
+  project: aurora-core
+
+  # Ingress Domain
+  ingressDomain: example.ca
+
+  # The Kubernetes API Server
+  apiServerCidr: "192.0.2.10/32"
+
+  # The Azure Metadata API
+  azureMetadataApiCidr: "169.254.169.254/32"
+
+  # Alert Manager
+  alertManagerCidrs: ["192.0.2.10/32"]
+
+  # Logging
+  loggingCidrs: ["192.0.2.10/32"]
+  # Creates local platform logging network policies on clusters running Loki
+  # clusterHasLoki: false
+
+  # Vault
+  vaultCidrs: ["192.0.2.10/32"]
+
+  # Ingress Class Name
+  # ingressClassName: ingress-istio-controller
+
+  # The Azure subscription ID used for the cluster
+  # subscriptionId: ""
+
+  # The Azure tenant ID used for the cluster
+  # tenantId: ""
+
+  # Load Balancer Subnet Name for all Load Balancers
+  # load_balancer_subnet_name: ""
+
+  # child values import via dependencies
+  imports:
+    app:
+      # Used in cases where a subchart's component depends on the aurora-app subchart being enabled
+      enabled: false
+    mgmt:
+      # Used in cases where a subchart's component depends on the aurora-mgmt subchart being enabled
+      enabled: false
+
+# Components
+components:
+  aadPodIdentity:
+    helm: {}
+      # chart: aad-pod-identity
+      # repository: https://raw.githubusercontent.com/Azure/aad-pod-identity/master/charts
+      # targetRevision: 4.1.18
+
+    imagePullSecrets: []
+    image:
+      # registry: mcr.microsoft.com/
+      repository: oss/azure/aad-pod-identity
+      # pullPolicy: IfNotPresent
+
+    mic:
+      image: mic
+      # tag: v1.8.17
+
+      replicas: 2
+      resources: {}
+        # limits:
+        #   cpu: ""
+        #   memory: ""
+        # requests:
+        #   cpu: ""
+        #   memory: ""
+      nodeSelector:
+        kubernetes.io/os: linux
+        "node.ssc-spc.gc.ca/use": "general"
+        "node.ssc-spc.gc.ca/purpose": "system"
+      tolerations:
+        - key: CriticalAddonsOnly
+          operator: Exists
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 1
+            podAffinityTerm:
+              topologyKey: kubernetes.io/hostname
+              labelSelector:
+                matchLabels:
+                  app.kubernetes.io/component: mic
+
+      podDisruptionBudget:
+        minAvailable: 1
+
+      priorityClassName: platform-cluster-medium
+
+      logging: {}
+        ## log level. Uses V logs (klog)
+        # verbosity:
+        # format:
+
+    nmi:
+      image: nmi
+      # tag: v1.8.17
+
+      resources: {}
+        # limits:
+        #   cpu: ""
+        #   memory: ""
+        # requests:
+        #   cpu: ""
+        #   memory: ""
+      nodeSelector:
+        kubernetes.io/os: linux
+
+      tolerations:
+        # NMI is a daemonset.
+        # An empty key with operator Exists matches all keys, values and effects which means this will tolerate everything.
+        - operator: Exists
+      affinity: {}
+      priorityClassName: platform-cluster-critical
+
+      logging: {}
+        ## log level. Uses V logs (klog)
+        # verbosity:
+        # format:
+
+  certManager:
+    helm: {}
+      # chart: cert-manager
+      # repository: https://charts.jetstack.io
+      # targetRevision: v1.6.1
+
+    imagePullSecrets: []
+    image:
+      # registry: quay.io
+      repository: jetstack/cert-manager-controller
+      # tag: "v1.6.1"
+      # pullPolicy: IfNotPresent
+
+    replicas: 3
+    resources: {}
+      # limits:
+      #   cpu: ""
+      #   memory: ""
+      # requests:
+      #   cpu: ""
+      #   memory: ""
+    nodeSelector:
+      kubernetes.io/os: linux
+      node.ssc-spc.gc.ca/purpose: system
+    tolerations:
+      - key: CriticalAddonsOnly
+        operator: Exists
+    affinity:
+      podAntiAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 1
+          podAffinityTerm:
+            topologyKey: kubernetes.io/hostname
+            labelSelector:
+              matchLabels:
+                app.kubernetes.io/component: controller
+
+    webhook:
+      image:
+        # registry: quay.io
+        repository: jetstack/cert-manager-webhook
+        # tag: "v1.6.1"
+        # pullPolicy: IfNotPresent
+
+      replicas: 3
+      resources: {}
+        # limits:
+        #   cpu: ""
+        #   memory: ""
+        # requests:
+        #   cpu: ""
+        #   memory: ""
+      nodeSelector:
+        kubernetes.io/os: linux
+        node.ssc-spc.gc.ca/purpose: system
+      tolerations:
+        - key: CriticalAddonsOnly
+          operator: Exists
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 1
+            podAffinityTerm:
+              topologyKey: kubernetes.io/hostname
+              labelSelector:
+                matchLabels:
+                  app.kubernetes.io/component: webhook
+
+    cainjector:
+      image:
+        # registry: quay.io
+        repository: jetstack/cert-manager-cainjector
+        # tag: "v1.6.1"
+        # pullPolicy: IfNotPresent
+
+      replicas: 3
+      resources: {}
+        # limits:
+        #   cpu: ""
+        #   memory: ""
+        # requests:
+        #   cpu: ""
+        #   memory: ""
+      nodeSelector:
+        kubernetes.io/os: linux
+        node.ssc-spc.gc.ca/purpose: system
+      tolerations:
+        - key: CriticalAddonsOnly
+          operator: Exists
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 1
+            podAffinityTerm:
+              topologyKey: kubernetes.io/hostname
+              labelSelector:
+                matchLabels:
+                  app.kubernetes.io/component: cainjector
+
+    acmesolver:
+      image:
+        # registry: quay.io
+        repository: jetstack/cert-manager-acmesolver
+        # tag: "v1.6.1"
+        # pullPolicy: IfNotPresent
+
+    startupapicheck:
+      image:
+        # registry: quay.io
+        repository: jetstack/cert-manager-ctl
+        # tag: "v1.6.1"
+        # pullPolicy: IfNotPresent
+
+      resources: {}
+        # limits:
+        #   cpu: ""
+        #   memory: ""
+        # requests:
+        #   cpu: ""
+        #   memory: ""
+      nodeSelector:
+        kubernetes.io/os: linux
+        node.ssc-spc.gc.ca/purpose: system
+      tolerations:
+        - key: CriticalAddonsOnly
+          operator: Exists
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 1
+            podAffinityTerm:
+              topologyKey: kubernetes.io/hostname
+              labelSelector:
+                matchLabels:
+                  app.kubernetes.io/component: startupapicheck
+
+    podDnsConfig:
+      nameservers: []
+
+    aadPodIdentity:
+      name: cert-manager
+      azureManagedIdentity: {}
+        # clientId: ""
+        # resourceId: ""
+
+    issuers:
+      # email: ''
+
+      dns01: {}
+      #   azure:
+      #     zone:
+      #     resourceGroupName:
+      #     subscriptionId:
+
+    priorityClassName: platform-cluster-medium
+
+  cidrAllocator:
+    helm: {}
+      # chart: cidr-allocator
+      # repository: https://artifactory.ssc-spc.gc.ca/artifactory/gccloudone-aurora-helm-local
+      # targetRevision: 2.1.1
+
+    imagePullSecrets:
+      - name: cidr-allocator-image-pull-secret
+    image:
+      # registry: artifactory.ssc-spc.gc.ca/gccloudone-aurora-docker-local
+      repository: cidr-allocator
+      # tag: "0.0.1"
+      # pullPolicy: IfNotPresent
+
+    priorityClassName: system-cluster-critical
+
+    # addressPools: []
+    staticAllocations: []
+
+    replicas: 2
+    resources:
+      limits:
+        cpu: "100m"
+        memory: "128Mi"
+      requests:
+        cpu: "10m"
+        memory: "64Mi"
+
+    nodeSelector:
+      kubernetes.io/os: "linux"
+      node.ssc-spc.gc.ca/purpose: system
+
+    tolerations:
+      - operator: Exists
+
+    affinity:
+      podAntiAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 1
+          podAffinityTerm:
+            topologyKey: kubernetes.io/hostname
+            labelSelector:
+              matchLabels:
+                app.kubernetes.io/instance: cidr-allocator
+
+    # secretDockerConfigJson: ""
+
+  auroraController:
+    helm: {}
+      # chart: aurora-controller
+      # repository: https://gccloudone-aurora.github.io/charts
+      # targetRevision: 0.0.1
+
+    imagePullSecrets:
+      - name: aurora-controller-image-pull-secret
+    image:
+      # registry: artifactory.ssc-spc.gc.ca/gccloudone-aurora-docker-local
+      repository: aurora-controller
+      tag: "0.0.1"
+
+    priorityClassName: platform-cluster-medium
+
+    replicas: 2
+    resources: {}
+      # limits:
+      #   cpu: ""
+      #   memory: ""
+      # requests:
+      #   cpu: ""
+      #   memory: ""
+    nodeSelector:
+      kubernetes.io/os: linux
+      node.ssc-spc.gc.ca/purpose: system
+    tolerations:
+      - key: CriticalAddonsOnly
+        operator: Exists
+    affinity:
+      podAntiAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 1
+          podAffinityTerm:
+            topologyKey: kubernetes.io/hostname
+            labelSelector:
+              matchLabels:
+                app.kubernetes.io/instance: aurora-controller
+
+    aurora:
+      secretName: "aurora-image-pull-secret"
+      # secretDockerConfigJson: ""
+
+  cilium:
+    helm: {}
+      # chart: cilium
+      # repository: https://helm.cilium.io
+      # targetRevision: 1.14.1
+
+    imagePullSecrets:
+      - name: cilium-image-pull-secret
+    image:
+      # registry: artifactory.ssc-spc.gc.ca/gccloudone-aurora-docker-local
+      repository: cilium/cilium
+      tag: "v1.14.1"
+      pullPolicy: IfNotPresent
+
+    apiserver:
+      image:
+        # registry: artifactory.ssc-spc.gc.ca/gccloudone-aurora-docker-local
+        repository: cilium/clustermesh-apiserver
+
+      etcd:
+        image:
+          # registry: artifactory.ssc-spc.gc.ca/gccloudone-aurora-docker-local
+          repository: coreos/etcd
+
+    certgen:
+      image:
+        # registry: artifactory.ssc-spc.gc.ca/gccloudone-aurora-docker-local
+        repository: cilium/certgen
+
+    etcd:
+      image:
+        # registry: artifactory.ssc-spc.gc.ca/gccloudone-aurora-docker-local
+        repository: cilium/cilium-etcd-operator
+
+    hubble:
+      relay:
+        image:
+          # registry: artifactory.ssc-spc.gc.ca/gccloudone-aurora-docker-local
+          repository: cilium/hubble-relay
+
+      ui:
+        backend:
+          image:
+            # registry: artifactory.ssc-spc.gc.ca/gccloudone-aurora-docker-local
+            repository: cilium/hubble-ui-backend
+
+        frontend:
+          image:
+            # registry: artifactory.ssc-spc.gc.ca/gccloudone-aurora-docker-local
+            repository: cilium/hubble-ui
+
+    nodeinit:
+      image:
+        # registry: artifactory.ssc-spc.gc.ca/gccloudone-aurora-docker-local
+        repository: cilium/startup-script
+
+    operator:
+      image:
+        # registry: artifactory.ssc-spc.gc.ca/gccloudone-aurora-docker-local
+        repository: cilium/operator
+
+    preflight:
+      image:
+        # registry: artifactory.ssc-spc.gc.ca/gccloudone-aurora-docker-local
+        repository: cilium/cilium
+
+    priorityClassName: system-cluster-critical
+
+    replicas: 2
+    resources: {}
+      # limits:
+      #   cpu: ""
+      #   memory: ""
+      # requests:
+      #   cpu: ""
+      #   memory: ""
+    nodeSelector:
+      kubernetes.io/os: linux
+      node.ssc-spc.gc.ca/purpose: system
+    tolerations:
+      - key: CriticalAddonsOnly
+        operator: Exists
+    affinity:
+      podAntiAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 1
+          podAffinityTerm:
+            topologyKey: kubernetes.io/hostname
+            labelSelector:
+              matchLabels:
+                app.kubernetes.io/name: cilium-operator
+
+    # secretDockerConfigJson: ""
+
+    ciliumBGPPeeringPolicy:
+      nodeSelector:
+        matchLabels:
+          kubernetes.io/os: linux
+      virtualRouters: []
+
+  fluentOperator:
+    helm: {}
+      # chart: fluent-operator
+      # repository:  https://fluent.github.io/fluent-operator
+      # targetRevision: 0.20.9
+
+    containerRuntime: "containerd"
+    imagePullSecrets: []
+
+    operator:
+      initContainer:
+        image:
+          # registry: docker.io
+          repository: docker
+          # tag: "20.10"
+          # pullPolicy: IfNotPresent
+
+      image:
+        # registry: docker.io
+        repository: kubesphere/fluent-operator
+        # tag: "v2.4.0"
+        # pullPolicy: IfNotPresent
+
+      resources:
+        limits:
+          cpu: 500m
+          memory: 256Mi
+        requests:
+          cpu: 100m
+          memory: 128Mi
+
+      nodeSelector:
+        kubernetes.io/os: linux
+        node.ssc-spc.gc.ca/purpose: system
+      tolerations:
+        - key: CriticalAddonsOnly
+          operator: Exists
+
+      priorityClassName: platform-cluster-critical
+
+    fluentbit:
+      crdsEnabled: true
+      enabled: true
+
+      image:
+        repository: kubesphere/fluent-bit
+
+      resources:
+        limits:
+          cpu: 500m
+          memory: 1Gi
+        requests:
+          cpu: 100m
+          memory: 128Mi
+
+      nodeSelector:
+        kubernetes.io/os: linux
+      tolerations:
+        - operator: Exists
+
+      priorityClassName: platform-node-critical
+
+      input:
+        tail:
+          enable: true
+          refreshIntervalSeconds: 10
+          memBufLimit: 100MB
+          path: "/var/log/containers/*.log"
+          skipLongLines: true
+          readFromHead: false
+          storageType: memory
+          pauseOnChunksOverlimit: "off"
+        systemd:
+          enable: true
+          systemdFilter:
+            enable: true
+            filters: []
+          path: "/var/log/journal"
+          includeKubelet: true
+          stripUnderscores: "off"
+          storageType: memory
+          pauseOnChunksOverlimit: "off"
+
+      output:
+        # forwarding to fluentd is already implemented by default so no need to provide a forwarding config by default through values.
+        # However, output **must** be set
+        # source: https://github.com/fluent/fluent-operator/blob/9f5033150f5ca0eb4497edcf5ee5f5e7494e0e55/charts/fluent-operator/templates/fluentd-fluentd.yaml#L11
+        stdout:
+          enable: false
+
+      filter:
+        kubernetes:
+          enable: true
+        containerd:
+          enable: true
+        systemd:
+          enable: true
+
+    fluentd:
+      crdsEnabled: true
+      enabled: true
+
+      image:
+        # registry: docker.io
+        repository: kubesphere/fluentd
+        # tag: "v1.15.3"
+        # pullPolicy: IfNotPresent
+
+      # number of fluentd instances
+      replicas: 1
+      # the number of workers per fluentd instance
+      workers: 2
+
+      resources:
+        limits:
+          cpu: 1000m
+          memory: 2Gi
+        requests:
+          cpu: 100m
+          memory: 128Mi
+
+      logLevel: info
+
+      nodeSelector:
+        kubernetes.io/os: linux
+        node.ssc-spc.gc.ca/purpose: system
+      tolerations:
+        - operator: Exists
+
+      priorityClassName: platform-node-critical
+
+      forward:
+        port: 24224
+
+      watchedNamespaces: []
+
+      output:
+        loki:
+          enable: true
+          # url: ""
+          # username: ""
+          # password: ""
+          buffer:
+            enable: true
+            type: "memory"
+            disableChunkBackup: true
+            flushMode: "interval"
+            flushInterval: "1s"
+            flushAtShutdown: true
+            flushThreadCount: "8"
+            # Max 4MB until https://github.com/grafana/loki/pull/11348
+            chunkLimitSize: "4MB"
+            totalLimitSize: "512MB"
+            queueLimitLength: "16"
+            retryType: "exponential_backoff"
+            retryMaxInterval: "30s"
+            retryExponentialBackoffBase: "30"
+            overflowAction: "drop_oldest_chunk"
+
+  gatekeeper:
+    helm: {}
+      # chart: gatekeeper
+      # repository: https://open-policy-agent.github.io/gatekeeper/charts
+      # targetRevision:
+
+    imagePullSecrets: []
+    image:
+      # registry: docker.io
+      repository: openpolicyagent/gatekeeper
+      crdRepository: openpolicyagent/gatekeeper-crds
+      # tag: "v3.9.0"
+      # pullPolicy: IfNotPresent
+
+    priorityClassName: system-cluster-critical
+
+    replicas: 3
+
+    postInstall:
+      image:
+        # registry: docker.io
+        repository: openpolicyagent/gatekeeper-crds
+        # tag: "v3.9.0"
+        # pullPolicy: IfNotPresent
+
+      nodeSelector:
+        kubernetes.io/os: linux
+        node.ssc-spc.gc.ca/purpose: system
+      tolerations:
+        - key: CriticalAddonsOnly
+          operator: Exists
+      affinity: {}
+
+      probeWebhook:
+        image:
+          # registry: docker.io
+          repository: curlimages/curl
+          # tag: 7.83.1
+          # pullPolicy: IfNotPresent
+
+    postUpgrade:
+      image:
+        # registry: docker.io
+        repository: openpolicyagent/gatekeeper-crds
+        # tag: "v3.9.0"
+        # pullPolicy: IfNotPresent
+
+      resources: {}
+        # limits:
+        #  cpu: ""
+        #  memory: ""
+        # requests:
+        #  cpu: ""
+        #  memory: ""
+
+      nodeSelector:
+        kubernetes.io/os: linux
+        node.ssc-spc.gc.ca/purpose: system
+      tolerations:
+        - key: CriticalAddonsOnly
+          operator: Exists
+      affinity: {}
+
+    preUninstall:
+      image:
+        # registry: docker.io
+        repository: openpolicyagent/gatekeeper-crds
+        # tag: "v3.9.0"
+        # pullPolicy: IfNotPresent
+
+      resources: {}
+        # limits:
+        #  cpu: ""
+        #  memory: ""
+        # requests:
+        #  cpu: ""
+        #  memory: ""
+
+      nodeSelector:
+        kubernetes.io/os: linux
+        node.ssc-spc.gc.ca/purpose: system
+      tolerations:
+        - key: CriticalAddonsOnly
+          operator: Exists
+      affinity: {}
+
+    audit:
+      resources:
+        limits:
+          cpu: 500m
+          memory: 2048Mi
+        requests:
+          cpu: 100m
+          memory: 1024Mi
+
+      nodeSelector:
+        kubernetes.io/os: linux
+        node.ssc-spc.gc.ca/purpose: system
+      tolerations:
+        - key: CriticalAddonsOnly
+          operator: Exists
+      affinity: {}
+
+    controllerManager:
+      exemptNamespaces: []
+      resources:
+        limits:
+          cpu: 500m
+          memory: 2048Mi
+        requests:
+          cpu: 100m
+          memory: 1024Mi
+
+      nodeSelector:
+        kubernetes.io/os: linux
+        node.ssc-spc.gc.ca/purpose: system
+      tolerations:
+        - key: CriticalAddonsOnly
+          operator: Exists
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 1
+            podAffinityTerm:
+              topologyKey: kubernetes.io/hostname
+              labelSelector:
+                matchLabels:
+                  control-plane: controller-manager
+    mutations:
+      repoURL: https://github.com/gccloudone-aurora/gatekeeper-mutations.git
+      components:
+      - "init-containers"
+      - "istio-service-entries"
+      - "solution-builders"
+      # - "taints-and-tolerations"
+      # targetRevision:
+
+    crds:
+      resources: {}
+        # limits:
+        #  cpu: ""
+        #  memory: ""
+        # requests:
+        #  cpu: ""
+        #  memory: ""
+
+      nodeSelector:
+        kubernetes.io/os: linux
+        node.ssc-spc.gc.ca/purpose: system
+      tolerations:
+        - key: CriticalAddonsOnly
+          operator: Exists
+      affinity: {}
+
+    templates: {}
+      # repository: https://github.com/gccloudone-aurora/gatekeeper-policies.git
+      # path: .
+      # targetRevision: main
+
+    constraints:
+      blockOperations:
+        enabled: false
+        excludedNamespaces: []
+        enforcementAction: "deny"
+      k8sBlockWildcardIngress:
+        labelSelector: {}
+        excludedNamespaces: []
+        enforcementAction: "deny"
+      gatewayContainerAllowedImages:
+        allowedRepos: []
+        excludedNamespaces: []
+        enforcementAction: "deny"
+      systemContainerAllowedImages:
+        allowedRepos: []
+        excludedNamespaces: []
+        enforcementAction: "deny"
+      solutionContainerAllowedImages:
+        allowedRepos: []
+        excludedNamespaces: []
+        enforcementAction: "deny"
+      k8sPodDisruptionBudget:
+        excludedNamespaces: []
+        enforcementAction: "deny"
+      k8sStorageClass:
+        includeStorageClassesInMessage: true
+        allowedStorageClasses: ["*", ""]
+        excludedNamespaces: []
+        enforcementAction: "deny"
+      enforceSixDigitWid:
+        excludedNamespaces: []
+        enforcementAction: "deny"
+        allowedRegex:
+          - "^[0-9]{6}$"
+        allowedValues: [""]
+      gatewaysSolution:
+        excludedNamespaces: []
+        enforcementAction: "deny"
+      gatewaysSystem:
+        excludedNamespaces: []
+        enforcementAction: "deny"
+      restrictHostnames:
+        excludedNamespaces: []
+        exemptions: []
+        enforcementAction: "deny"
+      allowedServicePortName:
+        allowedPrefixes: ["http-", "http2-", "https-", "tcp-", "tls-", "grpc-", "grpc-web-", "mongo-", "mysql-", "redis-"]
+        excludedNamespaces: []
+        enforcementAction: "deny"
+      restrictPodAnnotations:
+        excludedNamespaces: []
+        enforcementAction: "deny"
+        restrictedAnnotations:
+        - galley.istio.io/analyze-suppress
+        - inject.istio.io/templates
+        - istio.io/rev
+        - proxy.istio.io/config
+        - sidecar.istio.io/inject
+        - sidecar.istio.io/controlPlaneAuthPolicy
+        - sidecar.istio.io/discoveryAddress
+        - sidecar.istio.io/bootstrapOverride
+        - traffic.sidecar.istio.io/excludeInboundPorts
+        - traffic.istio.io/nodeSelector
+        - sidecar.istio.io/proxyImage
+        - sidecar.istio.io/proxyImageType
+        - sidecar.istio.io/userVolume
+        - sidecar.istio.io/userVolumeMount
+        - status.sidecar.istio.io/port
+      restrictPodLabels :
+        excludedNamespaces: []
+        enforcementAction: "deny"
+        restrictedLabels:
+        - galley.istio.io/analyze-suppress
+        - networking.istio.io/gatewayPort
+        - topology.istio.io/network
+        - sidecar.istio.io/inject
+        - topology.istio.io/subzone
+  kubecost:
+    helm: {}
+      # chart: cost-analyzer
+      # repository: https://kubecost.github.io/cost-analyzer/
+      # targetRevision:
+
+    imagePullSecrets: []
+    nodeSelector:
+      kubernetes.io/os: linux
+      node.ssc-spc.gc.ca/purpose: system
+    tolerations:
+      - key: CriticalAddonsOnly
+        operator: Exists
+    affinity:
+      podAntiAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 1
+          podAffinityTerm:
+            topologyKey: kubernetes.io/hostname
+            labelSelector:
+              matchLabels:
+                app.kubernetes.io/name: cost-analyzer
+
+    priorityClassName: platform-cluster-medium
+
+    frontend:
+      image:
+        # registry: gcr.io
+        repository: kubecost1/frontend
+        # pullPolicy: Always
+
+      resources: {}
+        # limits:
+        #   cpu: ""
+        #   memory: ""
+        # requests:
+        #   cpu: ""
+        #   memory: ""
+
+    costModel:
+      image:
+        # registry: gcr.io
+        repository: kubecost1/cost-model
+        # pullPolicy: Always
+
+      resources: {}
+        # limits:
+        #   cpu: ""
+        #   memory: ""
+        # requests:
+        #   cpu: ""
+        #   memory: ""
+
+    networkCosts:
+      image:
+        # registry: gcr.io
+        repository: kubecost1/kubecost-network-costs:v16.3
+        # pullPolicy: Always
+
+      resources: {}
+        # limits:
+        #   cpu: ""
+        #   memory: ""
+        # requests:
+        #   cpu: ""
+        #   memory: ""
+
+      nodeSelector:
+        kubernetes.io/os: linux
+        node.ssc-spc.gc.ca/purpose: system
+      tolerations:
+        - key: CriticalAddonsOnly
+          operator: Exists
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 1
+            podAffinityTerm:
+              topologyKey: kubernetes.io/hostname
+              labelSelector:
+                matchLabels:
+                  app.kubernetes.io/name: network-costs
+
+    clusterController:
+      image:
+        # registry: gcr.io
+        repository: kubecost1/cluster-controller:v0.6.0
+        # pullPolicy: Always
+
+    # token: abcde12345
+
+    # azure:
+    #   subscriptionId: abcde12345
+    #   clientId: abcde12345
+    #   clientPassword: abcde12345
+    #   tenantId: abcde12345
+
+    # cloudServiceKey: abcde12345
+    # productKey: abcde12345
+    # clusterProfile: # "development", "production" or "high-availability"
+
+  kubernetesEventExporter:
+    helm: {}
+      # chart: kubernetes-event-exporter
+      # repository: https://artifactory.ssc-spc.gc.ca/artifactory/helm-kubernetes-event-exporter-remote
+      # targetRevision: 3.1.2
+
+    imagePullSecrets:
+      - name: aurora-image-pull-secret
+    image:
+      # registry: artifactory.ssc-spc.gc.ca/gccloudone-aurora-docker-local
+      repository: bitnami/kubernetes-event-exporter
+      tag: 1.7.0-debian-12-r14
+      pullPolicy: IfNotPresent
+
+    pdb:
+      create: true
+      minAvailable: 1
+      # maxUnavailable: ""
+    priorityClassName: platform-node-critical
+
+    replicas: 2
+    resources: {}
+      # limits:
+      #   cpu: ""
+      #   memory: ""
+      # requests:
+      #   cpu: ""
+      #   memory: ""
+    nodeSelector:
+      kubernetes.io/os: linux
+      node.ssc-spc.gc.ca/purpose: system
+    tolerations:
+      - key: CriticalAddonsOnly
+        operator: Exists
+    affinity:
+      podAntiAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 1
+          podAffinityTerm:
+            topologyKey: kubernetes.io/hostname
+            labelSelector:
+              matchLabels:
+                app.kubernetes.io/name: kubernetes-event-exporter
+
+    config:
+      output:
+        loki:
+          # authorization: ""
+          # url: ""
+
+  ntp:
+    enabled: true
+
+    image:
+      repository: busybox
+      tag: latest
+
+    imagePullSecrets:
+      - name: aurora-image-pull-secret
+
+    resources:
+      limits:
+        cpu: 10m
+        memory: 40Mi
+      requests:
+        cpu: 10m
+        memory: 40Mi
+
+    pools:
+      - server: time.nrc.ca
+        options: "iburst maxsources 4"
+      - server: time.chu.nrc.ca
+        options: "iburst maxsources 4"
+
+    tolerations:
+      - operator: Exists
+
+  podtracker:
+    helm: {}
+      # chart: podtracker
+      # repository: https://artifactory.ssc-spc.gc.ca/artifactory/gccloudone-aurora-helm-local
+      # targetRevision: 1.1.1
+
+    image:
+      # registry: artifactory.ssc-spc.gc.ca/docker
+      repository: podtracker
+      # tag: "1.1.0"
+      # pullPolicy: IfNotPresent
+
+    imagePullSecrets: []
+
+    priorityClassName: platform-cluster-medium
+
+    leaderElectionEnabled: true
+    replicaCount: 2
+
+    webhooksEnabled: true
+
+    podtrackerConfiguration: []
+
+    securityContext:
+      runAsNonRoot: true
+      capabilities:
+        drop:
+        - ALL
+      readOnlyRootFilesystem: true
+      runAsUser: 1000
+
+    resources:
+      limits:
+        cpu: 100m
+        memory: 128Mi
+      requests:
+        cpu: 10m
+        memory: 64Mi
+
+    networkPolicies:
+      enabled: true
+      extraPolicies: []
+
+    prometheus:
+      enabled: true
+      servicemonitor:
+        enabled: true
+        prometheusInstance: default
+        targetPort: 9003
+        path: /metrics
+        interval: 60s
+        scrapeTimeout: 30s
+        labels: {}
+        annotations: {}
+        honorLabels: false
+        endpointAdditionalProperties: {}
+
+    nodeSelector:
+      kubernetes.io/os: linux
+      node.ssc-spc.gc.ca/purpose: system
+
+    tolerations:
+      - key: CriticalAddonsOnly
+        operator: Exists
+
+    affinity:
+      podAntiAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 1
+          podAffinityTerm:
+            topologyKey: kubernetes.io/hostname
+            labelSelector:
+              matchLabels:
+                app.kubernetes.io/instance: podtracker
+
+  prometheus:
+    helm: {}
+      # chart: kube-prometheus-stack
+      # repository: https://prometheus-community.github.io/helm-charts
+      # targetRevision: 1.97.0
+
+    imageRegistry: ""
+    imagePullSecrets: []
+
+    priorityClassName: platform-cluster-critical
+
+    operator:
+      image:
+        # registry: quay.io
+        repository: prometheus-operator/prometheus-operator
+        # tag: "v0.62.0"
+        # pullPolicy: IfNotPresent
+
+      resources: {}
+        # limits:
+        #   cpu: ""
+        #   memory: ""
+        # requests:
+        #   cpu: ""
+        #   memory: ""
+
+      admissionWebhooks:
+        image:
+          # registry: k8s.gcr.io
+          repository: ingress-nginx/kube-webhook-certgen
+          # tag: "v1.3.0"
+          # pullPolicy: IfNotPresent
+
+        resources: {}
+          # limits:
+          #   cpu: ""
+          #   memory: ""
+          # requests:
+          #   cpu: ""
+          #   memory: ""
+
+      prometheusConfigReloader:
+        image:
+          # registry: quay.io
+          repository: prometheus-operator/prometheus-config-reloader
+          # tag: "v0.62.0"
+          # pullPolicy: IfNotPresent
+
+        resources: {}
+          # limits:
+          #   cpu: ""
+          #   memory: ""
+          # requests:
+          #   cpu: ""
+          #   memory: ""
+
+      thanos:
+        image:
+          # registry: k8s.gcr.io
+          repository: thanos/thanos
+          # tag: "v0.29.0"
+          # pullPolicy: IfNotPresent
+
+    alertmanager:
+      enabled: false
+      alertmanagerSpec:
+        image:
+          # registry: quay.io
+          repository: prometheus/alertmanager
+          # tag: "v0.24.0"
+          # pullPolicy: IfNotPresent
+
+        replicas: 1
+        resources: {}
+          # limits:
+          #   cpu: ""
+          #   memory: ""
+          # requests:
+          #   cpu: ""
+          #   memory: ""
+        nodeSelector: {}
+        tolerations: []
+        affinity: {}
+
+        storage: 2Gi
+
+      config:
+        severities:
+          critical: "P1-Critical"
+          major: "P2-Major"
+          minor: "P3-Minor"
+
+        environments:
+          prod:
+            matchers: []
+              # - "target =~ gen-prod-cc-00"
+              # - "cluster =~ gen-prod-cc-00|gen-qa-cc-00|mgmt-prod-cc-00|ingress-prod-cc-00"
+          nonProd:
+            matchers: []
+              # - "target =~ gen-dev-cc-00"
+              # - "cluster =~ gen-dev-cc-00|gen-test-cc-00|gen-uat-cc-00"
+          dev:
+            matchers: []
+              # - "class = testing"
+              # - "target =~ aurora-dev-cc-00"
+              # - "cluster =~ aurora-dev-cc-00|gen-canary-cc-00|mgmt-dev-cc-00|ingress-dev-cc-00"
+
+        smtp:
+          smarthost:
+          from:
+          auth_username:
+          auth_password:
+
+          sendAddresses:
+            email:
+              to:
+              matchers: "severity =~ P2-Major|P1-Critical"
+            # test_email:
+            #   to:
+            #   matchers: "severity =~ Testing-Major"
+
+        deadMansSwitchURL:
+
+        additionalConfig:
+          receivers: []
+          routes: []
+
+    prometheus:
+
+      netpol:
+        allowFederation: true
+
+      prometheusSpec:
+        image:
+          # registry: quay.io
+          repository: prometheus/prometheus
+          # tag: "v2.36.1"
+          # pullPolicy: IfNotPresent
+
+        replicas: 1
+        resources: {}
+          # limits:
+          #   cpu: ""
+          #   memory: ""
+          # requests:
+          #   cpu: ""
+          #   memory: ""
+        nodeSelector:
+          kubernetes.io/os: linux
+          node.ssc-spc.gc.ca/purpose: system
+        tolerations:
+          - key: CriticalAddonsOnly
+            operator: Exists
+        affinity:
+          podAntiAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 1
+              podAffinityTerm:
+                topologyKey: kubernetes.io/hostname
+                labelSelector:
+                  matchLabels:
+                    app.kubernetes.io/name: prometheus
+
+        storage: 80Gi
+
+        additionalAlertManagerHosts: []
+
+      rules:
+        backup:
+          enabled: false
+
+    thanosRuler:
+      thanosRulerSpec:
+        image:
+          # registry: quay.io
+          repository: thanos/thanos
+          # tag: "v0.29.0"
+          # pullPolicy: IfNotPresent
+
+        replicas: 1
+        resources: {}
+          # limits:
+          #   cpu: ""
+          #   memory: ""
+          # requests:
+          #   cpu: ""
+          #   memory: ""
+        nodeSelector:
+          kubernetes.io/os: linux
+          node.ssc-spc.gc.ca/purpose: system
+        tolerations:
+          - key: CriticalAddonsOnly
+            operator: Exists
+        affinity:
+          podAntiAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 1
+              podAffinityTerm:
+                topologyKey: kubernetes.io/hostname
+                labelSelector:
+                  matchLabels:
+                    app.kubernetes.io/name: thanos
+
+    grafana:
+      image:
+        # registry: docker.io
+        repository: grafana/grafana
+        # tag: "9.0.1"
+        # pullPolicy: IfNotPresent
+
+      replicas: 1
+      resources: {}
+        # limits:
+        #   cpu: ""
+        #   memory: ""
+        # requests:
+        #   cpu: ""
+        #   memory: ""
+      nodeSelector:
+        kubernetes.io/os: linux
+        node.ssc-spc.gc.ca/purpose: system
+      tolerations:
+        - key: CriticalAddonsOnly
+          operator: Exists
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 1
+            podAffinityTerm:
+              topologyKey: kubernetes.io/hostname
+              labelSelector:
+                matchLabels:
+                  app.kubernetes.io/name: grafana
+
+      # Mitigation for https://github.com/grafana/helm-charts/issues/1184
+      deploymentStrategy:
+        type: Recreate
+
+      downloadDashboards:
+        image:
+          # registry: docker.io
+          repository: kiwigrid/k8s-sidecar
+          # tag: "1.19.2"
+          # pullPolicy: IfNotPresent
+
+        resources: {}
+          # limits:
+          #   cpu: ""
+          #   memory: ""
+          # requests:
+          #   cpu: ""
+          #   memory: ""
+
+      initChownData:
+        image:
+          # registry: docker.io
+          repository: busybox
+          # tag: "1.31.1"
+          # pullPolicy: IfNotPresent
+
+        resources: {}
+          # limits:
+          #   cpu: ""
+          #   memory: ""
+          # requests:
+          #   cpu: ""
+          #   memory: ""
+
+      sidecar:
+        image:
+          # registry: docker.io
+          repository: kiwigrid/k8s-sidecar
+          # tag: "1.19.2"
+          # pullPolicy: IfNotPresent
+
+        resources: {}
+          # limits:
+          #   cpu: ""
+          #   memory: ""
+          # requests:
+          #   cpu: ""
+          #   memory: ""
+
+      # adminPassword: abcde12345
+      # authUrl: "https://login.microsoftonline.com/TENANT_ID/oauth2/v2.0/authorize"
+      # tokenUrl: "https://login.microsoftonline.com/TENANT_ID/oauth2/v2.0/token"
+      allowedGroups: ""
+
+      persistence:
+        size: 20Gi
+
+      # lokiDataSource:
+      #   url: ""
+      #   user: ""
+      #   password: ""
+
+    kubeStateMetrics:
+      image:
+        # registry: registry.k8s.io
+        repository: kube-state-metrics/kube-state-metrics
+        # tag: "v2.5.0"
+        # pullPolicy: IfNotPresent
+
+      replicas: 1
+      resources: {}
+        # limits:
+        #   cpu: ""
+        #   memory: ""
+        # requests:
+        #   cpu: ""
+        #   memory: ""
+      nodeSelector:
+        kubernetes.io/os: linux
+        node.ssc-spc.gc.ca/purpose: system
+      tolerations:
+        - key: CriticalAddonsOnly
+          operator: Exists
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 1
+            podAffinityTerm:
+              topologyKey: kubernetes.io/hostname
+              labelSelector:
+                matchLabels:
+                  app.kubernetes.io/name: kube-state-metrics
+
+    prometheusNodeExporter:
+      image:
+        # registry: quay.io
+        repository: prometheus/node-exporter
+        # tag: "v1.3.1"
+        # pullPolicy: IfNotPresent
+
+      replicas: 1
+      resources: {}
+        # limits:
+        #   cpu: ""
+        #   memory: ""
+        # requests:
+        #   cpu: ""
+        #   memory: ""
+      nodeSelector:
+        kubernetes.io/os: linux
+      tolerations:
+        - key: CriticalAddonsOnly
+          operator: Exists
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 1
+            podAffinityTerm:
+              topologyKey: kubernetes.io/hostname
+              labelSelector:
+                matchLabels:
+                  app.kubernetes.io/name: prometheus-node-exporter
+
+    blackboxExporter:
+      helm: {}
+        # chart: prometheus-blackbox-exporter
+        # repository: https://prometheus-community.github.io/helm-charts
+        # targetRevision: 7.0.0
+      image:
+        # registry: docker.io
+        repository: prom/blackbox-exporter
+        # tag: "v0.23.0"
+        # pullPolicy: IfNotPresent
+      imagePullSecrets: []
+
+      replicas: 1
+
+      resources: {}
+        # limits:
+        #   cpu: ""
+        #   memory: ""
+        # requests:
+        #   cpu: ""
+        #   memory: ""
+
+      nodeSelector:
+        kubernetes.io/os: linux
+        node.ssc-spc.gc.ca/purpose: system
+      tolerations:
+        - key: CriticalAddonsOnly
+          operator: Exists
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 1
+            podAffinityTerm:
+              topologyKey: kubernetes.io/hostname
+              labelSelector:
+                matchLabels:
+                  app.kubernetes.io/name: prometheus-blackbox-exporter
+
+      istioIngressGatewayProbes: []
+        # - name:
+        #   ipAddress:
+      controlPlaneProbes: []
+        # - name:
+        #   url:
+        #   bearerToken:
+
+    additionalModules: {}
+    additionalTargets: {}
+
+    jiralert:
+      helm: {}
+        # chart: jiralert
+        # repository: https://prometheus-community.github.io/helm-charts
+        # targetRevision: 1.7.1
+
+      image:
+        # registry: docker.io
+        # registry: quay.io
+        repository: jiralert/jiralert-linux-amd64
+        # tag: "0.0.1"
+        # pullPolicy: IfNotPresent
+      imagePullSecrets: []
+
+      replicas: 1
+      resources: {}
+        # limits:
+        #   cpu: ""
+        #   memory: ""
+        # requests:
+        #   cpu: ""
+        #   memory: ""
+
+      nodeSelector:
+        kubernetes.io/os: linux
+        node.ssc-spc.gc.ca/purpose: system
+      tolerations:
+        - key: CriticalAddonsOnly
+          operator: Exists
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 1
+            podAffinityTerm:
+              topologyKey: kubernetes.io/hostname
+              labelSelector:
+                matchLabels:
+                  app.kubernetes.io/name: prometheus-jira-alert
+      priorityClassName: platform-cluster-medium
+
+      config:
+        apiURL:
+        project:
+        user:
+        password:
+
+      receivers:
+        critical:
+          name: 'jiralert_critical'
+          priority: Blocker
+          components: ['Incoming Platform Alert']
+        major:
+          name: 'jiralert_major'
+          priority: High
+          components: ['Incoming Platform Alert']
+        minor:
+          name: 'jiralert_minor'
+          priority: Medium
+          components: ['Incoming Platform Alert']
+
+    msteams:
+      helm: {}
+        # chart: prometheus-blackbox-exporter
+        # repository: https://prometheus-community.github.io/helm-charts
+        # targetRevision: 1.3.0
+      image:
+        # registry: quay.io/
+        repository: prometheusmsteams/prometheus-msteams
+        tag: "master"
+        # pullPolicy: IfNotPresent
+      imagePullSecrets: []
+
+      replicas: 1
+
+      resources: {}
+        # limits:
+        #   cpu: ""
+        #   memory: ""
+        # requests:
+        #   cpu: ""
+        #   memory: ""
+
+      nodeSelector:
+        kubernetes.io/os: linux
+        node.ssc-spc.gc.ca/purpose: system
+      tolerations:
+        - key: CriticalAddonsOnly
+          operator: Exists
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 1
+            podAffinityTerm:
+              topologyKey: kubernetes.io/hostname
+              labelSelector:
+                matchLabels:
+                  app: prometheus-msteams
+
+      connectors: {}
+      #  testing: ""
+      #  devCritical: ""
+      #  devMajor: ""
+      #  devMinor: ""
+      #  nonProdCritical: ""
+      #  nonProdMajor: ""
+      #  nonProdMinor: ""
+      #  prodCritical: ""
+      #  prodMajor: ""
+      #  prodMinor: ""
+
+  vaultAgent:
+    helm: {}
+      # chart: vault
+      # repository: https://helm.releases.hashicorp.com
+      # targetRevision: 0.20.1
+
+    imagePullSecrets: []
+
+    injector:
+      image:
+        # registry: docker.io
+        repository: hashicorp/vault-k8s
+        # tag: "1.0.0"
+        # pullPolicy: IfNotPresent
+
+      replicas: 3
+      resources: {}
+        # limits:
+        #   cpu: 250m
+        #   memory: 256Mi
+        # requests:
+        #   cpu: 250m
+        #   memory: 256Mi
+      nodeSelector:
+        kubernetes.io/os: linux
+        node.ssc-spc.gc.ca/purpose: system
+      tolerations:
+        - key: CriticalAddonsOnly
+          operator: Exists
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 1
+            podAffinityTerm:
+              topologyKey: kubernetes.io/hostname
+              labelSelector:
+                matchLabels:
+                  app.kubernetes.io/instance: vault-agent
+
+      agentImage:
+        # registry: docker.io
+        repository: hashicorp/vault
+        # tag: "1.11.4"
+
+      agentDefaults: {}
+        # cpuLimit: "500m"
+        # cpuRequest: "250m"
+        # memLimit: "128Mi"
+        # memRequest: "64Mi"
+
+      annotations:
+        istioInject:
+          disable: true
+
+      # externalVaultAddr: ""
+      # authPath: ""
+
+    priorityClassName: platform-cluster-critical
+
+  velero:
+    helm: {}
+      # chart: velero
+      # repository: https://vmware-tanzu.github.io/helm-charts
+      # targetRevision: 3.1.4
+
+    imagePullSecrets: []
+    image:
+      # registry: docker.io
+      repository: velero/velero
+      # tag: "v1.10.2"
+      # pullPolicy: IfNotPresent
+
+    resources:
+      requests:
+        cpu: '1'
+        memory: 512Mi
+      limits:
+        cpu: '1'
+        memory: 1Gi
+    nodeSelector:
+      kubernetes.io/os: linux
+      node.ssc-spc.gc.ca/purpose: system
+    tolerations:
+      - key: CriticalAddonsOnly
+        operator: Exists
+    affinity:
+      podAntiAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 1
+          podAffinityTerm:
+            topologyKey: kubernetes.io/hostname
+            labelSelector:
+              matchLabels:
+                app.kubernetes.io/instance: velero
+
+    backupStorage: {}
+      # bucket:
+      # resourceGroupName:
+      # storageAccountName:
+      # subscriptionId:
+
+    volumeSnapshot: {}
+      # resourceGroupName:
+
+    aadPodIdentity:
+      name: velero
+      azureManagedIdentity: {}
+        # clientId: ""
+        # resourceId: ""
+
+    plugin:
+      azure:
+        image:
+          # registry: docker.io
+          repository: velero/velero-plugin-for-microsoft-azure
+          tag: "v1.7.1"
+
+    kubectl:
+      image:
+        # registry: docker.io
+        repository: bitnami/kubectl
+        # tag: "1.16.15"
+
+    priorityClassName: platform-cluster-medium
+
+rbac:
+  # Groups and users that should be bound to the platform-admin role.
+  # Note: if using AKS with AAD enabled, this is not necessary since admins
+  #       will be defined in the configuration.
+  platformAdmin:
+    groups: []
+    users: []
+  # Configurations for the platform-operator-daily role.
+  # A read-only aggregated role which uses the
+  # 'rbac.ssc-spc.gc.ca/aggregate-to-platform-operator-view: "true"'
+  # label as the selector.
+  platformOperator:
+    groups: []
+    users: []

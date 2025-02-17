@@ -1,0 +1,214 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-istio-netpol"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    chart: {{ .Values.global.raw.helm.chart }}
+    repoURL: {{ default .Values.global.helm.repository .Values.global.raw.helm.repository }}
+    targetRevision: {{ .Values.global.raw.helm.targetRevision }}
+    helm:
+      releaseName: istio-netpol
+      values: |
+        resources:
+          - apiVersion: cilium.io/v2
+            kind: CiliumClusterwideNetworkPolicy
+            metadata:
+              name: allow-ingress-from-ingress-to-ns
+            spec:
+              endpointSelector:
+                matchExpressions:
+                  - key: io.kubernetes.pod.namespace
+                    operator: NotIn
+                    values:
+                      - kube-system
+              ingress:
+                - fromEndpoints:
+                    - matchLabels:
+                        io.kubernetes.pod.namespace: ingress-general-system
+                        app: general
+          - apiVersion: cilium.io/v2
+            kind: CiliumClusterwideNetworkPolicy
+            metadata:
+              name: allow-ingress-from-istiod-to-ns
+            spec:
+              endpointSelector:
+                matchExpressions:
+                  - key: io.kubernetes.pod.namespace
+                    operator: NotIn
+                    values:
+                      - kube-system
+              ingress:
+                - fromEndpoints:
+                    - matchLabels:
+                        io.kubernetes.pod.namespace: istio-system
+                        app: istiod
+          - apiVersion: cilium.io/v2
+            kind: CiliumClusterwideNetworkPolicy
+            metadata:
+              name: allow-egress-to-istiod-from-ns
+            spec:
+              endpointSelector:
+                matchExpressions:
+                  - key: io.kubernetes.pod.namespace
+                    operator: NotIn
+                    values:
+                      - kube-system
+              egress:
+                - toEndpoints:
+                    - matchLabels:
+                        io.kubernetes.pod.namespace: istio-system
+                        app: istiod
+          - apiVersion: networking.k8s.io/v1
+            kind: NetworkPolicy
+            metadata:
+              name: allow-same-namespace
+              namespace: istio-system
+            spec:
+              podSelector: {}
+              policyTypes:
+                - Ingress
+                - Egress
+              ingress:
+                - from:
+                  - podSelector: {}
+              egress:
+                - to:
+                  - podSelector: {}
+          - apiVersion: networking.k8s.io/v1
+            kind: NetworkPolicy
+            metadata:
+              name: allow-same-namespace
+              namespace: ingress-general-system
+            spec:
+              podSelector: {}
+              policyTypes:
+                - Ingress
+                - Egress
+              ingress:
+                - from:
+                  - podSelector: {}
+              egress:
+                - to:
+                  - podSelector: {}
+          - apiVersion: networking.k8s.io/v1
+            kind: NetworkPolicy
+            metadata:
+              name: allow-ingress-from-apiserver-to-general
+              namespace: istio-system
+            spec:
+              ingress:
+              - from:
+                - ipBlock:
+                    cidr: {{ required "global.apiServerCidr is required" .Values.global.apiServerCidr | quote }}
+                - namespaceSelector:
+                    matchLabels:
+                      kubernetes.io/metadata.name: kube-system
+                  podSelector:
+                    matchLabels:
+                      app: konnectivity-agent
+              podSelector: {}
+              policyTypes:
+              - Ingress
+          - apiVersion: networking.k8s.io/v1
+            kind: NetworkPolicy
+            metadata:
+              name: allow-ingress-from-ns-to-istiod
+              namespace: istio-system
+            spec:
+              ingress:
+              - from:
+                - namespaceSelector:
+                    matchLabels: {}
+              podSelector:
+                matchLabels:
+                  app: istiod
+              policyTypes:
+              - Ingress
+          - apiVersion: networking.k8s.io/v1
+            kind: NetworkPolicy
+            metadata:
+              name: allow-egress-to-ns-from-istiod
+              namespace: istio-system
+            spec:
+              egress:
+              - to:
+                - namespaceSelector:
+                    matchLabels: {}
+              podSelector:
+                matchLabels:
+                  app: istiod
+              policyTypes:
+              - Egress
+          - apiVersion: networking.k8s.io/v1
+            kind: NetworkPolicy
+            metadata:
+              name: allow-ingress-end-user-devices-to-ingress-general
+              namespace: ingress-general-system
+            spec:
+              ingress:
+              - ports:
+                - port: 8443
+                  protocol: TCP
+                - port: 8080
+                  protocol: TCP
+                - port: 443
+                  protocol: TCP
+                - port: 80
+                  protocol: TCP
+                from:
+                - ipBlock:
+                    cidr: 0.0.0.0/0
+              podSelector:
+                matchLabels:
+                  istio: general
+              policyTypes:
+              - Ingress
+          - apiVersion: networking.k8s.io/v1
+            kind: NetworkPolicy
+            metadata:
+              name: allow-ingress-from-all-ns
+              namespace: ingress-general-system
+            spec:
+              podSelector:
+                matchLabels:
+                  istio: general
+              ingress:
+                - ports:
+                    - protocol: TCP
+                      port: 8443
+                    - protocol: TCP
+                      port: 8080
+                    - protocol: TCP
+                      port: 443
+                    - protocol: TCP
+                      port: 80
+                  from:
+                    - namespaceSelector: {}
+              policyTypes:
+                - Ingress
+          - apiVersion: networking.k8s.io/v1
+            kind: NetworkPolicy
+            metadata:
+              name: allow-egress-to-ns-from-ingress
+              namespace: ingress-general-system
+            spec:
+              egress:
+              - to:
+                - namespaceSelector:
+                    matchLabels: {}
+              podSelector:
+                matchLabels:
+                  istio: general
+              policyTypes:
+              - Egress
+  destination:
+    name: {{ .Values.global.cluster }}
+    namespace: platform-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

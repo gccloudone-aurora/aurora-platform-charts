@@ -1,0 +1,49 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-cidr-allocator"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    chart: {{ default "cidr-allocator" .Values.components.cidrAllocator.helm.chart }}
+    {{- if .Values.components.cidrAllocator.helm.repository }}
+    repoURL: {{ .Values.components.cidrAllocator.helm.repository }}
+    {{- else }}
+    repoURL: {{ default "https://artifactory.ssc-spc.gc.ca/artifactory/gccloudone-aurora-helm-local" .Values.global.helm.repository }}
+    {{- end }}
+    targetRevision: {{ default "2.1.1" .Values.components.cidrAllocator.helm.targetRevision }}
+    plugin:
+      env:
+        - name: HELM_RELEASE_NAME
+          value: "cidr-allocator"
+        - name: HELM_VALUES
+          value: |
+            image: {{ default "{}" (include "cidrAllocator.image" .) | nindent 14 }}
+            imagePullSecrets: {{ toYaml .Values.components.cidrAllocator.imagePullSecrets | nindent 14 }}
+
+            leaderElectionEnabled: {{ default true .Values.components.cidrAllocator.leaderElectionEnabled }}
+            replicaCount: {{ .Values.components.cidrAllocator.replicas }}
+            resources: {{ toYaml .Values.components.cidrAllocator.resources | nindent 14 }}
+
+            nodeSelector: {{ toYaml .Values.components.cidrAllocator.nodeSelector | nindent 14 }}
+            tolerations: {{ toYaml .Values.components.cidrAllocator.tolerations | nindent 14 }}
+            affinity: {{ toYaml .Values.components.cidrAllocator.affinity | nindent 14 }}
+
+            priorityClassName: {{ .Values.components.cidrAllocator.priorityClassName }}
+
+            installCRDs: true
+            nodeCIDRAllocations:
+              - name: linux-nodes
+                nodeSelector:
+                  kubernetes.io/os: "linux"
+                addressPools: {{ toYaml (required "cidrAllocator.addressPools is required" .Values.components.cidrAllocator.addressPools) | nindent 18 }}
+                staticAllocations: {{ toYaml .Values.components.cidrAllocator.staticAllocations | nindent 18 }}
+  destination:
+    name: {{ .Values.global.cluster }}
+    namespace: cidr-allocator-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

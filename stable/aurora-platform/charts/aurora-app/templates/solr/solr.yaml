@@ -1,0 +1,60 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-solr-operator"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    chart: {{ default "solr-operator" .Values.components.solr.helm.chart }}
+    {{- if .Values.components.solr.helm.repository }}
+    repoURL: {{ .Values.components.solr.helm.repository }}
+    {{- else }}
+    repoURL: {{ default "https://solr.apache.org/charts" .Values.global.helm.repository }}
+    {{- end }}
+    targetRevision: {{ default "0.5.1" .Values.components.solr.helm.targetRevision }}
+    helm:
+      releaseName: solr-operator
+      values: |
+        image: {{ default "{}" (include "solr.image" .) | nindent 10 }}
+
+        replicaCount: {{ .Values.components.solr.replicas }}
+        resources: {{ toYaml .Values.components.solr.resources | nindent 10 }}
+
+        nodeSelector: {{ toYaml .Values.components.solr.nodeSelector | nindent 10 }}
+        tolerations: {{ toYaml .Values.components.solr.tolerations | nindent 10 }}
+        affinity: {{ toYaml .Values.components.solr.affinity | nindent 10 }}
+
+        zookeeper-operator:
+          install: true
+          crd:
+            create: true
+          image: {{ default "{}" (include "solr.zookeeper.image" .) | nindent 12 }}
+          resources: {{ toYaml .Values.components.solr.zookeeper.resources | nindent 12 }}
+
+          nodeSelector: {{ toYaml .Values.components.solr.zookeeper.nodeSelector | nindent 12 }}
+          tolerations: {{ toYaml .Values.components.solr.zookeeper.tolerations | nindent 12 }}
+          affinity: {{ toYaml .Values.components.solr.zookeeper.affinity | nindent 12 }}
+
+          hooks:
+            image: {{ default "{}" (include "solr.zookeeper.hooks.image" .) | nindent 14 }}
+
+        # A comma-separated list of namespaces that the operator should watch.
+        # If empty, the solr operator will watch all namespaces in the cluster.
+        watchNamespaces: ""
+
+        rbac:
+          create: true
+
+        serviceAccount:
+          create: true
+
+        priorityClassName: {{ .Values.components.solr.priorityClassName }}
+  destination:
+    name: {{ .Values.global.cluster }}
+    namespace: solr-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

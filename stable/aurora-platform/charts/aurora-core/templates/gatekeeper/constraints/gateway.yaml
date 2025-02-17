@@ -1,0 +1,80 @@
+# Enforces configurations of Istio Gateways in alignment with ITSP.40.062
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-gatekeeper-gateways"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+  annotations:
+    kubernetes.io/description: |
+      Enforces configurations of Istio Gateways in alignment with ITSP.40.062
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    chart: {{ .Values.global.raw.helm.chart }}
+    repoURL: {{ default .Values.global.helm.repository .Values.global.raw.helm.repository }}
+    targetRevision: {{ .Values.global.raw.helm.targetRevision }}
+    helm:
+      releaseName: gatekeeper-gateways
+      values: |
+        resources:
+          - apiVersion: constraints.gatekeeper.sh/v1beta1
+            kind: SecuredGateways
+            metadata:
+              name: secured-gateways-solution
+            spec:
+              match:
+                kinds:
+                  - apiGroups: ["networking.istio.io"]
+                    kinds: ["Gateway"]
+                namespaceSelector:
+                    matchLabels:
+                      namespace.ssc-spc.gc.ca/purpose: solution
+                excludedNamespaces: {{ toYaml .Values.components.gatekeeper.constraints.gatewaysSolution.excludedNamespaces | nindent 18 }}
+              parameters:
+                approvedCipherSuites:
+                  - TLS_AES_256_GCM_SHA384
+                  - TLS_AES_128_GCM_SHA256
+                  - ECDHE-RSA-AES256-GCM-SHA384
+                  - ECDHE-RSA-AES128-GCM-SHA256
+                  - ECDHE-ECDSA-AES256-GCM-SHA384
+                  - ECDHE-ECDSA-AES128-GCM-SHA256
+                maxTLSVersions:
+                  - TLSV1_2
+                minTLSVersions:
+                  - TLSV1_2
+              enforcementAction: {{ .Values.components.gatekeeper.constraints.gatewaysSolution.enforcementAction }}
+          - apiVersion: constraints.gatekeeper.sh/v1beta1
+            kind: SecuredGateways
+            metadata:
+              name: secured-gateways-system
+            spec:
+              match:
+                kinds:
+                  - apiGroups: ["networking.istio.io"]
+                    kinds: ["Gateway"]
+                namespaceSelector:
+                    matchLabels:
+                      namespace.ssc-spc.gc.ca/purpose: solution
+                excludedNamespaces: {{ toYaml .Values.components.gatekeeper.constraints.gatewaysSystem.excludedNamespaces | nindent 18 }}
+              parameters:
+                approvedCipherSuites:
+                  - TLS_AES_256_GCM_SHA384
+                  - TLS_AES_128_GCM_SHA256
+                  - ECDHE-RSA-AES256-GCM-SHA384
+                  - ECDHE-RSA-AES128-GCM-SHA256
+                  - ECDHE-ECDSA-AES256-GCM-SHA384
+                  - ECDHE-ECDSA-AES128-GCM-SHA256
+                  - AES256-GCM-SHA384
+                maxTLSVersions:
+                  - TLSV1_2
+                minTLSVersions:
+                  - TLSV1_2
+              enforcementAction: {{ .Values.components.gatekeeper.constraints.gatewaysSystem.enforcementAction }}
+  destination:
+    name: {{ .Values.global.cluster }}
+    namespace: platform-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

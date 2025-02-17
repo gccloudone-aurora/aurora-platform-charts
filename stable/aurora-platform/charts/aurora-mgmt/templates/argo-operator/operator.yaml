@@ -1,0 +1,39 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-argo-operator"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    chart: {{ default "argocd-operator" .Values.components.argoOperator.helm.chart }}
+    {{- if .Values.components.argoOperator.helm.repository }}
+    repoURL: {{ .Values.components.argoOperator.helm.repository }}
+    {{- else }}
+    repoURL: {{ default "https://gccloudone-aurora.github.io/charts" .Values.global.helm.repository }}
+    {{- end }}
+    targetRevision: {{ default "0.4.1" .Values.components.argoOperator.helm.targetRevision }}
+    helm:
+      releaseName: argo-operator
+      values: |
+        operator:
+          image: {{ default "{}" (include "argoOperator.image" .) | nindent 12 }}
+          imagePullSecrets: {{ toYaml .Values.components.argoOperator.imagePullSecrets | nindent 12 }}
+
+          replicaCount: {{ .Values.components.argoOperator.replicas }}
+          resources: {{ toYaml .Values.components.argoOperator.resources | nindent 12 }}
+
+          nodeSelector: {{ toYaml .Values.components.argoOperator.nodeSelector | nindent 12 }}
+          tolerations: {{ toYaml .Values.components.argoOperator.tolerations | nindent 12 }}
+          affinity: {{ toYaml .Values.components.argoOperator.affinity | nindent 12 }}
+
+          nsToWatch: ""
+          nsClusterConfig: platform-management-system
+  destination:
+    name: '{{ .Values.global.cluster }}'
+    namespace: argo-operator-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

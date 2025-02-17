@@ -1,0 +1,72 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-fluent-rbac"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    chart: {{ .Values.global.raw.helm.chart }}
+    repoURL: {{ default .Values.global.helm.repository .Values.global.raw.helm.repository }}
+    targetRevision: {{ .Values.global.raw.helm.targetRevision }}
+    helm:
+      releaseName: fluent-rbac
+      values: |
+        resources:
+          - apiVersion: rbac.authorization.k8s.io/v1
+            kind: ClusterRole
+            metadata:
+              name: solution-builder-fluent
+              labels:
+                rbac.ssc-spc.gc.ca/aggregate-to-solution-builder: "true"
+                app.kubernetes.io/name: "fluent-rbac"
+                app.kubernetes.io/instance: "{{ .Values.global.cluster }}"
+                app.kubernetes.io/part-of: solution-builder-rbac
+                app.kubernetes.io/managed-by: argo
+                helm.sh/chart: {{ printf "%s-%s" .Chart.Name .Chart.Version }}
+            rules:
+              - apiGroups:
+                  - fluentd.fluent.io
+                resources:
+                  - outputs
+                  - filters
+                  - fluentdconfigs
+                verbs:
+                  - get
+                  - list
+                  - watch
+                  - create
+                  - update
+                  - patch
+                  - delete
+          - apiVersion: rbac.authorization.k8s.io/v1
+            kind: ClusterRole
+            metadata:
+              name: fluent-operator-view-all
+              annotations:
+                kubernetes.io/description: Allows the ability to read all fluent-operator CRDs.
+              labels:
+                rbac.ssc-spc.gc.ca/aggregate-to-platform-operator-view: "true"
+                app.kubernetes.io/name: "fluent-rbac"
+                app.kubernetes.io/instance: "{{ .Values.global.cluster }}"
+                app.kubernetes.io/part-of: cluster-operator-rbac
+                app.kubernetes.io/managed-by: argo
+                helm.sh/chart: {{ printf "%s-%s" .Chart.Name .Chart.Version }}
+            rules:
+              - apiGroups:
+                  - fluentbit.fluent.io
+                  - fluentd.fluent.io
+                resources:
+                  - "*"
+                verbs:
+                  - get
+                  - list
+                  - watch
+  destination:
+    name: {{ .Values.global.cluster }}
+    namespace: platform-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

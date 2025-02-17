@@ -1,0 +1,43 @@
+groups:
+  - name: pvc.rules
+    rules:
+      - alert: PVCStorageRemainingLow
+        annotations:
+          message: 'The PVC named {{ $$labels.persistentvolumeclaim }} in namespace {{ $$labels.namespace }} has {{ printf "%.2f" $$value }}% storage remaining'
+          runbook: "https://aurora.gccloudone.ca/en/documentation/monitoring-surveillance/prometheus/namespace-alert-runbooks/persistent-volume-claims/#resolution-process"
+        expr: sum by (cluster, persistentvolumeclaim, namespace) (kubelet_volume_stats_available_bytes / kubelet_volume_stats_capacity_bytes) * 100 < 15
+        for: 15m
+        labels:
+          scope: namespace
+          severity: P3-Minor
+
+      - alert: PVCStorageRemainingNone
+        annotations:
+          message: 'The PVC named {{ $$labels.persistentvolumeclaim }} in namespace {{ $$labels.namespace }} has no storage remaining'
+          runbook: "https://aurora.gccloudone.ca/en/documentation/monitoring-surveillance/prometheus/namespace-alert-runbooks/persistent-volume-claims/#resolution-process"
+        expr: sum by (cluster, persistentvolumeclaim, namespace) (kubelet_volume_stats_available_bytes / kubelet_volume_stats_capacity_bytes) * 100 < 5
+        for: 5m
+        labels:
+          scope: namespace
+          severity: P2-Major
+
+      # The following 2 alerts use label replacement to set the 'namespace' label to the PersistentVolumeClaim's namespace instead of the kube-state-metrics namespace
+      - alert: KubePersistentVolumeStatusFailed
+        annotations:
+          message: 'The persistent volume {{ $$labels.persistentvolume }}, associated with claim {{ $$labels.name }} in namespace {{ $$labels.namespace }}, has status Failed.'
+          runbook: "https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubepersistentvolumeerrors"
+        expr: sum without (claim_namespace) (label_replace(sum by (name, persistentvolume, claim_namespace) (kube_persistentvolume_status_phase{phase="Failed",job="kube-state-metrics"} * on (persistentvolume) group_right kube_persistentvolume_claim_ref > 0), "namespace", "$$1", "claim_namespace", "(.*)"))
+        for: 1m
+        labels:
+          severity: P2-Major
+          scope: namespace
+
+      - alert: KubePersistentVolumeStatusPending
+        annotations:
+          message: 'The persistent volume {{ $$labels.persistentvolume }}, associated with claim {{ $$labels.name }} in namespace {{ $$labels.namespace }}, has status Pending for over 30 minutes.'
+          runbook: "https://runbooks.prometheus-operator.dev/runbooks/kubernetes/kubepersistentvolumeerrors"
+        expr: sum without (claim_namespace) (label_replace(sum by (name, persistentvolume, claim_namespace) (kube_persistentvolume_status_phase{phase="Pending",job="kube-state-metrics"} * on (persistentvolume) group_right kube_persistentvolume_claim_ref > 0), "namespace", "$$1", "claim_namespace", "(.*)"))
+        for: 30m
+        labels:
+          severity: P2-Major
+          scope: namespace

@@ -1,0 +1,58 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-argo-workflow-manifests"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    chart: {{ .Values.global.raw.helm.chart }}
+    repoURL: {{ default .Values.global.helm.repository .Values.global.raw.helm.repository }}
+    targetRevision: {{ .Values.global.raw.helm.targetRevision }}
+    plugin:
+      env:
+        - name: HELM_RELEASE_NAME
+          value: "argo-workflow-manifests"
+        - name: HELM_VALUES
+          value: |
+            resources:
+              - apiVersion: v1
+                kind: Secret
+                metadata:
+                  name: argo-controller-storage-credentials
+                  namespace: {{ include "argoWorkflow.namespace" . }}
+                  labels:
+                    app.kubernetes.io/name: "argo-workflow-manifests"
+                    app.kubernetes.io/instance: "{{ .Values.global.cluster }}"
+                    app.kubernetes.io/component: auth
+                    app.kubernetes.io/part-of: {{ include "argoWorkflow.namespace" . }}
+                    app.kubernetes.io/managed-by: argo
+                    helm.sh/chart: {{ printf "%s-%s" .Chart.Name .Chart.Version }}
+                type: Opaque
+                data:
+                  root-user: {{ required "argoWorkflow.workflow.storageAccount.name is required" .Values.components.argoWorkflow.workflow.storageAccount.name| b64enc }}
+                  root-password: {{ required "argoWorkflow.workflow.storageAccount.primaryAccessKey is required" .Values.components.argoWorkflow.workflow.storageAccount.primaryAccessKey | b64enc }}
+              - apiVersion: v1
+                kind: Secret
+                metadata:
+                  name: argo-server-sso
+                  namespace: {{ include "argoWorkflow.namespace" . }}
+                  labels:
+                    app.kubernetes.io/name: "argo-workflow-manifests"
+                    app.kubernetes.io/instance: "{{ .Values.global.cluster }}"
+                    app.kubernetes.io/component: auth
+                    app.kubernetes.io/part-of: {{ include "argoWorkflow.namespace" . }}
+                    app.kubernetes.io/managed-by: argo
+                    helm.sh/chart: {{ printf "%s-%s" .Chart.Name .Chart.Version }}
+                type: Opaque
+                data:
+                  clientId: {{ required "argoWorkflow.workflow.azure.clientId is required" .Values.components.argoWorkflow.workflow.sso.clientId | b64enc }}
+                  clientSecret: {{ required "argoWorkflow.workflow.azure.clientSecret is required" .Values.components.argoWorkflow.workflow.sso.clientSecret | b64enc }}
+  destination:
+    name: {{ .Values.global.cluster }}
+    namespace: platform-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

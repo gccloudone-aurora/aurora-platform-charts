@@ -1,0 +1,46 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-bill-of-landing-netpol"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    chart: {{ .Values.global.raw.helm.chart }}
+    repoURL: {{ default .Values.global.helm.repository .Values.global.raw.helm.repository }}
+    targetRevision: {{ .Values.global.raw.helm.targetRevision }}
+    helm:
+      releaseName: kubecost-netpol
+      values: |
+        resources:
+          - apiVersion: networking.k8s.io/v1
+            kind: NetworkPolicy
+            metadata:
+              name: allow-egress-to-incluster-kubecost-from-bill-of-landing
+              namespace: bill-of-landing-system
+            spec:
+              egress:
+                - ports:
+                    - port: 9090
+                      protocol: TCP
+                  to:
+                    - namespaceSelector:
+                        matchLabels:
+                          kubernetes.io/metadata.name: kubecost-system
+                      podSelector:
+                        matchLabels:
+                          app: cost-analyzer
+              podSelector:
+                matchLabels:
+                  app.kubernetes.io/instance: bill-of-landing
+                  app.kubernetes.io/name: bol
+              policyTypes:
+                - Egress
+  destination:
+    name: {{ .Values.global.cluster }}
+    namespace: platform-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

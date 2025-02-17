@@ -1,0 +1,127 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-argo-workflow"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    chart: {{ default "argo-workflows" .Values.components.argoWorkflow.workflow.helm.chart }}
+    {{- if .Values.components.argoWorkflow.workflow.helm.repository  }}
+    repoURL: {{ .Values.components.argoWorkflow.workflow.helm.repository }}
+    {{- else }}
+    repoURL: {{ default "https://argoproj.github.io/argo-helm" .Values.global.helm.repository }}
+    {{- end }}
+    targetRevision: {{ default "0.42.1" .Values.components.argoWorkflow.workflow.helm.targetRevision }}
+    plugin:
+      env:
+        - name: HELM_RELEASE_NAME
+          value: "argo-workflow"
+        - name: HELM_VALUES
+          value: |
+            images:
+              pullPolicy: {{ .Values.components.argoWorkflow.workflow.images.pullPolicy }}
+              pullSecrets: {{ toYaml .Values.components.argoWorkflow.workflow.images.pullSecrets | nindent 16 }}
+
+            controller:
+              image: {{ default "{}" (include "argoWorkflow.controller.image" .) | nindent 16 }}
+
+              replicas: {{ .Values.components.argoWorkflow.workflow.controller.replicas }}
+              resources: {{ toYaml .Values.components.argoWorkflow.workflow.controller.resources | nindent 16 }}
+
+              nodeSelector: {{ toYaml .Values.components.argoWorkflow.workflow.controller.nodeSelector | nindent 16 }}
+              tolerations: {{ toYaml .Values.components.argoWorkflow.workflow.controller.tolerations | nindent 16 }}
+              affinity: {{ toYaml .Values.components.argoWorkflow.workflow.controller.affinity | nindent 16 }}
+
+              containerRuntimeExecutor: emissary
+
+              priorityClassName: {{ .Values.components.argoWorkflow.priorityClassName }}
+
+            executor:
+              image: {{ default "{}" (include "argoWorkflow.executor.image" .) | nindent 16 }}
+              resources: {{ toYaml .Values.components.argoWorkflow.workflow.controller.resources | nindent 16 }}
+
+            server:
+              ingress:
+                enabled: true
+                https: true
+                hosts:
+                  - "argo-workflows.{{ .Values.global.ingressDomain }}"
+                paths:
+                  - /
+                pathType: Prefix
+                annotations: {}
+                ingressClassName: "{{ .Values.global.ingressClassName }}"
+
+              image: {{ default "{}" (include "argoWorkflow.server.image" .) | nindent 16 }}
+
+              replicas: {{ .Values.components.argoWorkflow.workflow.server.replicas }}
+              resources: {{ toYaml .Values.components.argoWorkflow.workflow.server.resources | nindent 16 }}
+
+              nodeSelector: {{ toYaml .Values.components.argoWorkflow.workflow.server.nodeSelector | nindent 16 }}
+              tolerations: {{ toYaml .Values.components.argoWorkflow.workflow.server.tolerations | nindent 16 }}
+              affinity: {{ toYaml .Values.components.argoWorkflow.workflow.server.affinity | nindent 16 }}
+
+              priorityClassName: {{ .Values.components.argoWorkflow.priorityClassName }}
+
+              authModes: ["sso", "client"]
+
+              extraEnv:
+                - name: "SSO_DELEGATE_RBAC_TO_NAMESPACE"
+                  value: "true"
+                                   
+              sso:
+                enabled: true
+                issuer: {{ .Values.components.argoWorkflow.workflow.sso.issuerUrl | default (printf "https://login.microsoftonline.com/%s/v2.0" .Values.global.tenantId) | quote }}
+                clientId:
+                  name: argo-server-sso
+                  key: clientId
+                clientSecret:
+                  name: argo-server-sso
+                  key: clientSecret
+                redirectUrl: "https://argo-workflows.{{ .Values.global.ingressDomain }}/oauth2/callback"
+                rbac:
+                  enabled: true
+                scopes:
+                  - openid
+                  - profile
+                  - email
+
+            workflow:
+              serviceAccount:
+                create: true
+                name: "argo-workflows"
+              rbac:
+                create: true
+
+            useDefaultArtifactRepo: true
+            useStaticCredentials: true
+
+            artifactRepository:
+              archiveLogs: true
+              azure:
+                endpoint: {{ required "argoWorkflow.workflow.storageAccount.primaryBlobEndpoint is required" .Values.components.argoWorkflow.workflow.storageAccount.primaryBlobEndpoint }}
+                container: workflows
+                # blob: /
+                # accountKeySecret is a secret selector.
+                # It references the k8s secret named 'my-azure-storage-credentials'.
+                # This secret is expected to have have the key 'account-access-key',
+                # containing the base64 encoded credentials to the storage account.
+                #
+                # If a managed identity has been assigned to the machines running the
+                # workflow (e.g., https://docs.microsoft.com/en-us/azure/aks/use-managed-identity)
+                # then accountKeySecret is not needed, and useSDKCreds should be
+                # set to true instead:
+                useSDKCreds: false
+                accountKeySecret:
+                  name: argo-controller-storage-credentials
+                  key: root-password
+
+  destination:
+    name: {{ .Values.global.cluster }}
+    namespace: {{ include "argoWorkflow.namespace" . }}
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

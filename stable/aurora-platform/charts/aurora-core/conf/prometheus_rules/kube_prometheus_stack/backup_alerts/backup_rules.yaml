@@ -1,0 +1,20 @@
+groups:
+  - name: backup.rules
+    rules:
+      - alert: BackupJobFailed
+        expr: sum by (job_name,namespace) (kube_job_failed{job_name=~".*backup.*"}) == 1
+        for: 2m
+        labels:
+          severity: P2-Major
+          scope: cluster
+          resolves: never
+        annotations:
+          message: 'Job {{ $$labels.namespace }}/{{ $$labels.job_name }} failed to complete.  Removing the failed job after investigation should clear this alert.'
+      - alert: GitlabBackupIncomplete
+        expr: '(sum by(namespace, job_name) (kube_job_spec_completions{job_name=~"gitlab-backup.*"}) unless sum by(namespace, job_name) (kube_job_complete == 1)) unless sum by(namespace, job_name) (kube_job_failed == 1)'
+        for: 48h
+        labels:
+          severity: P3-Minor
+          scope: namespace
+        annotations:
+          message: 'Job {{ $$labels.namespace }}/{{ $$labels.job_name }} is taking more than 48 hours to complete.'

@@ -1,0 +1,44 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-gatekeeper-enforce-six-digit-wid"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+  annotations:
+    kubernetes.io/description: |
+      Enforces that the Workload ID (WID) label on a namespace is six digits.
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    chart: {{ .Values.global.raw.helm.chart }}
+    repoURL: {{ default .Values.global.helm.repository .Values.global.raw.helm.repository }}
+    targetRevision: {{ .Values.global.raw.helm.targetRevision }}
+    helm:
+      releaseName: gatekeeper-enforce-six-digit-wid
+      values: |
+        resources:
+          - apiVersion: constraints.gatekeeper.sh/v1beta1
+            kind: MetadataRestrictions
+            metadata:
+              name: enforce-six-digit-wid
+            spec:
+              match:
+                kinds:
+                  - apiGroups:
+                      - ''
+                    kinds:
+                      - Namespace
+                excludedNamespaces: {{ toYaml .Values.components.gatekeeper.constraints.enforceSixDigitWid.excludedNamespaces | nindent 18 }}
+              parameters:
+                labels:
+                  - allowedRegex: {{ .Values.components.gatekeeper.constraints.enforceSixDigitWid.allowedRegex | toYaml | nindent 20  }}
+                    allowedValues: {{ .Values.components.gatekeeper.constraints.enforceSixDigitWid.allowedValues | toYaml | nindent 20 }}
+                    key: finance.ssc-spc.gc.ca/workload-id
+              enforcementAction: {{ .Values.components.gatekeeper.constraints.enforceSixDigitWid.enforcementAction }}
+  destination:
+    name: {{ .Values.global.cluster }}
+    namespace: platform-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

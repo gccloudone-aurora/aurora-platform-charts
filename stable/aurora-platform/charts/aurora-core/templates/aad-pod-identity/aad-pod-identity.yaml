@@ -1,0 +1,84 @@
+{{/* Common values for this configuration which are used in multiple places to prevent missing a change. */}}
+
+{{/* The version of aad-pod-identity to prevent setting in multiple places. */}}
+{{- $defaultVersion := "v1.8.17" }}
+
+{{/* The namespace to */}}
+{{- $namespace := "aad-pod-identity-system" }}
+
+
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-aad-pod-identity"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    chart: {{ default "aad-pod-identity" .Values.components.aadPodIdentity.helm.chart }}
+    {{- if .Values.components.aadPodIdentity.helm.repository }}
+    repoURL: {{ .Values.components.aadPodIdentity.helm.repository }}
+    {{- else }}
+    repoURL: {{ default "https://raw.githubusercontent.com/Azure/aad-pod-identity/master/charts" .Values.global.helm.repository }}
+    {{- end }}
+    targetRevision: {{ default "4.1.18" .Values.components.aadPodIdentity.helm.targetRevision }}
+    helm:
+      releaseName: aad-pod-identity
+      values: |
+        image: {{ default "{}" (include "aad-pod-identity.image" .) | nindent 10 }}
+        imagePullSecrets: {{ toYaml .Values.components.aadPodIdentity.imagePullSecrets | nindent 10 }}
+        forceNamespaced: "true"
+
+        rbac:
+          enabled: true
+          # NMI requires permissions to get secrets when service principal (type: 1) is used in AzureIdentity.
+          # If using only MSI (type: 0) in AzureIdentity, secret get permission can be disabled by setting this to false.
+          allowAccessToSecrets: false
+
+        mic:
+          image: {{ default "mic" .Values.components.aadPodIdentity.mic.image }}
+          tag: {{ default $defaultVersion .Values.components.aadPodIdentity.mic.tag }}
+
+          replicas: {{ .Values.components.aadPodIdentity.mic.replicas }}
+          resources: {{ toYaml .Values.components.aadPodIdentity.mic.resources | nindent 12 }}
+
+          # log level. Uses V logs (klog)
+          logVerbosity: {{ default "0" .Values.components.aadPodIdentity.mic.logging.verbosity }}
+          loggingFormat: {{ default "" .Values.components.aadPodIdentity.mic.logging.format }}
+
+          nodeSelector: {{ toYaml .Values.components.aadPodIdentity.mic.nodeSelector | nindent 12 }}
+          tolerations: {{ toYaml .Values.components.aadPodIdentity.mic.tolerations | nindent 12 }}
+          affinity: {{ toYaml .Values.components.aadPodIdentity.mic.affinity | nindent 12 }}
+          podDisruptionBudget: {{ toYaml .Values.components.aadPodIdentity.mic.podDisruptionBudget | nindent 12 }}
+          priorityClassName: {{ .Values.components.aadPodIdentity.mic.priorityClassName }}
+
+          leaderElection:
+            namespace: {{ default "default" $namespace }}
+
+        nmi:
+          # https://azure.github.io/aad-pod-identity/docs/configure/feature_flags/#metadata-header-required-flag
+          metadataHeaderRequired: true
+
+          image: {{ default "nmi" .Values.components.aadPodIdentity.nmi.image }}
+          tag: {{ default $defaultVersion .Values.components.aadPodIdentity.nmi.tag }}
+
+          # log level. Uses V logs (klog)
+          logVerbosity: {{ default "0" .Values.components.aadPodIdentity.nmi.logging.verbosity }}
+          loggingFormat: {{ default "" .Values.components.aadPodIdentity.nmi.logging.format }}
+
+          resources: {{ toYaml .Values.components.aadPodIdentity.nmi.resources | nindent 12 }}
+          nodeSelector: {{ toYaml .Values.components.aadPodIdentity.nmi.nodeSelector | nindent 12 }}
+          tolerations: {{ toYaml .Values.components.aadPodIdentity.nmi.tolerations | nindent 12 }}
+          affinity: {{ toYaml .Values.components.aadPodIdentity.nmi.affinity | nindent 12 }}
+          priorityClassName: {{ .Values.components.aadPodIdentity.nmi.priorityClassName }}
+
+          micNamespace: {{ $namespace }}
+
+  destination:
+    name: {{ .Values.global.cluster }}
+    namespace: {{ $namespace }}
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

@@ -1,0 +1,64 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-vault-agent"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    chart: {{ default "vault" .Values.components.vaultAgent.helm.chart }}
+    {{- if .Values.components.vaultAgent.helm.repository  }}
+    repoURL: {{ .Values.components.vaultAgent.helm.repository  }}
+    {{- else }}
+    repoURL: {{ default "https://helm.releases.hashicorp.com" .Values.global.helm.repository }}
+    {{- end }}
+    targetRevision: {{ default "0.22.0" .Values.components.vaultAgent.helm.targetRevision }}
+    helm:
+      releaseName: vault-agent
+      values: |
+        global:
+          enabled: false
+          imagePullSecrets: {{ toYaml .Values.components.vaultAgent.imagePullSecrets | nindent 12 }}
+
+        injector:
+          enabled: true
+          image: {{ default "{}" (include "vaultAgent.injector.image" .) | nindent 12 }}
+
+          replicas: {{ .Values.components.vaultAgent.injector.replicas }}
+          resources: {{ toYaml .Values.components.vaultAgent.injector.resources | nindent 12 }}
+
+          nodeSelector: {{ toYaml .Values.components.vaultAgent.injector.nodeSelector | nindent 12 }}
+          tolerations: {{ toYaml .Values.components.vaultAgent.injector.tolerations | nindent 12 }}
+          affinity: {{ toYaml .Values.components.vaultAgent.injector.affinity | nindent 12 }}
+
+          agentImage: {{ default "{}" (include "vaultAgent.injector.agentImage" .) | nindent 12 }}
+
+          agentDefaults:
+            cpuLimit: {{ .Values.components.vaultAgent.injector.agentDefaults.cpuLimit }}
+            cpuRequest: {{ .Values.components.vaultAgent.injector.agentDefaults.cpuRequest }}
+            memLimit: {{ .Values.components.vaultAgent.injector.agentDefaults.memLimit }}
+            memRequest: {{ .Values.components.vaultAgent.injector.agentDefaults.memRequest }}
+
+          extraLabels:
+            {{- if .Values.components.vaultAgent.injector.annotations.istioInject.disable }}
+            sidecar.istio.io/inject: 'false'
+            {{- end }}
+
+          externalVaultAddr: {{ required "vaultAgent.injector.externalVaultAddr is required" .Values.components.vaultAgent.injector.externalVaultAddr }}
+          {{- if .Values.components.vaultAgent.injector.authPath }}
+          authPath: {{ .Values.components.vaultAgent.injector.authPath }}
+          {{- else }}
+          authPath: "auth/{{ .Values.global.cluster }}"
+          {{- end }}
+
+          revokeOnShutdown: true
+
+          priorityClassName: {{ .Values.components.vaultAgent.priorityClassName }}
+  destination:
+    name: {{ .Values.global.cluster }}
+    namespace: vault-agent-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

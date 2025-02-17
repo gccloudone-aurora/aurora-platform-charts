@@ -1,0 +1,78 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-vault-agent-netpol"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    chart: {{ .Values.global.raw.helm.chart }}
+    repoURL: {{ default .Values.global.helm.repository .Values.global.raw.helm.repository }}
+    targetRevision: {{ .Values.global.raw.helm.targetRevision }}
+    plugin:
+      env:
+        - name: HELM_RELEASE_NAME
+          value: "vault-agent-netpol"
+        - name: HELM_VALUES
+          value: |
+            resources:
+              - apiVersion: cilium.io/v2
+                kind: CiliumClusterwideNetworkPolicy
+                metadata:
+                  name: allow-egress-to-vault-from-vaultinjectedpods
+                spec:
+                  endpointSelector:
+                    matchLabels:
+                      secrets.ssc-spc.gc.ca/vault: "yes"
+                  egress:
+                  {{- range (required "global.vaultCidrs is required" .Values.global.vaultCidrs) }}
+                    - toCIDRSet:
+                        - cidr: {{ . | quote }}
+                      toPorts:
+                        - ports:
+                            - port: "443"
+                  {{- end }}
+              - apiVersion: networking.k8s.io/v1
+                kind: NetworkPolicy
+                metadata:
+                  name: allow-same-namespace
+                  namespace: vault-agent-system
+                spec:
+                  podSelector: {}
+                  policyTypes:
+                    - Ingress
+                    - Egress
+                  ingress:
+                    - from:
+                      - podSelector: {}
+                  egress:
+                    - to:
+                      - podSelector: {}
+              - apiVersion: networking.k8s.io/v1
+                kind: NetworkPolicy
+                metadata:
+                  name: allow-ingress-from-apiserver-to-vault-agent-webhook
+                  namespace: vault-agent-system
+                spec:
+                  ingress:
+                  - from:
+                    - ipBlock:
+                        cidr: {{ required "global.apiServerCidr is required" .Values.global.apiServerCidr | quote }}
+                    - namespaceSelector:
+                        matchLabels:
+                          kubernetes.io/metadata.name: kube-system
+                      podSelector:
+                        matchLabels:
+                          app: konnectivity-agent
+                  podSelector:
+                    matchLabels: {}
+                  policyTypes:
+                  - Ingress
+  destination:
+    name: {{ .Values.global.cluster }}
+    namespace: platform-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

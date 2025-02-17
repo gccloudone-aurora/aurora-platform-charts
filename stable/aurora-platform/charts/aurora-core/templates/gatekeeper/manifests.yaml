@@ -1,0 +1,44 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-gatekeeper-manifests"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    chart: {{ .Values.global.raw.helm.chart }}
+    repoURL: {{ default .Values.global.helm.repository .Values.global.raw.helm.repository }}
+    targetRevision: {{ .Values.global.raw.helm.targetRevision }}
+    helm:
+      releaseName: gatekeeper-manifests
+      values: |
+        resources:
+          - apiVersion: config.gatekeeper.sh/v1alpha1
+            kind: Config
+            metadata:
+              name: config
+              namespace: gatekeeper-system
+            spec:
+              sync:
+                syncOnly:
+                - kind: Namespace
+                  version: v1
+                - kind: Service
+                  version: v1
+                - group: networking.k8s.io
+                  kind: Ingress
+                  version: v1
+                - group: "policy"
+                  version: "v1"
+                  kind: "PodDisruptionBudget"
+                - group: "storage.k8s.io"
+                  version: "v1"
+                  kind: "StorageClass"
+  destination:
+    name: {{ .Values.global.cluster }}
+    namespace: platform-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

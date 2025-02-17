@@ -1,0 +1,45 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-velero-manifests"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    chart: {{ .Values.global.raw.helm.chart }}
+    repoURL: {{ default .Values.global.helm.repository .Values.global.raw.helm.repository }}
+    targetRevision: {{ .Values.global.raw.helm.targetRevision }}
+    plugin:
+      env:
+      - name: HELM_RELEASE_NAME
+        value: velero-manifests
+      - name: HELM_VALUES
+        value: |
+          resources:
+            - apiVersion: "aadpodidentity.k8s.io/v1"
+              kind: AzureIdentity
+              metadata:
+                annotations:
+                  aadpodidentity.k8s.io/Behavior: "namespaced"
+                name: {{ .Values.components.velero.aadPodIdentity.name }}
+                namespace: velero-system
+              spec:
+                clientID: {{ required "velero.aadPodIdentity.azureManagedIdentity.clientId is required" .Values.components.velero.aadPodIdentity.azureManagedIdentity.clientId | quote }}
+                resourceID: {{ required "velero.aadPodIdentity.azureManagedIdentity.resourceId is required" .Values.components.velero.aadPodIdentity.azureManagedIdentity.resourceId | quote }}
+                type: 0
+            - apiVersion: "aadpodidentity.k8s.io/v1"
+              kind: AzureIdentityBinding
+              metadata:
+                name: {{ .Values.components.velero.aadPodIdentity.name }}
+                namespace: velero-system
+              spec:
+                azureIdentity: {{ .Values.components.velero.aadPodIdentity.name }}
+                selector: {{ .Values.components.velero.aadPodIdentity.name }}
+  destination:
+    name: {{ .Values.global.cluster }}
+    namespace: platform-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

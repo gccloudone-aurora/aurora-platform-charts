@@ -1,0 +1,128 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-kubecost"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    chart: {{ default "cost-analyzer" .Values.components.kubecost.helm.chart }}
+    {{- if .Values.global.helm.repository }}
+    repoURL: {{ default .Values.components.kubecost.helm.repository .Values.global.helm.repository }}
+    {{- else }}
+    repoURL: {{ default "https://kubecost.github.io/cost-analyzer/" .Values.components.kubecost.helm.repository }}
+    {{- end }}
+    targetRevision: {{ default "1.106.0" .Values.components.kubecost.helm.targetRevision }}
+    plugin:
+      env:
+        - name: HELM_RELEASE_NAME
+          value: "kubecost"
+        - name: HELM_VALUES
+          value: |
+            global:
+              grafana:
+                enabled: false
+                domainName: kube-prometheus-stack-grafana.prometheus-system
+                proxy: false
+
+              prometheus:
+                enabled: false
+                fqdn: http://kube-prometheus-stack-prometheus.prometheus-system.svc:9090
+
+            imagePullSecrets: {{ toYaml .Values.components.kubecost.imagePullSecrets | nindent 14 }}
+
+            nodeSelector: {{ toYaml .Values.components.kubecost.nodeSelector | nindent 14 }}
+            tolerations: {{ toYaml .Values.components.kubecost.tolerations | nindent 14 }}
+            affinity: {{ toYaml .Values.components.kubecost.affinity | nindent 14 }}
+
+            kubecostToken: {{ required "kubecost.token is required" .Values.components.kubecost.token | quote }}
+
+            ingress:
+              enabled: true
+              hosts:
+              - "kubecost.{{ .Values.global.ingressDomain }}"
+              paths:
+              - /
+              pathType: Prefix
+              annotations: {}
+              ingressClassName: "{{ .Values.global.ingressClassName }}"
+
+            kubecostFrontend:
+              {{- default "{}" (include "kubecost.frontend.image" .) | nindent 14 }}
+              resources: {{ toYaml .Values.components.kubecost.frontend.resources | nindent 16 }}
+
+            kubecostMetrics:
+              exporter:
+                priorityClassName: {{ .Values.components.kubecost.priorityClassName }}
+
+            kubecostModel:
+              {{- default "{}" (include "kubecost.costModel.image" .) | nindent 14 }}
+              resources: {{ toYaml .Values.components.kubecost.costModel.resources | nindent 16 }}
+
+            networkCosts:
+              {{- default "{}" (include "kubecost.networkCosts.image" .) | nindent 14 }}
+              resources: {{ toYaml .Values.components.kubecost.networkCosts.resources | nindent 16 }}
+              nodeSelector: {{ toYaml .Values.components.kubecost.networkCosts.nodeSelector | nindent 16 }}
+              tolerations: {{ toYaml .Values.components.kubecost.networkCosts.tolerations | nindent 16 }}
+              affinity: {{ toYaml .Values.components.kubecost.networkCosts.affinity | nindent 16 }}
+              priorityClassName: {{ .Values.components.kubecost.priorityClassName }}
+
+            clusterController:
+              {{- default "{}" (include "kubecost.clusterController.image" .) | nindent 14 }}
+
+            grafana:
+              sidecar:
+                dashboards:
+                  enabled: true
+                datasources:
+                  enabled: false
+
+            prometheus:
+              nodeExporter:
+                enabled: false
+              kubeStateMetrics:
+                enabled: false
+
+            prometheusRule:
+              enabled: true
+
+            serviceMonitor:
+              enabled: true
+              additionalLabels: {}
+              networkCosts:
+                enabled: false
+
+            kubecostProductConfigs:
+              clusterName: "{{ .Values.global.cluster }}"
+              clusterProfile: {{ .Values.components.kubecost.clusterProfile | default "production" | quote }}
+              currencyCode: "CAD"
+              azureBillingRegion: CA
+              azureSubscriptionID: {{ .Values.components.kubecost.azure.subscriptionId | default .Values.global.subscriptionId | quote }}
+              azureTenantID: {{ .Values.components.kubecost.azure.tenantId | default .Values.global.tenantId | quote }}
+              azureClientID: {{ required "kubecost.azure.clientId is required" .Values.components.kubecost.azure.clientId | quote }}
+              azureClientPassword: {{ required "kubecost.azure.clientPassword is required" .Values.components.kubecost.azure.clientPassword | quote }}
+              azureOfferDurableID: MS-AZR-0017P
+              createServiceKeySecret: true
+              serviceKeySecretName: cloud-service-key
+              grafanaURL: "https://grafana.{{ .Values.global.ingressDomain }}"
+              productKey:
+                enabled: true
+                key: {{ required "kubecost.productKey is required" .Values.components.kubecost.productKey | quote }}
+              labelMappingConfigs:
+                enabled: true
+                owner_label: "project.ssc-spc.gc.ca/lead"
+                team_label: "project.ssc-spc.gc.ca/team"
+                department_label: "project.ssc-spc.gc.ca/division"
+                product_label: "finance.ssc-spc.gc.ca/workload-id"
+                environment_label: "project.ssc-spc.gc.ca/environment"
+              gpuLabel: "node.ssc-spc.gc.ca/use"
+              gpuLabelValue: "gpu"
+
+  destination:
+    name: {{ .Values.global.cluster }}
+    namespace: kubecost-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

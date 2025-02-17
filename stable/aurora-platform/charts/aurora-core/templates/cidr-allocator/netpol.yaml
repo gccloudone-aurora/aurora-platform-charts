@@ -1,0 +1,81 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-cidr-allocator-netpol"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    chart: {{ .Values.global.raw.helm.chart }}
+    repoURL: {{ default .Values.global.helm.repository .Values.global.raw.helm.repository }}
+    targetRevision: {{ .Values.global.raw.helm.targetRevision }}
+    helm:
+      releaseName: cidr-allocator-netpol
+      values: |
+        resources:
+          - apiVersion: networking.k8s.io/v1
+            kind: NetworkPolicy
+            metadata:
+              name: allow-ingress-from-prometheus-to-cidr-allocator
+              namespace: cidr-allocator-system
+            spec:
+              ingress:
+              - from:
+                - namespaceSelector:
+                    matchLabels:
+                      namespace.ssc-spc.gc.ca/purpose: system
+                      kubernetes.io/metadata.name: prometheus-system
+                  podSelector:
+                    matchLabels:
+                      app.kubernetes.io/name: prometheus
+                      app.kubernetes.io/instance: kube-prometheus-stack-prometheus
+              podSelector:
+                matchLabels:
+                  app.kubernetes.io/name: cidr-allocator
+                  app.kubernetes.io/instance: cidr-allocator
+              policyTypes:
+              - Ingress
+          - apiVersion: networking.k8s.io/v1
+            kind: NetworkPolicy
+            metadata:
+              name: allow-same-namespace
+              namespace: cidr-allocator-system
+            spec:
+              podSelector: {}
+              policyTypes:
+                - Ingress
+                - Egress
+              ingress:
+                - from:
+                  - podSelector: {}
+              egress:
+                - to:
+                  - podSelector: {}
+          - apiVersion: networking.k8s.io/v1
+            kind: NetworkPolicy
+            metadata:
+              name: allow-ingress-from-apiserver-to-cidr-allocator
+              namespace: cidr-allocator-system
+            spec:
+              ingress:
+              - from:
+                - ipBlock:
+                    cidr: {{ required "global.apiServerCidr is required" .Values.global.apiServerCidr | quote }}
+                - namespaceSelector:
+                    matchLabels:
+                      kubernetes.io/metadata.name: kube-system
+                  podSelector:
+                    matchLabels:
+                      app: konnectivity-agent
+              podSelector:
+                matchLabels: {}
+              policyTypes:
+              - Ingress
+  destination:
+    name: {{ .Values.global.cluster }}
+    namespace: platform-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

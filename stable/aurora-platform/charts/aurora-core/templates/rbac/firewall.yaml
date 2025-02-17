@@ -1,0 +1,103 @@
+{{- $namespace := "platform-system" }}
+{{- $serviceAccountName := "firewall-read" }}
+{{- $clusterRoleName := "firewall-read" }}
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-rbac-firewall"
+  annotations:
+    kubernetes.io/description: Configurations required for visibility by the firewalls for the implementation of metadata-based networking policies to be defined.
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    chart: {{ .Values.global.raw.helm.chart }}
+    repoURL: {{ default .Values.global.helm.repository .Values.global.raw.helm.repository }}
+    targetRevision: {{ .Values.global.raw.helm.targetRevision }}
+    helm:
+      releaseName: rbac-firewall
+      values: |
+        resources:
+          - apiVersion: rbac.authorization.k8s.io/v1
+            kind: ClusterRole
+            metadata:
+              name: {{ $clusterRoleName }}
+              annotations:
+                kubernetes.io/description: Permissions required by the firewall to implement metadata-based network policies.
+              labels:
+                app.kubernetes.io/name: rbac-firewall
+                app.kubernetes.io/instance: {{ .Values.global.cluster | quote }}
+                app.kubernetes.io/part-of: rbac-firewall
+                app.kubernetes.io/managed-by: argo
+                helm.sh/chart: {{ printf "%s-%s" .Chart.Name .Chart.Version | quote }}
+            rules:
+              - apiGroups:
+                  - ""
+                resources:
+                  - pods
+                  - namespaces
+                  - nodes
+                  - services
+                verbs:
+                  - list
+                  - get
+                  - watch
+
+          - apiVersion: v1
+            kind: ServiceAccount
+            metadata:
+              name: {{ $serviceAccountName }}
+              annotations:
+                kubernetes.io/description: Permissions required by the firewall to implement metadata-based network policies.
+              labels:
+                app.kubernetes.io/name: rbac-firewall
+                app.kubernetes.io/instance: {{ .Values.global.cluster | quote }}
+                app.kubernetes.io/part-of: rbac-firewall
+                app.kubernetes.io/managed-by: argo
+                helm.sh/chart: {{ printf "%s-%s" .Chart.Name .Chart.Version | quote }}
+            automountServiceAccountToken: false
+
+          - apiVersion: v1
+            kind: Secret
+            metadata:
+              name: firewall-read
+              annotations:
+                kubernetes.io/description: Permissions required by the firewall to implement metadata-based network policies.
+                kubernetes.io/service-account.name: {{ $serviceAccountName }}
+              labels:
+                app.kubernetes.io/name: rbac-firewall
+                app.kubernetes.io/instance: {{ .Values.global.cluster | quote }}
+                app.kubernetes.io/part-of: rbac-firewall
+                app.kubernetes.io/managed-by: argo
+                helm.sh/chart: {{ printf "%s-%s" .Chart.Name .Chart.Version | quote }}
+            type: kubernetes.io/service-account-token
+
+          - apiVersion: rbac.authorization.k8s.io/v1
+            kind: ClusterRoleBinding
+            metadata:
+              name: firewall-read
+              annotations:
+                kubernetes.io/description: Permissions required by the firewall to implement metadata-based network policies.
+              labels:
+                app.kubernetes.io/name: rbac-firewall
+                app.kubernetes.io/instance: {{ .Values.global.cluster | quote }}
+                app.kubernetes.io/part-of: rbac-firewall
+                app.kubernetes.io/managed-by: argo
+                helm.sh/chart: {{ printf "%s-%s" .Chart.Name .Chart.Version | quote }}
+            roleRef:
+              apiGroup: rbac.authorization.k8s.io
+              kind: ClusterRole
+              name: {{ $clusterRoleName }}
+            subjects:
+            - kind: ServiceAccount
+              name: {{ $serviceAccountName }}
+              namespace: {{ $namespace }}
+
+  destination:
+    name: {{ .Values.global.cluster }}
+    namespace: {{ $namespace }}
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

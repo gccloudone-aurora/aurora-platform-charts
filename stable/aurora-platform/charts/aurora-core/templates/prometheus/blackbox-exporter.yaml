@@ -1,0 +1,121 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-prometheus-blackbox-exporter"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    chart: {{ default "prometheus-blackbox-exporter" .Values.components.prometheus.blackboxExporter.helm.chart }}
+    {{- if .Values.components.prometheus.blackboxExporter.helm.repository }}
+    repoURL: {{ .Values.components.prometheus.blackboxExporter.helm.repository }}
+    {{- else }}
+    repoURL: {{ default "https://prometheus-community.github.io/helm-charts" .Values.global.helm.repository }}
+    {{- end }}
+    targetRevision: {{ default "7.1.1" .Values.components.prometheus.blackboxExporter.helm.targetRevision }}
+    helm:
+      releaseName: prometheus-blackbox-exporter
+      values: |
+        image: {{ default "{}" (include "prometheus.blackboxExporter.image" .) | nindent 10 }}
+
+        replicas: {{ .Values.components.prometheus.blackboxExporter.replicas }}
+        resources: {{ toYaml .Values.components.prometheus.blackboxExporter.resources | nindent 10 }}
+
+        nodeSelector: {{ toYaml .Values.components.prometheus.blackboxExporter.nodeSelector | nindent 10 }}
+        tolerations: {{ toYaml .Values.components.prometheus.blackboxExporter.tolerations | nindent 10 }}
+        affinity: {{ toYaml .Values.components.prometheus.blackboxExporter.affinity | nindent 10 }}
+        priorityClassName: {{ .Values.components.prometheus.priorityClassName }}
+
+        service:
+          labels:
+            app: prometheus-blackbox-exporter
+            jobLabel: blackbox-exporter
+
+        pod:
+          labels:
+            app: prometheus-blackbox-exporter
+
+        config:
+          modules:
+            http_2xx:
+              prober: http
+              timeout: 5s
+              http:
+                valid_http_versions: ["HTTP/1.1", "HTTP/2.0"]
+                follow_redirects: true
+                preferred_ip_protocol: "ip4"
+            {{- if .Values.components.prometheus.blackboxExporter.istioIngressGatewayProbes }}
+            istio_ingress_gateway_check:
+              prober: http
+              timeout: 5s
+              http:
+                valid_status_codes: [404]
+                valid_http_versions: ["HTTP/1.1", "HTTP/2.0"]
+                follow_redirects: true
+                fail_if_not_ssl: true
+                preferred_ip_protocol: "ip4"
+                tls_config:
+                  insecure_skip_verify: true
+            {{- end }}
+            {{- range $val := .Values.components.prometheus.blackboxExporter.controlPlaneProbes }}
+            {{ $val.name | replace "-" "_" }}:
+              prober: http
+              timeout: 5s
+              http:
+                valid_http_versions: ["HTTP/1.1", "HTTP/2.0"]
+                follow_redirects: true
+                fail_if_not_ssl: true
+                preferred_ip_protocol: "ip4"
+                fail_if_body_not_matches_regexp:
+                  - '.*readyz check passed.*'
+                tls_config:
+                  insecure_skip_verify: true
+                bearer_token: {{ $val.bearerToken }}
+            {{- end }}
+            {{- with .Values.components.prometheus.blackboxExporter.additionalModules }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+
+        serviceMonitor:
+          enabled: true
+          defaults:
+            labels:
+              app: prometheus-blackbox-exporter
+          targets:
+            - name: grafana
+              url: "https://grafana.{{ .Values.global.ingressDomain }}"
+              interval: 60s
+              scrapeTimeout: 60s
+              module: http_2xx
+            {{- range $val := .Values.components.prometheus.blackboxExporter.istioIngressGatewayProbes }}
+            - name: {{ $val.name }}
+              url: {{ $val.ipAddress }}
+              interval: 60s
+              scrapeTimeout: 60s
+              module: istio_ingress_gateway_check
+            {{- end }}
+            {{- range $val := .Values.components.prometheus.blackboxExporter.controlPlaneProbes }}
+            - name: {{ $val.name }}
+              url: {{ $val.url }}
+              interval: 60s
+              scrapeTimeout: 60s
+              module: {{ $val.name | replace "-" "_" }}
+            {{- end }}
+            {{- with .Values.components.prometheus.blackboxExporter.additionalTargets }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+
+  destination:
+    name: {{ .Values.global.cluster }}
+    namespace: prometheus-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+  # https://github.com/argoproj/argo-cd/issues/11074
+  ignoreDifferences:
+  - group: monitoring.coreos.com
+    kind: ServiceMonitor
+    jqPathExpressions:
+    - .spec.endpoints[]?.metricRelabelings[]?.action

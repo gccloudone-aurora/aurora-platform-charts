@@ -1,0 +1,79 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-gatekeeper"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    chart: {{ default "gatekeeper" .Values.components.gatekeeper.helm.chart }}
+    {{- if .Values.components.gatekeeper.helm.repository }}
+    repoURL: {{ .Values.components.gatekeeper.helm.repository }}
+    {{- else }}
+    repoURL: {{ default "https://open-policy-agent.github.io/gatekeeper/charts" .Values.global.helm.repository }}
+    {{- end }}
+    targetRevision: {{ default "3.12.0" .Values.components.gatekeeper.helm.targetRevision }}
+    helm:
+      releaseName: gatekeeper
+      values: |
+        validatingWebhookFailurePolicy: Fail
+        logLevel: WARNING
+        auditMatchKindOnly: true
+
+        image: {{ default "{}" (include "gatekeeper.image" .) | nindent 10 }}
+        replicas: {{ .Values.components.gatekeeper.replicas }}
+
+        postInstall:
+          labelNamespace:
+            image: {{ default "{}" (include "gatekeeper.postInstall.image" .) | nindent 14 }}
+          probeWebhook:
+            image: {{ default "{}" (include "gatekeeper.postInstall.probeWebhook.image" .) | nindent 14 }}
+          nodeSelector: {{ toYaml .Values.components.gatekeeper.postInstall.nodeSelector | nindent 12 }}
+          tolerations: {{ toYaml .Values.components.gatekeeper.postInstall.tolerations | nindent 12 }}
+          affinity: {{ toYaml .Values.components.gatekeeper.postInstall.affinity | nindent 12 }}
+
+        postUpgrade:
+          labelNamespace:
+            image: {{ default "{}" (include "gatekeeper.postUpgrade.image" .) | nindent 14 }}
+          resources: {{ toYaml .Values.components.gatekeeper.postUpgrade.resources | nindent 12 }}
+          nodeSelector: {{ toYaml .Values.components.gatekeeper.postUpgrade.nodeSelector | nindent 12 }}
+          tolerations: {{ toYaml .Values.components.gatekeeper.postUpgrade.tolerations | nindent 12 }}
+          affinity: {{ toYaml .Values.components.gatekeeper.postUpgrade.affinity | nindent 12 }}
+
+        preUninstall:
+          deleteWebhookConfigurations:
+            image: {{ default "{}" (include "gatekeeper.preUninstall.image" .) | nindent 14 }}
+          resources: {{ toYaml .Values.components.gatekeeper.preUninstall.resources | nindent 12 }}
+          nodeSelector: {{ toYaml .Values.components.gatekeeper.preUninstall.nodeSelector | nindent 12 }}
+          tolerations: {{ toYaml .Values.components.gatekeeper.preUninstall.tolerations | nindent 12 }}
+          affinity: {{ toYaml .Values.components.gatekeeper.preUninstall.affinity | nindent 12 }}
+
+        audit:
+          resources: {{ toYaml .Values.components.gatekeeper.audit.resources | nindent 12 }}
+          nodeSelector: {{ toYaml .Values.components.gatekeeper.audit.nodeSelector | nindent 12 }}
+          tolerations: {{ toYaml .Values.components.gatekeeper.audit.tolerations | nindent 12 }}
+          affinity: {{ toYaml .Values.components.gatekeeper.audit.affinity | nindent 12 }}
+          priorityClassName: {{ .Values.components.gatekeeper.priorityClassName }}
+
+        controllerManager:
+          resources: {{ toYaml .Values.components.gatekeeper.controllerManager.resources | nindent 12 }}
+          nodeSelector: {{ toYaml .Values.components.gatekeeper.controllerManager.nodeSelector | nindent 12 }}
+          tolerations: {{ toYaml .Values.components.gatekeeper.controllerManager.tolerations | nindent 12 }}
+          affinity: {{ toYaml .Values.components.gatekeeper.controllerManager.affinity | nindent 12 }}
+          exemptNamespaces: {{ toYaml .Values.components.gatekeeper.controllerManager.exemptNamespaces | nindent 12 }}
+          priorityClassName: {{ .Values.components.gatekeeper.priorityClassName }}
+
+        crds:
+          resources: {{ toYaml .Values.components.gatekeeper.crds.resources | nindent 12 }}
+          nodeSelector: {{ toYaml .Values.components.gatekeeper.crds.nodeSelector | nindent 12 }}
+          tolerations: {{ toYaml .Values.components.gatekeeper.crds.tolerations | nindent 12 }}
+          affinity: {{ toYaml .Values.components.gatekeeper.crds.affinity | nindent 12 }}
+
+  destination:
+    name: {{ .Values.global.cluster }}
+    namespace: gatekeeper-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

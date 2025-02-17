@@ -1,0 +1,63 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-istio-istiod"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    chart: {{ default "istiod" .Values.components.istio.istiod.helm.chart }}
+    {{- if .Values.components.istio.istiod.helm.repository }}
+    repoURL: {{ .Values.components.istio.istiod.helm.repository }}
+    {{- else }}
+    repoURL: {{ default "https://istio-release.storage.googleapis.com/charts" .Values.global.helm.repository }}
+    {{- end }}
+    targetRevision: {{ default "1.16.1" .Values.components.istio.istiod.helm.targetRevision }}
+    helm:
+      releaseName: istiod
+      values: |
+        pilot:
+          {{- default "{}" (include "istiod.pilot.image" .) | nindent 10 }}
+          replicaCount: {{ .Values.components.istio.istiod.pilot.replicas }}
+          resources: {{ toYaml .Values.components.istio.istiod.pilot.resources | nindent 12 }}
+          nodeSelector: {{ toYaml .Values.components.istio.istiod.pilot.nodeSelector | nindent 12 }}
+          tolerations: {{ toYaml .Values.components.istio.istiod.pilot.tolerations | nindent 12 }}
+          affinity: {{ toYaml .Values.components.istio.istiod.pilot.affinity | nindent 12 }}
+          autoscaleEnabled: true
+          autoscaleMin: 2
+          autoscaleMax: 5
+          enableProtocolSniffingForInbound: false
+          enableProtocolSniffingForOutbound: false
+          env:
+            PILOT_HTTP10: 'true'
+            PILOT_JWT_ENABLE_REMOTE_JWKS: 'envoy'
+
+        global:
+          {{- default "{}" (include "istiod.image" .) | nindent 10 }}
+          defaultResources: {{ toYaml .Values.components.istio.istiod.resources | nindent 14 }}
+          priorityClassName: {{ .Values.components.istio.istiod.priorityClassName }}
+
+          proxy:
+            {{- default "{}" (include "istiod.proxy.image" .) | nindent 12 }}
+            resources: {{ toYaml .Values.components.istio.istiod.proxy.resources | nindent 14 }}
+            holdApplicationUntilProxyStarts: true
+
+  destination:
+    name: '{{ .Values.global.cluster }}'
+    namespace: istio-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+  ignoreDifferences:
+  # The webhook's failurePolicy changes from Ignore to Fail
+  # afer the deployment has completed.
+  - group: admissionregistration.k8s.io
+    kind: MutatingWebhookConfiguration
+    name: istio-sidecar-injector
+    jsonPointers:
+    - /webhooks/0/clientConfig/caBundle
+    - /webhooks/1/clientConfig/caBundle
+    - /webhooks/2/clientConfig/caBundle
+    - /webhooks/3/clientConfig/caBundle

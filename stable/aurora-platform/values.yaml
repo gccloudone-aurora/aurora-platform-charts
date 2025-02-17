@@ -1,0 +1,113 @@
+global:
+  helm: {}
+    # Override all Helm applications to pull
+    # their helm chart from the following
+    # repository.
+    #
+    # You can override specific charts below
+    # in the components section.
+    # repository: https://myrepo.example.ca
+
+  container: {}
+    # Override all applications to pull
+    # their container from the following
+    # registry.
+    #
+    # You can override specific charts below
+    # in the components section.
+    # registry: artifactory.example.ca
+
+  namespace:
+    helm:
+      chart: "aurora-namespace"
+      targetRevision: "0.0.1"
+      repository: "https://artifactory.ssc-spc.gc.ca/artifactory/gccloudone-aurora-helm-local"
+
+  raw:
+    helm:
+      chart: "raw"
+      targetRevision: "0.0.1"
+      repository: "https://artifactory.ssc-spc.gc.ca/artifactory/gccloudone-aurora-helm-local"
+
+  # Cluster name for the Application targets.
+  cluster: in-cluster
+
+  # Which project to place applications in.
+  # project: aurora
+
+  # Ingress Domain
+  ingressDomain: example.ca
+
+  # The Kubernetes API Server
+  apiServerCidr: "192.0.2.10/32"
+
+  # The Azure Metadata API
+  azureMetadataApiCidr: "169.254.169.254/32"
+
+  # Alert Manager
+  alertManagerCidrs: ["192.0.2.10/32"]
+
+  # Logging
+  loggingCidrs: ["192.0.2.10/32"]
+
+  # Vault
+  vaultCidrs: ["192.0.2.10/32"]
+
+  # Ingress Class Name
+  # ingressClassName: ingress-istio-controller
+
+  # The Azure subscription ID used for the cluster
+  # subscriptionId: ""
+
+  # The Azure tenant ID used for the cluster
+  # tenantId: ""
+
+  # Load Balancer Subnet Name for all Load Balancers
+  # load_balancer_subnet_name: ""
+
+  # child values import via dependencies
+  # imports:
+    # app:
+      # Used in cases where a subchart's component depends on the aurora-app subchart being enabled
+      # enabled: false
+    # mgmt:
+      # Used in cases where a subchart's component depends on the aurora-mgmt subchart being enabled
+      # enabled: false
+core:
+  enabled: true
+  components: {}
+    # aadPodIdentity: {}
+    # certManager: {}
+    # cidrAllocator: {}
+    # cilium: {}
+    # auroraController: {}
+    # fluentOperator: {}
+    # gatekeeper: {}
+    # kubecost: {}
+    # kubernetesEventExporter: {}
+    # ntp: {}
+    # podtracker: {}
+    # prometheus: {}
+    # vaultAgent: {}
+    # velero: {}
+
+# Application Platform components are disabled by default
+# and enabled per-cluster which requires them.
+app:
+  enabled: false
+  components: {}
+    # argoController: {}
+    # argoWorkflow: {}
+    # elastic: {}
+    # istio: {}
+    # kiali: {}
+    # sidecarTerminator: {}
+    # solr: {}
+
+# Management Platform components are disabled by default
+# and enabled per-cluster which requires them.
+mgmt:
+  enabled: false
+  components: {}
+    # argoFoundation: {}
+    # argoOperator: {}

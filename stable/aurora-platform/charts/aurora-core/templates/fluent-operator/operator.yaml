@@ -1,0 +1,58 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-fluent-operator"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    chart: {{ default "fluent-operator" .Values.components.fluentOperator.helm.chart }}
+    {{- if .Values.components.fluentOperator.helm.repository }}
+    repoURL: {{ .Values.components.fluentOperator.helm.repository }}
+    {{- else }}
+    repoURL: {{ default "https://fluent.github.io/fluent-operator" .Values.global.helm.repository }}
+    {{- end }}
+    targetRevision: {{ default "2.5.0" .Values.components.fluentOperator.helm.targetRevision }}
+    helm:
+      releaseName: fluent-operator
+      values: |
+        Kubernetes: true
+
+        operator:
+          container: {{ default "{}" (include "fluentOperator.operator.image" .) | nindent 12 }}
+          imagePullSecrets: {{ toYaml .Values.components.fluentOperator.imagePullSecrets | nindent 12 }}
+          initcontainer: {{ default "{}" (include "fluentOperator.operator.initContainer.image" .) | nindent 12 }}
+          resources: {{ toYaml .Values.components.fluentOperator.operator.resources | nindent 12 }}
+          nodeSelector: {{ toYaml .Values.components.fluentOperator.operator.nodeSelector | nindent 12 }}
+          tolerations: {{ toYaml .Values.components.fluentOperator.operator.tolerations | nindent 12 }}
+          priorityClassName: {{ toYaml .Values.components.fluentOperator.operator.priorityClassName | nindent 12 }}
+
+        fluentbit:
+          crdsEnable: {{ .Values.components.fluentOperator.fluentbit.crdsEnabled }}
+          enable: {{ .Values.components.fluentOperator.fluentbit.enabled }}
+          image: {{ default "{}" (include "fluentOperator.fluentbit.image" .) | nindent 12 }}
+          imagePullSecrets: {{ toYaml .Values.components.fluentOperator.imagePullSecrets | nindent 12 }}
+          resources: {{ toYaml .Values.components.fluentOperator.fluentbit.resources | nindent 12 }}
+          input: {{ toYaml .Values.components.fluentOperator.fluentbit.input | nindent 12 }}
+          nodeSelector: {{ toYaml .Values.components.fluentOperator.fluentbit.nodeSelector | nindent 12 }}
+          tolerations: {{ toYaml .Values.components.fluentOperator.fluentbit.tolerations | nindent 12 }}
+          affinity: {{ toYaml .Values.components.fluentOperator.fluentbit.affinity | nindent 12 }}
+          priorityClassName: {{ toYaml .Values.components.fluentOperator.fluentbit.priorityClassName | nindent 12 }}
+          namespaceFluentBitCfgSelector: {{ toYaml .Values.components.fluentOperator.fluentbit.namespaceFluentBitCfgSelector | nindent 12 }}
+          input: {{ toYaml .Values.components.fluentOperator.fluentbit.input | nindent 12 }}
+          output: {{ toYaml .Values.components.fluentOperator.fluentbit.output | nindent 12 }}
+          filter: {{ toYaml .Values.components.fluentOperator.fluentbit.filter | nindent 12 }}
+
+        fluentd:
+          crdsEnable: {{ .Values.components.fluentOperator.fluentd.crdsEnabled }}
+          # disabling chart installation since we will be deploying Fluentd using the Custom Resource in the `manifests.yaml` template
+          # this allows us to customize some advanced properties of the Fluentd deployment
+          enable: false
+  destination:
+    name: {{ .Values.global.cluster }}
+    namespace: fluent-operator-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

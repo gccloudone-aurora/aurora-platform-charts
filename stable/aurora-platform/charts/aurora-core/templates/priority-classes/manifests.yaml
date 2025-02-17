@@ -1,0 +1,88 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-priority-classes"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    chart: {{ .Values.global.raw.helm.chart }}
+    repoURL: {{ default .Values.global.helm.repository .Values.global.raw.helm.repository }}
+    targetRevision: {{ .Values.global.raw.helm.targetRevision }}
+    helm:
+      releaseName: priority-classes
+      values: |
+        resources:
+          - apiVersion: scheduling.k8s.io/v1
+            kind: PriorityClass
+            metadata:
+              name: platform-node-critical
+              labels:
+                app.kubernetes.io/name: "priority-classes"
+                app.kubernetes.io/instance: "{{ .Values.global.cluster }}"
+                app.kubernetes.io/component: system
+                app.kubernetes.io/part-of: priority-classes
+                app.kubernetes.io/managed-by: argo
+                helm.sh/chart: {{ printf "%s-%s" .Chart.Name .Chart.Version }}
+            value: 1100000
+            globalDefault: false
+          - apiVersion: scheduling.k8s.io/v1
+            kind: PriorityClass
+            metadata:
+              name: platform-cluster-critical
+              labels:
+                app.kubernetes.io/name: "priority-classes"
+                app.kubernetes.io/instance: "{{ .Values.global.cluster }}"
+                app.kubernetes.io/component: system
+                app.kubernetes.io/part-of: priority-classes
+                app.kubernetes.io/managed-by: argo
+                helm.sh/chart: {{ printf "%s-%s" .Chart.Name .Chart.Version }}
+            value: 1000000
+            globalDefault: false
+          - apiVersion: scheduling.k8s.io/v1
+            kind: PriorityClass
+            metadata:
+              name: business-value-critical
+              labels:
+                app.kubernetes.io/name: "priority-classes"
+                app.kubernetes.io/instance: "{{ .Values.global.cluster }}"
+                app.kubernetes.io/component: solution
+                app.kubernetes.io/part-of: priority-classes
+                app.kubernetes.io/managed-by: argo
+                helm.sh/chart: {{ printf "%s-%s" .Chart.Name .Chart.Version }}
+            value: 900000
+            globalDefault: false
+          - apiVersion: scheduling.k8s.io/v1
+            kind: PriorityClass
+            metadata:
+              name: platform-cluster-medium
+              labels:
+                app.kubernetes.io/name: "priority-classes"
+                app.kubernetes.io/instance: "{{ .Values.global.cluster }}"
+                app.kubernetes.io/component: system
+                app.kubernetes.io/part-of: priority-classes
+                app.kubernetes.io/managed-by: argo
+                helm.sh/chart: {{ printf "%s-%s" .Chart.Name .Chart.Version }}
+            value: 800000
+            globalDefault: false
+          - apiVersion: scheduling.k8s.io/v1
+            kind: PriorityClass
+            metadata:
+              name: business-value-medium
+              labels:
+                app.kubernetes.io/name: "priority-classes"
+                app.kubernetes.io/instance: "{{ .Values.global.cluster }}"
+                app.kubernetes.io/component: solution
+                app.kubernetes.io/part-of: priority-classes
+                app.kubernetes.io/managed-by: argo
+                helm.sh/chart: {{ printf "%s-%s" .Chart.Name .Chart.Version }}
+            value: 700000
+            globalDefault: false
+  destination:
+    name: {{ .Values.global.cluster }}
+    namespace: platform-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

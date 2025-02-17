@@ -1,0 +1,25 @@
+{{ range .Values.components.gatekeeper.mutations.components -}}
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ $.Values.global.cluster }}-gatekeeper-mutations-{{ . }}"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+  annotations:
+    kubernetes.io/description: |
+      Applies Gatekeeper Mutation for '{{ . }}'
+spec:
+  project: {{ $.Values.global.project }}
+  source:
+    repoURL: {{ $.Values.components.gatekeeper.mutations.repoURL }}
+    targetRevision: {{ default "master" $.Values.components.gatekeeper.mutations.targetRevision }}
+    path: {{ . }}
+  destination:
+    name: {{ $.Values.global.cluster }}
+    namespace: platform-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+{{ end -}}

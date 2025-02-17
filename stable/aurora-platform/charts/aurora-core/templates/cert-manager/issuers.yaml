@@ -1,0 +1,83 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-cert-manager-issuers"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    chart: {{ .Values.global.raw.helm.chart }}
+    repoURL: {{ default .Values.global.helm.repository .Values.global.raw.helm.repository }}
+    targetRevision: {{ .Values.global.raw.helm.targetRevision }}
+    plugin:
+      env:
+        - name: HELM_RELEASE_NAME
+          value: "cert-manager-manifests"
+        - name: HELM_VALUES
+          value: |
+            resources:
+              - apiVersion: cert-manager.io/v1
+                kind: ClusterIssuer
+                metadata:
+                  name: letsencrypt
+                  labels:
+                    app.kubernetes.io/name: "cert-manager-issuers"
+                    app.kubernetes.io/instance: "{{ .Values.global.cluster }}"
+                    app.kubernetes.io/component: config
+                    app.kubernetes.io/part-of: cert-manager-system
+                    app.kubernetes.io/managed-by: argo
+                    helm.sh/chart: {{ printf "%s-%s" .Chart.Name .Chart.Version }}
+                spec:
+                  acme:
+                    email: {{ required "certManager.issuers.email is required" .Values.components.certManager.issuers.email }}
+                    preferredChain: ""
+                    privateKeySecretRef:
+                      name: clusterissuer-letsencrypt
+                    server: https://acme-v02.api.letsencrypt.org/directory
+                    solvers:
+                    - dns01:
+                        cnameStrategy: Follow
+                        azureDNS:
+                          hostedZoneName: {{ required "certManager.issuers.dns01.azure.zone is required" .Values.components.certManager.issuers.dns01.azure.zone }}
+                          resourceGroupName: {{ required "certManager.issuers.dns01.azure.resourceGroupName is required" .Values.components.certManager.issuers.dns01.azure.resourceGroupName }}
+                          subscriptionID: {{ required "certManager.issuers.dns01.azure.subscriptionId is required" .Values.components.certManager.issuers.dns01.azure.subscriptionId }}
+                      selector:
+                        matchLabels:
+                          use-azuredns-solver: "true"
+              - apiVersion: cert-manager.io/v1
+                kind: ClusterIssuer
+                metadata:
+                  name: letsencrypt-staging
+                  labels:
+                    app.kubernetes.io/name: "cert-manager-issuers"
+                    app.kubernetes.io/instance: "{{ .Values.global.cluster }}"
+                    app.kubernetes.io/component: config
+                    app.kubernetes.io/part-of: cert-manager-system
+                    app.kubernetes.io/managed-by: argo
+                    helm.sh/chart: {{ printf "%s-%s" .Chart.Name .Chart.Version }}
+                spec:
+                  acme:
+                    email: {{ required "certManager.issuers.email is required" .Values.components.certManager.issuers.email }}
+                    preferredChain: ""
+                    privateKeySecretRef:
+                      name: clusterissuer-letsencrypt-staging
+                    server: https://acme-staging-v02.api.letsencrypt.org/directory
+                    solvers:
+                    - dns01:
+                        cnameStrategy: Follow
+                        azureDNS:
+                          hostedZoneName: {{ required "certManager.issuers.dns01.azure.zone is required" .Values.components.certManager.issuers.dns01.azure.zone }}
+                          resourceGroupName: {{ required "certManager.issuers.dns01.azure.resourceGroupName is required" .Values.components.certManager.issuers.dns01.azure.resourceGroupName }}
+                          subscriptionID: {{ required "certManager.issuers.dns01.azure.subscriptionId is required" .Values.components.certManager.issuers.dns01.azure.subscriptionId }}
+                      selector:
+                        matchLabels:
+                          use-azuredns-solver: "true"
+
+  destination:
+    name: {{ .Values.global.cluster }}
+    namespace: platform-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

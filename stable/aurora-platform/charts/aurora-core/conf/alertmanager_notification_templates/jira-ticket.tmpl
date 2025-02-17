@@ -1,0 +1,42 @@
+{{`{{ define "silence_url" -}}
+    {{ .ExternalURL }}/#/silences/new?filter=%7B
+    {{- range .CommonLabels.SortedPairs -}}
+        {{- if ne .Name "severity" -}}
+            {{- .Name }}%3D%22{{- .Value -}}%22%2C%20
+        {{- end -}}
+    {{- end -}}
+    severity%3D%22{{ .CommonLabels.severity }}%22%7D
+{{- end }}
+
+{{ define "jira.summary" }}
+    {{- .CommonLabels.alertname }}{{ if gt (.Alerts.Firing | len) 1 }}(x{{ .Alerts.Firing | len }}){{ end -}}
+    {{- if .CommonLabels.label_agentpool }} ({{ .CommonLabels.label_agentpool }}){{ end -}}
+    {{- if .CommonLabels.total_nodepool }} ({{ .CommonLabels.total_nodepool }}){{ end -}}
+    {{- if .CommonLabels.target }} for {{ .CommonLabels.target }}{{ end }} on {{ .CommonLabels.cluster -}}
+    {{- if .CommonLabels.class }} class {{ .CommonLabels.class }}{{ end -}}
+    {{- if .CommonLabels.namespace }} in {{ .CommonLabels.namespace }}{{ end -}}
+{{- end -}}
+
+{{ define "jira.description" }}
+    [*Create a Silence*|{{ template "silence_url" . }}]
+
+    {{ with index .Alerts 0 -}}
+    [*Graph*|{{ .GeneratorURL }}]
+    {{ if .Annotations.runbook }}[*Runbook*|{{ .Annotations.runbook }}]{{ end }}
+    {{ if .Annotations.grafanaDashboard }}[*Grafana Dashboard*|{{ .Annotations.grafanaDashboard }}]{{ end }}
+    {{ end }}
+    {{ range .Alerts -}}
+        *Message:* {{ .Annotations.message }}
+        {{ if eq .Status "firing" }}*since:* {{ .StartsAt.Format "02 Jan 15:04 UTC" }}{{else}}*resolved:* {{ .EndsAt.Format "02 Jan 15:04 UTC" }}{{end}}
+        {{ range .Labels.SortedPairs -}}
+        {{ if eq .Name "alertname" -}}
+            {{ else if eq .Name "prometheus" -}}
+            {{ else if eq .Name "severity" -}}
+            {{ else if eq .Name "scope" -}}
+            {{ else if eq .Name "cluster" -}}
+            {{ else if eq .Name "namespace" -}}
+            {{ else }}*{{ .Name }}:* {{ .Value }}
+        {{ end }}
+        {{- end }}
+    {{ end }}
+{{- end }}`}}

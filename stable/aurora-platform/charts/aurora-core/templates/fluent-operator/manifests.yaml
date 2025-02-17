@@ -1,0 +1,166 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-fluent-operator-manifests"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    chart: {{ .Values.global.raw.helm.chart }}
+    repoURL: {{ default .Values.global.helm.repository .Values.global.raw.helm.repository }}
+    targetRevision: {{ .Values.global.raw.helm.targetRevision }}
+    plugin:
+      env:
+        - name: HELM_RELEASE_NAME
+          value: "fluent-operator-manifests"
+        - name: HELM_VALUES
+          value: |
+            resources:
+              - apiVersion: fluentbit.fluent.io/v1alpha2
+                kind: ClusterFilter
+                metadata:
+                  name: fluentbit-add-cluster-record
+                  labels:
+                    app.kubernetes.io/name: "fluentbit-add-cluster-record"
+                    app.kubernetes.io/instance: "{{ .Values.global.cluster }}"
+                    app.kubernetes.io/component: fluentbit
+                    app.kubernetes.io/part-of: fluent-operator-system
+                    app.kubernetes.io/managed-by: argo
+                    helm.sh/chart: {{ printf "%s-%s" .Chart.Name .Chart.Version }}
+                    fluentbit.fluent.io/enabled: "true"
+                spec:
+                  matchRegex: kube.*
+                  filters:
+                    - recordModifier:
+                        records:
+                          - "cluster {{ .Values.global.cluster }}"
+              - apiVersion: fluentbit.fluent.io/v1alpha2
+                kind: ClusterOutput
+                metadata:
+                  name: fluentd
+                  labels:
+                    app.kubernetes.io/name: "fluentbit-forward"
+                    app.kubernetes.io/instance: "{{ .Values.global.cluster }}"
+                    app.kubernetes.io/component: fluentbit
+                    app.kubernetes.io/part-of: fluent-operator-system
+                    app.kubernetes.io/managed-by: argo
+                    helm.sh/chart: {{ printf "%s-%s" .Chart.Name .Chart.Version }}
+                    fluentbit.fluent.io/enabled: "true"
+                spec:
+                  matchRegex: (?:kube|service)\.(.*)
+                  forward:
+                    host: fluentd.fluent-operator-system.svc
+                    port: {{ .Values.components.fluentOperator.fluentd.forward.port }}
+              {{- if .Values.components.fluentOperator.fluentd.output.loki.enable }}
+              - apiVersion: fluentd.fluent.io/v1alpha1
+                kind: ClusterOutput
+                metadata:
+                  name: fluentd-output-loki
+                  labels:
+                    app.kubernetes.io/name: "fluentd-output-loki"
+                    app.kubernetes.io/instance: "{{ .Values.global.cluster }}"
+                    app.kubernetes.io/component: loki
+                    app.kubernetes.io/part-of: fluent-operator-system
+                    app.kubernetes.io/managed-by: argo
+                    helm.sh/chart: {{ printf "%s-%s" .Chart.Name .Chart.Version }}
+                    output.fluentd.fluent.io/enabled: "true"
+                spec:
+                  outputs:
+                    - customPlugin:
+                        config: |
+                          <match **>
+                            @type loki
+                            url {{ required "fluentOperator.fluentd.output.loki.url is required" .Values.components.fluentOperator.fluentd.output.loki.url }}
+                            username {{ required "fluentOperator.fluentd.output.loki.username is required" .Values.components.fluentOperator.fluentd.output.loki.username }}
+                            password {{ required "fluentOperator.fluentd.output.loki.password is required" .Values.components.fluentOperator.fluentd.output.loki.password }}
+
+                            extract_kubernetes_labels true
+                            remove_keys kubernetes
+
+                            <label>
+                              namespace $.kubernetes.namespace_name
+                              container $.kubernetes.container_name
+                              cluster $.cluster
+                            </label>
+
+                            <buffer tag>
+                              @type {{ .Values.components.fluentOperator.fluentd.output.loki.buffer.type }}
+                              flush_at_shutdown {{ .Values.components.fluentOperator.fluentd.output.loki.buffer.flushAtShutdown }}
+                              chunk_limit_size {{ .Values.components.fluentOperator.fluentd.output.loki.buffer.chunkLimitSize | quote }}
+                              queue_limit_length {{ .Values.components.fluentOperator.fluentd.output.loki.buffer.queueLimitLength | quote }}
+                              disable_chunk_backup {{ .Values.components.fluentOperator.fluentd.output.loki.buffer.disableChunkBackup }}
+                              total_limit_size {{ .Values.components.fluentOperator.fluentd.output.loki.buffer.totalLimitSize | quote }}
+                              flush_mode {{ .Values.components.fluentOperator.fluentd.output.loki.buffer.flushMode }}
+                              {{- if and (eq .Values.components.fluentOperator.fluentd.output.loki.buffer.flushMode "interval") .Values.components.fluentOperator.fluentd.output.loki.buffer.flushInterval }}
+                              flush_interval {{ .Values.components.fluentOperator.fluentd.output.loki.buffer.flushInterval | quote }}
+                              {{- end }}
+                              flush_thread_count {{ .Values.components.fluentOperator.fluentd.output.loki.buffer.flushThreadCount | quote }}
+                              retry_type {{ .Values.components.fluentOperator.fluentd.output.loki.buffer.retryType }}
+                              retry_max_interval {{ .Values.components.fluentOperator.fluentd.output.loki.buffer.retryMaxInterval | quote }}
+                              retry_exponential_backoff_base {{ .Values.components.fluentOperator.fluentd.output.loki.buffer.retryExponentialBackoffBase | quote }}
+                              overflow_action {{ .Values.components.fluentOperator.fluentd.output.loki.buffer.overflowAction }}                            
+                            </buffer>
+                          </match>
+              {{- end }}
+              {{- if .Values.components.fluentOperator.fluentd.enabled }}
+              - apiVersion: fluentd.fluent.io/v1alpha1
+                kind: Fluentd
+                metadata:
+                  name: fluentd
+                  namespace: fluent-operator-system
+                  labels:
+                    app.kubernetes.io/name: "fluentd"
+                    app.kubernetes.io/instance: "{{ .Values.global.cluster }}"
+                    app.kubernetes.io/component: fluentd
+                    app.kubernetes.io/part-of: fluent-operator-system
+                    app.kubernetes.io/managed-by: argo
+                    helm.sh/chart: {{ printf "%s-%s" .Chart.Name .Chart.Version }}
+                spec:
+                  replicas: {{ .Values.components.fluentOperator.fluentd.replicas }}
+                  workers: {{ .Values.components.fluentOperator.fluentd.workers }}
+                  mode: "collector"
+                  fluentdCfgSelector:
+                    matchLabels:
+                      config.fluentd.fluent.io/enabled: "true"
+                  globalInputs:
+                  - forward:
+                      bind: "0.0.0.0"
+                      port: {{ .Values.components.fluentOperator.fluentd.forward.port }}
+                  buffer:
+                    disableBufferVolume: true
+                  logLevel: {{ .Values.components.fluentOperator.fluentd.logLevel }}
+                  priorityClassName: {{ .Values.components.fluentOperator.fluentd.priorityClassName }}
+                  image: {{ include "fluentOperator.kindFluentd.image" . }}
+                  imagePullSecrets: {{ default "[]" (toYaml .Values.components.fluentOperator.imagePullSecrets) | nindent 20 }}
+                  resources: {{ toYaml .Values.components.fluentOperator.fluentd.resources | nindent 20 }}
+                  nodeSelector: {{ toYaml .Values.components.fluentOperator.fluentd.nodeSelector | nindent 20 }}
+                  tolerations: {{ toYaml .Values.components.fluentOperator.fluentd.tolerations | nindent 20 }}
+              - apiVersion: fluentd.fluent.io/v1alpha1
+                kind: ClusterFluentdConfig
+                metadata:
+                  name: fluentd-config
+                  labels:
+                    app.kubernetes.io/name: "fluentd-config"
+                    app.kubernetes.io/instance: "{{ .Values.global.cluster }}"
+                    app.kubernetes.io/component: fluentd-config
+                    app.kubernetes.io/part-of: fluent-operator-system
+                    app.kubernetes.io/managed-by: argo
+                    helm.sh/chart: {{ printf "%s-%s" .Chart.Name .Chart.Version }}
+                    config.fluentd.fluent.io/enabled: "true"
+                spec:
+                  clusterFilterSelector:
+                    matchLabels:
+                      filter.fluentd.fluent.io/enabled: "true"
+                  clusterOutputSelector:
+                    matchLabels:
+                      output.fluentd.fluent.io/enabled: "true"
+                  watchedNamespaces: {{ .Values.components.fluentOperator.fluentd.watchedNamespaces }}
+              {{- end }}
+  destination:
+    name: {{ .Values.global.cluster }}
+    namespace: platform-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

@@ -1,0 +1,40 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-gatekeeper-storage-class"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    chart: {{ .Values.global.raw.helm.chart }}
+    repoURL: {{ default .Values.global.helm.repository .Values.global.raw.helm.repository }}
+    targetRevision: {{ .Values.global.raw.helm.targetRevision }}
+    helm:
+      releaseName: gatekeeper-storage-class-constraint
+      values: |
+        resources:
+          - apiVersion: constraints.gatekeeper.sh/v1beta1
+            kind: K8sStorageClass
+            metadata:
+              name: storage-class
+            spec:
+              match:
+                kinds:
+                - apiGroups: [""]
+                  kinds: ["PersistentVolumeClaim"]
+                - apiGroups: ["apps"]
+                  kinds: ["StatefulSet"]
+                excludedNamespaces: {{ toYaml .Values.components.gatekeeper.constraints.k8sStorageClass.excludedNamespaces | nindent 18 }}
+              parameters:
+                includeStorageClassesInMessage: {{ .Values.components.gatekeeper.constraints.k8sStorageClass.includeStorageClassesInMessage }}
+                allowedStorageClasses: {{ toYaml .Values.components.gatekeeper.constraints.k8sStorageClass.allowedStorageClasses | nindent 18 }}
+              enforcementAction: {{ .Values.components.gatekeeper.constraints.k8sStorageClass.enforcementAction }}
+
+  destination:
+    name: {{ .Values.global.cluster }}
+    namespace: platform-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

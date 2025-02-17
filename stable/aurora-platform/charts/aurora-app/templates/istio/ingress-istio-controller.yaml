@@ -1,0 +1,63 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-ingress-istio-controller"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    chart: {{ default "ingress-istio-controller" .Values.components.istio.ingressIstioController.helm.chart }}
+    {{- if .Values.components.istio.ingressIstioController.helm.repository }}
+    repoURL: {{ .Values.components.istio.ingressIstioController.helm.repository }}
+    {{- else }}
+    repoURL: {{ default "https://gccloudone-aurora.github.io/charts" .Values.global.helm.repository }}
+    {{- end }}
+    targetRevision: {{ default "1.4.0" .Values.components.istio.ingressIstioController.helm.targetRevision }}
+    helm:
+      releaseName: ingress-istio-controller
+      values: |
+        image: {{ default "{}" (include "ingressIstioController.image" .) | nindent 10 }}
+        imagePullSecrets: {{ toYaml .Values.components.istio.imagePullSecrets | nindent 10 }}
+
+        replicaCount: {{ .Values.components.istio.ingressIstioController.replicas }}
+        resources: {{ toYaml .Values.components.istio.ingressIstioController.resources | nindent 10 }}
+
+        nodeSelector: {{ toYaml .Values.components.istio.ingressIstioController.nodeSelector | nindent 10 }}
+        tolerations: {{ toYaml .Values.components.istio.ingressIstioController.tolerations | nindent 10 }}
+        affinity: {{ toYaml .Values.components.istio.ingressIstioController.affinity | nindent 10 }}
+
+        priorityClassName: {{ .Values.components.istio.ingressIstioController.priorityClassName }}
+
+        # These values determine the settings that can be passed to the controller.
+        # If values are left empty, defaults in the image will be used.
+        # Please see github.com/gccloudone-aurora-iac/ingress-istio-controller for defaults.
+        controller:
+          # The name of the gateway to attach to. Should be in the form <namespace>/<name>.
+          defaultGateway: "ingress-general-system/general-istio-ingress-gateway-https"
+          # The ingress class annotation to monitor (empty string to skip checking annotation).
+          ingressClass: istio
+
+        # Settings relating to the IngressClass for this controller
+        ingressClass:
+          # Determines if the IngressClass is deployed
+          deploy: true
+          # Determines if the IngressClass is set as the default in the Cluster
+          # NB: If more than one IngressClass is defined as the default,
+          # the admission controller will prevent the creation of new Ingresses.
+          default: true
+
+        gateway:
+          # Determines if the Gateway should be deployed
+          deploy: false
+          # Determines if this gateway should be used as the Controllers defaultGateway.
+          # Takes precedence over controller.defaultGateway
+          isControllerDefault: false
+
+  destination:
+    name: '{{ .Values.global.cluster }}'
+    namespace: ingress-general-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

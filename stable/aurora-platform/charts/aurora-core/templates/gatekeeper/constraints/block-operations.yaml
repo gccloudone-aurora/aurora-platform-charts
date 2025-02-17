@@ -1,0 +1,41 @@
+{{ if .Values.components.gatekeeper.constraints.blockOperations.enabled -}}
+
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-gatekeeper-block-operations"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    chart: {{ .Values.global.raw.helm.chart }}
+    repoURL: {{ default .Values.global.helm.repository .Values.global.raw.helm.repository }}
+    targetRevision: {{ .Values.global.raw.helm.targetRevision }}
+    helm:
+      releaseName: gatekeeper-block-operations-constraint
+      values: |
+        resources:
+          - apiVersion: constraints.gatekeeper.sh/v1beta1
+            kind: BlockOperations
+            metadata:
+              name: block-operations
+            spec:
+              match:
+                namespaceSelector:
+                  matchExpressions:
+                    - key: namespace.ssc-spc.gc.ca/purpose
+                      operator: In
+                      values:
+                        - solution
+                excludedNamespaces: {{ toYaml .Values.components.gatekeeper.constraints.blockOperations.excludedNamespaces | nindent 18 }}
+              enforcementAction: {{ .Values.components.gatekeeper.constraints.blockOperations.enforcementAction }}
+  destination:
+    name: {{ .Values.global.cluster }}
+    namespace: platform-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+
+{{- end }}

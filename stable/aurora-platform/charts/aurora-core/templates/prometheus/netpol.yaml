@@ -1,0 +1,645 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-prometheus-netpol"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    chart: {{ .Values.global.raw.helm.chart }}
+    repoURL: {{ default .Values.global.helm.repository .Values.global.raw.helm.repository }}
+    targetRevision: {{ .Values.global.raw.helm.targetRevision }}
+    plugin:
+      env:
+        - name: HELM_RELEASE_NAME
+          value: "prometheus-netpol"
+        - name: HELM_VALUES
+          value: |
+            resources:
+              - apiVersion: networking.k8s.io/v1
+                kind: NetworkPolicy
+                metadata:
+                  name: allow-same-namespace
+                  namespace: prometheus-system
+                spec:
+                  podSelector: {}
+                  policyTypes:
+                    - Ingress
+                    - Egress
+                  ingress:
+                    - from:
+                      - podSelector: {}
+                  egress:
+                    - to:
+                      - podSelector: {}
+              - apiVersion: networking.k8s.io/v1
+                kind: NetworkPolicy
+                metadata:
+                  name: allow-egress-to-kiali-from-prometheus
+                  namespace: prometheus-system
+                spec:
+                  egress:
+                    - to:
+                      - namespaceSelector:
+                          matchLabels:
+                            kubernetes.io/metadata.name: kiali-system
+                        podSelector:
+                          matchLabels:
+                            app.kubernetes.io/part-of: kiali
+                  podSelector:
+                    matchLabels:
+                      app.kubernetes.io/name: prometheus
+                  policyTypes:
+                  - Egress
+              - apiVersion: networking.k8s.io/v1
+                kind: NetworkPolicy
+                metadata:
+                  name: allow-egress-to-kiali-from-grafana
+                  namespace: prometheus-system
+                spec:
+                  egress:
+                    - to:
+                      - namespaceSelector:
+                          matchLabels:
+                            kubernetes.io/metadata.name: kiali-system
+                        podSelector:
+                          matchLabels:
+                            app.kubernetes.io/part-of: kiali
+                  podSelector:
+                    matchLabels:
+                      app.kubernetes.io/name: grafana
+                  policyTypes:
+                  - Egress
+              - apiVersion: networking.k8s.io/v1
+                kind: NetworkPolicy
+                metadata:
+                  name: allow-egress-to-kubecost-from-prometheus
+                  namespace: prometheus-system
+                spec:
+                  egress:
+                    - to:
+                      - namespaceSelector:
+                          matchLabels:
+                            kubernetes.io/metadata.name: kubecost-system
+                        podSelector:
+                          matchLabels:
+                            app.kubernetes.io/name: cost-analyzer
+                  podSelector:
+                    matchLabels:
+                      app.kubernetes.io/name: prometheus
+                  policyTypes:
+                  - Egress
+              - apiVersion: networking.k8s.io/v1
+                kind: NetworkPolicy
+                metadata:
+                  name: allow-egress-to-kubecost-from-grafana
+                  namespace: prometheus-system
+                spec:
+                  egress:
+                    - to:
+                      - namespaceSelector:
+                          matchLabels:
+                            kubernetes.io/metadata.name: kubecost-system
+                        podSelector:
+                          matchLabels:
+                            app.kubernetes.io/name: cost-analyzer
+                  podSelector:
+                    matchLabels:
+                      app.kubernetes.io/name: grafana
+                  policyTypes:
+                  - Egress
+              - apiVersion: networking.k8s.io/v1
+                kind: NetworkPolicy
+                metadata:
+                  name: allow-egress-to-alertmanager-from-prometheus
+                  namespace: prometheus-system
+                spec:
+                  egress:
+                  {{- range (required "global.alertManagerCidrs is required" .Values.global.alertManagerCidrs) }}
+                    - ports:
+                        - protocol: TCP
+                          port: 443
+                      to:
+                        - ipBlock:
+                            cidr: {{ . | quote }}
+                  {{- end }}
+                  podSelector:
+                    matchLabels:
+                      app.kubernetes.io/name: prometheus
+                  policyTypes:
+                  - Egress
+              {{- if .Values.components.prometheus.alertmanager.enabled }}
+              # Email relay service
+              - apiVersion: networking.k8s.io/v1
+                kind: NetworkPolicy
+                metadata:
+                  name: allow-egress-to-ceres-from-alertmanager
+                  namespace: prometheus-system
+                spec:
+                  egress:
+                    - ports:
+                        - port: 25
+                          protocol: TCP
+                      to:
+                        - ipBlock:
+                            cidr: 0.0.0.0/0
+                  podSelector:
+                    matchLabels:
+                      app.kubernetes.io/name: alertmanager
+                  policyTypes:
+                  - Egress
+              - apiVersion: networking.k8s.io/v1
+                kind: NetworkPolicy
+                metadata:
+                  name: allow-egress-to-loganalytics-from-alertmanager
+                  namespace: prometheus-system
+                spec:
+                  egress:
+                    - ports:
+                        - port: 443
+                          protocol: TCP
+                      to:
+                        - ipBlock:
+                            cidr: 0.0.0.0/0
+                  podSelector:
+                    matchLabels:
+                      app.kubernetes.io/name: alertmanager
+                  policyTypes:
+                  - Egress
+              - apiVersion: networking.k8s.io/v1
+                kind: NetworkPolicy
+                metadata:
+                  name: allow-egress-to-msteams-from-prometheus-msteams
+                  namespace: prometheus-system
+                spec:
+                  egress:
+                    - ports:
+                        - port: 443
+                          protocol: TCP
+                      to:
+                        - ipBlock:
+                            cidr: 0.0.0.0/0
+                  podSelector:
+                    matchLabels:
+                      app: prometheus-msteams
+                  policyTypes:
+                  - Egress
+              - apiVersion: cilium.io/v2
+                kind: CiliumNetworkPolicy
+                metadata:
+                  name: allow-egress-to-jira-from-jiralert
+                  namespace: prometheus-system
+                spec:
+                  description: |
+                    Allows Jiralert to send Alertmanager alert notifications to Jira
+                  egress:
+                  - toFQDNs:
+                    - matchPattern: jira.ssc-spc.gc.ca
+                    toPorts:
+                    - ports:
+                      - port: "443"
+                  endpointSelector:
+                    matchLabels:
+                      app.kubernetes.io/name: jiralert
+              {{- end }}
+              - apiVersion: networking.k8s.io/v1
+                kind: NetworkPolicy
+                metadata:
+                  name: allow-ingress-from-kiali-to-prometheus
+                  namespace: prometheus-system
+                spec:
+                  ingress:
+                  - from:
+                    - namespaceSelector:
+                        matchLabels:
+                          kubernetes.io/metadata.name: kiali-system
+                      podSelector:
+                        matchLabels:
+                          app.kubernetes.io/part-of: kiali
+                  podSelector:
+                    matchLabels:
+                      app.kubernetes.io/name: prometheus
+                      app.kubernetes.io/instance: kube-prometheus-stack-prometheus
+                  policyTypes:
+                  - Ingress
+              - apiVersion: networking.k8s.io/v1
+                kind: NetworkPolicy
+                metadata:
+                  name: allow-ingress-from-kiali-to-grafana
+                  namespace: prometheus-system
+                spec:
+                  ingress:
+                  - from:
+                    - namespaceSelector:
+                        matchLabels:
+                          kubernetes.io/metadata.name: kiali-system
+                      podSelector:
+                        matchLabels:
+                          app.kubernetes.io/part-of: kiali
+                  podSelector:
+                    matchLabels:
+                      app.kubernetes.io/name: grafana
+                  policyTypes:
+                  - Ingress
+              - apiVersion: networking.k8s.io/v1
+                kind: NetworkPolicy
+                metadata:
+                  name: allow-ingress-from-kubecost-to-prometheus
+                  namespace: prometheus-system
+                spec:
+                  ingress:
+                  - from:
+                    - namespaceSelector:
+                        matchLabels:
+                          kubernetes.io/metadata.name: kubecost-system
+                      podSelector:
+                        matchLabels:
+                          app.kubernetes.io/name: cost-analyzer
+                  podSelector:
+                    matchLabels:
+                      app.kubernetes.io/name: prometheus
+                      app.kubernetes.io/instance: kube-prometheus-stack-prometheus
+                  policyTypes:
+                  - Ingress
+              - apiVersion: networking.k8s.io/v1
+                kind: NetworkPolicy
+                metadata:
+                  name: allow-ingress-from-kubecost-to-grafana
+                  namespace: prometheus-system
+                spec:
+                  ingress:
+                  - from:
+                    - namespaceSelector:
+                        matchLabels:
+                          kubernetes.io/metadata.name: kubecost-system
+                      podSelector:
+                        matchLabels:
+                          app.kubernetes.io/name: cost-analyzer
+                  podSelector:
+                    matchLabels:
+                      app.kubernetes.io/name: grafana
+                  policyTypes:
+                  - Ingress
+              - apiVersion: networking.k8s.io/v1
+                kind: NetworkPolicy
+                metadata:
+                  name: allow-egress-to-azuread-from-grafana
+                  namespace: prometheus-system
+                spec:
+                  podSelector:
+                    matchLabels:
+                      app.kubernetes.io/name: grafana
+                  egress:
+                    - ports:
+                        - protocol: TCP
+                          port: 443
+                      to:
+                        - ipBlock:
+                            cidr: 0.0.0.0/0
+                  policyTypes:
+                    - Egress
+              - apiVersion: networking.k8s.io/v1
+                kind: NetworkPolicy
+                metadata:
+                  name: allow-ingress-from-cert-manager-to-prometheus
+                  namespace: prometheus-system
+                spec:
+                  ingress:
+                  - from:
+                    - namespaceSelector:
+                        matchLabels:
+                          namespace.ssc-spc.gc.ca/purpose: system
+                          kubernetes.io/metadata.name: cert-manager-system
+                      podSelector:
+                        matchLabels:
+                          app.kubernetes.io/name: cert-manager
+                  podSelector:
+                    matchLabels:
+                      app.kubernetes.io/name: prometheus
+                  policyTypes:
+                    - Ingress
+              - apiVersion: networking.k8s.io/v1
+                kind: NetworkPolicy
+                metadata:
+                  name: allow-egress-to-cert-manager-from-prometheus
+                  namespace: prometheus-system
+                spec:
+                  egress:
+                    - to:
+                      - namespaceSelector:
+                          matchLabels:
+                            namespace.ssc-spc.gc.ca/purpose: system
+                            kubernetes.io/metadata.name: cert-manager-system
+                        podSelector:
+                          matchLabels:
+                            app.kubernetes.io/name: cert-manager
+                  podSelector:
+                    matchLabels:
+                      app.kubernetes.io/name: prometheus
+                  policyTypes:
+                  - Egress
+              - apiVersion: networking.k8s.io/v1
+                kind: NetworkPolicy
+                metadata:
+                  name: allow-ingress-from-podtracker-to-prometheus
+                  namespace: prometheus-system
+                spec:
+                  ingress:
+                  - from:
+                    - namespaceSelector:
+                        matchLabels:
+                          namespace.ssc-spc.gc.ca/purpose: system
+                          kubernetes.io/metadata.name: podtracker-system
+                      podSelector:
+                        matchLabels:
+                          app.kubernetes.io/name: podtracker
+                  podSelector:
+                    matchLabels:
+                      app.kubernetes.io/name: prometheus
+                  policyTypes:
+                    - Ingress
+              - apiVersion: networking.k8s.io/v1
+                kind: NetworkPolicy
+                metadata:
+                  name: allow-egress-to-podtracker-from-prometheus
+                  namespace: prometheus-system
+                spec:
+                  egress:
+                    - to:
+                      - namespaceSelector:
+                          matchLabels:
+                            namespace.ssc-spc.gc.ca/purpose: system
+                            kubernetes.io/metadata.name: podtracker-system
+                        podSelector:
+                          matchLabels:
+                            app.kubernetes.io/name: podtracker
+                  podSelector:
+                    matchLabels:
+                      app.kubernetes.io/name: prometheus
+                  policyTypes:
+                  - Egress
+              - apiVersion: networking.k8s.io/v1
+                kind: NetworkPolicy
+                metadata:
+                  name: allow-ingress-from-cidr-allocator-to-prometheus
+                  namespace: prometheus-system
+                spec:
+                  ingress:
+                  - from:
+                    - namespaceSelector:
+                        matchLabels:
+                          namespace.ssc-spc.gc.ca/purpose: system
+                          kubernetes.io/metadata.name: cidr-allocator-system
+                      podSelector:
+                        matchLabels:
+                          app.kubernetes.io/name: cidr-allocator
+                  podSelector:
+                    matchLabels:
+                      app.kubernetes.io/name: prometheus
+                  policyTypes:
+                    - Ingress
+              - apiVersion: networking.k8s.io/v1
+                kind: NetworkPolicy
+                metadata:
+                  name: allow-egress-to-cidr-allocator-from-prometheus
+                  namespace: prometheus-system
+                spec:
+                  egress:
+                    - to:
+                      - namespaceSelector:
+                          matchLabels:
+                            namespace.ssc-spc.gc.ca/purpose: system
+                            kubernetes.io/metadata.name: cidr-allocator-system
+                        podSelector:
+                          matchLabels:
+                            app.kubernetes.io/name: cidr-allocator
+                  podSelector:
+                    matchLabels:
+                      app.kubernetes.io/name: prometheus
+                  policyTypes:
+                  - Egress
+              - apiVersion: networking.k8s.io/v1
+                kind: NetworkPolicy
+                metadata:
+                  name: allow-ingress-from-apiserver-to-prometheus
+                  namespace: prometheus-system
+                spec:
+                  ingress:
+                  - from:
+                    - ipBlock:
+                        cidr: {{ required "global.apiServerCidr is required" .Values.global.apiServerCidr | quote }}
+                    - namespaceSelector:
+                        matchLabels:
+                          kubernetes.io/metadata.name: kube-system
+                      podSelector:
+                        matchLabels:
+                          app: konnectivity-agent
+                  podSelector:
+                    matchLabels: {}
+                  policyTypes:
+                  - Ingress
+              - apiVersion: networking.k8s.io/v1
+                kind: NetworkPolicy
+                metadata:
+                  name: allow-ingress-from-node-exporter-to-prometheus
+                  namespace: prometheus-system
+                spec:
+                  podSelector:
+                    matchLabels:
+                      app.kubernetes.io/name: prometheus
+                  ingress:
+                  - ports:
+                    - protocol: TCP
+                      port: 9751
+                  policyTypes:
+                  - Ingress
+              - apiVersion: networking.k8s.io/v1
+                kind: NetworkPolicy
+                metadata:
+                  name: allow-egress-to-node-exporter-from-prometheus
+                  namespace: prometheus-system
+                spec:
+                  podSelector:
+                    matchLabels:
+                      app.kubernetes.io/name: prometheus
+                  egress:
+                  - ports:
+                    - protocol: TCP
+                      port: 9751
+                  policyTypes:
+                  - Egress
+              - apiVersion: networking.k8s.io/v1
+                kind: NetworkPolicy
+                metadata:
+                  name: allow-ingress-from-coredns-kubelet-to-prometheus
+                  namespace: prometheus-system
+                spec:
+                  podSelector:
+                    matchLabels:
+                      app.kubernetes.io/name: prometheus
+                  ingress:
+                  - ports:
+                    - protocol: TCP
+                      port: 9153
+                    - protocol: TCP
+                      port: 10250
+                  policyTypes:
+                  - Ingress
+              - apiVersion: networking.k8s.io/v1
+                kind: NetworkPolicy
+                metadata:
+                  name: allow-egress-to-coredns-kubelet-from-prometheus
+                  namespace: prometheus-system
+                spec:
+                  podSelector:
+                    matchLabels:
+                      app.kubernetes.io/name: prometheus
+                  egress:
+                  - ports:
+                    - protocol: TCP
+                      port: 9153
+                    - protocol: TCP
+                      port: 10250
+                  policyTypes:
+                  - Egress
+              {{- if .Values.components.prometheus.blackboxExporter.istioIngressGatewayProbes }}
+              - apiVersion: networking.k8s.io/v1
+                kind: NetworkPolicy
+                metadata:
+                  name: allow-egress-to-loadbalancer-from-blackbox
+                  namespace: prometheus-system
+                spec:
+                  podSelector:
+                    matchLabels:
+                      app: prometheus-blackbox-exporter
+                  policyTypes:
+                    - Egress
+                  egress:
+                    - to:
+                      {{- range $val := .Values.components.prometheus.blackboxExporter.istioIngressGatewayProbes }}
+                      - ipBlock:
+                          cidr: "{{ $val.ipAddress }}/32"
+                      {{- end }}
+              {{- end }}
+              {{- if .Values.components.prometheus.prometheus.netpol.allowFederation }}
+              # Required for other Prometheus instances to request metrics from the Platform Prometheus
+              - apiVersion: networking.k8s.io/v1
+                kind: NetworkPolicy
+                metadata:
+                  name: allow-ingress-from-solution-prometheus
+                  namespace: prometheus-system
+                spec:
+                  ingress:
+                  - ports:
+                    - port: 9090
+                      protocol: TCP
+                    from:
+                    - namespaceSelector: {}
+                      podSelector:
+                        matchLabels:
+                          app.kubernetes.io/name: prometheus
+                  podSelector:
+                    matchLabels:
+                      app.kubernetes.io/name: prometheus
+                      prometheus: kube-prometheus-stack-prometheus
+                  policyTypes:
+                  - Ingress
+              - apiVersion: cilium.io/v2
+                kind: CiliumClusterwideNetworkPolicy
+                metadata:
+                  name: allow-egress-to-cluster-prometheus-from-prometheus
+                spec:
+                  description: |
+                    Allows other Prometheus instances to request metrics from the Platform Prometheus
+                  egress:
+                  - toEndpoints:
+                    - matchLabels:
+                        k8s:io.kubernetes.pod.namespace: prometheus-system
+                        prometheus: kube-prometheus-stack-prometheus
+                    toPorts:
+                    - ports:
+                      - port: "9090"
+                  endpointSelector:
+                    matchLabels:
+                      app.kubernetes.io/name: prometheus
+              - apiVersion: cilium.io/v2
+                kind: CiliumClusterwideNetworkPolicy
+                metadata:
+                  name: allow-egress-to-apiserver-from-prometheus
+                spec:
+                  description: |
+                    Allows Prometheus instances to get information about, and connect to, Alertmanagers in the same namespace
+                  egress:
+                  - toEntities:
+                    - kube-apiserver
+                    toPorts:
+                    - ports:
+                      - port: "443"
+                  endpointSelector:
+                    matchLabels:
+                      app.kubernetes.io/name: prometheus
+              - apiVersion: cilium.io/v2
+                kind: CiliumClusterwideNetworkPolicy
+                metadata:
+                  name: allow-egress-to-ceres-from-alertmanager
+                spec:
+                  description: |
+                    Allows Alertmanagers to send email notifications
+                  egress:
+                  - toFQDNs:
+                    - matchPattern: "email-smtp.ca-central-1.amazonaws.com"
+                    toPorts:
+                    - ports:
+                      - port: "25"
+                  endpointSelector:
+                    matchLabels:
+                      app.kubernetes.io/name: alertmanager
+              - apiVersion: cilium.io/v2
+                kind: CiliumClusterwideNetworkPolicy
+                metadata:
+                  name: allow-egress-to-msteams-from-prometheus-msteams
+                spec:
+                  description: |
+                    Allows Prometheus-MSTeams to send Alertmanager alert notifications to MS Teams
+                  egress:
+                  - toFQDNs:
+                    - matchPattern: "054gc.webhook.office.com"
+                    toPorts:
+                    - ports:
+                      - port: "443"
+                  endpointSelector:
+                    matchLabels:
+                      app: prometheus-msteams
+              {{- end }}
+              {{ if .Values.global.clusterHasLoki }}
+              - apiVersion: networking.k8s.io/v1
+                kind: NetworkPolicy
+                metadata:
+                  name: allow-egress-to-loki-from-grafana
+                  namespace: prometheus-system
+                spec:
+                  egress:
+                  - ports:
+                    - port: 8080
+                      protocol: TCP
+                    to:
+                    - namespaceSelector:
+                        matchLabels:
+                          kubernetes.io/metadata.name: loki
+                      podSelector:
+                        matchLabels:
+                          app.kubernetes.io/component: gateway
+                  podSelector:
+                    matchLabels:
+                      app.kubernetes.io/name: grafana
+                  policyTypes:
+                  - Egress
+              {{- end }}
+  destination:
+    name: {{ .Values.global.cluster }}
+    namespace: platform-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

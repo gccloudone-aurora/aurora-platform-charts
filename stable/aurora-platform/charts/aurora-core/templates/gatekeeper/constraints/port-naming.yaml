@@ -1,0 +1,37 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-gatekeeper-allowed-service-port-name"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    chart: {{ .Values.global.raw.helm.chart }}
+    repoURL: {{ default .Values.global.helm.repository .Values.global.raw.helm.repository }}
+    targetRevision: {{ .Values.global.raw.helm.targetRevision }}
+    helm:
+      releaseName: gatekeeper-allowed-service-port-name-constraint
+      values: |
+        resources:
+          - apiVersion: constraints.gatekeeper.sh/v1beta1
+            kind: AllowedServicePortName
+            metadata:
+              name: allowed-service-port-name
+            spec:
+              match:
+                kinds:
+                - apiGroups: ["networking.k8s.io"]
+                  kinds: ["Ingress", "Service"]
+                excludedNamespaces: {{ toYaml .Values.components.gatekeeper.constraints.allowedServicePortName.excludedNamespaces | nindent 18 }}
+              parameters:
+                prefixes: {{ toYaml .Values.components.gatekeeper.constraints.allowedServicePortName.allowedPrefixes | nindent 18 }}
+              enforcementAction: {{ .Values.components.gatekeeper.constraints.allowedServicePortName.enforcementAction }}
+
+  destination:
+    name: {{ .Values.global.cluster }}
+    namespace: platform-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

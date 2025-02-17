@@ -1,0 +1,80 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-velero-rbac-platform-operator-maintenance"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    chart: {{ .Values.global.raw.helm.chart }}
+    repoURL: {{ default .Values.global.helm.repository .Values.global.raw.helm.repository }}
+    targetRevision: {{ .Values.global.raw.helm.targetRevision }}
+    helm:
+      releaseName: rbac-platform-operator-velero-maintenance
+      values: |
+        resources:
+          - apiVersion: rbac.authorization.k8s.io/v1
+            kind: Role
+            metadata:
+              name: cluster-operator-velero-manage
+              annotations:
+                kubernetes.io/description: "Allows cluster operators to perform basic Velero operations."
+              labels:
+                app.kubernetes.io/name: "velero-rbac-platform-operator-maintenance"
+                app.kubernetes.io/instance: "{{ .Values.global.cluster }}"
+                app.kubernetes.io/part-of: platform-operator-rbac
+                app.kubernetes.io/managed-by: argo
+                helm.sh/chart: {{ printf "%s-%s" .Chart.Name .Chart.Version }}
+            rules:
+              - apiGroups:
+                  - velero.io
+                resources:
+                  - backups
+                verbs:
+                  - create
+                  - get
+                  - list
+                  - patch
+                  - update
+                  - watch
+
+          - apiVersion: rbac.authorization.k8s.io/v1
+            kind: RoleBinding
+            metadata:
+              name: cluster-operator-velero-manage
+              annotations:
+                kubernetes.io/description: |-
+                  kubernetes.io/description: "Allows cluster operators to perform basic Velero operations."
+              labels:
+                app.kubernetes.io/name: "velero-rbac-platform-operator-maintenance"
+                app.kubernetes.io/instance: "{{ .Values.global.cluster }}"
+                app.kubernetes.io/part-of: platform-operator-rbac
+                app.kubernetes.io/managed-by: argo
+                helm.sh/chart: {{ printf "%s-%s" .Chart.Name .Chart.Version }}
+            roleRef:
+              apiGroup: rbac.authorization.k8s.io
+              kind: Role
+              name: cluster-operator-velero-manage
+            {{- if (or .Values.rbac.platformOperator.groups .Values.rbac.platformOperator.users) }}
+            subjects:
+              {{- range .Values.rbac.platformOperator.groups }}
+              - apiGroup: rbac.authorization.k8s.io
+                kind: Group
+                name: {{ . }}
+              {{- end }}
+              {{- range .Values.rbac.platformOperator.users }}
+              - apiGroup: rbac.authorization.k8s.io
+                kind: User
+                name: {{ . }}
+              {{- end }}
+            {{- else }}
+            subjects: []
+              {{- end }}
+  destination:
+    name: {{ .Values.global.cluster }}
+    namespace: velero-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

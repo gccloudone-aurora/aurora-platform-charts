@@ -1,0 +1,71 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-gatekeeper-container-allowed-images"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    chart: {{ .Values.global.raw.helm.chart }}
+    repoURL: {{ default .Values.global.helm.repository .Values.global.raw.helm.repository }}
+    targetRevision: {{ .Values.global.raw.helm.targetRevision }}
+    helm:
+      releaseName: gatekeeper-container-allowed-images-constraint
+      values: |
+        resources:
+          - apiVersion: constraints.gatekeeper.sh/v1beta1
+            kind: ContainerAllowedImages
+            metadata:
+              name: gateway-container-allowed-images
+            spec:
+              match:
+                namespaceSelector:
+                  matchLabels:
+                    namespace.ssc-spc.gc.ca/purpose: gateway
+                kinds:
+                - apiGroups: [""]
+                  kinds: ["Pod"]
+                excludedNamespaces: {{ toYaml .Values.components.gatekeeper.constraints.gatewayContainerAllowedImages.excludedNamespaces | nindent 18 }}
+              parameters:
+                repos: {{ toYaml .Values.components.gatekeeper.constraints.gatewayContainerAllowedImages.allowedRepos | nindent 18 }}
+              enforcementAction: {{ .Values.components.gatekeeper.constraints.gatewayContainerAllowedImages.enforcementAction }}
+          - apiVersion: constraints.gatekeeper.sh/v1beta1
+            kind: ContainerAllowedImages
+            metadata:
+              name: system-container-allowed-images
+            spec:
+              match:
+                namespaceSelector:
+                  matchLabels:
+                    namespace.ssc-spc.gc.ca/purpose: system
+                kinds:
+                - apiGroups: [""]
+                  kinds: ["Pod"]
+                excludedNamespaces: {{ toYaml .Values.components.gatekeeper.constraints.systemContainerAllowedImages.excludedNamespaces | nindent 18 }}
+              parameters:
+                repos: {{ toYaml .Values.components.gatekeeper.constraints.systemContainerAllowedImages.allowedRepos | nindent 18 }}
+              enforcementAction: {{ .Values.components.gatekeeper.constraints.systemContainerAllowedImages.enforcementAction }}
+          - apiVersion: constraints.gatekeeper.sh/v1beta1
+            kind: ContainerAllowedImages
+            metadata:
+              name: solution-container-allowed-images
+            spec:
+              match:
+                namespaceSelector:
+                  matchLabels:
+                    namespace.ssc-spc.gc.ca/purpose: solution
+                kinds:
+                - apiGroups: [""]
+                  kinds: ["Pod"]
+                excludedNamespaces: {{ toYaml .Values.components.gatekeeper.constraints.solutionContainerAllowedImages.excludedNamespaces | nindent 18 }}
+              parameters:
+                repos: {{ toYaml .Values.components.gatekeeper.constraints.solutionContainerAllowedImages.allowedRepos | nindent 18 }}
+              enforcementAction: {{ .Values.components.gatekeeper.constraints.solutionContainerAllowedImages.enforcementAction }}
+  destination:
+    name: {{ .Values.global.cluster }}
+    namespace: platform-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

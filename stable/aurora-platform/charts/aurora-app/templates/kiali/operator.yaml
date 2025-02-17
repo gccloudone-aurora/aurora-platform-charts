@@ -1,0 +1,46 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-kiali-operator"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    chart: {{ default "kiali-operator" .Values.components.kiali.helm.chart }}
+    {{- if .Values.components.kiali.helm.repository }}
+    repoURL: {{ .Values.components.kiali.helm.repository }}
+    {{- else }}
+    repoURL: {{ default "https://kiali.org/helm-charts" .Values.global.helm.repository }}
+    {{- end }}
+    targetRevision: {{ default "1.62.0" .Values.components.kiali.helm.targetRevision }}
+    helm:
+      releaseName: kiali-operator
+      values: |
+        image: {{ default "{}" (include "kiali.image" .) | nindent 10 }}
+
+        replicaCount: {{ .Values.components.kiali.replicas }}
+        resources: {{ toYaml .Values.components.kiali.resources | nindent 10 }}
+
+        nodeSelector: {{ toYaml .Values.components.kiali.nodeSelector | nindent 10 }}
+        tolerations: {{ toYaml .Values.components.kiali.tolerations | nindent 10 }}
+        affinity: {{ toYaml .Values.components.kiali.affinity | nindent 10 }}
+
+        # Set to true if you want to allow the operator to only be able to install Kiali in view-only-mode.
+        # The purpose for this setting is to allow you to restrict the permissions given to the operator itself.
+        onlyViewOnlyMode: true
+
+        # allowAdHocKialiImage tells the operator to allow a user to be able to install a custom Kiali image as opposed
+        # to the image the operator will install by default. In other words, it will allow the
+        # Kiali CR spec.deployment.image_name and spec.deployment.image_version to be configured by the user.
+        # You may want to disable this if you do not want users to install their own Kiali images.
+        allowAdHocKialiImage: true
+
+        priorityClassName: {{ .Values.components.kiali.priorityClassName }}
+  destination:
+    name: '{{ .Values.global.cluster }}'
+    namespace: kiali-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

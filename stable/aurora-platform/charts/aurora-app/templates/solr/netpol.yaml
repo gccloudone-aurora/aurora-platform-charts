@@ -1,0 +1,69 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-solr-netpol"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    chart: {{ .Values.global.raw.helm.chart }}
+    repoURL: {{ default .Values.global.helm.repository .Values.global.raw.helm.repository }}
+    targetRevision: {{ .Values.global.raw.helm.targetRevision }}
+    helm:
+      releaseName: solr-netpol
+      values: |
+        resources:
+          - apiVersion: cilium.io/v2
+            kind: CiliumClusterwideNetworkPolicy
+            metadata:
+              name: allow-ingress-from-solr-to-solr-instances
+            spec:
+              endpointSelector:
+                matchExpressions:
+                  - key: solr-cloud
+                    operator: Exists
+              ingress:
+                - fromEndpoints:
+                    - matchLabels:
+                        io.kubernetes.pod.namespace: solr-system
+          - apiVersion: networking.k8s.io/v1
+            kind: NetworkPolicy
+            metadata:
+              name: allow-same-namespace
+              namespace: solr-system
+            spec:
+              podSelector: {}
+              policyTypes:
+                - Ingress
+                - Egress
+              ingress:
+                - from:
+                  - podSelector: {}
+              egress:
+                - to:
+                  - podSelector: {}
+          - apiVersion: networking.k8s.io/v1
+            kind: NetworkPolicy
+            metadata:
+              name: allow-egress-to-solr-instances-from-solr
+              namespace: solr-system
+            spec:
+              egress:
+                - to:
+                  - namespaceSelector: {}
+                    podSelector:
+                      matchExpressions:
+                        - key: solr-cloud
+                          operator: Exists
+              podSelector:
+                matchLabels: {}
+              policyTypes:
+                - Egress
+  destination:
+    name: {{ .Values.global.cluster }}
+    namespace: platform-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

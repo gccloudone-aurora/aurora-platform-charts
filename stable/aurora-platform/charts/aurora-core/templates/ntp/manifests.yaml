@@ -1,0 +1,111 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-configure-ntp"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    chart: {{ .Values.global.raw.helm.chart }}
+    repoURL: {{ default .Values.global.helm.repository .Values.global.raw.helm.repository }}
+    targetRevision: {{ .Values.global.raw.helm.targetRevision }}
+    helm:
+      releaseName: configure-ntp
+      values: |
+        resources:
+          - apiVersion: apps/v1
+            kind: DaemonSet
+            metadata:
+              name: configure-ntp
+              namespace: ntp-system
+            spec:
+              selector:
+                matchLabels:
+                  app.kubernetes.io/name: configure-ntp
+              template:
+                metadata:
+                  labels:
+                    app.kubernetes.io/name: configure-ntp
+                spec:
+                  tolerations: {{ toYaml .Values.components.ntp.tolerations | nindent 20 }}
+                  volumes:
+                    - name: root
+                      hostPath:
+                        path: /
+                        type: ''
+                  imagePullSecrets: {{ toYaml .Values.components.ntp.imagePullSecrets | nindent 20 }}
+                  containers:
+                    - name: configure-ntp
+                      image: {{ include "ntp.image" . | quote }}
+                      imagePullPolicy: IfNotPresent
+                      command:
+                        - /bin/chroot
+                        - /mnt
+                        - /bin/bash
+                        - -c
+                        - |
+                            set -o errexit
+                            set -o xtrace
+
+                            # Disable other NTP daemons if they are enabled
+                            systemctl is-active systemd-timesyncd && systemctl stop systemd-timesyncd
+                            systemctl is-enabled systemd-timesyncd && systemctl disable systemd-timesyncd
+
+                            # Configure and enable chrony
+                            cat >/etc/chrony/chrony.conf <<EOF
+                            {{- range .Values.components.ntp.pools }}
+                            pool {{ .server }} {{ .options | default "" }}
+                            {{- end }}
+
+                            # Once we have a newer chrony version, we can enable the hardware clock
+                            # as a last resort synchronization.
+                            #
+                            # https://learn.microsoft.com/en-us/azure/virtual-machines/linux/time-sync#chrony
+                            # refclock PHC /dev/ptp_hyperv poll 3 dpoll -2 offset 0 stratum 10
+
+                            # This directive specify the location of the file containing ID/key pairs for
+                            # NTP authentication.
+                            keyfile /etc/chrony/chrony.keys
+
+                            # This directive specifies the file into which chronyd will store the rate
+                            # information.
+                            driftfile /var/lib/chrony/chrony.drift
+
+                            # Uncomment the following line to turn logging on.
+                            #log tracking measurements statistics
+
+                            # Log files location.
+                            logdir /var/log/chrony
+
+                            # Stop bad estimates upsetting machine clock.
+                            maxupdateskew 100.0
+
+                            # This directive enables kernel synchronisation (every 11 minutes) of the
+                            # real-time clock. Note that it can't be used along with the 'rtcfile' directive.
+                            rtcsync
+
+                            # Step the system clock instead of slewing it if the adjustment is larger than
+                            # one second, but only in the first three clock updates.
+                            makestep 1.0 -1
+                            EOF
+
+                            systemctl restart chrony
+                            systemctl enable chrony
+
+                            cat
+                      tty: true
+                      volumeMounts:
+                        - name: root
+                          mountPath: /mnt
+                      resources: {{ toYaml .Values.components.ntp.resources | nindent 24 }}
+                  hostIPC: true
+                  hostNetwork: true
+                  hostPID: true
+  destination:
+    name: {{ .Values.global.cluster }}
+    namespace: ntp-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

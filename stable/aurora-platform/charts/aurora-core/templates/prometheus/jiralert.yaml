@@ -1,0 +1,96 @@
+{{ if .Values.components.prometheus.alertmanager.enabled -}}
+
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-prometheus-jiralert"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    chart: {{ default "jiralert" .Values.components.prometheus.jiralert.helm.chart }}
+    {{- if .Values.components.prometheus.jiralert.helm.repository }}
+    repoURL: {{ .Values.components.prometheus.jiralert.helm.repository }}
+    {{- else }}
+    repoURL: {{ default "https://prometheus-community.github.io/helm-charts" .Values.global.helm.repository }}
+    {{- end }}
+    targetRevision: {{ default "1.7.1" .Values.components.prometheus.jiralert.helm.targetRevision }}
+    plugin:
+      env:
+        - name: HELM_RELEASE_NAME
+          value: "prometheus-jiralert"
+        - name: HELM_VALUES
+          value: |
+            global:
+              imagePullSecrets: {{ .Values.components.prometheus.jiralert.imagePullSecrets }}
+
+            image: {{ default "{}" (include "prometheus.jiralert.image" .) | nindent 14 }}
+
+            extraArgs:
+              - -log.level=debug
+              - -hash-jira-label
+
+            replicaCount: {{ .Values.components.prometheus.jiralert.replicas }}
+            resources: {{ toYaml .Values.components.prometheus.jiralert.resources | nindent 14 }}
+
+            nodeSelector: {{ toYaml .Values.components.prometheus.jiralert.nodeSelector | nindent 14 }}
+            tolerations: {{ toYaml .Values.components.prometheus.jiralert.tolerations | nindent 14 }}
+            affinity: {{ toYaml .Values.components.prometheus.jiralert.affinity | nindent 14 }}
+            priorityClassName: {{ .Values.components.prometheus.jiralert.priorityClassName }}
+
+            config:
+              template: jiralert.tmpl
+
+              # Global defaults, applied to all receivers where not explicitly overridden. Optional.
+              defaults:
+                # API access fields.
+                api_url: {{ required "prometheus.jiralert.config.apiURL is required" .Values.components.prometheus.jiralert.config.apiURL }}
+                user: {{ required ".Values.components.prometheus.jiralert.config.user is required" .Values.components.prometheus.jiralert.config.user }}
+                password: {{ required ".Values.components.prometheus.jiralert.config.password is required" .Values.components.prometheus.jiralert.config.password }}
+                # The type of JIRA issue to create. Required.
+                issue_type: Alert
+                # Issue priority. Optional.
+                priority: Trivial
+                # Go template invocation for generating the summary. Required.
+                summary: '{{`{{ template "jira.summary" . }}`}}'
+                # Go template invocation for generating the description. Optional.
+                description: '{{`{{ template "jira.description" . }}`}}'
+                # State to transition into when reopening a closed issue. Required.
+                reopen_state: "Open"
+                # Do not reopen issues with this resolution. Optional.
+                wont_fix_resolution: "Won't Fix"
+                # Amount of time after being closed that an issue should be reopened, after which, a new issue is created.
+                # Optional (default: always reopen)
+                reopen_duration: 1d
+                project: {{ required ".Values.components.prometheus.jiralert.config.project is required" .Values.components.prometheus.jiralert.config.project }}
+
+              # Receiver definitions. At least one must be defined.
+              # Receiver names must match the Alertmanager receiver names. Required.
+              receivers:
+                {{- range $key, $value := .Values.components.prometheus.jiralert.receivers }}
+                - name: {{ $value.name }}
+                  priority: {{ $value.priority }}
+                  components: {{ $value.components }}
+                  auto_resolve:
+                    state: 'Completed'
+                {{- end }}
+
+            # Template for Jira ticket creation (summary and description).  Required.
+            issueTemplate: | {{ .Files.Get "conf/alertmanager_notification_templates/jira-ticket.tmpl" | trim | nindent 14 }}
+
+  destination:
+    name: {{ .Values.global.cluster }}
+    namespace: prometheus-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+
+{{- range $sKey, $sVal := .Values.components.prometheus.jiralert.receivers }}
+{{- if not (hasKey $.Values.components.prometheus.alertmanager.config.severities $sKey) }}
+{{- fail "A valid .Values.components.prometheus.jiralert.receivers entry must correspond to a prometheus.alertmanager.config.severities entry"}}
+{{- end }}
+{{- end }}
+
+{{- end }}

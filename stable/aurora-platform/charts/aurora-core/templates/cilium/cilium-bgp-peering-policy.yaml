@@ -1,0 +1,40 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-cilium-bgp-peering-policy"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    chart: {{ .Values.global.raw.helm.chart }}
+    repoURL: {{ default .Values.global.helm.repository .Values.global.raw.helm.repository }}
+    targetRevision: {{ .Values.global.raw.helm.targetRevision }}
+    plugin:
+      env:
+        - name: HELM_RELEASE_NAME
+          value: "bgp-peering-policy-0"
+        - name: HELM_VALUES
+          value: |
+            resources:
+              - apiVersion: cilium.io/v2alpha1
+                kind: CiliumBGPPeeringPolicy
+                metadata:
+                  name: bgp-peering-policy-0
+                  labels:
+                    app.kubernetes.io/name: "cilium-bgp-peering-policy"
+                    app.kubernetes.io/instance: "{{ .Values.global.cluster }}"
+                    app.kubernetes.io/component: config
+                    app.kubernetes.io/part-of: cilium-system
+                    app.kubernetes.io/managed-by: argo
+                    helm.sh/chart: {{ printf "%s-%s" .Chart.Name .Chart.Version }}
+                spec:
+                  nodeSelector: {{ toYaml .Values.components.cilium.ciliumBGPPeeringPolicy.nodeSelector | nindent 20 }}
+                  virtualRouters: {{ toYaml (required "A valid .Values.components.cilium.ciliumBGPPeeringPolicy.virtualRouters entry required!" .Values.components.cilium.ciliumBGPPeeringPolicy.virtualRouters) | nindent 20 }}
+  destination:
+    name: {{ .Values.global.cluster }}
+    namespace: cilium-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

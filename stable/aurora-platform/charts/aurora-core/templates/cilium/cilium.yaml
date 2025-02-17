@@ -1,0 +1,137 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-cilium"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    chart: {{ default "cilium" .Values.components.cilium.helm.chart }}
+    {{- if .Values.components.cilium.helm.repository }}
+    repoURL: {{ .Values.components.cilium.helm.repository }}
+    {{- else }}
+    repoURL: {{ default "https://artifactory.ssc-spc.gc.ca/artifactory/gccloudone-aurora-helm" .Values.global.helm.repository }}
+    {{- end }}
+    targetRevision: {{ default "1.14.1" .Values.components.cilium.helm.targetRevision }}
+    plugin:
+      env:
+        - name: HELM_RELEASE_NAME
+          value: "cilium"
+        - name: HELM_VALUES
+          value: |
+            aksbyocni:
+              enabled: false
+
+            bgp:
+              # Should only be enabled if bgpControlPlane = false
+              enabled: false
+            bgpControlPlane:
+              enabled: true
+
+            cluster:
+              id: 1
+              name: {{ .Values.global.cluster }}-aks
+
+            cni:
+              uninstall: false
+            ipam:
+              mode: kubernetes
+            enableIPv4Masquerade: false
+            enableIPv6Masquerade: false
+
+            # cilium-agent
+            image: {{ default "{}" (include "cilium.image" .) | nindent 14 }}
+            imagePullSecrets: {{ toYaml .Values.components.cilium.imagePullSecrets | nindent 14 }}
+            nodeSelector:
+              kubernetes.io/os: linux
+            tolerations:
+              - operator: Exists
+
+            apiserver:
+              image: {{ default "{}" (include "cilium.apiserver.image" .) | nindent 16 }}
+              etcd:
+                image: {{ default "{}" (include "cilium.apiserver.etcd.image" .) | nindent 18 }}
+              nodeSelector: {{ toYaml .Values.components.cilium.nodeSelector | nindent 16 }}
+              tolerations: {{ toYaml .Values.components.cilium.tolerations | nindent 16 }}
+
+            # Configure certificate generation for Hubble integration
+            certgen:
+              image: {{ default "{}" (include "cilium.certgen.image" .) | nindent 16 }}
+              tolerations: {{ toYaml .Values.components.cilium.tolerations | nindent 16 }}
+
+            # Networking and security observability platform
+            hubble:
+              enabled: true
+
+              # Provides a cluster-wide API for querying Hubble flow data, which can be accessed directly or
+              # via the Hubble CLI and UI
+              relay:
+                enabled: true
+                image: {{ default "{}" (include "cilium.hubble.relay.image" .) | nindent 18 }}
+                nodeSelector: {{ toYaml .Values.components.cilium.nodeSelector | nindent 18 }}
+                tolerations: {{ toYaml .Values.components.cilium.tolerations | nindent 18 }}
+
+              ui:
+                enabled: true
+                nodeSelector: {{ toYaml .Values.components.cilium.nodeSelector | nindent 18 }}
+                tolerations: {{ toYaml .Values.components.cilium.tolerations | nindent 18 }}
+                backend:
+                  image: {{ default "{}" (include "cilium.hubble.ui.backend.image" .) | nindent 20 }}
+                frontend:
+                  image: {{ default "{}" (include "cilium.hubble.ui.frontend.image" .) | nindent 20 }}
+
+            operator:
+              enabled: true
+              image: {{ default "{}" (include "cilium.operator.image" .) | nindent 16 }}
+              nodeSelector: {{ toYaml .Values.components.cilium.nodeSelector | nindent 16 }}
+              tolerations: {{ toYaml .Values.components.cilium.tolerations | nindent 16 }}
+
+            # etcd mode for the agent
+            etcd:
+              enabled: false
+              image: {{ default "{}" (include "cilium.etcd.image" .) | nindent 16 }}
+              tolerations:
+                - operator: Exists
+
+            # The node initialization DaemonSet
+            nodeinit:
+              enabled: false
+              image: {{ default "{}" (include "cilium.nodeinit.image" .) | nindent 16 }}
+              nodeSelector: {{ toYaml .Values.components.cilium.nodeSelector | nindent 16 }}
+              tolerations: {{ toYaml .Values.components.cilium.tolerations | nindent 16 }}
+
+            #  Cilium pre-flight resources (required for upgrade)
+            preflight:
+              enabled: false
+              image: {{ default "{}" (include "cilium.preflight.image" .) | nindent 16 }}
+              nodeSelector: {{ toYaml .Values.components.cilium.nodeSelector | nindent 16 }}
+              tolerations: {{ toYaml .Values.components.cilium.tolerations | nindent 16 }}
+  destination:
+    name: {{ .Values.global.cluster }}
+    namespace: cilium-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+  # https://github.com/cilium/cilium/issues/17349
+  ignoreDifferences:
+    - group: ""
+      kind: ConfigMap
+      name: hubble-ca-cert
+      jsonPointers:
+      - /data/ca.crt
+    - group: ""
+      kind: Secret
+      name: hubble-relay-client-certs
+      jsonPointers:
+      - /data/ca.crt
+      - /data/tls.crt
+      - /data/tls.key
+    - group: ""
+      kind: Secret
+      name: hubble-server-certs
+      jsonPointers:
+      - /data/ca.crt
+      - /data/tls.crt
+      - /data/tls.key

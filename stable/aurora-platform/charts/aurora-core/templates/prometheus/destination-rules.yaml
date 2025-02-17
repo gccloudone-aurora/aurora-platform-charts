@@ -1,0 +1,102 @@
+{{- if .Values.global.imports.app.enabled }}
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-prometheus-destination-rules"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    chart: {{ .Values.global.raw.helm.chart }}
+    repoURL: {{ default .Values.global.helm.repository .Values.global.raw.helm.repository }}
+    targetRevision: {{ .Values.global.raw.helm.targetRevision }}
+    plugin:
+      env:
+        - name: HELM_RELEASE_NAME
+          value: "prometheus-destination-rules"
+        - name: HELM_VALUES
+          value: |
+            resources:
+              - apiVersion: networking.istio.io/v1beta1
+                kind: DestinationRule
+                metadata:
+                  name: kube-prometheus-stack-grafana
+                  namespace: prometheus-system
+                  labels:
+                    app.kubernetes.io/managed-by: argo
+                    app.kubernetes.io/name: grafana-destination-rule
+                    app.kubernetes.io/part-of: prometheus-system
+                spec:
+                  host: "kube-prometheus-stack-grafana.prometheus-system.svc.{{ .Values.global.ingressDomain }}"
+                  trafficPolicy:
+                    tls:
+                      mode: DISABLE
+              - apiVersion: networking.istio.io/v1beta1
+                kind: DestinationRule
+                metadata:
+                  name: kube-prometheus-stack-prometheus
+                  namespace: prometheus-system
+                  labels:
+                    app.kubernetes.io/managed-by: argo
+                    app.kubernetes.io/name: prometheus-destination-rule
+                    app.kubernetes.io/part-of: prometheus-system
+                spec:
+                  host: "kube-prometheus-stack-prometheus.prometheus-system.svc.{{ .Values.global.ingressDomain }}"
+                  trafficPolicy:
+                    tls:
+                      mode: DISABLE
+              - apiVersion: networking.istio.io/v1beta1
+                kind: DestinationRule
+                metadata:
+                  name: kube-prometheus-stack-prometheus-node-exporter
+                  namespace: prometheus-system
+                  labels:
+                    app.kubernetes.io/managed-by: argo
+                    app.kubernetes.io/name: prometheus-node-exporter-destination-rule
+                    app.kubernetes.io/part-of: prometheus-system
+                spec:
+                  host: "kube-prometheus-stack-prometheus-node-exporter.prometheus-system.svc.{{ .Values.global.ingressDomain }}"
+                  trafficPolicy:
+                    tls:
+                      mode: DISABLE
+              {{- if .Values.components.prometheus.alertmanager.enabled }}
+              - apiVersion: networking.istio.io/v1beta1
+                kind: DestinationRule
+                metadata:
+                  name: kube-prometheus-stack-alertmanager
+                  namespace: prometheus-system
+                  labels:
+                    app.kubernetes.io/managed-by: argo
+                    app.kubernetes.io/name: alertmanager-destination-rule
+                    app.kubernetes.io/part-of: prometheus-system
+                spec:
+                  host: "kube-prometheus-stack-alertmanager.prometheus-system.svc.{{ .Values.global.ingressDomain }}"
+                  trafficPolicy:
+                    tls:
+                      mode: DISABLE
+              {{- range untilStep 0 (int .Values.components.prometheus.alertmanager.alertmanagerSpec.replicas) 1 }}
+              - apiVersion: networking.istio.io/v1beta1
+                kind: DestinationRule
+                metadata:
+                  name: kube-prometheus-stack-alertmanager-{{ . }}
+                  namespace: prometheus-system
+                  labels:
+                    app.kubernetes.io/managed-by: argo
+                    app.kubernetes.io/name: alertmanager-destination-rule
+                    app.kubernetes.io/part-of: prometheus-system
+                spec:
+                  host: "kube-prometheus-stack-alertmanager-{{ . }}.prometheus-system.svc.{{ $.Values.global.ingressDomain }}"
+                  trafficPolicy:
+                    tls:
+                      mode: DISABLE
+              {{- end }}
+              {{- end }}
+  destination:
+    name: {{ .Values.global.cluster }}
+    namespace: platform-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+{{- end }}

@@ -1,0 +1,95 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-velero"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    chart: {{ default "velero" .Values.components.velero.helm.chart }}
+    {{- if .Values.components.velero.helm.repository}}
+    repoURL: {{ .Values.components.velero.helm.repository }}
+    {{- else }}
+    repoURL: {{ default "https://vmware-tanzu.github.io/helm-charts" .Values.global.helm.repository }}
+    {{- end }}
+    targetRevision: {{ default "4.0.3" .Values.components.velero.helm.targetRevision }}
+    plugin:
+      env:
+        - name: HELM_RELEASE_NAME
+          value: "velero"
+        - name: HELM_VALUES
+          value: |
+            image: {{ default "{}" (include "velero.image" .) | nindent 14 }}
+
+            resources: {{ toYaml .Values.components.velero.resources | nindent 14 }}
+
+            nodeSelector: {{ toYaml .Values.components.velero.nodeSelector | nindent 14 }}
+            tolerations: {{ toYaml .Values.components.velero.tolerations | nindent 14 }}
+            affinity: {{ toYaml .Values.components.velero.affinity | nindent 14 }}
+
+            initContainers:
+              - name: velero-plugin-for-azure
+                image: {{ include "velero.plugin.azure.image" . | quote }}
+                imagePullPolicy: IfNotPresent
+                volumeMounts:
+                  - mountPath: /target
+                    name: plugins
+
+            kubectl:
+              image: {{ default "{}" (include "velero.kubectl.image" .) | nindent 16 }}
+
+            podLabels:
+              aadpodidbinding: {{ required "velero.aadPodIdentity.name is required" .Values.components.velero.aadPodIdentity.name | quote }}
+
+            metrics:
+              serviceMonitor:
+                enabled: true
+
+            configuration:
+              backupStorageLocation:
+              - name: {{ .Values.global.cluster }}
+                provider: azure
+                default: true
+                bucket: {{ required "velero.backupStorage.bucket is required" .Values.components.velero.backupStorage.bucket | quote }}
+                config:
+                  resourceGroup: {{ required "velero.backupStorage.resourceGroupName is required" .Values.components.velero.backupStorage.resourceGroupName | quote }}
+                  storageAccount: {{ required "velero.backupStorage.storageAccountName is required" .Values.components.velero.backupStorage.storageAccountName | quote }}
+                  subscriptionId: {{ required "velero.backupStorage.subscriptionId is required" .Values.components.velero.backupStorage.subscriptionId | quote }}
+              volumeSnapshotLocation:
+              - name: {{ .Values.global.cluster }}
+                provider: azure
+                config:
+                  resourceGroup: {{ required "velero.volumeSnapshot.resourceGroupName is required" .Values.components.velero.volumeSnapshot.resourceGroupName | quote }}
+                  incremental: true
+
+            credentials:
+              secretContents:
+                cloud: |
+                  AZURE_CLIENT_ID:
+                  AZURE_CLIENT_SECRET: 
+                  AZURE_TENANT_ID: {{ .Values.global.tenantId }}
+                  AZURE_SUBSCRIPTION_ID: {{ .Values.global.subscriptionId }}
+                  AZURE_RESOURCE_GROUP: {{ printf "%s-rg-managed-aks" .Values.global.cluster }}                  
+
+            schedules:
+              hourly-resources:
+                schedule: "0 * * * *"
+                template:
+                  includeClusterResources: true
+                  includedNamespaces:
+                  - '*'
+                  snapshotVolumes: false
+                  storageLocation: {{ .Values.global.cluster }}
+                  volumeSnapshotLocations:
+                  - {{ .Values.global.cluster }}
+                  ttl: 720h0m0s
+
+            priorityClassName: {{ .Values.components.velero.priorityClassName }}
+  destination:
+    name: {{ .Values.global.cluster }}
+    namespace: velero-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

@@ -1,0 +1,52 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-podtracker"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    chart: {{ default "podtracker" .Values.components.podtracker.helm.chart }}
+    {{- if .Values.components.podtracker.helm.repository }}
+    repoURL: {{ .Values.components.podtracker.helm.repository }}
+    {{- else }}
+    repoURL: {{ default "https://artifactory.ssc-spc.gc.ca/artifactory/gccloudone-aurora-helm" .Values.global.helm.repository }}
+    {{- end }}
+    targetRevision: {{ default "1.1.4" .Values.components.podtracker.helm.targetRevision }}
+    plugin:
+      env:
+        - name: HELM_RELEASE_NAME
+          value: "podtracker"
+        - name: HELM_VALUES
+          value: |
+            image: {{ default "{}" (include "podtracker.image" .) | nindent 14 }}
+            imagePullSecrets: {{ toYaml .Values.components.podtracker.imagePullSecrets | nindent 14 }}
+
+            leaderElectionEnabled: {{ .Values.components.podtracker.leaderElectionEnabled }}
+            replicaCount: {{ default 2 .Values.components.podtracker.replicaCount }}
+
+            priorityClassName: {{ .Values.components.podtracker.priorityClassName }}
+
+            webhooksEnabled: {{ .Values.components.podtracker.webhooksEnabled }}
+
+            podtrackerConfiguration: {{ default "[]" (toYaml .Values.components.podtracker.podtrackerConfiguration) | nindent 14 }}
+
+            securityContext: {{ default "{}" (toYaml .Values.components.podtracker.securityContext) | nindent 14 }}
+
+            resources: {{ default "{}" (toYaml .Values.components.podtracker.resources) | nindent 14 }}
+
+            networkPolicies: {{ default "[]" (toYaml .Values.components.podtracker.networkPolicies) | nindent 14 }}
+
+            prometheus: {{ default "{}" (toYaml .Values.components.podtracker.prometheus) | nindent 14 }}
+
+            nodeSelector: {{ toYaml .Values.components.podtracker.nodeSelector | nindent 14 }}
+            tolerations: {{ toYaml .Values.components.podtracker.tolerations | nindent 14 }}
+            affinity: {{ toYaml .Values.components.podtracker.affinity | nindent 14 }}
+  destination:
+    name: {{ .Values.global.cluster }}
+    namespace: podtracker-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

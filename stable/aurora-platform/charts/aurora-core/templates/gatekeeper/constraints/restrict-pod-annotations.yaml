@@ -1,0 +1,45 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-gatekeeper-restrict-pod-annotations"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+  annotations:
+    kubernetes.io/description: |
+      Ensures that solution builders cannot assign certain pod annotations.
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    chart: {{ .Values.global.raw.helm.chart }}
+    repoURL: {{ default .Values.global.helm.repository .Values.global.raw.helm.repository }}
+    targetRevision: {{ .Values.global.raw.helm.targetRevision }}
+    helm:
+      releaseName: gatekeeper-restrict-pod-annotations
+      values: |
+        resources:
+          - apiVersion: constraints.gatekeeper.sh/v1beta1
+            kind: RestrictPodAnnotations
+            metadata:
+              name: restrict-pod-annotations
+            spec:
+              match:
+                namespaceSelector:
+                  matchExpressions:
+                    - key: namespace.ssc-spc.gc.ca/purpose
+                      operator: In
+                      values:
+                        - solution
+                kinds:
+                  - apiGroups: [""]
+                    kinds: ["Pod"]
+                excludedNamespaces: {{ toYaml .Values.components.gatekeeper.constraints.restrictPodAnnotations.excludedNamespaces | nindent 18 }}
+              enforcementAction: {{ .Values.components.gatekeeper.constraints.restrictPodAnnotations.enforcementAction }}
+              parameters:
+                annotations: {{ .Values.components.gatekeeper.constraints.restrictPodAnnotations.restrictedAnnotations | toYaml | nindent 18 }}
+  destination:
+    name: {{ .Values.global.cluster }}
+    namespace: platform-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

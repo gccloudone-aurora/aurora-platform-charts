@@ -1,0 +1,164 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-kubecost-netpol"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    chart: {{ .Values.global.raw.helm.chart }}
+    repoURL: {{ default .Values.global.helm.repository .Values.global.raw.helm.repository }}
+    targetRevision: {{ .Values.global.raw.helm.targetRevision }}
+    helm:
+      releaseName: kubecost-netpol
+      values: |
+        resources:
+          - apiVersion: networking.k8s.io/v1
+            kind: NetworkPolicy
+            metadata:
+              name: allow-same-namespace
+              namespace: kubecost-system
+            spec:
+              podSelector: {}
+              policyTypes:
+                - Ingress
+                - Egress
+              ingress:
+                - from:
+                  - podSelector: {}
+              egress:
+                - to:
+                  - podSelector: {}
+          - apiVersion: networking.k8s.io/v1
+            kind: NetworkPolicy
+            metadata:
+              name: allow-ingress-from-prometheus-to-kubecost
+              namespace: kubecost-system
+            spec:
+              ingress:
+              - from:
+                - namespaceSelector:
+                    matchLabels:
+                      namespace.ssc-spc.gc.ca/purpose: system
+                      kubernetes.io/metadata.name: prometheus-system
+                  podSelector:
+                    matchLabels:
+                      app.kubernetes.io/name: prometheus
+                      app.kubernetes.io/instance: kube-prometheus-stack-prometheus
+              podSelector:
+                matchLabels:
+                  app.kubernetes.io/name: cost-analyzer
+              policyTypes:
+              - Ingress
+          - apiVersion: networking.k8s.io/v1
+            kind: NetworkPolicy
+            metadata:
+              name: allow-ingress-from-grafana-to-kubecost
+              namespace: kubecost-system
+            spec:
+              ingress:
+              - from:
+                - namespaceSelector:
+                    matchLabels:
+                      namespace.ssc-spc.gc.ca/purpose: system
+                      kubernetes.io/metadata.name: prometheus-system
+                  podSelector:
+                    matchLabels:
+                      app.kubernetes.io/name: grafana
+              podSelector:
+                matchLabels:
+                  app.kubernetes.io/name: cost-analyzer
+              policyTypes:
+              - Ingress
+          - apiVersion: networking.k8s.io/v1
+            kind: NetworkPolicy
+            metadata:
+              name: allow-egress-to-azureapi-from-kubecost
+              namespace: kubecost-system
+            spec:
+              egress:
+              - ports:
+                - port: 443
+                  protocol: TCP
+                to:
+                - ipBlock:
+                    cidr: 0.0.0.0/0
+              podSelector:
+                matchLabels:
+                  app.kubernetes.io/name: cost-analyzer
+              policyTypes:
+              - Egress
+          - apiVersion: networking.k8s.io/v1
+            kind: NetworkPolicy
+            metadata:
+              name: allow-egress-to-prometheus-from-kubecost
+              namespace: kubecost-system
+            spec:
+              egress:
+                - to:
+                  - namespaceSelector:
+                      matchLabels:
+                        namespace.ssc-spc.gc.ca/purpose: system
+                        kubernetes.io/metadata.name: prometheus-system
+                    podSelector:
+                      matchLabels:
+                        app.kubernetes.io/name: prometheus
+                        app.kubernetes.io/instance: kube-prometheus-stack-prometheus
+              podSelector:
+                matchLabels:
+                  app.kubernetes.io/name: cost-analyzer
+              policyTypes:
+              - Egress
+          - apiVersion: networking.k8s.io/v1
+            kind: NetworkPolicy
+            metadata:
+              name: allow-egress-to-grafana-from-kubecost
+              namespace: kubecost-system
+            spec:
+              egress:
+                - to:
+                  - namespaceSelector:
+                      matchLabels:
+                        namespace.ssc-spc.gc.ca/purpose: system
+                        kubernetes.io/metadata.name: prometheus-system
+                    podSelector:
+                      matchLabels:
+                        app.kubernetes.io/name: grafana
+              podSelector:
+                matchLabels:
+                  app.kubernetes.io/name: cost-analyzer
+              policyTypes:
+              - Egress
+          {{- if .Values.global.imports.mgmt.enabled }}
+          - apiVersion: networking.k8s.io/v1
+            kind: NetworkPolicy
+            metadata:
+              name: allow-ingress-from-bill-of-landing-to-kubecost
+              namespace: kubecost-system
+            spec:
+              ingress:
+                - ports:
+                    - port: 9090
+                      protocol: TCP
+                  from:
+                    - namespaceSelector:
+                        matchLabels:
+                          kubernetes.io/metadata.name: bill-of-landing-system
+                      podSelector:
+                        matchLabels:
+                          app.kubernetes.io/instance: bill-of-landing
+                          app.kubernetes.io/name: bol
+              podSelector:
+                matchLabels:
+                  app.kubernetes.io/name: cost-analyzer
+              policyTypes:
+                - Ingress
+          {{- end }}
+  destination:
+    name: {{ .Values.global.cluster }}
+    namespace: platform-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

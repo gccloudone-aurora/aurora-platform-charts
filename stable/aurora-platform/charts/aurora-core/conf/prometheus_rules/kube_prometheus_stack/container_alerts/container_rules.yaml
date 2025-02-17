@@ -1,0 +1,54 @@
+groups:
+  - name: containers.rules
+    rules:
+      - alert: ManyContainerRestarts
+        annotations:
+          message: 'Container {{ $$labels.namespace }}/{{ $$labels.pod }}/{{ $$labels.container }} restarted {{ $$value }} times in the last 8 hours.'
+          runbook: "https://aurora.gccloudone.ca/en/documentation/monitoring-surveillance/prometheus/namespace-alert-runbooks/many-container-restarts/"
+        expr: 'sum by (cluster, container, pod, namespace) (kube_pod_container_status_restarts_total{job="kube-state-metrics"} - kube_pod_container_status_restarts_total{job="kube-state-metrics"} offset 8h > 10)'
+        for: 2m
+        labels:
+          scope: namespace
+          severity: P3-Minor
+
+      # pint disable promql/series
+      - alert: ContainerCrashLooping
+        annotations:
+          message: 'Pod {{ $$labels.namespace }}/{{ $$labels.pod }} ({{ $$labels.container }}) is in CrashLoopBackOff.'
+          runbook: "https://aurora.gccloudone.ca/en/documentation/monitoring-surveillance/prometheus/namespace-alert-runbooks/many-container-restarts/"
+        expr: 'sum by (cluster, container, pod, namespace) (max_over_time(kube_pod_container_status_waiting_reason{job="kube-state-metrics",reason="CrashLoopBackOff"}[15m]) >= 1)'
+        for: 5m
+        labels:
+          scope: namespace
+          severity: P3-Minor
+
+      - alert: ContainerWaiting
+        annotations:
+          message: 'Container {{ $$labels.namespace }}/{{ $$labels.pod }}/{{ $$labels.container }} has been in {{ $$labels.reason }} for longer than 15 minutes.'
+          runbook: "https://aurora.gccloudone.ca/en/documentation/monitoring-surveillance/prometheus/namespace-alert-runbooks/container-waiting/"
+        expr: 'sum by (cluster, container, pod, namespace, reason) (kube_pod_container_status_waiting_reason{reason!~"CrashLoopBackOff|ErrImagePull|ImagePullBackOff|ContainerCreating|PodInitializing"}) == 1'
+        for: 15m
+        labels:
+          scope: namespace
+          severity: P3-Minor
+
+      - alert: ContainerWaiting
+        annotations:
+          message: 'Container {{ $$labels.namespace }}/{{ $$labels.pod }}/{{ $$labels.container }} has been in {{ $$labels.reason }} for longer than 20 minutes.'
+          runbook: "https://aurora.gccloudone.ca/en/documentation/monitoring-surveillance/prometheus/namespace-alert-runbooks/container-waiting/"
+        expr: 'sum by (cluster, container, pod, namespace, reason) (kube_pod_container_status_waiting_reason{reason=~"ContainerCreating|PodInitializing"}) == 1'
+        for: 20m
+        labels:
+          scope: namespace
+          severity: P3-Minor
+
+      # pint disable promql/series
+      - alert: ContainerImagePullProblem
+        annotations:
+          message: 'Container {{ $$labels.namespace }}/{{ $$labels.pod }}/{{ $$labels.container}} has been in ErrImagePull and/or ImagePullBackOff for longer than 15 minutes.'
+          runbook: "https://aurora.gccloudone.ca/en/documentation/monitoring-surveillance/prometheus/namespace-alert-runbooks/container-waiting/#errimagepull"
+        expr: 'sum by (cluster, container, pod, namespace) (max_over_time(kube_pod_container_status_waiting_reason{reason=~"ErrImagePull|ImagePullBackOff"}[1m])) > 0'
+        for: 15m
+        labels:
+          scope: namespace
+          severity: P3-Minor

@@ -1,0 +1,73 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-vault-agent-k8s-auth"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    chart: {{ .Values.global.raw.helm.chart }}
+    repoURL: {{ default .Values.global.helm.repository .Values.global.raw.helm.repository }}
+    targetRevision: {{ .Values.global.raw.helm.targetRevision }}
+    plugin:
+      env:
+        - name: HELM_RELEASE_NAME
+          value: "vault-agent-k8s-auth"
+        - name: HELM_VALUES
+          value: |
+            resources:
+              - apiVersion: v1
+                kind: ServiceAccount
+                metadata:
+                  name: vault-auth
+                  namespace: vault-agent-system
+                  labels:
+                    app.kubernetes.io/name: "vault-agent-k8s-auth"
+                    app.kubernetes.io/instance: "{{ .Values.global.cluster }}"
+                    app.kubernetes.io/component: auth
+                    app.kubernetes.io/part-of: vault-agent-system
+                    app.kubernetes.io/managed-by: argo
+                    helm.sh/chart: {{ printf "%s-%s" .Chart.Name .Chart.Version }}              
+              - apiVersion: v1
+                kind: Secret
+                metadata:
+                  name: vault-auth
+                  namespace: vault-agent-system
+                  annotations:
+                    kubernetes.io/service-account.name: vault-auth
+                  labels:
+                    app.kubernetes.io/name: "vault-agent-k8s-auth"
+                    app.kubernetes.io/instance: "{{ .Values.global.cluster }}"
+                    app.kubernetes.io/component: auth
+                    app.kubernetes.io/part-of: vault-agent-system
+                    app.kubernetes.io/managed-by: argo
+                    helm.sh/chart: {{ printf "%s-%s" .Chart.Name .Chart.Version }}                      
+                type: kubernetes.io/service-account-token                  
+              - apiVersion: rbac.authorization.k8s.io/v1
+                kind: ClusterRoleBinding
+                metadata:
+                  name: vault-auth
+                  namespace: vault-agent-system
+                  labels:
+                    app.kubernetes.io/name: "vault-agent-k8s-auth"
+                    app.kubernetes.io/instance: "{{ .Values.global.cluster }}"
+                    app.kubernetes.io/component: auth
+                    app.kubernetes.io/part-of: vault-agent-system
+                    app.kubernetes.io/managed-by: argo
+                    helm.sh/chart: {{ printf "%s-%s" .Chart.Name .Chart.Version }}                    
+                subjects:
+                  - kind: ServiceAccount
+                    name: vault-auth
+                    namespace: vault-agent-system
+                roleRef:
+                  apiGroup: rbac.authorization.k8s.io
+                  kind: ClusterRole
+                  name: system:auth-delegator
+  destination:
+    name: {{ .Values.global.cluster }}
+    namespace: platform-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

@@ -1,0 +1,73 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-kubernetes-event-exporter"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    chart: {{ default "kubernetes-event-exporter" .Values.components.kubernetesEventExporter.helm.chart }}
+    {{- if .Values.components.kubernetesEventExporter.helm.repository}}
+    repoURL: {{ .Values.components.kubernetesEventExporter.helm.repository }}
+    {{- else }}
+    repoURL: {{ default "registry-1.docker.io/bitnamicharts" .Values.global.helm.repository }}
+    {{- end }}
+    targetRevision: {{ default "3.2.12" .Values.components.kubernetesEventExporter.helm.targetRevision }}
+    plugin:
+      env:
+        - name: HELM_RELEASE_NAME
+          value: "kubernetes-event-exporter"
+        - name: HELM_VALUES
+          value: |
+            global:
+              imagePullSecrets: {{ toYaml .Values.components.kubernetesEventExporter.imagePullSecrets | nindent 14 }}
+            image: {{ default "{}" (include "kubernetesEventExporter.image" .) | nindent 14 }}
+
+            replicaCount: {{ .Values.components.kubernetesEventExporter.replicas }}
+            resources: {{ toYaml .Values.components.kubernetesEventExporter.resources | nindent 14 }}
+
+            nodeSelector: {{ toYaml .Values.components.kubernetesEventExporter.nodeSelector | nindent 14 }}
+            tolerations: {{ toYaml .Values.components.kubernetesEventExporter.tolerations | nindent 14 }}
+            affinity: {{ toYaml .Values.components.kubernetesEventExporter.affinity | nindent 14 }}
+
+            pdb: {{ toYaml .Values.components.kubernetesEventExporter.pdb | nindent 14 }}
+
+            priorityClassName: {{ .Values.components.kubernetesEventExporter.priorityClassName }}
+
+            config:
+              logLevel: info
+              logFormat: pretty
+              maxEventAgeSeconds: 180
+              kubeQPS: 60
+              kubeBurst: 60
+              route:
+                routes:
+                  - match:
+                    - receiver: loki
+              receivers:
+                - name: loki
+                  loki:
+                    headers:
+                      Authorization: {{ required "kubernetesEventExporter.config.output.loki.authorization is required" .Values.components.kubernetesEventExporter.config.output.loki.authorization | quote }}
+                    streamLabels:
+                      source: kubernetes-event-exporter
+                      events_cluster: {{ .Values.global.cluster }}
+                    url: "{{ required "kubernetesEventExporter.config.output.loki.url is required" .Values.components.kubernetesEventExporter.config.output.loki.url }}"
+                    layout:
+                      message: {{`"{{ .Message }}"`}}
+                      reason: {{`"{{ .Reason }}"`}}
+                      type: {{`"{{ .Type }}"`}}
+                      count: {{`"{{ .Count }}"`}}
+                      kind: {{`"{{ .InvolvedObject.Kind }}"`}}
+                      name: {{`"{{ .InvolvedObject.Name }}"`}}
+                      namespace: {{`"{{ .Namespace }}"`}}
+                      reporter: {{`"{{ .Source.Component }}"`}}
+                      host: {{`"{{ .Source.Host }}"`}}
+  destination:
+    name: {{ .Values.global.cluster }}
+    namespace: event-logging-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

@@ -1,0 +1,81 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-cert-manager"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    chart: {{ default "cert-manager" .Values.components.certManager.helm.chart }}
+    {{- if .Values.components.certManager.helm.repository }}
+    repoURL: {{ .Values.components.certManager.helm.repository }}
+    {{- else }}
+    repoURL: {{ default "https://charts.jetstack.io" .Values.global.helm.repository }}
+    {{- end }}
+    targetRevision: {{ default "v1.11.0" .Values.components.certManager.helm.targetRevision }}
+    helm:
+      releaseName: cert-manager
+      values: |
+        installCRDs: true
+
+        global:
+          imagePullSecrets: {{ toYaml .Values.components.certManager.imagePullSecrets | nindent 12 }}
+          priorityClassName: {{ .Values.components.certManager.priorityClassName }}
+
+        image: {{ default "{}" (include "certManager.image" .) | nindent 10 }}
+        replicaCount: {{ .Values.components.certManager.replicas }}
+        resources: {{ toYaml .Values.components.certManager.resources | nindent 10 }}
+        nodeSelector: {{ toYaml .Values.components.certManager.nodeSelector | nindent 10 }}
+        tolerations: {{ toYaml .Values.components.certManager.tolerations | nindent 10 }}
+        affinity: {{ toYaml .Values.components.certManager.affinity | nindent 10 }}
+
+        webhook:
+          image: {{ default "{}" (include "certManager.webhook.image" .) | nindent 12 }}
+          replicaCount: {{ .Values.components.certManager.webhook.replicas }}
+          resources: {{ toYaml .Values.components.certManager.webhook.resources | nindent 12 }}
+          nodeSelector: {{ toYaml .Values.components.certManager.webhook.nodeSelector | nindent 12 }}
+          tolerations: {{ toYaml .Values.components.certManager.webhook.tolerations | nindent 12 }}
+          affinity: {{ toYaml .Values.components.certManager.webhook.affinity | nindent 12 }}
+
+        cainjector:
+          image: {{ default "{}" (include "certManager.cainjector.image" .) | nindent 12 }}
+          replicaCount: {{ .Values.components.certManager.cainjector.replicas }}
+          resources: {{ toYaml .Values.components.certManager.cainjector.resources | nindent 12 }}
+          nodeSelector: {{ toYaml .Values.components.certManager.cainjector.nodeSelector | nindent 12 }}
+          tolerations: {{ toYaml .Values.components.certManager.cainjector.tolerations | nindent 12 }}
+          affinity: {{ toYaml .Values.components.certManager.cainjector.affinity | nindent 12 }}
+
+        acmesolver:
+          image: {{ default "{}" (include "certManager.acmesolver.image" .) | nindent 12 }}
+
+        startupapicheck:
+          image: {{ default "{}" (include "certManager.startupapicheck.image" .) | nindent 12 }}
+          resources: {{ toYaml .Values.components.certManager.startupapicheck.resources | nindent 12 }}
+          nodeSelector: {{ toYaml .Values.components.certManager.startupapicheck.nodeSelector | nindent 12 }}
+          tolerations: {{ toYaml .Values.components.certManager.startupapicheck.tolerations | nindent 12 }}
+          affinity: {{ toYaml .Values.components.certManager.startupapicheck.affinity | nindent 12 }}
+
+        podLabels:
+          aadpodidbinding: {{ required "certManager.aadPodIdentity.name is required" .Values.components.certManager.aadPodIdentity.name | quote }}
+
+        podDnsConfig:
+          nameservers: {{ toYaml .Values.components.certManager.podDnsConfig.nameservers | nindent 12 }}
+
+        prometheus:
+          enabled: true
+          servicemonitor:
+            enabled: true
+            # prometheusInstance: default
+            # interval: 60s
+            # scrapeTimeout: 30s
+            # labels: {}
+            # honorLabels: false
+
+  destination:
+    name: {{ .Values.global.cluster }}
+    namespace: cert-manager-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

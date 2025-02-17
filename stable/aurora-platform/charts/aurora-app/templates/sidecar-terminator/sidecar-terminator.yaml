@@ -1,0 +1,40 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-sidecar-terminator"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    chart: {{ default "sidecar-terminator" .Values.components.sidecarTerminator.helm.chart }}
+    {{- if .Values.components.sidecarTerminator.helm.repository }}
+    repoURL: {{ .Values.components.sidecarTerminator.helm.repository }}
+    {{- else }}
+    repoURL: {{ default "https://artifactory.ssc-spc.gc.ca/artifactory/helm-aurora-remote" .Values.global.helm.repository }}
+    {{- end }}
+    targetRevision: {{ default "1.3.5" .Values.components.sidecarTerminator.helm.targetRevision }}
+    helm:
+      releaseName: sidecar-terminator
+      values: |
+        image: {{ default "{}" (include "sidecar-terminator.image" .) | nindent 10 }}
+        imagePullSecrets: {{ toYaml .Values.components.sidecarTerminator.imagePullSecrets | nindent 10 }}
+
+        terminator:
+          {{ default "{}" (include "sidecar-terminator-ephemeral.image" .) | nindent 10 }}
+
+        replicaCount: {{ .Values.components.sidecarTerminator.replicas }}
+        resources: {{ toYaml .Values.components.sidecarTerminator.resources | nindent 10 }}
+
+        nodeSelector: {{ toYaml .Values.components.sidecarTerminator.nodeSelector | nindent 10 }}
+        tolerations: {{ toYaml .Values.components.sidecarTerminator.tolerations | nindent 10 }}
+        affinity: {{ toYaml .Values.components.sidecarTerminator.affinity | nindent 10 }}
+
+        priorityClassName: {{ .Values.components.sidecarTerminator.priorityClassName }}
+  destination:
+    name: {{ .Values.global.cluster }}
+    namespace: sidecar-terminator-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

@@ -1,0 +1,110 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-argo-foundation-argocd-instance"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    chart: {{ default "argocd-instance" .Values.components.argoFoundation.argocdInstance.helm.chart }}
+    {{- if .Values.components.argoFoundation.argocdInstance.helm.repository }}
+    repoURL: {{ .Values.components.argoFoundation.argocdInstance.helm.repository }}
+    {{- else }}
+    repoURL: {{ default "https://artifactory.ssc-spc.gc.ca/artifactory/gccloudone-aurora-helm-local" .Values.global.helm.repository }}
+    {{- end }}
+    targetRevision: {{ default "0.0.1" .Values.components.argoFoundation.argocdInstance.helm.targetRevision }}
+    plugin:
+      env:
+        - name: HELM_RELEASE_NAME
+          value: "argocd-instance"
+        - name: HELM_VALUES
+          value: |
+            argocdInstance:
+
+              nodeSelector: {{ toYaml .Values.components.argoFoundation.argocdInstance.nodeSelector | nindent 16 }}
+              tolerations: {{ toYaml .Values.components.argoFoundation.argocdInstance.tolerations | nindent 16 }}
+
+              ingressDomain: "{{ .Values.components.argoFoundation.argocdInstance.ingressDomain }}"
+
+              adminSecurityGroup: {{ .Values.components.argoFoundation.argocdInstance.adminSecurityGroup }}
+              disableAdmin: "{{ .Values.components.argoFoundation.argocdInstance.disableAdmin }}"
+              oidcAuthSP:
+                tenantID: "{{ .Values.components.argoFoundation.argocdInstance.oidcAuthSP.credentials.tenantID }}"
+                clientID: "{{ .Values.components.argoFoundation.argocdInstance.oidcAuthSP.credentials.clientID }}"
+                clientSecret: "{{ .Values.components.argoFoundation.argocdInstance.oidcAuthSP.credentials.clientSecret }}"
+
+              argocdVaultPlugin:
+                AADPodIdentity:
+                  enabled: {{ default "false" .Values.components.argoFoundation.argocdInstance.aadPodIdentity.enabled }}
+                  {{- if .Values.components.argoFoundation.argocdInstance.aadPodIdentity.enabled }}
+                  managedIdentity:
+                    clientID: {{ .Values.components.argoFoundation.argocdInstance.aadPodIdentity.managedIdentity.clientID }}
+                    resourceID: {{ .Values.components.argoFoundation.argocdInstance.aadPodIdentity.managedIdentity.resourceID }}
+                  {{- end }}
+                credentials:
+                  avpType: "azurekeyvault"
+                  azureTenantID: "{{ .Values.components.argoFoundation.argocdInstance.argocdVaultPlugin.credentials.azureTenantID }}"
+                  azureClientID: "{{ .Values.components.argoFoundation.argocdInstance.argocdVaultPlugin.credentials.azureClientID }}"
+                  azureClientSecret: "{{ .Values.components.argoFoundation.argocdInstance.argocdVaultPlugin.credentials.azureClientSecret }}"
+
+              server:
+                autoscale:
+                  enabled: true
+                {{- if .Values.components.argoFoundation.argocdInstance.server.service }}
+                service: {{ toYaml .Values.components.argoFoundation.argocdInstance.server.service | nindent 18 }}
+                {{- end }}
+                resources: {{ toYaml .Values.components.argoFoundation.argocdInstance.server.resources | nindent 18 }}
+
+              repo:
+                resources: {{ toYaml .Values.components.argoFoundation.argocdInstance.repo.resources | nindent 18 }}
+
+              controller:
+                resources: {{ toYaml .Values.components.argoFoundation.argocdInstance.controller.resources | nindent 18 }}
+
+              applicationSet:
+                resources: {{ toYaml .Values.components.argoFoundation.argocdInstance.applicationSet.resources | nindent 18 }}
+
+              redis:
+                resources: {{ toYaml .Values.components.argoFoundation.argocdInstance.redis.resources | nindent 18 }}
+
+              notifications:
+                enabled: {{ .Values.components.argoFoundation.argocdInstance.notifications.enabled }}
+
+            netpol:
+              enabled: {{ .Values.components.argoFoundation.argocdInstance.netpol.enabled }}
+
+            register:
+              {{- if .Values.components.argoFoundation.argocdInstance.register.clusters }}
+              clusters: {{  toYaml .Values.components.argoFoundation.argocdInstance.register.clusters | nindent 16 }}
+              {{- end }}
+
+              repositories:
+                aurora-helm:
+                  type: helm
+                  url: https://artifactory.ssc-spc.gc.ca/artifactory/gccloudone-aurora-helm
+                aurora-clusters:
+                  type: git
+                  url: https://github.com/gccloudone-aurora/clusters.git
+                aurora-namespaces:
+                  type: git
+                  url: https://github.com/gccloudone-aurora/namespaces.git
+
+              repositoryCreds:
+                private-repo-creds:
+                  type: git
+                  url: {{ required ".Values.components.argoFoundation.argocdInstance.credentials.repository.username is required" .Values.components.argoFoundation.argocdInstance.credentials.repository.url | quote }}
+                  username: {{ required ".Values.components.argoFoundation.argocdInstance.credentials.repository.username is required" .Values.components.argoFoundation.argocdInstance.credentials.repository.username | quote }}
+                  password: {{ required ".Values.components.argoFoundation.argocdInstance.credentials.repository.password is required" .Values.components.argoFoundation.argocdInstance.credentials.repository.password | quote }}
+                private-helm-creds:
+                  type: helm
+                  url: {{ required ".Values.components.argoFoundation.argocdInstance.credentials.repository.username is required" .Values.components.argoFoundation.argocdInstance.credentials.helm.url | quote }}
+                  username: {{ required ".Values.components.argoFoundation.argocdInstance.credentials.helm.repository.username is required" .Values.components.argoFoundation.argocdInstance.credentials.helm.username | quote }}
+                  password: {{ required ".Values.components.argoFoundation.argocdInstance.credentials.helm.repository.password is required" .Values.components.argoFoundation.argocdInstance.credentials.helm.password | quote }}
+  destination:
+    name: '{{ .Values.global.cluster }}'
+    namespace: platform-management-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

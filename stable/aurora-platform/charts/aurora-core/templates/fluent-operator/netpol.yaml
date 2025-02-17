@@ -1,0 +1,198 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-fluent-operator-netpol"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    chart: {{ .Values.global.raw.helm.chart }}
+    repoURL: {{ default .Values.global.helm.repository .Values.global.raw.helm.repository }}
+    targetRevision: {{ .Values.global.raw.helm.targetRevision }}
+    plugin:
+      env:
+        - name: HELM_RELEASE_NAME
+          value: "fluent-operator-netpol"
+        - name: HELM_VALUES
+          value: |
+            resources:
+              - apiVersion: cilium.io/v2
+                kind: CiliumClusterwideNetworkPolicy
+                metadata:
+                  name: allow-ingress-from-fluent-to-fluentd-instances
+                spec:
+                  endpointSelector:
+                    matchLabels:
+                      app.kubernetes.io/component: fluentd
+                  ingress:
+                    - fromEndpoints:
+                        - matchLabels:
+                            io.kubernetes.pod.namespace: fluent-operator-system
+              - apiVersion: networking.k8s.io/v1
+                kind: NetworkPolicy
+                metadata:
+                  name: allow-same-namespace
+                  namespace: fluent-operator-system
+                spec:
+                  podSelector: {}
+                  policyTypes:
+                    - Ingress
+                    - Egress
+                  ingress:
+                    - from:
+                      - podSelector: {}
+                  egress:
+                    - to:
+                      - podSelector: {}
+              - apiVersion: networking.k8s.io/v1
+                kind: NetworkPolicy
+                metadata:
+                  name: allow-egress-to-logging-from-fluent
+                  namespace: fluent-operator-system
+                spec:
+                  egress:
+                  {{- range (required "global.loggingCidrs is required" .Values.global.loggingCidrs) }}
+                    - ports:
+                        - protocol: TCP
+                          port: 443
+                      to:
+                        - ipBlock:
+                            cidr: {{ . | quote }}
+                  {{- end }}
+                  podSelector:
+                    matchLabels:
+                      app.kubernetes.io/component: fluentd
+                  policyTypes:
+                  - Egress
+              {{ if .Values.global.clusterHasLoki }}
+              - apiVersion: networking.k8s.io/v1
+                kind: NetworkPolicy
+                metadata:
+                  name: allow-egress-to-loki-from-fluent
+                  namespace: fluent-operator-system
+                spec:
+                  egress:
+                  - ports:
+                    - port: 8080
+                      protocol: TCP
+                    to:
+                    - namespaceSelector:
+                        matchLabels:
+                          kubernetes.io/metadata.name: loki
+                      podSelector:
+                        matchLabels:
+                          app.kubernetes.io/component: gateway
+                  podSelector:
+                    matchLabels:
+                      app.kubernetes.io/name: fluentd
+                  policyTypes:
+                  - Egress
+              {{- end }}
+              - apiVersion: networking.k8s.io/v1
+                kind: NetworkPolicy
+                metadata:
+                  name: allow-egress-to-loganalytics-from-fluent
+                  namespace: fluent-operator-system
+                spec:
+                  egress:
+                    - ports:
+                        - protocol: TCP
+                          port: 443
+                      to:
+                        - ipBlock:
+                            cidr: 0.0.0.0/0
+                  podSelector:
+                    matchLabels:
+                      app.kubernetes.io/component: fluentd
+                  policyTypes:
+                  - Egress
+              - apiVersion: networking.k8s.io/v1
+                kind: NetworkPolicy
+                metadata:
+                  name: allow-egress-to-fluentd-from-fluentbit
+                  namespace: fluent-operator-system
+                spec:
+                  egress:
+                    - to:
+                      - namespaceSelector:
+                          matchLabels:
+                            namespace.ssc-spc.gc.ca/purpose: system
+                            kubernetes.io/metadata.name: fluent-operator-system
+                        podSelector:
+                          matchLabels:
+                            app.kubernetes.io/component: fluentd
+                  podSelector:
+                    matchLabels:
+                      app.kubernetes.io/component: config
+                  policyTypes:
+                  - Egress
+              - apiVersion: networking.k8s.io/v1
+                kind: NetworkPolicy
+                metadata:
+                  # FIXME: possibly remove this policy - not sure if this policy is necessary
+                  name: allow-ingress-from-fluentd-to-fluentbit
+                  namespace: fluent-operator-system
+                spec:
+                  ingress:
+                  - from:
+                    - namespaceSelector:
+                        matchLabels:
+                          namespace.ssc-spc.gc.ca/purpose: system
+                          kubernetes.io/metadata.name: fluent-operator-system
+                      podSelector:
+                        matchLabels:
+                          app.kubernetes.io/component: fluentd
+                  podSelector:
+                    matchLabels:
+                      app.kubernetes.io/component: config
+                  policyTypes:
+                  - Ingress
+              - apiVersion: networking.k8s.io/v1
+                kind: NetworkPolicy
+                metadata:
+                  # FIXME: potentially remove this - may not be necessary
+                  name: allow-egress-to-fluentbit-from-fluentd
+                  namespace: fluent-operator-system
+                spec:
+                  egress:
+                    - to:
+                      - namespaceSelector:
+                          matchLabels:
+                            namespace.ssc-spc.gc.ca/purpose: system
+                            kubernetes.io/metadata.name: fluent-operator-system
+                        podSelector:
+                          matchLabels:
+                            app.kubernetes.io/component: config
+                  podSelector:
+                    matchLabels:
+                      app.kubernetes.io/component: fluentd
+                  policyTypes:
+                  - Egress
+              - apiVersion: networking.k8s.io/v1
+                kind: NetworkPolicy
+                metadata:
+                  name: allow-ingress-from-fluentbit-to-fluentd
+                  namespace: fluent-operator-system
+                spec:
+                  ingress:
+                  - from:
+                    - namespaceSelector:
+                        matchLabels:
+                          namespace.ssc-spc.gc.ca/purpose: system
+                          kubernetes.io/metadata.name: fluent-operator-system
+                      podSelector:
+                        matchLabels:
+                          app.kubernetes.io/component: config
+                  podSelector:
+                    matchLabels:
+                      app.kubernetes.io/component: fluentd
+                  policyTypes:
+                  - Ingress
+  destination:
+    name: {{ .Values.global.cluster }}
+    namespace: platform-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

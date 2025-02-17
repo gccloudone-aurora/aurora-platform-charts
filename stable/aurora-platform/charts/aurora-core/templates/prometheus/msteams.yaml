@@ -1,0 +1,69 @@
+{{ if .Values.components.prometheus.alertmanager.enabled -}}
+
+# Convert a map of strings into a list of map of strings
+{{- $connectors := list -}}
+{{- range $key, $value := .Values.components.prometheus.msteams.connectors }}
+{{- $newMap := dict $key $value -}}
+{{- $connectors = append $connectors $newMap -}}
+{{- end }}
+
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-prometheus-msteams"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    chart: {{ default "prometheus-msteams" .Values.components.prometheus.msteams.helm.chart }}
+    {{- if .Values.components.prometheus.msteams.helm.repository }}
+    repoURL: {{ .Values.components.prometheus.msteams.helm.repository }}
+    {{- else }}
+    repoURL: {{ default "https://prometheus-msteams.github.io/prometheus-msteams" .Values.global.helm.repository }}
+    {{- end }}
+    targetRevision: {{ default "1.3.0" .Values.components.prometheus.msteams.helm.targetRevision }}
+    plugin:
+      env:
+        - name: HELM_RELEASE_NAME
+          value: "prometheus-msteams"
+        - name: HELM_VALUES
+          value: |
+            image: {{ default "{}" (include "prometheus.msteams.image" .) | nindent 14 }}
+            imagePullSecrets: {{ toYaml .Values.components.prometheus.msteams.imagePullSecrets | nindent 14 }}
+
+            replicaCount: {{ .Values.components.prometheus.msteams.replicas }}
+            resources: {{ toYaml .Values.components.prometheus.msteams.resources | nindent 14 }}
+
+            nodeSelector: {{ toYaml .Values.components.prometheus.msteams.nodeSelector | nindent 14 }}
+            tolerations: {{ toYaml .Values.components.prometheus.msteams.tolerations | nindent 14 }}
+            affinity: {{ toYaml .Values.components.prometheus.msteams.affinity | nindent 14 }}
+            priorityClassName: {{ .Values.components.prometheus.priorityClassName }}
+
+            metrics:
+              serviceMonitor:
+                enabled: true
+
+            customCardTemplate: | {{ .Files.Get "conf/alertmanager_notification_templates/msteams-card.tmpl" | trim | nindent 14 }}
+
+            # in alertmanager, the receiver is prometheus-msteams:2000/<connector name>
+            connectors: {{ toYaml $connectors | nindent 14 }}
+
+  destination:
+    name: {{ .Values.global.cluster }}
+    namespace: prometheus-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+
+{{- range $sKey, $sVal := .Values.components.prometheus.alertmanager.config.severities }}
+{{- range $environment, $matchers := $.Values.components.prometheus.alertmanager.config.environments }}
+{{- $envSeverityPair := printf "%s%s" $environment (camelcase $sKey) }}
+{{- if not (hasKey $.Values.components.prometheus.msteams.connectors $envSeverityPair) }}
+{{- fail (printf "A valid .Values.components.prometheus.msteams.connectors.%s entry required!" $envSeverityPair) }}
+{{- end }}
+{{- end }}
+{{- end }}
+
+{{- end }}
