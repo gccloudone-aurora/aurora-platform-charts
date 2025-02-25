@@ -1,0 +1,43 @@
+name: Release Helm Charts
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install Dependencies
+        run: |
+          echo "Installing yq..."
+          curl -fsSL https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -o /usr/local/bin/yq
+          chmod +x /usr/local/bin/yq
+
+      - name: Configure Git User
+        run: |
+          git config --global user.name "chart-releaser"
+          git config --global user.email "chart-releaser@users.noreply.github.com"
+
+      - name: Install Helm
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.19'
+      - run: |
+          curl -fsSL https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+
+      - name: Run Helm Chart Releaser
+        uses: helm/chart-releaser-action@v1.7.0
+        with:
+          charts_dir: charts
+        env:
+          CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
