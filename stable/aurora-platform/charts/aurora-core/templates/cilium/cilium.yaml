@@ -11,7 +11,7 @@ spec:
     {{- if .Values.components.cilium.helm.repository }}
     repoURL: {{ .Values.components.cilium.helm.repository }}
     {{- else }}
-    repoURL: {{ default "https://artifactory.ssc-spc.gc.ca/artifactory/gccloudone-aurora-helm" .Values.global.helm.repository }}
+    repoURL: {{ default "https://helm.cilium.io" .Values.global.helm.repository }}
     {{- end }}
     targetRevision: {{ default "1.14.1" .Values.components.cilium.helm.targetRevision }}
     plugin:

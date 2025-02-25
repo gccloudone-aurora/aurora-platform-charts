@@ -11,7 +11,7 @@ spec:
     {{- if .Values.components.argoFoundation.argocdInstance.helm.repository }}
     repoURL: {{ .Values.components.argoFoundation.argocdInstance.helm.repository }}
     {{- else }}
-    repoURL: {{ default "https://artifactory.ssc-spc.gc.ca/artifactory/gccloudone-aurora-helm-local" .Values.global.helm.repository }}
+    repoURL: {{ default "https://gccloudone-aurora.github.io/aurora-platform-charts" .Values.global.helm.repository }}
     {{- end }}
     targetRevision: {{ default "0.0.1" .Values.components.argoFoundation.argocdInstance.helm.targetRevision }}
     plugin:
@@ -79,28 +79,14 @@ spec:
               clusters: {{  toYaml .Values.components.argoFoundation.argocdInstance.register.clusters | nindent 16 }}
               {{- end }}
 
-              repositories:
-                aurora-helm:
-                  type: helm
-                  url: https://artifactory.ssc-spc.gc.ca/artifactory/gccloudone-aurora-helm
-                aurora-clusters:
-                  type: git
-                  url: https://github.com/gccloudone-aurora/clusters.git
-                aurora-namespaces:
-                  type: git
-                  url: https://github.com/gccloudone-aurora/namespaces.git
+              {{- if .Values.components.argoFoundation.argocdInstance.register.repositories }}
+              repositories: {{  toYaml .Values.components.argoFoundation.argocdInstance.register.repositories | nindent 16 }}
+              {{- end }}
 
-              repositoryCreds:
-                private-repo-creds:
-                  type: git
-                  url: {{ required ".Values.components.argoFoundation.argocdInstance.credentials.repository.username is required" .Values.components.argoFoundation.argocdInstance.credentials.repository.url | quote }}
-                  username: {{ required ".Values.components.argoFoundation.argocdInstance.credentials.repository.username is required" .Values.components.argoFoundation.argocdInstance.credentials.repository.username | quote }}
-                  password: {{ required ".Values.components.argoFoundation.argocdInstance.credentials.repository.password is required" .Values.components.argoFoundation.argocdInstance.credentials.repository.password | quote }}
-                private-helm-creds:
-                  type: helm
-                  url: {{ required ".Values.components.argoFoundation.argocdInstance.credentials.repository.username is required" .Values.components.argoFoundation.argocdInstance.credentials.helm.url | quote }}
-                  username: {{ required ".Values.components.argoFoundation.argocdInstance.credentials.helm.repository.username is required" .Values.components.argoFoundation.argocdInstance.credentials.helm.username | quote }}
-                  password: {{ required ".Values.components.argoFoundation.argocdInstance.credentials.helm.repository.password is required" .Values.components.argoFoundation.argocdInstance.credentials.helm.password | quote }}
+              {{- if .Values.components.argoFoundation.argocdInstance.register.repositoryCreds }}
+              repositoryCreds: {{  toYaml .Values.components.argoFoundation.argocdInstance.register.repositoryCreds | nindent 16 }}
+              {{- end }}
+
   destination:
     name: '{{ .Values.global.cluster }}'
     namespace: platform-management-system

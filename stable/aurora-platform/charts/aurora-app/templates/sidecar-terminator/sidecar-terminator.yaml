@@ -11,9 +11,9 @@ spec:
     {{- if .Values.components.sidecarTerminator.helm.repository }}
     repoURL: {{ .Values.components.sidecarTerminator.helm.repository }}
     {{- else }}
-    repoURL: {{ default "https://artifactory.ssc-spc.gc.ca/artifactory/helm-aurora-remote" .Values.global.helm.repository }}
+    repoURL: {{ default "https://gccloudone-aurora.github.io/aurora-platform-charts" .Values.global.helm.repository }}
     {{- end }}
-    targetRevision: {{ default "1.3.5" .Values.components.sidecarTerminator.helm.targetRevision }}
+    targetRevision: {{ default "0.0.1" .Values.components.sidecarTerminator.helm.targetRevision }}
     helm:
       releaseName: sidecar-terminator
       values: |

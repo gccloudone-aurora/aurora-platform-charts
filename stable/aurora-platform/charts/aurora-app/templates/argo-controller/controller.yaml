@@ -11,7 +11,7 @@ spec:
     {{- if .Values.components.argoController.helm.repository }}
     repoURL: {{ .Values.components.argoController.helm.repository }}
     {{- else }}
-    repoURL: {{ default "https://gccloudone-aurora.github.io/charts" .Values.global.helm.repository }}
+    repoURL: {{ default "https://gccloudone-aurora.github.io/aurora-platform-charts" .Values.global.helm.repository }}
     {{- end }}
     targetRevision: {{ default "0.0.1" .Values.components.argoController.helm.targetRevision }}
     helm:

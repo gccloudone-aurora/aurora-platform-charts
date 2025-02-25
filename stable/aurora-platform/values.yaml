@@ -15,19 +15,19 @@ global:
     #
     # You can override specific charts below
     # in the components section.
-    # registry: artifactory.example.ca
+    # registry: docker.io
 
   namespace:
     helm:
       chart: "aurora-namespace"
       targetRevision: "0.0.1"
-      repository: "https://artifactory.ssc-spc.gc.ca/artifactory/gccloudone-aurora-helm-local"
+      repository: "https://gccloudone-aurora.github.io/aurora-platform-charts"
 
   raw:
     helm:
       chart: "raw"
       targetRevision: "0.0.1"
-      repository: "https://artifactory.ssc-spc.gc.ca/artifactory/gccloudone-aurora-helm-local"
+      repository: "https://gccloudone-aurora.github.io/aurora-platform-charts"
 
   # Cluster name for the Application targets.
   cluster: in-cluster

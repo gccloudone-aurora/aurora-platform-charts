@@ -15,7 +15,7 @@ global:
     #
     # You can override specific charts below
     # in the components section.
-    # registry: artifactory.example.ca
+    # registry: docker.io
 
   namespace:
     helm:
@@ -61,7 +61,7 @@ components:
     argocdInstance:
       helm: {}
       # chart: argocd-instance
-      # repository: https://artifactory.ssc-spc.gc.ca/artifactory/gccloudone-aurora-helm-local
+      # repository: https://gccloudone-aurora.github.io/aurora-platform-charts
       # targetRevision: 0.0.1
 
       # disableAdmin: true
@@ -98,16 +98,6 @@ components:
       server:
         service: {}
           # type: ""
-
-      # credentials:
-      #   repository:
-      #     url: ""
-      #     username: ""
-      #     password: ""
-      #   helm:
-      #     url: ""
-      #     username: ""
-      #     password: ""
 
       repo:
         resources: {}
@@ -146,19 +136,31 @@ components:
 
       register:
         clusters: {}
+        repositories: {}
+        repositoryCreds: {}
 
     argocdProjects:
       platform:
         # applicationSet:
         #   generator:
         #     git:
+        #       repoURL
+        #       revision
         #       files:
+        #   template:
+        #     source:
+        #       repoURL
 
       solutions:
         # applicationSet:
         #   generator:
         #     git:
+        #       repoURL
+        #       revision
         #       files:
+        #   template:
+        #     source:
+        #       repoURL
 
       syncWindows:
         - clusters:
@@ -172,7 +174,7 @@ components:
   argoOperator:
     helm: {}
       # chart: argocd-operator
-      # repository: https://gccloudone-aurora.github.io/charts
+      # repository: https://gccloudone-aurora.github.io/aurora-platform-charts
       # targetRevision: 0.4.1
 
     imagePullSecrets: []
@@ -205,11 +207,11 @@ components:
 
     helm: {}
       # chart: bol
-      # repository: https://artifactory.ssc-spc.gc.ca/artifactory/gccloudone-aurora-helm-local
+      # repository: https://gccloudone-aurora.github.io/aurora-platform-charts
       # targetRevision: 0.0.1
 
     image:
-      # registry: artifactory.ssc-spc.gc.ca/gccloudone-aurora-docker-local
+      # registry: docker.io
       repository: bol
       # tag: v0.0.1
 

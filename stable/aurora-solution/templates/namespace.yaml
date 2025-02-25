@@ -33,7 +33,7 @@ spec:
     {{- if $.Values.global.helm.repository }}
     repoURL: {{ default $.Values.global.helm.repository $.Values.global.helm.repository }}
     {{- else }}
-    repoURL: {{ default "https://artifactory.ssc-spc.gc.ca/artifactory/gccloudone-aurora-helm-local" $.Values.global.helm.repository }}
+    repoURL: {{ default "https://gccloudone-aurora.github.io/aurora-platform-charts" $.Values.global.helm.repository }}
     {{- end }}
     targetRevision: {{ default "0.0.1" $.Values.global.helm.targetRevision }}
     helm:

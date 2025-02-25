@@ -15,7 +15,7 @@ global:
     #
     # You can override specific charts below
     # in the components section.
-    # registry: artifactory.example.ca
+    # registry: docker.io
 
   namespace:
     helm:
@@ -59,7 +59,7 @@ components:
   argoController:
     helm: {}
       # chart: argo-controller
-      # repository: https://gccloudone-aurora.github.io/charts
+      # repository: https://gccloudone-aurora.github.io/aurora-platform-charts
       # targetRevision: 0.0.1
 
     imagePullSecrets: []
@@ -252,13 +252,13 @@ components:
     customIstioResponses:
       helm: {}
         # chart: custom-istio-responses
-        # repository: https://gccloudone-aurora.github.io/charts
+        # repository: https://gccloudone-aurora.github.io/aurora-platform-charts
         # targetRevision: 0.0.1
 
     gateway:
       helm: {}
         # chart: istio-ingress-gateway
-        # repository:  https://gccloudone-aurora.github.io/charts
+        # repository:  https://gccloudone-aurora.github.io/aurora-platform-charts
         # targetRevision: 0.0.1
 
       replicas: 3
@@ -294,7 +294,7 @@ components:
     ingressIstioController:
       helm: {}
         # chart: ingress-istio-controller
-        # repository: https://gccloudone-aurora.github.io/charts
+        # repository: https://gccloudone-aurora.github.io/aurora-platform-charts
         # targetRevision: 1.4.0
 
       image:
@@ -447,8 +447,8 @@ components:
   sidecarTerminator:
     helm: {}
       # chart: sidecar-terminator
-      # repository: https://artifactory.ssc-spc.gc.ca/artifactory
-      # targetRevision: 1.3.5
+      # repository: https://gccloudone-aurora.github.io/aurora-platform-charts
+      # targetRevision: 0.0.1
 
     imagePullSecrets: []
     image:

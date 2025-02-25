@@ -40,8 +40,8 @@ spec:
             spec:
               generators:
                 - git:
-                    repoURL: "https://github.com/gccloudone-aurora/namespaces.git"
-                    revision: main
+                    repoURL: {{ .Values.components.argoFoundation.argocdProjects.solutions.applicationSet.generator.git.repoURL }}
+                    revision: {{ .Values.components.argoFoundation.argocdProjects.solutions.applicationSet.generator.git.revision }}
                     files: {{ toYaml .Values.components.argoFoundation.argocdProjects.solutions.applicationSet.generator.git.files | nindent 22 }}
               syncPolicy:
                 preserveResourcesOnDeletion: true
@@ -59,7 +59,7 @@ spec:
                       releaseName: '{{ "{{" }} path.basename }}'
                       values: |
                         {{ "{{" }} settings }}
-                    repoURL: https://artifactory.ssc-spc.gc.ca/artifactory/gccloudone-aurora-helm
+                    repoURL: {{ .Values.components.argoFoundation.argocdProjects.solutions.applicationSet.template.source.repoURL }}
                     targetRevision: '{{ "{{" }} version }}'
                   syncPolicy:
                     automated:

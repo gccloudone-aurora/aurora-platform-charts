@@ -15,7 +15,7 @@ global:
     #
     # You can override specific charts below
     # in the components section.
-    # registry: artifactory.example.ca
+    # registry: docker.io
 
   namespace:
     helm:
@@ -314,13 +314,13 @@ components:
   cidrAllocator:
     helm: {}
       # chart: cidr-allocator
-      # repository: https://artifactory.ssc-spc.gc.ca/artifactory/gccloudone-aurora-helm-local
+      # repository: https://gccloudone-aurora.github.io/aurora-platform-charts
       # targetRevision: 2.1.1
 
     imagePullSecrets:
       - name: cidr-allocator-image-pull-secret
     image:
-      # registry: artifactory.ssc-spc.gc.ca/gccloudone-aurora-docker-local
+      # registry: docker.io
       repository: cidr-allocator
       # tag: "0.0.1"
       # pullPolicy: IfNotPresent
@@ -361,13 +361,13 @@ components:
   auroraController:
     helm: {}
       # chart: aurora-controller
-      # repository: https://gccloudone-aurora.github.io/charts
+      # repository: https://gccloudone-aurora.github.io/aurora-platform-charts
       # targetRevision: 0.0.1
 
     imagePullSecrets:
       - name: aurora-controller-image-pull-secret
     image:
-      # registry: artifactory.ssc-spc.gc.ca/gccloudone-aurora-docker-local
+      # registry: docker.io
       repository: aurora-controller
       tag: "0.0.1"
 
@@ -410,61 +410,61 @@ components:
     imagePullSecrets:
       - name: cilium-image-pull-secret
     image:
-      # registry: artifactory.ssc-spc.gc.ca/gccloudone-aurora-docker-local
+      # registry: docker.io
       repository: cilium/cilium
       tag: "v1.14.1"
       pullPolicy: IfNotPresent
 
     apiserver:
       image:
-        # registry: artifactory.ssc-spc.gc.ca/gccloudone-aurora-docker-local
+        # registry: docker.io
         repository: cilium/clustermesh-apiserver
 
       etcd:
         image:
-          # registry: artifactory.ssc-spc.gc.ca/gccloudone-aurora-docker-local
+          # registry: docker.io
           repository: coreos/etcd
 
     certgen:
       image:
-        # registry: artifactory.ssc-spc.gc.ca/gccloudone-aurora-docker-local
+        # registry: docker.io
         repository: cilium/certgen
 
     etcd:
       image:
-        # registry: artifactory.ssc-spc.gc.ca/gccloudone-aurora-docker-local
+        # registry: docker.io
         repository: cilium/cilium-etcd-operator
 
     hubble:
       relay:
         image:
-          # registry: artifactory.ssc-spc.gc.ca/gccloudone-aurora-docker-local
+          # registry: docker.io
           repository: cilium/hubble-relay
 
       ui:
         backend:
           image:
-            # registry: artifactory.ssc-spc.gc.ca/gccloudone-aurora-docker-local
+            # registry: docker.io
             repository: cilium/hubble-ui-backend
 
         frontend:
           image:
-            # registry: artifactory.ssc-spc.gc.ca/gccloudone-aurora-docker-local
+            # registry: docker.io
             repository: cilium/hubble-ui
 
     nodeinit:
       image:
-        # registry: artifactory.ssc-spc.gc.ca/gccloudone-aurora-docker-local
+        # registry: docker.io
         repository: cilium/startup-script
 
     operator:
       image:
-        # registry: artifactory.ssc-spc.gc.ca/gccloudone-aurora-docker-local
+        # registry: docker.io
         repository: cilium/operator
 
     preflight:
       image:
-        # registry: artifactory.ssc-spc.gc.ca/gccloudone-aurora-docker-local
+        # registry: docker.io
         repository: cilium/cilium
 
     priorityClassName: system-cluster-critical
@@ -1000,13 +1000,13 @@ components:
   kubernetesEventExporter:
     helm: {}
       # chart: kubernetes-event-exporter
-      # repository: https://artifactory.ssc-spc.gc.ca/artifactory/helm-kubernetes-event-exporter-remote
+      # repository: https:///registry-1.docker.io/bitnamicharts
       # targetRevision: 3.1.2
 
     imagePullSecrets:
       - name: aurora-image-pull-secret
     image:
-      # registry: artifactory.ssc-spc.gc.ca/gccloudone-aurora-docker-local
+      # registry: docker.io
       repository: bitnami/kubernetes-event-exporter
       tag: 1.7.0-debian-12-r14
       pullPolicy: IfNotPresent
@@ -1077,11 +1077,11 @@ components:
   podtracker:
     helm: {}
       # chart: podtracker
-      # repository: https://artifactory.ssc-spc.gc.ca/artifactory/gccloudone-aurora-helm-local
+      # repository: https://gccloudone-aurora.github.io/aurora-platform-charts
       # targetRevision: 1.1.1
 
     image:
-      # registry: artifactory.ssc-spc.gc.ca/docker
+      # registry: docker.io
       repository: podtracker
       # tag: "1.1.0"
       # pullPolicy: IfNotPresent

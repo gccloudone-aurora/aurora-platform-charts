@@ -13,7 +13,7 @@ spec:
   project: {{ $.Values.global.project }}
   source:
     repoURL: {{ $.Values.components.gatekeeper.mutations.repoURL }}
-    targetRevision: {{ default "master" $.Values.components.gatekeeper.mutations.targetRevision }}
+    targetRevision: {{ default "main" $.Values.components.gatekeeper.mutations.targetRevision }}
     path: {{ . }}
   destination:
     name: {{ $.Values.global.cluster }}

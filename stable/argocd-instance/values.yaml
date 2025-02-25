@@ -20,7 +20,7 @@ argocdInstance:
       azureClientSecret: ""
   disableAdmin: false
   imageRegistry:
-    host: "artifactory.ssc-spc.gc.ca"
+    host: "docker.io"
     repository: "docker"
   image:
     name: "argoproj/argocd"
@@ -97,22 +97,32 @@ register:
     #   caData:
 
   repositories: {}
-    # aurora-clusters:
-    #   type: git
-    #   url: https://github.com/gccloudone-aurora/clusters.git
-    # aurora-namespaces:
-    #   type: git
-    #   url: https://github.com/gccloudone-aurora/namespaces.git
-
-  repositoryCreds: {}
-    # platform:
-    #   type: git
-    #   url: https://github.com/gccloudone-aurora/clusters.git
-    #   username: ""
-    #   password: ""
     # aurora-helm:
     #   type: helm
-    #   url: https://artifactory.ssc-spc.gc.ca/artifactory/gccloudone-aurora-helm
+    #   url: https://gccloudone-aurora.github.io/aurora-platform-charts
+    # aurora-clusters:
+    #   type: git
+    #   url: https://github.com/gccloudone-aurora/aurora-template-example.git
+    #   path: platform/clusters
+    # aurora-namespaces:
+    #   type: git
+    #   url: https://github.com/gccloudone-aurora/aurora-template-example.git
+    #   path: platform/namespaces
+
+  repositoryCreds: {}
+    # aurora-helm:
+    #   type: helm
+    #   url: https://gccloudone-aurora.github.io/aurora-platform-charts
+    #   username: ""
+    #   password: ""
+    # aurora-clusters:
+    #   type: git
+    #   url: https://github.com/gccloudone-aurora/aurora-template-example.git
+    #   username: ""
+    #   password: ""
+    # aurora-namespaces:
+    #   type: git
+    #   url: https://github.com/gccloudone-aurora/aurora-template-example.git
     #   username: ""
     #   password: ""
 
