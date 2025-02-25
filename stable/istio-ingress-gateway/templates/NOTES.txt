@@ -1,0 +1,5 @@
+**********************
+** CONGRATULATIONS! **
+**********************
+
+Istio Ingress Gateway has been installed.

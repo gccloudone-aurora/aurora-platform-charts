@@ -249,9 +249,9 @@ components:
         # repository: https://istio-release.storage.googleapis.com/charts
         # targetRevision: 1.16.1
 
-    customIstioResponses:
+    istioCustomResponses:
       helm: {}
-        # chart: custom-istio-responses
+        # chart: istio-custom-responses
         # repository: https://gccloudone-aurora.github.io/aurora-platform-charts
         # targetRevision: 0.0.1
 

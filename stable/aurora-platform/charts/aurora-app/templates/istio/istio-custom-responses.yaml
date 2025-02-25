@@ -1,19 +1,19 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: "{{ .Values.global.cluster }}-custom-istio-responses"
+  name: "{{ .Values.global.cluster }}-istio-custom-responses"
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
   project: {{ .Values.global.project }}
   source:
-    chart: {{ default "custom-istio-responses" .Values.components.istio.customIstioResponses.helm.chart }}
-    {{- if .Values.components.istio.customIstioResponses.helm.repository }}
-    repoURL: {{ .Values.components.istio.customIstioResponses.helm.repository }}
+    chart: {{ default "istio-custom-responses" .Values.components.istio.istioCustomResponses.helm.chart }}
+    {{- if .Values.components.istio.istioCustomResponses.helm.repository }}
+    repoURL: {{ .Values.components.istio.istioCustomResponses.helm.repository }}
     {{- else }}
     repoURL: {{ default "https://gccloudone-aurora.github.io/aurora-platform-charts" .Values.global.helm.repository }}
     {{- end }}
-    targetRevision: {{ default "0.0.1" .Values.components.istio.customIstioResponses.helm.targetRevision }}
+    targetRevision: {{ default "0.0.1" .Values.components.istio.istioCustomResponses.helm.targetRevision }}
     helm:
       releaseName: custom-responses
       values: |

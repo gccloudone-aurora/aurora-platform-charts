@@ -1,0 +1,5 @@
+**********************
+** CONGRATULATIONS! **
+**********************
+
+Istio Custom Responses has been installed.
