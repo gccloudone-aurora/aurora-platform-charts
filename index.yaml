@@ -1,0 +1,118 @@
+apiVersion: v1
+entries:
+  argocd-instance:
+  - apiVersion: v2
+    appVersion: 1.16.0
+    created: "2025-02-25T23:44:29.619841646Z"
+    description: A Helm chart that configures Argo CD.
+    digest: 2e19f5801cf10f89895e5fdaa1c8fe367ceb207dfee47d9513b8d3226e8aceb0
+    name: argocd-instance
+    type: application
+    urls:
+    - https://github.com/gccloudone-aurora/aurora-platform-charts/releases/download/argocd-instance-0.0.1/argocd-instance-0.0.1.tgz
+    version: 0.0.1
+  argocd-operator:
+  - apiVersion: v2
+    appVersion: 0.4.0
+    created: "2025-02-25T23:44:29.801270228Z"
+    description: A Helm chart that deploys ArgoCD Operator.
+    digest: d3e0f85dcd92652f65e29fdb4247fd36f2ff12ffd11f2b6fffcb85a3d2f2c40c
+    name: argocd-operator
+    type: application
+    urls:
+    - https://github.com/gccloudone-aurora/aurora-platform-charts/releases/download/argocd-operator-0.0.1/argocd-operator-0.0.1.tgz
+    version: 0.0.1
+  aurora-namespace:
+  - apiVersion: v2
+    appVersion: 2.0.0
+    created: "2025-02-25T23:44:29.965368174Z"
+    dependencies:
+    - name: raw
+      repository: file://../raw
+      version: 0.0.1
+    description: Aurora Namespace
+    digest: 14cd2d59a401378fedabba15288a8a530bc6c4acbbcb97b0b88af5cb7e0cea5a
+    name: aurora-namespace
+    type: application
+    urls:
+    - https://github.com/gccloudone-aurora/aurora-platform-charts/releases/download/aurora-namespace-0.0.1/aurora-namespace-0.0.1.tgz
+    version: 0.0.1
+  aurora-platform:
+  - apiVersion: v2
+    appVersion: 2.0.0
+    created: "2025-02-25T23:44:30.127944382Z"
+    dependencies:
+    - alias: core
+      condition: core.enabled
+      name: aurora-core
+      repository: ""
+      version: 0.0.1
+    - alias: app
+      condition: app.enabled
+      import-values:
+      - child: data
+        parent: global.imports
+      name: aurora-app
+      repository: ""
+      version: 0.0.1
+    - alias: mgmt
+      condition: mgmt.enabled
+      import-values:
+      - child: data
+        parent: global.imports
+      name: aurora-mgmt
+      repository: ""
+      version: 0.0.1
+    description: Aurora Platform
+    digest: a937d958d9e613334254d91092555f538155e7eb6a946539352393213bd13dc5
+    name: aurora-platform
+    type: application
+    urls:
+    - https://github.com/gccloudone-aurora/aurora-platform-charts/releases/download/aurora-platform-0.0.1/aurora-platform-0.0.1.tgz
+    version: 0.0.1
+  aurora-solution:
+  - apiVersion: v2
+    appVersion: 2.0.0
+    created: "2025-02-25T23:44:30.270272257Z"
+    description: Aurora Solution
+    digest: 5154393658ffacd4b5d1d61a9efa824523595ad56fa6e011e4c0191bf5d225c4
+    name: aurora-solution
+    type: application
+    urls:
+    - https://github.com/gccloudone-aurora/aurora-platform-charts/releases/download/aurora-solution-0.0.1/aurora-solution-0.0.1.tgz
+    version: 0.0.1
+  istio-custom-responses:
+  - apiVersion: v2
+    appVersion: 1.0.0
+    created: "2025-02-25T23:44:30.417866028Z"
+    description: A Helm chart that configures custom response templates for Istio.
+    digest: 3b4ef6b9042dfabe692a80b4944e5f71073d566705c4c2b2e4dcad98917a646d
+    name: istio-custom-responses
+    type: application
+    urls:
+    - https://github.com/gccloudone-aurora/aurora-platform-charts/releases/download/istio-custom-responses-0.0.1/istio-custom-responses-0.0.1.tgz
+    version: 0.0.1
+  istio-ingress-gateway:
+  - apiVersion: v2
+    appVersion: 2.6.0
+    created: "2025-02-25T23:44:30.553858175Z"
+    description: A Helm chart deploys an opinionated Istio Ingress Gateway.
+    digest: e02a4784f09c306f85f33bee6b46e589d91e108f3ec2f81de7a499ad868010d7
+    name: istio-ingress-gateway
+    type: application
+    urls:
+    - https://github.com/gccloudone-aurora/aurora-platform-charts/releases/download/istio-ingress-gateway-0.0.1/istio-ingress-gateway-0.0.1.tgz
+    version: 0.0.1
+  raw:
+  - apiVersion: v2
+    appVersion: 0.0.1
+    created: "2025-02-25T23:44:30.722143177Z"
+    description: A place for all the Kubernetes resources which don't already have
+      a home.
+    digest: 74c977cb0ac3c02c5b74144d9f29e64f69bbb9fd3dbcd69fbd37e99cbcd16870
+    name: raw
+    type: application
+    urls:
+    - https://github.com/gccloudone-aurora/aurora-platform-charts/releases/download/raw-0.0.1/raw-0.0.1.tgz
+    version: 0.0.1
+generated: "2025-02-25T23:44:30.722148918Z"
