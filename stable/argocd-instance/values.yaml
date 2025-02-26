@@ -3,9 +3,12 @@ argocdInstance:
   nodeSelector: {}
   tolerations: []
   argocdVaultPlugin:
+    imageRegistry:
+      host: "ghcr.io"
+      repository: "gccloudone-aurora"
     image:
-      name: "platform/argocd"
-      version: "v1.0.0"
+      name: "argocd-repo-server"
+      version: "main"
     configMapName: "cmp-plugin"
     AADPodIdentity:
       enabled: false

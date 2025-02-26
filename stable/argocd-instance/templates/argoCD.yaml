@@ -131,7 +131,7 @@ spec:
             value: {{ .Values.argocdInstance.argocdVaultPlugin.credentials.azureClientID }}
           - name: ARGOCD_ENV_AZURE_CLIENT_SECRET
             value: {{ .Values.argocdInstance.argocdVaultPlugin.credentials.azureClientSecret }}
-        image: {{ regexReplaceAll "//+" (printf "%s/%s/%s:%s" .Values.argocdInstance.imageRegistry.host .Values.argocdInstance.imageRegistry.repository .Values.argocdInstance.argocdVaultPlugin.image.name .Values.argocdInstance.argocdVaultPlugin.image.version) "/" }}
+        image: {{ regexReplaceAll "//+" (printf "%s/%s/%s:%s" .Values.argocdInstance.argocdVaultPlugin.imageRegistry.host .Values.argocdInstance.argocdVaultPlugin.imageRegistry.repository .Values.argocdInstance.argocdVaultPlugin.image.name .Values.argocdInstance.argocdVaultPlugin.image.version) "/" }}
         name: avp-helm
         securityContext:
           runAsNonRoot: true
