@@ -87,12 +87,12 @@ spec:
     scopes: '[groups]'
 
   redis:
-    image: {{ regexReplaceAll "//+" (printf "%s/%s/%s" .Values.argocdInstance.imageRegistry.host .Values.argocdInstance.imageRegistry.repository .Values.argocdInstance.image.name) "/" }}
+    image: {{ regexReplaceAll "//+" (printf "%s/%s/%s" .Values.argocdInstance.imageRegistry.host .Values.argocdInstance.imageRegistry.repository .Values.argocdInstance.redis.image.name) "/" }}
     version: {{ .Values.argocdInstance.redis.image.version }}
     resources:  {{ toYaml .Values.argocdInstance.redis.resources | nindent 6 }}
 
   repo:
-    image: {{ regexReplaceAll "//+" (printf "%s/%s/%s" .Values.argocdInstance.imageRegistry.host .Values.argocdInstance.imageRegistry.repository .Values.argocdInstance.image.name) "/" }}
+    image: {{ regexReplaceAll "//+" (printf "%s/%s/%s" .Values.argocdInstance.imageRegistry.host .Values.argocdInstance.imageRegistry.repository .Values.argocdInstance.repo.image.name) "/" }}
     logLevel: {{ .Values.argocdInstance.logLevel }}
     mountsatoken: true
     sidecarContainers:
