@@ -21,7 +21,7 @@ argocdInstance:
   disableAdmin: false
   imageRegistry:
     host: "docker.io"
-    repository: "docker"
+    repository: ""
   image:
     name: "argoproj/argocd"
     version: "v2.4.12"

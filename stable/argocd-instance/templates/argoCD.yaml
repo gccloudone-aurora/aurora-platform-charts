@@ -14,7 +14,7 @@ spec:
     tolerations: {{ toYaml .Values.argocdInstance.tolerations | nindent 6 }}
 
   applicationSet:
-    image: {{ printf "%s/%s/%s" .Values.argocdInstance.imageRegistry.host .Values.argocdInstance.imageRegistry.repository .Values.argocdInstance.image.name }}
+    image: {{ regexReplaceAll "//+" (printf "%s/%s/%s" .Values.argocdInstance.imageRegistry.host .Values.argocdInstance.imageRegistry.repository .Values.argocdInstance.image.name) "/" }}
     version: {{ .Values.argocdInstance.image.version }}
     logLevel: {{ .Values.argocdInstance.logLevel }}
     resources:  {{ toYaml .Values.argocdInstance.applicationSet.resources | nindent 6 }}
@@ -52,7 +52,7 @@ spec:
     enabled: false
   initialSSHKnownHosts: {}
   kustomizeBuildOptions: --load-restrictor LoadRestrictionsNone --enable-helm
-  image: {{ printf "%s/%s/%s" .Values.argocdInstance.imageRegistry.host .Values.argocdInstance.imageRegistry.repository .Values.argocdInstance.image.name }}
+  image: {{ regexReplaceAll "//+" (printf "%s/%s/%s" .Values.argocdInstance.imageRegistry.host .Values.argocdInstance.imageRegistry.repository .Values.argocdInstance.image.name) "/" }}
   notifications:
     enabled: {{ .Values.argocdInstance.notifications.enabled }}
     logLevel: {{ .Values.argocdInstance.logLevel }}
@@ -87,12 +87,12 @@ spec:
     scopes: '[groups]'
 
   redis:
-    image: {{ printf "%s/%s/%s" .Values.argocdInstance.imageRegistry.host .Values.argocdInstance.imageRegistry.repository .Values.argocdInstance.redis.image.name }}
+    image: {{ regexReplaceAll "//+" (printf "%s/%s/%s" .Values.argocdInstance.imageRegistry.host .Values.argocdInstance.imageRegistry.repository .Values.argocdInstance.image.name) "/" }}
     version: {{ .Values.argocdInstance.redis.image.version }}
     resources:  {{ toYaml .Values.argocdInstance.redis.resources | nindent 6 }}
 
   repo:
-    image: {{ printf "%s/%s/%s" .Values.argocdInstance.imageRegistry.host .Values.argocdInstance.imageRegistry.repository .Values.argocdInstance.repo.image.name }}
+    image: {{ regexReplaceAll "//+" (printf "%s/%s/%s" .Values.argocdInstance.imageRegistry.host .Values.argocdInstance.imageRegistry.repository .Values.argocdInstance.image.name) "/" }}
     logLevel: {{ .Values.argocdInstance.logLevel }}
     mountsatoken: true
     sidecarContainers:
@@ -107,7 +107,7 @@ spec:
             value: {{ .Values.argocdInstance.argocdVaultPlugin.credentials.azureClientID }}
           - name: ARGOCD_ENV_AZURE_CLIENT_SECRET
             value: {{ .Values.argocdInstance.argocdVaultPlugin.credentials.azureClientSecret }}
-        image: {{ printf "%s/%s/%s:%s" .Values.argocdInstance.imageRegistry.host .Values.argocdInstance.imageRegistry.repository .Values.argocdInstance.argocdVaultPlugin.image.name .Values.argocdInstance.argocdVaultPlugin.image.version }}
+        image: {{ regexReplaceAll "//+" (printf "%s/%s/%s:%s" .Values.argocdInstance.imageRegistry.host .Values.argocdInstance.imageRegistry.repository .Values.argocdInstance.argocdVaultPlugin.image.name .Values.argocdInstance.argocdVaultPlugin.image.version) "/" }}
         name: avp
         securityContext:
           runAsNonRoot: true
@@ -131,7 +131,7 @@ spec:
             value: {{ .Values.argocdInstance.argocdVaultPlugin.credentials.azureClientID }}
           - name: ARGOCD_ENV_AZURE_CLIENT_SECRET
             value: {{ .Values.argocdInstance.argocdVaultPlugin.credentials.azureClientSecret }}
-        image: {{ printf "%s/%s/%s:%s" .Values.argocdInstance.imageRegistry.host .Values.argocdInstance.imageRegistry.repository .Values.argocdInstance.argocdVaultPlugin.image.name .Values.argocdInstance.argocdVaultPlugin.image.version }}
+        image: {{ regexReplaceAll "//+" (printf "%s/%s/%s:%s" .Values.argocdInstance.imageRegistry.host .Values.argocdInstance.imageRegistry.repository .Values.argocdInstance.argocdVaultPlugin.image.name .Values.argocdInstance.argocdVaultPlugin.image.version) "/" }}
         name: avp-helm
         securityContext:
           runAsNonRoot: true
