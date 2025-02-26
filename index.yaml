@@ -3,6 +3,16 @@ entries:
   argocd-instance:
   - apiVersion: v2
     appVersion: 1.16.0
+    created: "2025-02-26T17:55:40.536519954Z"
+    description: A Helm chart that configures Argo CD.
+    digest: 2d5c79d2e32fd86d43b8f7968ea017b125aebec0ee4ce532c37a09c15d7b640a
+    name: argocd-instance
+    type: application
+    urls:
+    - https://github.com/gccloudone-aurora/aurora-platform-charts/releases/download/argocd-instance-0.0.6/argocd-instance-0.0.6.tgz
+    version: 0.0.6
+  - apiVersion: v2
+    appVersion: 1.16.0
     created: "2025-02-26T16:17:29.134946947Z"
     description: A Helm chart that configures Argo CD.
     digest: 72ae9343920717ad3878ef0ff0909b352ddcac288d0f2268acc5c21200701b9b
@@ -80,6 +90,38 @@ entries:
   aurora-platform:
   - apiVersion: v2
     appVersion: 2.0.0
+    created: "2025-02-26T17:55:40.744007833Z"
+    dependencies:
+    - alias: core
+      condition: core.enabled
+      name: aurora-core
+      repository: ""
+      version: 0.0.1
+    - alias: app
+      condition: app.enabled
+      import-values:
+      - child: data
+        parent: global.imports
+      name: aurora-app
+      repository: ""
+      version: 0.0.1
+    - alias: mgmt
+      condition: mgmt.enabled
+      import-values:
+      - child: data
+        parent: global.imports
+      name: aurora-mgmt
+      repository: ""
+      version: 0.0.1
+    description: Aurora Platform
+    digest: 9a61cdc3a8d1131619118819959a2a06ea41ec527d4ee689c7f2c2c02113750d
+    name: aurora-platform
+    type: application
+    urls:
+    - https://github.com/gccloudone-aurora/aurora-platform-charts/releases/download/aurora-platform-0.0.2/aurora-platform-0.0.2.tgz
+    version: 0.0.2
+  - apiVersion: v2
+    appVersion: 2.0.0
     created: "2025-02-25T23:44:30.127944382Z"
     dependencies:
     - alias: core
@@ -155,4 +197,4 @@ entries:
     urls:
     - https://github.com/gccloudone-aurora/aurora-platform-charts/releases/download/raw-0.0.1/raw-0.0.1.tgz
     version: 0.0.1
-generated: "2025-02-26T16:17:29.134972836Z"
+generated: "2025-02-26T17:55:40.74403861Z"
