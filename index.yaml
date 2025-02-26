@@ -3,6 +3,16 @@ entries:
   argocd-instance:
   - apiVersion: v2
     appVersion: 1.16.0
+    created: "2025-02-26T15:28:18.324705012Z"
+    description: A Helm chart that configures Argo CD.
+    digest: f26413e45c6a8745a5a11e19a5cc34048897ec4e945b2c3b13a98c1e9f1ca508
+    name: argocd-instance
+    type: application
+    urls:
+    - https://github.com/gccloudone-aurora/aurora-platform-charts/releases/download/argocd-instance-0.0.3/argocd-instance-0.0.3.tgz
+    version: 0.0.3
+  - apiVersion: v2
+    appVersion: 1.16.0
     created: "2025-02-26T15:21:21.972236888Z"
     description: A Helm chart that configures Argo CD.
     digest: 97f367f15ba83b3388f39a18f4e40bd05f7f9cc1a58515ca1630ae6a10efa0ed
@@ -125,4 +135,4 @@ entries:
     urls:
     - https://github.com/gccloudone-aurora/aurora-platform-charts/releases/download/raw-0.0.1/raw-0.0.1.tgz
     version: 0.0.1
-generated: "2025-02-26T15:21:21.972247488Z"
+generated: "2025-02-26T15:28:18.324723036Z"
