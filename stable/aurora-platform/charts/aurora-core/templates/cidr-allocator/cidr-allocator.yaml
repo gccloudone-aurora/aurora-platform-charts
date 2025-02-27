@@ -13,7 +13,7 @@ spec:
     {{- if .Values.components.cidrAllocator.helm.repository }}
     repoURL: {{ .Values.components.cidrAllocator.helm.repository }}
     {{- else }}
-    repoURL: {{ default "https://gccloudone-aurora.github.io/aurora-platform-charts" .Values.global.helm.repository }}
+    repoURL: {{ default "https://gccloudone-aurora.github.io/cidr-allocator" .Values.global.helm.repository }}
     {{- end }}
     targetRevision: {{ default "0.0.1" .Values.components.cidrAllocator.helm.targetRevision }}
     plugin:
