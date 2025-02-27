@@ -45,15 +45,16 @@ global:
   azureMetadataApiCidr: "169.254.169.254/32"
 
   # Alert Manager
-  alertManagerCidrs: ["192.0.2.10/32"]
+  # alertManagerCidrs: ["192.0.2.10/32"]
 
   # Logging
-  loggingCidrs: ["192.0.2.10/32"]
+  # loggingCidrs: ["192.0.2.10/32"]
+
   # Creates local platform logging network policies on clusters running Loki
   # clusterHasLoki: false
 
   # Vault
-  vaultCidrs: ["192.0.2.10/32"]
+  # vaultCidrs: ["192.0.2.10/32"]
 
   # Ingress Class Name
   # ingressClassName: ingress-istio-controller
@@ -76,9 +77,27 @@ global:
       # Used in cases where a subchart's component depends on the aurora-mgmt subchart being enabled
       enabled: false
 
+# Role Based Access Control
+rbac:
+  # Groups and users that should be bound to the platform-admin role.
+  # Note: if using AKS with AAD enabled, this is not necessary since admins
+  #       will be defined in the configuration.
+  platformAdmin:
+    groups: []
+    users: []
+  # Configurations for the platform-operator-daily role.
+  # A read-only aggregated role which uses the
+  # 'rbac.ssc-spc.gc.ca/aggregate-to-platform-operator-view: "true"'
+  # label as the selector.
+  platformOperator:
+    groups: []
+    users: []
+
 # Components
 components:
   aadPodIdentity:
+    enabled: true
+
     helm: {}
       # chart: aad-pod-identity
       # repository: https://raw.githubusercontent.com/Azure/aad-pod-identity/master/charts
@@ -155,7 +174,54 @@ components:
         # verbosity:
         # format:
 
+  auroraController:
+    enabled: true
+
+    helm: {}
+      # chart: aurora-controller
+      # repository: https://gccloudone-aurora.github.io/aurora-platform-charts
+      # targetRevision: 0.0.1
+
+    imagePullSecrets:
+      - name: aurora-controller-image-pull-secret
+    image:
+      # registry: docker.io
+      repository: aurora-controller
+      tag: "0.0.1"
+
+    priorityClassName: platform-cluster-medium
+
+    replicas: 2
+    resources: {}
+      # limits:
+      #   cpu: ""
+      #   memory: ""
+      # requests:
+      #   cpu: ""
+      #   memory: ""
+    nodeSelector:
+      kubernetes.io/os: linux
+      node.ssc-spc.gc.ca/purpose: system
+    tolerations:
+      - key: CriticalAddonsOnly
+        operator: Exists
+    affinity:
+      podAntiAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 1
+          podAffinityTerm:
+            topologyKey: kubernetes.io/hostname
+            labelSelector:
+              matchLabels:
+                app.kubernetes.io/instance: aurora-controller
+
+    aurora:
+      secretName: "aurora-image-pull-secret"
+      # secretDockerConfigJson: ""
+
   certManager:
+    enabled: true
+
     helm: {}
       # chart: cert-manager
       # repository: https://charts.jetstack.io
@@ -312,6 +378,8 @@ components:
     priorityClassName: platform-cluster-medium
 
   cidrAllocator:
+    enabled: true
+
     helm: {}
       # chart: cidr-allocator
       # repository: https://gccloudone-aurora.github.io/aurora-platform-charts
@@ -358,50 +426,9 @@ components:
 
     # secretDockerConfigJson: ""
 
-  auroraController:
-    helm: {}
-      # chart: aurora-controller
-      # repository: https://gccloudone-aurora.github.io/aurora-platform-charts
-      # targetRevision: 0.0.1
-
-    imagePullSecrets:
-      - name: aurora-controller-image-pull-secret
-    image:
-      # registry: docker.io
-      repository: aurora-controller
-      tag: "0.0.1"
-
-    priorityClassName: platform-cluster-medium
-
-    replicas: 2
-    resources: {}
-      # limits:
-      #   cpu: ""
-      #   memory: ""
-      # requests:
-      #   cpu: ""
-      #   memory: ""
-    nodeSelector:
-      kubernetes.io/os: linux
-      node.ssc-spc.gc.ca/purpose: system
-    tolerations:
-      - key: CriticalAddonsOnly
-        operator: Exists
-    affinity:
-      podAntiAffinity:
-        preferredDuringSchedulingIgnoredDuringExecution:
-        - weight: 1
-          podAffinityTerm:
-            topologyKey: kubernetes.io/hostname
-            labelSelector:
-              matchLabels:
-                app.kubernetes.io/instance: aurora-controller
-
-    aurora:
-      secretName: "aurora-image-pull-secret"
-      # secretDockerConfigJson: ""
-
   cilium:
+    enabled: true
+
     helm: {}
       # chart: cilium
       # repository: https://helm.cilium.io
@@ -502,6 +529,8 @@ components:
       virtualRouters: []
 
   fluentOperator:
+    enabled: true
+
     helm: {}
       # chart: fluent-operator
       # repository:  https://fluent.github.io/fluent-operator
@@ -661,6 +690,8 @@ components:
             overflowAction: "drop_oldest_chunk"
 
   gatekeeper:
+    enabled: true
+
     helm: {}
       # chart: gatekeeper
       # repository: https://open-policy-agent.github.io/gatekeeper/charts
@@ -821,7 +852,6 @@ components:
 
     constraints:
       blockOperations:
-        enabled: false
         excludedNamespaces: []
         enforcementAction: "deny"
       k8sBlockWildcardIngress:
@@ -896,7 +926,10 @@ components:
         - topology.istio.io/network
         - sidecar.istio.io/inject
         - topology.istio.io/subzone
+
   kubecost:
+    enabled: false
+
     helm: {}
       # chart: cost-analyzer
       # repository: https://kubecost.github.io/cost-analyzer/
@@ -998,6 +1031,8 @@ components:
     # clusterProfile: # "development", "production" or "high-availability"
 
   kubernetesEventExporter:
+    enabled: true
+
     helm: {}
       # chart: kubernetes-event-exporter
       # repository: https:///registry-1.docker.io/bitnamicharts
@@ -1075,6 +1110,8 @@ components:
       - operator: Exists
 
   podtracker:
+    enabled: true
+
     helm: {}
       # chart: podtracker
       # repository: https://gccloudone-aurora.github.io/aurora-platform-charts
@@ -1150,6 +1187,8 @@ components:
                 app.kubernetes.io/instance: podtracker
 
   prometheus:
+    enabled: true
+
     helm: {}
       # chart: kube-prometheus-stack
       # repository: https://prometheus-community.github.io/helm-charts
@@ -1244,17 +1283,10 @@ components:
         environments:
           prod:
             matchers: []
-              # - "target =~ gen-prod-cc-00"
-              # - "cluster =~ gen-prod-cc-00|gen-qa-cc-00|mgmt-prod-cc-00|ingress-prod-cc-00"
           nonProd:
             matchers: []
-              # - "target =~ gen-dev-cc-00"
-              # - "cluster =~ gen-dev-cc-00|gen-test-cc-00|gen-uat-cc-00"
           dev:
             matchers: []
-              # - "class = testing"
-              # - "target =~ aurora-dev-cc-00"
-              # - "cluster =~ aurora-dev-cc-00|gen-canary-cc-00|mgmt-dev-cc-00|ingress-dev-cc-00"
 
         smtp:
           smarthost:
@@ -1666,6 +1698,8 @@ components:
       #  prodMinor: ""
 
   vaultAgent:
+    enabled: false
+
     helm: {}
       # chart: vault
       # repository: https://helm.releases.hashicorp.com
@@ -1725,6 +1759,8 @@ components:
     priorityClassName: platform-cluster-critical
 
   velero:
+    enabled: true
+
     helm: {}
       # chart: velero
       # repository: https://vmware-tanzu.github.io/helm-charts
@@ -1789,18 +1825,3 @@ components:
         # tag: "1.16.15"
 
     priorityClassName: platform-cluster-medium
-
-rbac:
-  # Groups and users that should be bound to the platform-admin role.
-  # Note: if using AKS with AAD enabled, this is not necessary since admins
-  #       will be defined in the configuration.
-  platformAdmin:
-    groups: []
-    users: []
-  # Configurations for the platform-operator-daily role.
-  # A read-only aggregated role which uses the
-  # 'rbac.ssc-spc.gc.ca/aggregate-to-platform-operator-view: "true"'
-  # label as the selector.
-  platformOperator:
-    groups: []
-    users: []

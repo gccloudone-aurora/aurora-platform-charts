@@ -1,3 +1,5 @@
+{{ if .Values.components.prometheus.enabled -}}
+
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
@@ -385,3 +387,5 @@ spec:
     syncOptions:
       # https://github.com/argoproj/argo-cd/issues/11074
       - ServerSideApply=true
+
+{{- end }}

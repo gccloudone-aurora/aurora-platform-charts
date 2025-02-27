@@ -1,3 +1,5 @@
+{{ if .Values.components.prometheus.enabled -}}
+
 {{ if .Values.components.prometheus.alertmanager.enabled -}}
 
 apiVersion: argoproj.io/v1alpha1
@@ -91,6 +93,8 @@ spec:
 {{- if not (hasKey $.Values.components.prometheus.alertmanager.config.severities $sKey) }}
 {{- fail "A valid .Values.components.prometheus.jiralert.receivers entry must correspond to a prometheus.alertmanager.config.severities entry"}}
 {{- end }}
+{{- end }}
+
 {{- end }}
 
 {{- end }}

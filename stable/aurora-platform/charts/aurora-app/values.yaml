@@ -57,6 +57,8 @@ data:
 # Components
 components:
   argoController:
+    enabled: true
+
     helm: {}
       # chart: argo-controller
       # repository: https://gccloudone-aurora.github.io/aurora-platform-charts
@@ -103,6 +105,8 @@ components:
     #   primaryAccessKey: ""
 
   argoWorkflow:
+    enabled: true
+
     workflow:
       helm: {}
         # chart: argo-workflows
@@ -202,6 +206,8 @@ components:
       #   clientSecret: ""
 
   elastic:
+    enabled: false
+
     helm: {}
       # chart: eck-operator
       # repository: https://helm.elastic.co
@@ -241,6 +247,8 @@ components:
     priorityClassName: platform-cluster-medium
 
   istio:
+    enabled: true
+
     imagePullSecrets: []
 
     base:
@@ -401,6 +409,8 @@ components:
       priorityClassName: platform-cluster-critical
 
   kiali:
+    enabled: true
+
     helm: {}
       # chart: kiali-operator
       # repository: https://kiali.org/helm-charts
@@ -445,6 +455,8 @@ components:
     priorityClassName: platform-cluster-medium
 
   sidecarTerminator:
+    enabled: true
+
     helm: {}
       # chart: sidecar-terminator
       # repository: https://gccloudone-aurora.github.io/aurora-platform-charts
@@ -489,6 +501,8 @@ components:
                 app.kubernetes.io/name: sidecar-terminator
 
   solr:
+    enabled: false
+
     helm: {}
       # chart: solr-operator
       # repository: https://solr.apache.org/charts

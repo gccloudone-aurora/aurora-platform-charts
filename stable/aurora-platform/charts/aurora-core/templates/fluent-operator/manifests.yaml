@@ -1,3 +1,5 @@
+{{ if .Values.components.fluentOperator.enabled -}}
+
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
@@ -99,7 +101,7 @@ spec:
                               retry_type {{ .Values.components.fluentOperator.fluentd.output.loki.buffer.retryType }}
                               retry_max_interval {{ .Values.components.fluentOperator.fluentd.output.loki.buffer.retryMaxInterval | quote }}
                               retry_exponential_backoff_base {{ .Values.components.fluentOperator.fluentd.output.loki.buffer.retryExponentialBackoffBase | quote }}
-                              overflow_action {{ .Values.components.fluentOperator.fluentd.output.loki.buffer.overflowAction }}                            
+                              overflow_action {{ .Values.components.fluentOperator.fluentd.output.loki.buffer.overflowAction }}
                             </buffer>
                           </match>
               {{- end }}
@@ -164,3 +166,5 @@ spec:
     automated:
       prune: true
       selfHeal: true
+
+{{- end }}

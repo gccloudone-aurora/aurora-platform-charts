@@ -1,3 +1,5 @@
+{{ if .Values.components.vaultAgent.enabled -}}
+
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
@@ -28,7 +30,7 @@ spec:
                     app.kubernetes.io/component: auth
                     app.kubernetes.io/part-of: vault-agent-system
                     app.kubernetes.io/managed-by: argo
-                    helm.sh/chart: {{ printf "%s-%s" .Chart.Name .Chart.Version }}              
+                    helm.sh/chart: {{ printf "%s-%s" .Chart.Name .Chart.Version }}
               - apiVersion: v1
                 kind: Secret
                 metadata:
@@ -42,8 +44,8 @@ spec:
                     app.kubernetes.io/component: auth
                     app.kubernetes.io/part-of: vault-agent-system
                     app.kubernetes.io/managed-by: argo
-                    helm.sh/chart: {{ printf "%s-%s" .Chart.Name .Chart.Version }}                      
-                type: kubernetes.io/service-account-token                  
+                    helm.sh/chart: {{ printf "%s-%s" .Chart.Name .Chart.Version }}
+                type: kubernetes.io/service-account-token
               - apiVersion: rbac.authorization.k8s.io/v1
                 kind: ClusterRoleBinding
                 metadata:
@@ -55,7 +57,7 @@ spec:
                     app.kubernetes.io/component: auth
                     app.kubernetes.io/part-of: vault-agent-system
                     app.kubernetes.io/managed-by: argo
-                    helm.sh/chart: {{ printf "%s-%s" .Chart.Name .Chart.Version }}                    
+                    helm.sh/chart: {{ printf "%s-%s" .Chart.Name .Chart.Version }}
                 subjects:
                   - kind: ServiceAccount
                     name: vault-auth
@@ -71,3 +73,5 @@ spec:
     automated:
       prune: true
       selfHeal: true
+
+{{- end }}
