@@ -45,10 +45,10 @@ global:
   azureMetadataApiCidr: "169.254.169.254/32"
 
   # Alert Manager
-  # alertManagerCidrs: ["192.0.2.10/32"]
+  alertManagerCidrs: ["192.0.2.10/32"]
 
   # Logging
-  # loggingCidrs: ["192.0.2.10/32"]
+  loggingCidrs: ["192.0.2.10/32"]
 
   # Creates local platform logging network policies on clusters running Loki
   # clusterHasLoki: false
