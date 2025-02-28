@@ -396,6 +396,8 @@ components:
 
     priorityClassName: system-cluster-critical
 
+    prometheus: {}
+
     addressPools: []
     staticAllocations: []
 
@@ -413,7 +415,8 @@ components:
       node.ssc-spc.gc.ca/purpose: system
 
     tolerations:
-      - operator: Exists
+      - key: node.kubernetes.io/not-ready
+        operator: Exists
 
     affinity:
       podAntiAffinity:
@@ -511,6 +514,8 @@ components:
       node.ssc-spc.gc.ca/purpose: system
     tolerations:
       - key: CriticalAddonsOnly
+        operator: Exists
+      - key: node.kubernetes.io/not-ready
         operator: Exists
     affinity:
       podAntiAffinity:

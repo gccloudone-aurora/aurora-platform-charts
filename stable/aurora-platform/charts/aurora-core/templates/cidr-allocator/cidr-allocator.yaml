@@ -35,6 +35,8 @@ spec:
 
             priorityClassName: {{ .Values.components.cidrAllocator.priorityClassName }}
 
+            prometheus: {{ toYaml .Values.components.cidrAllocator.prometheus | nindent 14 }}
+
             installCRDs: true
             nodeCIDRAllocations:
               - name: linux-nodes
