@@ -90,6 +90,38 @@ entries:
   aurora-platform:
   - apiVersion: v2
     appVersion: 2.0.0
+    created: "2025-02-28T20:06:29.277530474Z"
+    dependencies:
+    - alias: core
+      condition: core.enabled
+      name: aurora-core
+      repository: ""
+      version: 0.0.1
+    - alias: app
+      condition: app.enabled
+      import-values:
+      - child: data
+        parent: global.imports
+      name: aurora-app
+      repository: ""
+      version: 0.0.1
+    - alias: mgmt
+      condition: mgmt.enabled
+      import-values:
+      - child: data
+        parent: global.imports
+      name: aurora-mgmt
+      repository: ""
+      version: 0.0.1
+    description: Aurora Platform
+    digest: 976a362140802748bbde89dab629c01feb4c39b427b4d82715afc515264d3a4a
+    name: aurora-platform
+    type: application
+    urls:
+    - https://github.com/gccloudone-aurora/aurora-platform-charts/releases/download/aurora-platform-0.0.13/aurora-platform-0.0.13.tgz
+    version: 0.0.13
+  - apiVersion: v2
+    appVersion: 2.0.0
     created: "2025-02-28T19:22:06.305494982Z"
     dependencies:
     - alias: core
@@ -496,6 +528,20 @@ entries:
     version: 0.0.1
   istio-ingress-gateway:
   - apiVersion: v2
+    created: "2025-02-28T20:06:29.436077036Z"
+    dependencies:
+    - condition: gateway.enabled
+      name: gateway
+      repository: https://istio-release.storage.googleapis.com/charts
+      version: 1.14.3
+    description: This chart deploys an opinionated Istio Ingress Gateway.
+    digest: 76d1b9dc218850ab603cae90fc44c50e7ac28125bcb22d04f7721f0e49961d64
+    name: istio-ingress-gateway
+    type: application
+    urls:
+    - https://github.com/gccloudone-aurora/aurora-platform-charts/releases/download/istio-ingress-gateway-0.0.2/istio-ingress-gateway-0.0.2.tgz
+    version: 0.0.2
+  - apiVersion: v2
     appVersion: 2.6.0
     created: "2025-02-25T23:44:30.553858175Z"
     description: A Helm chart deploys an opinionated Istio Ingress Gateway.
@@ -517,4 +563,4 @@ entries:
     urls:
     - https://github.com/gccloudone-aurora/aurora-platform-charts/releases/download/raw-0.0.1/raw-0.0.1.tgz
     version: 0.0.1
-generated: "2025-02-28T19:22:06.305543733Z"
+generated: "2025-02-28T20:06:29.436162316Z"
