@@ -39,8 +39,8 @@ spec:
               uninstall: false
             ipam:
               mode: kubernetes
-            enableIPv4Masquerade: false
-            enableIPv6Masquerade: false
+            enableIPv4Masquerade: {{ default false .Values.components.cilium.enableIPv4Masquerade }}
+            enableIPv6Masquerade: {{ default false .Values.components.cilium.enableIPv6Masquerade }}
 
             # cilium-agent
             image: {{ default "{}" (include "cilium.image" .) | nindent 14 }}

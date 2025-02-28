@@ -440,6 +440,9 @@ components:
     imagePullSecrets:
       - name: cilium-image-pull-secret
 
+    enableIPv4Masquerade: false
+    enableIPv6Masquerade: false
+
     image:
       # registry: docker.io
       repository: cilium/cilium
