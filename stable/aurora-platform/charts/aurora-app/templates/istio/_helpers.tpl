@@ -5,7 +5,7 @@ The image section for Istio.
 {{- if (and .Values.components.istio.ingressIstioController.image.registry .Values.components.istio.ingressIstioController.image.repository) }}
 repository: {{ printf "%s/%s" .Values.components.istio.ingressIstioController.image.registry .Values.components.istio.ingressIstioController.image.repository }}
 {{- else if .Values.components.istio.ingressIstioController.image.repository }}
-repository: {{ printf "%s/%s" (default "docker.io" .Values.global.container.registry) .Values.components.istio.ingressIstioController.image.repository }}
+repository: {{ printf "%s/%s" (default "ghcr.io" .Values.global.container.registry) .Values.components.istio.ingressIstioController.image.repository }}
 {{- end }}
 {{- if .Values.components.istio.ingressIstioController.image.tag }}
 tag: {{ .Values.components.istio.ingressIstioController.image.tag }}
