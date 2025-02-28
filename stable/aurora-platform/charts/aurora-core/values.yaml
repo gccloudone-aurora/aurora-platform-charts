@@ -357,6 +357,9 @@ components:
                 matchLabels:
                   app.kubernetes.io/component: startupapicheck
 
+    dns01RecursiveNameservers: ""
+    dns01RecursiveNameserversOnly: false
+
     podDnsConfig:
       nameservers: []
 
