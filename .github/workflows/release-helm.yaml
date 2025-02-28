@@ -35,6 +35,10 @@ jobs:
       - run: |
           curl -fsSL https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
 
+      - name: Run Helm Repository Add
+        run: |
+          helm repo add istio https://istio-release.storage.googleapis.com/charts
+
       - name: Run Helm Chart Releaser
         uses: helm/chart-releaser-action@v1.7.0
         with:
