@@ -15,7 +15,7 @@ spec:
     {{- else }}
     repoURL: {{ default "https://gccloudone-aurora.github.io/ingress-istio-controller" .Values.global.helm.repository }}
     {{- end }}
-    targetRevision: {{ default "0.0.1" .Values.components.istio.ingressIstioController.helm.targetRevision }}
+    targetRevision: {{ default "0.0.2" .Values.components.istio.ingressIstioController.helm.targetRevision }}
     helm:
       releaseName: ingress-istio-controller
       values: |
