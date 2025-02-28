@@ -37,6 +37,9 @@ spec:
                     privateKeySecretRef:
                       name: clusterissuer-letsencrypt
                     server: https://acme-v02.api.letsencrypt.org/directory
+                    {{ if .Values.components.certManager.issuers.caBundle }}
+                    caBundle: {{ .Values.components.certManager.issuers.caBundle }}
+                    {{ end }}
                     solvers:
                     - dns01:
                         cnameStrategy: Follow
@@ -65,6 +68,9 @@ spec:
                     privateKeySecretRef:
                       name: clusterissuer-letsencrypt-staging
                     server: https://acme-staging-v02.api.letsencrypt.org/directory
+                    {{ if .Values.components.certManager.issuers.caBundle }}
+                    caBundle: {{ .Values.components.certManager.issuers.caBundle }}
+                    {{ end }}
                     solvers:
                     - dns01:
                         cnameStrategy: Follow
