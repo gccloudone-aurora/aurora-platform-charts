@@ -415,8 +415,7 @@ components:
       node.ssc-spc.gc.ca/purpose: system
 
     tolerations:
-      - key: node.kubernetes.io/not-ready
-        operator: Exists
+      - operator: Exists
 
     affinity:
       podAntiAffinity:
