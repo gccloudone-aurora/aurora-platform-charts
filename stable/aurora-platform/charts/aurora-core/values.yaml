@@ -184,10 +184,12 @@ components:
 
     imagePullSecrets:
       - name: aurora-controller-image-pull-secret
+
     image:
-      # registry: docker.io
-      repository: aurora-controller
-      tag: "0.0.1"
+      # registry: ghcr.io
+      repository: gccloudone-aurora/aurora-controller
+      # tag: "main"
+      # pullPolicy: IfNotPresent
 
     priorityClassName: platform-cluster-medium
 

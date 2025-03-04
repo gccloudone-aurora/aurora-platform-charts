@@ -65,10 +65,11 @@ components:
       # targetRevision: 0.0.1
 
     imagePullSecrets: []
+
     image:
-      # registry: docker.io
+      # registry: ghcr.io
       repository: gccloudone-aurora/argo-controller
-      tag: "0.0.1"
+      # tag: "main"
       # pullPolicy: IfNotPresent
 
     priorityClassName: platform-cluster-medium
@@ -463,10 +464,11 @@ components:
       # targetRevision: 0.0.1
 
     imagePullSecrets: []
+
     image:
-      # registry: docker.io
-      repository: gccloudone-aurora/sidecar-terminator
-      # tag: "latest"
+      # registry: ghcr.io
+      repository: gccloudone-aurora/sidecar-controller
+      # tag: "main"
       # pullPolicy: IfNotPresent
 
     terminator:
