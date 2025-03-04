@@ -5,7 +5,7 @@ The image section for Sidecar Terminator.
 {{- if (and .Values.components.sidecarTerminator.image.registry .Values.components.sidecarTerminator.image.repository) }}
 repository: {{ printf "%s/%s" .Values.components.sidecarTerminator.image.registry .Values.components.sidecarTerminator.image.repository }}
 {{- else if .Values.components.sidecarTerminator.image.repository }}
-repository: {{ printf "%s/%s" (default "docker.io" .Values.global.container.registry) .Values.components.sidecarTerminator.image.repository }}
+repository: {{ printf "%s/%s" (default "ghcr.io" .Values.global.container.registry) .Values.components.sidecarTerminator.image.repository }}
 {{- end }}
 {{- if .Values.components.sidecarTerminator.image.tag }}
 tag: {{ .Values.components.sidecarTerminator.image.tag }}

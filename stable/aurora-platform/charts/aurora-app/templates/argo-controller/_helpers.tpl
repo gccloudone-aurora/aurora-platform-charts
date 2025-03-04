@@ -5,7 +5,7 @@ The image section for Argo Controller.
 {{- if (and .Values.components.argoController.image.registry .Values.components.argoController.image.repository) }}
 repository: {{ printf "%s/%s" .Values.components.argoController.image.registry .Values.components.argoController.image.repository }}
 {{- else if .Values.components.argoController.image.repository }}
-repository: {{ printf "%s/%s" (default "docker.io" .Values.global.container.registry) .Values.components.argoController.image.repository }}
+repository: {{ printf "%s/%s" (default "ghcr.io" .Values.global.container.registry) .Values.components.argoController.image.repository }}
 {{- end }}
 {{- if .Values.components.argoController.image.tag }}
 tag: {{ .Values.components.argoController.image.tag }}

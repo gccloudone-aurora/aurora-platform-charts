@@ -5,7 +5,7 @@ The image section for CNP Controller.
 {{- if (and .Values.components.auroraController.image.registry .Values.components.auroraController.image.repository) }}
 repository: {{ printf "%s/%s" .Values.components.auroraController.image.registry .Values.components.auroraController.image.repository }}
 {{- else if .Values.components.auroraController.image.repository }}
-repository: {{ printf "%s/%s" (default "docker.io" .Values.global.container.registry) .Values.components.auroraController.image.repository }}
+repository: {{ printf "%s/%s" (default "ghcr.io" .Values.global.container.registry) .Values.components.auroraController.image.repository }}
 {{- end }}
 {{- if .Values.components.auroraController.image.tag }}
 tag: {{ .Values.components.auroraController.image.tag }}
