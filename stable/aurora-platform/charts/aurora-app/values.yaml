@@ -467,7 +467,7 @@ components:
 
     image:
       # registry: ghcr.io
-      repository: gccloudone-aurora/sidecar-controller
+      repository: gccloudone-aurora/sidecar-terminator
       # tag: "main"
       # pullPolicy: IfNotPresent
 
