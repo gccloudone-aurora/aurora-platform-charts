@@ -67,15 +67,7 @@ spec:
         podDnsConfig:
           nameservers: {{ toYaml .Values.components.certManager.podDnsConfig.nameservers | nindent 12 }}
 
-        prometheus:
-          enabled: true
-          servicemonitor:
-            enabled: true
-            # prometheusInstance: default
-            # interval: 60s
-            # scrapeTimeout: 30s
-            # labels: {}
-            # honorLabels: false
+        prometheus: {{ toYaml .Values.components.certManager.prometheus | nindent 10 }}
 
   destination:
     name: {{ .Values.global.cluster }}

@@ -234,6 +234,20 @@ components:
       # tag: "v1.6.1"
       # pullPolicy: IfNotPresent
 
+    prometheus:
+      enabled: true
+      servicemonitor:
+        enabled: true
+        prometheusInstance: default
+        targetPort: 9003
+        path: /metrics
+        interval: 60s
+        scrapeTimeout: 30s
+        labels: {}
+        annotations: {}
+        honorLabels: false
+        endpointAdditionalProperties: {}
+
     replicas: 3
     resources: {}
       # limits:
