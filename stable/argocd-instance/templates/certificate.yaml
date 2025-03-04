@@ -7,9 +7,9 @@ metadata:
     use-azuredns-solver: "true"
     {{- include "argocd-foundation.labels" $ | nindent 4 }}
 spec:
-  commonName: {{ printf "platform-argocd.%s" .Values.argocdInstance.ingressDomain }}
+  commonName: {{ .Values.argocdInstance.ingressDomain }}
   dnsNames:
-    - {{ printf "platform-argocd.%s" .Values.argocdInstance.ingressDomain }}
+    - {{ .Values.argocdInstance.ingressDomain }}
   issuerRef:
     kind: ClusterIssuer
     name: letsencrypt

@@ -8,7 +8,7 @@ metadata:
 spec:
   ingressClassName: ingress-istio-controller
   rules:
-  - host: {{ printf "platform-argocd.%s" .Values.argocdInstance.ingressDomain }}
+  - host: {{ .Values.argocdInstance.ingressDomain }}
     http:
       paths:
       - backend:

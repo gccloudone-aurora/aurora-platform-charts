@@ -234,7 +234,7 @@ spec:
       ingress:
         enabled: false
     {{- if .Values.argocdInstance.ingressDomain }}
-    host: {{ printf "platform-argocd.%s" .Values.argocdInstance.ingressDomain }}
+    host: {{ .Values.argocdInstance.ingressDomain }}
     {{- end }}
     ingress:
       enabled: false
