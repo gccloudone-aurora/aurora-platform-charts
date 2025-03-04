@@ -5,7 +5,7 @@ The image section for gatekeeper.
 {{- if (and .Values.components.gatekeeper.image.registry .Values.components.gatekeeper.image.repository) }}
 repository: {{ printf "%s/%s" .Values.components.gatekeeper.image.registry .Values.components.gatekeeper.image.repository }}
 {{- else if .Values.components.gatekeeper.image.repository }}
-repository: {{ printf "%s/%s" (default "ghcr.io" .Values.global.container.registry) .Values.components.gatekeeper.image.repository }}
+repository: {{ printf "%s/%s" (default "docker.io" .Values.global.container.registry) .Values.components.gatekeeper.image.repository }}
 {{- end }}
 {{- if (and .Values.components.gatekeeper.image.registry .Values.components.gatekeeper.image.crdRepository) }}
 crdRepository: {{ printf "%s/%s" .Values.components.gatekeeper.image.registry .Values.components.gatekeeper.image.crdRepository }}
