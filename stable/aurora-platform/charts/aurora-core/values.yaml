@@ -1147,9 +1147,9 @@ components:
       # targetRevision: 1.1.1
 
     image:
-      # registry: docker.io
-      repository: podtracker
-      # tag: "1.1.0"
+      # registry: ghcr.io
+      repository: gccloudone-aurora/podtracker
+      # tag: "main"
       # pullPolicy: IfNotPresent
 
     imagePullSecrets: []
