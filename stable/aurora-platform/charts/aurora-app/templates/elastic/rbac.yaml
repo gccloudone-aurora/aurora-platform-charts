@@ -52,6 +52,18 @@ spec:
                   - update
                   - patch
                   - delete
+              - apiGroups:
+                  - logstash.k8s.elastic.co
+                resources:
+                  - logstashes
+                verbs:
+                  - get
+                  - list
+                  - watch
+                  - create
+                  - update
+                  - patch
+                  - delete
           - apiVersion: rbac.authorization.k8s.io/v1
             kind: ClusterRole
             metadata:
@@ -74,6 +86,7 @@ spec:
                   - enterprisesearch.k8s.elastic.co
                   - kibana.k8s.elastic.co
                   - maps.k8s.elastic.co
+                  - logstash.k8s.elastic.co
                 resources:
                   - '*'
                 verbs:

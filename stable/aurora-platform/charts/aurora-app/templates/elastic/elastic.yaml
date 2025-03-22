@@ -15,7 +15,7 @@ spec:
     {{- else }}
     repoURL: {{ default "https://helm.elastic.co" .Values.global.helm.repository }}
     {{- end }}
-    targetRevision: {{ default "2.3.0" .Values.components.elastic.helm.targetRevision }}
+    targetRevision: {{ default "2.16.1" .Values.components.elastic.helm.targetRevision }}
     helm:
       releaseName: elastic-operator
       values: |
