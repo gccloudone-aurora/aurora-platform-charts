@@ -29,7 +29,7 @@ spec:
               # Should only be enabled if bgpControlPlane = false
               enabled: false
             bgpControlPlane:
-              enabled: {{ default true .Values.components.cilium.bgpControlPlane.enabled }}
+              enabled: {{ .Values.components.cilium.bgpControlPlane.enabled }}
 
             cluster:
               id: 1
