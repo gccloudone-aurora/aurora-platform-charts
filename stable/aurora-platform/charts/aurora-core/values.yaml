@@ -463,7 +463,7 @@ components:
     enableIPv4Masquerade: false
     enableIPv6Masquerade: false
 
-    bgpControlPlane
+    bgpControlPlane:
       enabled: true
 
     image:
