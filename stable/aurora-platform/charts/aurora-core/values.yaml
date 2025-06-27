@@ -463,6 +463,9 @@ components:
     enableIPv4Masquerade: false
     enableIPv6Masquerade: false
 
+    bgpControlPlane
+      enabled: true
+
     image:
       # registry: docker.io
       repository: cilium/cilium

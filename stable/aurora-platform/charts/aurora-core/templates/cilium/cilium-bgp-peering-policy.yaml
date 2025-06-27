@@ -1,4 +1,5 @@
 {{ if .Values.components.cilium.enabled -}}
+{{ if .Values.components.cilium.bgpControlPlane.enabled -}}
 
 apiVersion: argoproj.io/v1alpha1
 kind: Application
@@ -41,4 +42,5 @@ spec:
       prune: true
       selfHeal: true
 
+{{- end }}
 {{- end }}
