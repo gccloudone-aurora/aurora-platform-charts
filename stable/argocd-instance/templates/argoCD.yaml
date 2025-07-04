@@ -103,14 +103,10 @@ spec:
       - command:
           - /var/run/argocd/argocd-cmp-server
         env:
-          - name: ARGOCD_ENV_AVP_TYPE
-            value: {{ .Values.argocdInstance.argocdVaultPlugin.credentials.avpType }}
-          - name: ARGOCD_ENV_AZURE_TENANT_ID
-            value: {{ .Values.argocdInstance.argocdVaultPlugin.credentials.azureTenantID }}
-          - name: ARGOCD_ENV_AZURE_CLIENT_ID
-            value: {{ .Values.argocdInstance.argocdVaultPlugin.credentials.azureClientID }}
-          - name: ARGOCD_ENV_AZURE_CLIENT_SECRET
-            value: {{ .Values.argocdInstance.argocdVaultPlugin.credentials.azureClientSecret }}
+        {{- range $key, $value := .Values.argocdInstance.argocdVaultPlugin.env }}
+          - name: {{ $key }}
+            value: "{{ $value }}"
+        {{- end }}
         image: {{ regexReplaceAll "//+" (printf "%s/%s/%s:%s" .Values.argocdInstance.argocdVaultPlugin.imageRegistry.host .Values.argocdInstance.argocdVaultPlugin.imageRegistry.repository .Values.argocdInstance.argocdVaultPlugin.image.name .Values.argocdInstance.argocdVaultPlugin.image.version) "/" }}
         name: avp
         securityContext:
@@ -127,14 +123,10 @@ spec:
       - command:
           - /var/run/argocd/argocd-cmp-server
         env:
-          - name: ARGOCD_ENV_AVP_TYPE
-            value: {{ .Values.argocdInstance.argocdVaultPlugin.credentials.avpType }}
-          - name: ARGOCD_ENV_AZURE_TENANT_ID
-            value: {{ .Values.argocdInstance.argocdVaultPlugin.credentials.azureTenantID }}
-          - name: ARGOCD_ENV_AZURE_CLIENT_ID
-            value: {{ .Values.argocdInstance.argocdVaultPlugin.credentials.azureClientID }}
-          - name: ARGOCD_ENV_AZURE_CLIENT_SECRET
-            value: {{ .Values.argocdInstance.argocdVaultPlugin.credentials.azureClientSecret }}
+        {{- range $key, $value := .Values.argocdInstance.argocdVaultPlugin.env }}
+          - name: {{ $key }}
+            value: "{{ $value }}"
+        {{- end }}
         image: {{ regexReplaceAll "//+" (printf "%s/%s/%s:%s" .Values.argocdInstance.argocdVaultPlugin.imageRegistry.host .Values.argocdInstance.argocdVaultPlugin.imageRegistry.repository .Values.argocdInstance.argocdVaultPlugin.image.name .Values.argocdInstance.argocdVaultPlugin.image.version) "/" }}
         name: avp-helm
         securityContext:
