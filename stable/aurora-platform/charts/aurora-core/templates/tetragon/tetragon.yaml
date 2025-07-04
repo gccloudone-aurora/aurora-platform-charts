@@ -1,0 +1,45 @@
+{{ if .Values.components.tetragon.enabled -}}
+
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-tetragon"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    chart: {{ default "tetragon" .Values.components.tetragon.helm.chart }}
+    {{- if .Values.components.tetragon.helm.repository }}
+    repoURL: {{ .Values.components.tetragon.helm.repository }}
+    {{- else }}
+    repoURL: {{ default "https://helm.cilium.io" .Values.global.helm.repository }}
+    {{- end }}
+    targetRevision: {{ default "1.4.0" .Values.components.tetragon.helm.targetRevision }}
+    plugin:
+      env:
+        - name: HELM_RELEASE_NAME
+          value: "tetragon"
+        - name: HELM_VALUES
+          value: |
+            tetragon:
+              enabled: true
+              image: {{ default "{}" (include "tetragon.image" .) | nindent 16 }}
+
+            tetragonOperator:
+              enabled: true
+              image: {{ default "{}" (include "tetragon.operator.image" .) | nindent 16 }}
+              nodeSelector: {{ toYaml .Values.components.tetragon.operator.nodeSelector | nindent 16 }}
+              tolerations: {{ toYaml .Values.components.tetragon.operator.tolerations | nindent 16 }}
+
+            export:
+              image: {{ default "{}" (include "tetragon.export.image" .) | nindent 16 }}
+  destination:
+    name: {{ .Values.global.cluster }}
+    namespace: tetragon-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+
+{{- end }}
