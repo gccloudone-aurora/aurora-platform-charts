@@ -38,7 +38,7 @@ spec:
             cni:
               uninstall: false
             ipam:
-              mode: kubernetes
+              mode: {{ .Values.components.cilium.ipamMode }}
             enableIPv4Masquerade: {{ default false .Values.components.cilium.enableIPv4Masquerade }}
             enableIPv6Masquerade: {{ default false .Values.components.cilium.enableIPv6Masquerade }}
 
