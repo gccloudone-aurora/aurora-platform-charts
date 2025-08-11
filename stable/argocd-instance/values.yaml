@@ -12,7 +12,7 @@ argocdInstance:
     configMapName: "cmp-plugin"
 
     env:
-      ARGOCD_ENV_AVP_TYPE: "" # azurekeyvault, awssecretsmanager
+      ARGOCD_ENV_AVP_TYPE: "" # azurekeyvault, awssecretsmanager, etc
 
       # # Azure
       # ARGOCD_ENV_AZURE_TENANT_ID: ""
