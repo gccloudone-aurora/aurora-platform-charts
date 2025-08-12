@@ -31,12 +31,14 @@ spec:
             affinity: {{ toYaml .Values.components.velero.affinity | nindent 14 }}
 
             initContainers:
-              - name: velero-plugin-for-azure
-                image: {{ include "velero.plugin.azure.image" . | quote }}
+            {{- range $key, $value := .Values.components.velero.plugins }}
+              - name: velero-plugin-for-{{ $key }}
+                image: {{ include "velero.imageFunction" $value | quote }}
                 imagePullPolicy: IfNotPresent
                 volumeMounts:
                   - mountPath: /target
                     name: plugins
+            {{- end }}
 
             kubectl:
               image: {{ default "{}" (include "velero.kubectl.image" .) | nindent 16 }}
@@ -51,28 +53,14 @@ spec:
             configuration:
               backupStorageLocation:
               - name: {{ .Values.global.cluster }}
-                provider: azure
+                provider: {{ .Values.components.velero.provider }}
                 default: true
                 bucket: {{ required "velero.backupStorage.bucket is required" .Values.components.velero.backupStorage.bucket | quote }}
-                config:
-                  resourceGroup: {{ required "velero.backupStorage.resourceGroupName is required" .Values.components.velero.backupStorage.resourceGroupName | quote }}
-                  storageAccount: {{ required "velero.backupStorage.storageAccountName is required" .Values.components.velero.backupStorage.storageAccountName | quote }}
-                  subscriptionId: {{ required "velero.backupStorage.subscriptionId is required" .Values.components.velero.backupStorage.subscriptionId | quote }}
+                config: {{ toYaml .Values.components.velero.backupStorage.config | nindent 18 }}
               volumeSnapshotLocation:
               - name: {{ .Values.global.cluster }}
-                provider: azure
-                config:
-                  resourceGroup: {{ required "velero.volumeSnapshot.resourceGroupName is required" .Values.components.velero.volumeSnapshot.resourceGroupName | quote }}
-                  incremental: true
-
-            credentials:
-              secretContents:
-                cloud: |
-                  AZURE_CLIENT_ID:
-                  AZURE_CLIENT_SECRET:
-                  AZURE_TENANT_ID: {{ .Values.global.tenantId }}
-                  AZURE_SUBSCRIPTION_ID: {{ .Values.global.subscriptionId }}
-                  AZURE_RESOURCE_GROUP: {{ printf "%s-rg-managed-aks" .Values.global.cluster }}
+                provider: {{ .Values.components.velero.provider }}
+                config: {{ toYaml .Values.components.velero.volumeSnapshot.config | nindent 18 }}
 
             schedules:
               hourly-resources:

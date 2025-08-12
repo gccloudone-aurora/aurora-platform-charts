@@ -1828,22 +1828,24 @@ components:
               matchLabels:
                 app.kubernetes.io/instance: velero
 
+
+    provider: "azure"
+
     backupStorage: {}
       # bucket:
-      # resourceGroupName:
-      # storageAccountName:
-      # subscriptionId:
+      # config:
 
     volumeSnapshot: {}
-      # resourceGroupName:
+      # config:
 
     aadPodIdentity:
+      enabled: true
       name: velero
       azureManagedIdentity: {}
         # clientId: ""
         # resourceId: ""
 
-    plugin:
+    plugins:
       azure:
         image:
           # registry: docker.io

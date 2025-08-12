@@ -34,14 +34,12 @@ tag: {{ .Values.components.velero.kubectl.image.tag }}
 {{- end }}
 
 {{/*
-The image section for velero plugin azure.
+The image section for velero plugins.
 */}}
-{{- define "velero.plugin.azure.image" -}}
-{{- if (and .Values.components.velero.plugin.azure.image.registry .Values.components.velero.plugin.azure.image.repository .Values.components.velero.plugin.azure.image.tag) }}
-{{- printf "%s/%s:%s" .Values.components.velero.plugin.azure.image.registry .Values.components.velero.plugin.azure.image.repository .Values.components.velero.plugin.azure.image.tag }}
-{{- else if (and .Values.components.velero.plugin.azure.image.repository .Values.components.velero.plugin.azure.image.tag) }}
-{{- printf "%s/%s:%s" (default "docker.io" .Values.global.container.registry) .Values.components.velero.plugin.azure.image.repository .Values.components.velero.plugin.azure.image.tag }}
+{{- define "velero.imageFunction" -}}
+{{- if .image.registry }}
+{{- printf "%s/%s:%s" .image.registry .image.repository .image.tag }}
 {{- else }}
-{{- printf "%s/%s:%s" "docker.io" "velero/velero-plugin-for-microsoft-azure" "v1.6.0" }}
+{{- printf "%s/%s:%s" "docker.io" .image.repository .image.tag }}
 {{- end }}
 {{- end }}
