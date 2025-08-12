@@ -58,11 +58,13 @@ spec:
           tolerations: {{ toYaml .Values.components.certManager.startupapicheck.tolerations | nindent 12 }}
           affinity: {{ toYaml .Values.components.certManager.startupapicheck.affinity | nindent 12 }}
 
-        dns01RecursiveNameservers: {{ .Values.components.certManager.dns01RecursiveNameservers }}
-        dns01RecursiveNameserversOnly: {{ .Values.components.certManager.dns01RecursiveNameserversOnly }}
-
+        {{- if .Values.components.certManager.aadPodIdentity.enabled }}  
         podLabels:
           aadpodidbinding: {{ required "certManager.aadPodIdentity.name is required" .Values.components.certManager.aadPodIdentity.name | quote }}
+        {{- end }}  
+
+        dns01RecursiveNameservers: {{ .Values.components.certManager.dns01RecursiveNameservers }}
+        dns01RecursiveNameserversOnly: {{ .Values.components.certManager.dns01RecursiveNameserversOnly }}
 
         podDnsConfig:
           nameservers: {{ toYaml .Values.components.certManager.podDnsConfig.nameservers | nindent 12 }}

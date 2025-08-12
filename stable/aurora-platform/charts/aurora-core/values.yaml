@@ -380,6 +380,7 @@ components:
       nameservers: []
 
     aadPodIdentity:
+      enabled: true
       name: cert-manager
       azureManagedIdentity: {}
         # clientId: ""
@@ -390,10 +391,10 @@ components:
       # caBundle: ""
 
       dns01: {}
-      #   azure:
-      #     zone:
-      #     resourceGroupName:
-      #     subscriptionId:
+        # azureDNS:
+        #   hostedZoneName: 
+        #   resourceGroupName: 
+        #   subscriptionID: 
 
     priorityClassName: platform-cluster-medium
 
