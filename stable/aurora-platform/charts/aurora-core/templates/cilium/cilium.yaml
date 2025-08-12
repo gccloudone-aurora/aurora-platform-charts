@@ -39,12 +39,30 @@ spec:
               uninstall: false
             ipam:
               mode: {{ .Values.components.cilium.ipamMode }}
+
+            eni:
+              enabled: true
+              # -- Release IPs not used from the ENI
+              awsReleaseExcessIPs: {{ .Values.components.cilium.eni.awsReleaseExcessIPs }}
+              # -- Enable ENI prefix delegation
+              awsEnablePrefixDelegation: {{ .Values.components.cilium.eni.awsEnablePrefixDelegation }}
+              # -- Filter via subnet IDs which will dictate which subnets are going to be used to create new ENIs
+              # Important note: This requires that each instance has an ENI with a matching subnet attached
+              # when Cilium is deployed. If you only want to control subnets for ENIs attached by Cilium,
+              # use the CNI configuration file settings (cni.customConf) instead.
+              subnetIDsFilter: {{ .Values.components.cilium.eni.subnetIDsFilter }}
+              # -- Filter via tags (k=v) which will dictate which subnets are going to be used to create new ENIs
+              # Important note: This requires that each instance has an ENI with a matching subnet attached
+              # when Cilium is deployed. If you only want to control subnets for ENIs attached by Cilium,
+              # use the CNI configuration file settings (cni.customConf) instead.
+              subnetTagsFilter: {{ .Values.components.cilium.eni.subnetTagsFilter }}
+
             enableIPv4Masquerade: {{ default false .Values.components.cilium.enableIPv4Masquerade }}
             enableIPv6Masquerade: {{ default false .Values.components.cilium.enableIPv6Masquerade }}
 
             # cilium-agent
             image: {{ default "{}" (include "cilium.image" .) | nindent 14 }}
-            imagePullSecrets: {{ toYaml .Values.components.cilium.imagePullSecrets | nindent 14 }}
+            imagePullSecrets: {{ include "cilium.imagePullSecrets" . | nindent 14 }}
             nodeSelector:
               kubernetes.io/os: linux
             tolerations:
