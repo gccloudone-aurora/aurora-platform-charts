@@ -41,15 +41,7 @@ spec:
                     caBundle: {{ .Values.components.certManager.issuers.caBundle }}
                     {{ end }}
                     solvers:
-                    - dns01:
-                        cnameStrategy: Follow
-                        azureDNS:
-                          hostedZoneName: {{ required "certManager.issuers.dns01.azure.zone is required" .Values.components.certManager.issuers.dns01.azure.zone }}
-                          resourceGroupName: {{ required "certManager.issuers.dns01.azure.resourceGroupName is required" .Values.components.certManager.issuers.dns01.azure.resourceGroupName }}
-                          subscriptionID: {{ required "certManager.issuers.dns01.azure.subscriptionId is required" .Values.components.certManager.issuers.dns01.azure.subscriptionId }}
-                      selector:
-                        matchLabels:
-                          use-azuredns-solver: "true"
+                    - dns01: {{ toYaml .Values.components.certManager.issuers.dns01 | nindent 24 }}
               - apiVersion: cert-manager.io/v1
                 kind: ClusterIssuer
                 metadata:
@@ -72,16 +64,7 @@ spec:
                     caBundle: {{ .Values.components.certManager.issuers.caBundle }}
                     {{ end }}
                     solvers:
-                    - dns01:
-                        cnameStrategy: Follow
-                        azureDNS:
-                          hostedZoneName: {{ required "certManager.issuers.dns01.azure.zone is required" .Values.components.certManager.issuers.dns01.azure.zone }}
-                          resourceGroupName: {{ required "certManager.issuers.dns01.azure.resourceGroupName is required" .Values.components.certManager.issuers.dns01.azure.resourceGroupName }}
-                          subscriptionID: {{ required "certManager.issuers.dns01.azure.subscriptionId is required" .Values.components.certManager.issuers.dns01.azure.subscriptionId }}
-                      selector:
-                        matchLabels:
-                          use-azuredns-solver: "true"
-
+                    - dns01: {{ toYaml .Values.components.certManager.issuers.dns01 | nindent 24 }}
   destination:
     name: {{ .Values.global.cluster }}
     namespace: platform-system
