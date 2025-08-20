@@ -95,7 +95,7 @@ core:
 
 # Core AWS Platform components
 coreAws:
-  enabled: true
+  enabled: false
   components: {}
     # awsEbsCsiDriver: {}
 
