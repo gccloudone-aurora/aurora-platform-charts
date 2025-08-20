@@ -41,10 +41,7 @@ spec:
               service:
                 # Defines the type of Service to deploy
                 type: LoadBalancer
-                annotations:
-                  # Defines if an "internal" or "external" Azure load-balancer is deployed for the service.
-                  service.beta.kubernetes.io/azure-load-balancer-internal: "true"
-                  service.beta.kubernetes.io/azure-load-balancer-internal-subnet: "{{ required ".Values.global.load_balancer_subnet_name is required" .Values.global.load_balancer_subnet_name }}"
+                annotations: {{ toYaml .Values.components.istio.gateway.service.annotations | nindent 18 }}
                 # Specifies the IP that the LoadBalancer should use. Skipped if empty.
                 loadBalancerIP: ""
                 # Describes how nodes distribute service traffic
