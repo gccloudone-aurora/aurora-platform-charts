@@ -1,0 +1,147 @@
+global:
+  helm: {}
+    # Override all Helm applications to pull
+    # their helm chart from the following
+    # repository.
+    #
+    # You can override specific charts below
+    # in the components section.
+    # repository: https://myrepo.example.ca
+
+  container: {}
+    # Override all applications to pull
+    # their container from the following
+    # registry.
+    #
+    # You can override specific charts below
+    # in the components section.
+    # registry: docker.io
+
+  namespace:
+    helm:
+      chart:
+      targetRevision:
+      repository:
+
+  raw:
+    helm:
+      chart:
+      targetRevision:
+      repository:
+
+  # Cluster name for the Application targets.
+  cluster: in-cluster
+
+  # Which project to place applications in.
+  project: aurora-core
+
+  # Ingress Domain
+  ingressDomain: example.ca
+
+  # Ingress Class Name
+  # ingressClassName: ingress-istio-controller
+
+  # The Azure subscription ID used for the cluster
+  # subscriptionId: ""
+
+  # The Azure tenant ID used for the cluster
+  # tenantId: ""
+
+  # Load Balancer Subnet Name for all Load Balancers
+  # load_balancer_subnet_name: ""
+
+# Role Based Access Control
+rbac:
+  # Groups and users that should be bound to the platform-admin role.
+  # Note: if using AKS with AAD enabled, this is not necessary since admins
+  #       will be defined in the configuration.
+  platformAdmin:
+    groups: []
+    users: []
+  # Configurations for the platform-operator-daily role.
+  # A read-only aggregated role which uses the
+  # 'rbac.ssc-spc.gc.ca/aggregate-to-platform-operator-view: "true"'
+  # label as the selector.
+  platformOperator:
+    groups: []
+    users: []
+
+# Components
+components:
+  awsEbsCsiDriver:
+    enabled: true
+
+    helm: {}
+      # chart: aws-ebs-csi-driver
+      # repository: https://kubernetes-sigs.github.io/aws-ebs-csi-driver
+      # targetRevision: 2.47.0
+
+    image:
+      # registry: public.ecr.aws  
+      repository: ebs-csi-driver/aws-ebs-csi-driver
+      # tag: ""
+      # pullPolicy: IfNotPresent
+
+    controller:
+      replicas: 2
+      resources:
+        requests:
+          cpu: 10m
+          memory: 40Mi
+        limits:
+          memory: 256Mi
+      nodeSelector: {}    
+
+    node:
+      resources:      
+        requests:
+          cpu: 10m
+          memory: 40Mi
+        limits:
+          memory: 256Mi
+      nodeSelector: {}
+
+    # sidecars
+    provisioner:
+      image:
+        # registry: public.ecr.aws  
+        repository: csi-components/csi-provisioner
+        # tag: "v5.3.0-eksbuild.3"
+        # pullPolicy: IfNotPresent
+      resources: {}
+
+    attacher:
+      image:
+        # registry: public.ecr.aws  
+        repository: csi-components/csi-attacher
+        # tag: "v4.9.0-eksbuild.3"
+        # pullPolicy: IfNotPresent
+      resources: {}
+    snapshotter:
+      image:
+        # registry: public.ecr.aws  
+        repository: csi-components/csi-snapshotter
+        # tag: "v8.3.0-eksbuild.1"
+        # pullPolicy: IfNotPresent
+      resources: {}
+    resizer:
+      image:
+        # registry: public.ecr.aws  
+        repository: csi-components/csi-resizer
+        # tag: "v1.14.0-eksbuild.3"
+        # pullPolicy: IfNotPresent
+      resources: {}
+    nodeDriverRegistrar:
+      image:
+        # registry: public.ecr.aws  
+        repository: csi-components/csi-node-driver-registrar
+        # tag: "v2.14.0-eksbuild.4"
+        # pullPolicy: IfNotPresent
+      resources: {}
+    volumemodifier:
+      image:
+        # registry: public.ecr.aws  
+        repository: ebs-csi-driver/volume-modifier-for-k8s
+        # tag:  "v0.7.0"
+        # pullPolicy: IfNotPresent
+      resources: {}

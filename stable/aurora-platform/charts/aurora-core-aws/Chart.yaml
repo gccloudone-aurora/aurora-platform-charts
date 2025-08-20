@@ -1,6 +1,6 @@
 apiVersion: v2
-name: aurora-platform
-description: Aurora Platform
+name: aurora-core-aws
+description: Aurora Platform - Core AWS Components
 
 # A chart can be either an 'application' or a 'library' chart.
 #
@@ -15,34 +15,10 @@ type: application
 # This is the chart version. This version number should be incremented each time you make changes
 # to the chart and its templates, including the app version.
 # Versions are expected to follow Semantic Versioning (https://semver.org/)
-version: 0.0.28
+version: 0.0.1
 
 # This is the version number of the application being deployed. This version number should be
 # incremented each time you make changes to the application. Versions are not expected to
 # follow Semantic Versioning. They should reflect the version the application is using.
 # It is recommended to use it with quotes.
-appVersion: "2.0.0"
-
-dependencies:
-  - name: aurora-core
-    condition: core.enabled
-    version: 0.0.1
-    alias: core
-  - name: aurora-core-aws
-    condition: coreAws.enabled
-    version: 0.0.1
-    alias: coreAws    
-  - name: aurora-app
-    condition: app.enabled
-    version: 0.0.1
-    alias: app
-    import-values:
-      - child: data
-        parent: global.imports
-  - name: aurora-mgmt
-    condition: mgmt.enabled
-    version: 0.0.1
-    alias: mgmt
-    import-values:
-      - child: data
-        parent: global.imports
+appVersion: "0.0.1"

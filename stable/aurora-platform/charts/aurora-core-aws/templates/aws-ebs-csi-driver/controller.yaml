@@ -1,0 +1,95 @@
+{{ if .Values.components.awsEbsCsiDriver.enabled -}}
+
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-aws-ebs-csi-driver"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    chart: {{ default "aws-ebs-csi-driver" .Values.components.awsEbsCsiDriver.helm.chart }}
+    {{- if .Values.components.awsEbsCsiDriver.helm.repository  }}
+    repoURL: {{ .Values.components.awsEbsCsiDriver.helm.repository }}
+    {{- else }}
+    repoURL: {{ default "https://kubernetes-sigs.github.io/aws-ebs-csi-driver" .Values.global.helm.repository }}
+    {{- end }}
+    targetRevision: {{ default "2.47.0" .Values.components.awsEbsCsiDriver.helm.targetRevision }}
+    plugin:
+      env:
+        - name: HELM_RELEASE_NAME
+          value: "aws-ebs-csi-driver"
+        - name: HELM_VALUES
+          value: |
+            image: {{ default "{}" (include "awsEbsCsiDriver.image" .) | nindent 14 }}
+            imagePullSecrets: []
+
+            controller:
+              replicaCount: {{ .Values.components.awsEbsCsiDriver.controller.replicas }}
+              resources: {{ toYaml .Values.components.awsEbsCsiDriver.controller.resources | nindent 16 }}
+              
+              nodeSelector: {{ toYaml .Values.components.awsEbsCsiDriver.controller.nodeSelector | nindent 16 }}
+              tolerations:
+                - key: CriticalAddonsOnly
+                  operator: Exists
+                - effect: NoExecute
+                  operator: Exists
+                  tolerationSeconds: 300
+              priorityClassName: system-cluster-critical                  
+
+              serviceAccount:
+                name: ebs-csi-controller-sa
+
+            node:
+              resources: {{ toYaml .Values.components.awsEbsCsiDriver.node.resources | nindent 16 }}
+
+              nodeSelector: {{ toYaml .Values.components.awsEbsCsiDriver.node.nodeSelector | nindent 16 }}
+              tolerations:
+                - operator: Exists
+                  effect: NoExecute
+                  tolerationSeconds: 300
+              priorityClassName: system-node-critical
+
+              serviceAccount:
+                name: ebs-csi-node-sa                       
+
+            sidecars:
+              provisioner:
+                image: {{ default "{}" (include "awsEbsCsiDriver.provisioner.image" .) | nindent 18 }}
+                resources: {{ toYaml .Values.components.awsEbsCsiDriver.provisioner.resources | nindent 18 }}
+              attacher:
+                image: {{ default "{}" (include "awsEbsCsiDriver.attacher.image" .) | nindent 18 }}
+                resources: {{ toYaml .Values.components.awsEbsCsiDriver.attacher.resources | nindent 18 }}
+              snapshotter:
+                image: {{ default "{}" (include "awsEbsCsiDriver.snapshotter.image" .) | nindent 18 }}
+                resources: {{ toYaml .Values.components.awsEbsCsiDriver.snapshotter.resources | nindent 18 }}
+              resizer:
+                image: {{ default "{}" (include "awsEbsCsiDriver.resizer.image" .) | nindent 18 }}
+                resources: {{ toYaml .Values.components.awsEbsCsiDriver.resizer.resources | nindent 18 }}
+              nodeDriverRegistrar:
+                image: {{ default "{}" (include "awsEbsCsiDriver.nodeDriverRegistrar.image" .) | nindent 18 }}
+                resources: {{ toYaml .Values.components.awsEbsCsiDriver.nodeDriverRegistrar.resources | nindent 18 }}
+              volumemodifier:
+                image: {{ default "{}" (include "awsEbsCsiDriver.volumemodifier.image" .) | nindent 18 }}
+                resources: {{ toYaml .Values.components.awsEbsCsiDriver.volumemodifier.resources | nindent 18 }}
+            
+            storageClasses:
+              - name: default
+                annotations:
+                  storageclass.kubernetes.io/is-default-class: "true"
+                volumeBindingMode: WaitForFirstConsumer
+                reclaimPolicy: Delete
+                parameters:
+                  type: gp3
+                  encrypted: "true"
+
+  destination:
+    name: {{ .Values.global.cluster }}
+    namespace: aws-ebs-csi-driver-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+
+{{- end }}
