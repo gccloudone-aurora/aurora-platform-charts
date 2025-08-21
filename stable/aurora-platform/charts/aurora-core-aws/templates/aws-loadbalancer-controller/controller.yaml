@@ -1,0 +1,52 @@
+{{ if .Values.components.awsLoadbalancerController.enabled -}}
+
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-aws-loadbalancer-controller"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    chart: {{ default "aws-load-balancer-controller" .Values.components.awsLoadbalancerController.helm.chart }}
+    {{- if .Values.components.awsLoadbalancerController.helm.repository  }}
+    repoURL: {{ .Values.components.awsLoadbalancerController.helm.repository }}
+    {{- else }}
+    repoURL: {{ default "https://aws.github.io/eks-charts" .Values.global.helm.repository }}
+    {{- end }}
+    targetRevision: {{ default "1.13.4" .Values.components.awsLoadbalancerController.helm.targetRevision }}
+    plugin:
+      env:
+        - name: HELM_RELEASE_NAME
+          value: "aws-load-balancer-controller"
+        - name: HELM_VALUES
+          value: |
+            image: {{ default "{}" (include "awsLoadbalancerController.image" .) | nindent 14 }}
+
+            replicaCount: {{ .Values.components.awsLoadbalancerController.replicas }}
+            resources: {{ toYaml .Values.components.awsLoadbalancerController.resources | nindent 14 }}
+
+            priorityClassName: system-cluster-critical # {{ .Values.components.awsLoadbalancerController.priorityClassName }}
+            nodeSelector: {{ toYaml .Values.components.awsLoadbalancerController.nodeSelector | nindent 14 }}
+            tolerations: {{ toYaml .Values.components.awsLoadbalancerController.tolerations | nindent 14 }}
+            configureDefaultAffinity: true
+
+            clusterName: {{ .Values.global.cluster }}
+
+            serviceAccount:
+              name: "aws-loadbalancer-controller"
+
+            enableCertManager: {{ .Values.components.awsLoadbalancerController.enableCertManager }}
+            serviceMonitor:
+              enabled: {{ .Values.components.awsLoadbalancerController.enableServiceMinitor }} 
+
+  destination:
+    name: {{ .Values.global.cluster }}
+    namespace: aws-loadbalancer-controller-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+
+{{- end }}
