@@ -13,7 +13,7 @@ spec:
     {{- else }}
     repoURL: {{ default "https://gccloudone-aurora.github.io/aurora-platform-charts" .Values.global.helm.repository }}
     {{- end }}
-    targetRevision: {{ default "0.0.7" .Values.components.argoFoundation.argocdInstance.helm.targetRevision }}
+    targetRevision: {{ default "0.1.0" .Values.components.argoFoundation.argocdInstance.helm.targetRevision }}
     plugin:
       env:
         - name: HELM_RELEASE_NAME
@@ -35,6 +35,8 @@ spec:
                 clientSecret: "{{ .Values.components.argoFoundation.argocdInstance.oidcAuthSP.credentials.clientSecret }}"
 
               argocdVaultPlugin:
+                env: {{ toYaml .Values.components.argoFoundation.argocdInstance.argocdVaultPlugin.env | nindent 18 }}
+                  
                 AADPodIdentity:
                   enabled: {{ default "false" .Values.components.argoFoundation.argocdInstance.aadPodIdentity.enabled }}
                   {{- if .Values.components.argoFoundation.argocdInstance.aadPodIdentity.enabled }}
@@ -42,11 +44,6 @@ spec:
                     clientID: {{ .Values.components.argoFoundation.argocdInstance.aadPodIdentity.managedIdentity.clientID }}
                     resourceID: {{ .Values.components.argoFoundation.argocdInstance.aadPodIdentity.managedIdentity.resourceID }}
                   {{- end }}
-                credentials:
-                  avpType: "azurekeyvault"
-                  azureTenantID: "{{ .Values.components.argoFoundation.argocdInstance.argocdVaultPlugin.credentials.azureTenantID }}"
-                  azureClientID: "{{ .Values.components.argoFoundation.argocdInstance.argocdVaultPlugin.credentials.azureClientID }}"
-                  azureClientSecret: "{{ .Values.components.argoFoundation.argocdInstance.argocdVaultPlugin.credentials.azureClientSecret }}"
 
               server:
                 autoscale:

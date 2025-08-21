@@ -1,4 +1,4 @@
-{{- range $name, $value := .Values.register.repositories }}
+{{- range $name, $value := default dict .Values.register.repositories }}
 ---
 apiVersion: v1
 kind: Secret
@@ -12,7 +12,7 @@ stringData:
   url: {{ $value.url }}
 {{- end }}
 
-{{- range $name, $value := .Values.register.repositoryCreds }}
+{{- range $name, $value := default dict .Values.register.repositoryCreds }}
 ---
 
 apiVersion: v1
