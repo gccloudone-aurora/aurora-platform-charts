@@ -1729,6 +1729,63 @@ components:
       #  prodMajor: ""
       #  prodMinor: ""
 
+  tetragon:
+    enabled: true
+
+    helm: {}
+      # chart: tetragon
+      # repository: https://helm.cilium.io
+      # targetRevision: 1.14.1
+
+    imagePullSecrets: []
+
+    image:
+      # registry: quay.io
+      repository: cilium/tetragon
+      tag: "v1.4.0"
+      pullPolicy: IfNotPresent
+
+    operator:
+      image:
+        # registry: quay.io
+        repository: cilium/tetragon-operator
+        tag: "v1.4.0"
+        pullPolicy: IfNotPresent
+
+      replicas: 2
+
+      priorityClassName: system-cluster-critical
+
+      resources: {}
+        # limits:
+        #   cpu: ""
+        #   memory: ""
+        # requests:
+        #   cpu: ""
+        #   memory: ""
+      nodeSelector:
+        kubernetes.io/os: linux
+        node.ssc-spc.gc.ca/purpose: system
+      tolerations:
+        - key: CriticalAddonsOnly
+          operator: Exists
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              topologyKey: kubernetes.io/hostname
+              labelSelector:
+                matchLabels:
+                  app.kubernetes.io/name: tetragon-operator
+
+    export:
+      image:
+        # registry: quay.io
+        repository: cilium/hubble-export-stdout
+        tag: "v1.1.0"
+        pullPolicy: IfNotPresent
+
   vaultAgent:
     enabled: false
 
