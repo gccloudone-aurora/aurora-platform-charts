@@ -70,7 +70,7 @@ argocdInstance:
   repo:
     image:
       name: "argoproj/argocd"
-      version: "v2.4.12"
+      version: "v2.5.15"
     resources: {}
       # limits:
       #   cpu: ""
