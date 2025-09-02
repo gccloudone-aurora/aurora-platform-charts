@@ -31,20 +31,20 @@ spec:
             affinity: {{ toYaml .Values.components.velero.affinity | nindent 14 }}
 
             initContainers:
-            {{- range $key, $value := .Values.components.velero.plugins }}
-              - name: velero-plugin-for-{{ $key }}
-                image: {{ include "velero.imageFunction" $value | quote }}
+              - name: velero-plugin-for-{{ .Values.global.provider }}
+                image: {{ include "velero.plugin.image" . }}
                 imagePullPolicy: IfNotPresent
                 volumeMounts:
                   - mountPath: /target
-                    name: plugins
-            {{- end }}
+                    name: plugins    
 
             kubectl:
               image: {{ default "{}" (include "velero.kubectl.image" .) | nindent 16 }}
 
+            {{- if eq .Values.global.provider "azure" }}
             podLabels:
               aadpodidbinding: {{ required "velero.aadPodIdentity.name is required" .Values.components.velero.aadPodIdentity.name | quote }}
+            {{- end }}
 
             metrics:
               serviceMonitor:
@@ -53,14 +53,14 @@ spec:
             configuration:
               backupStorageLocation:
               - name: {{ .Values.global.cluster }}
-                provider: {{ .Values.components.velero.provider }}
+                provider: {{ .Values.global.provider }}
                 default: true
                 bucket: {{ required "velero.backupStorage.bucket is required" .Values.components.velero.backupStorage.bucket | quote }}
-                config: {{ toYaml .Values.components.velero.backupStorage.config | nindent 18 }}
+                config: {{ include "velero.backupStorageLocation.config" . | nindent  18 }}
               volumeSnapshotLocation:
               - name: {{ .Values.global.cluster }}
-                provider: {{ .Values.components.velero.provider }}
-                config: {{ toYaml .Values.components.velero.volumeSnapshot.config | nindent 18 }}
+                provider: {{ .Values.global.provider }}
+                config: {{ include "velero.volumeSnapshotLocation.config" . | nindent 18 }}
 
             schedules:
               hourly-resources:
