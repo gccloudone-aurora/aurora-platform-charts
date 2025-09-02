@@ -82,3 +82,19 @@ tag: {{ .Values.components.certManager.startupapicheck.image.tag }}
 pullPolicy: {{ .Values.components.certManager.startupapicheck.image.pullPolicy }}
 {{- end }}
 {{- end }}
+
+{{/*
+The image section for Cert Manager Startup API Check.
+*/}}
+{{- define "certManager.issuer.dns01Solver" -}}
+{{- if eq .Values.global.provider "azure" }}
+cnameStrategy: Follow
+azureDNS:
+    hostedZoneName: {{ required "certManager.issuers.dns01.azure.zone is required" .Values.components.certManager.issuers.dns01.azure.zone }}
+    resourceGroupName: {{ required "certManager.issuers.dns01.azure.resourceGroupName is required" .Values.components.certManager.issuers.dns01.azure.resourceGroupName }}
+    subscriptionID: {{ required "certManager.issuers.dns01.azure.subscriptionId is required" .Values.components.certManager.issuers.dns01.azure.subscriptionId }} 
+{{- else if eq .Values.global.provider "aws" }}
+cnameStrategy: Follow
+route53: {}
+{{- end }}
+{{- end }}

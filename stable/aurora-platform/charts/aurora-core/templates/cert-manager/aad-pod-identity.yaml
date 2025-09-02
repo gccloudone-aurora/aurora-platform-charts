@@ -1,4 +1,5 @@
-{{ if and .Values.components.certManager.enabled .Values.components.certManager.aadPodIdentity.enabled -}}
+{{ if .Values.components.certManager.enabled -}}
+{{ if eq .Values.global.provider "azure" -}}
 
 apiVersion: argoproj.io/v1alpha1
 kind: Application
@@ -60,4 +61,5 @@ spec:
       prune: true
       selfHeal: true
 
+{{- end }}
 {{- end }}

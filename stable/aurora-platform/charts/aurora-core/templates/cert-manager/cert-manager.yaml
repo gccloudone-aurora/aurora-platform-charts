@@ -58,7 +58,7 @@ spec:
           tolerations: {{ toYaml .Values.components.certManager.startupapicheck.tolerations | nindent 12 }}
           affinity: {{ toYaml .Values.components.certManager.startupapicheck.affinity | nindent 12 }}
 
-        {{- if .Values.components.certManager.aadPodIdentity.enabled }}  
+        {{- if and .Values.components.certManager.aadPodIdentity.enabled (eq .Values.global.provider "azure") }}
         podLabels:
           aadpodidbinding: {{ required "certManager.aadPodIdentity.name is required" .Values.components.certManager.aadPodIdentity.name | quote }}
         {{- end }}  
