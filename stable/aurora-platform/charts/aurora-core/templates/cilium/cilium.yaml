@@ -25,9 +25,6 @@ spec:
             aksbyocni:
               enabled: false
 
-            bgp:
-              # Should only be enabled if bgpControlPlane = false
-              enabled: false
             bgpControlPlane:
               enabled: {{ .Values.components.cilium.bgpControlPlane.enabled }}
 
@@ -37,14 +34,15 @@ spec:
 
             cni:
               uninstall: false
-            ipam:
-              mode: kubernetes
+
+            {{ include "cilium.ipam" . | nindent 12 }}
+
             enableIPv4Masquerade: {{ default false .Values.components.cilium.enableIPv4Masquerade }}
             enableIPv6Masquerade: {{ default false .Values.components.cilium.enableIPv6Masquerade }}
 
             # cilium-agent
             image: {{ default "{}" (include "cilium.image" .) | nindent 14 }}
-            imagePullSecrets: {{ toYaml .Values.components.cilium.imagePullSecrets | nindent 14 }}
+            imagePullSecrets: {{ include "cilium.imagePullSecrets" . | nindent 14 }}
             nodeSelector:
               kubernetes.io/os: linux
             tolerations:

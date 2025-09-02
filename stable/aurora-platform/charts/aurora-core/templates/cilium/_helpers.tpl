@@ -1,4 +1,15 @@
 {{/*
+image pull secret
+*/}}
+{{- define "cilium.imagePullSecrets" -}}
+{{- if not .Values.components.cilium.secretDockerConfigJson }}
+{{- .Values.components.cilium.imagePullSecrets }}
+{{- else }}
+{{- append .Values.components.cilium.imagePullSecrets "cilium-image-pull-secret" | uniq }}
+{{- end }}
+{{- end }}
+
+{{/*
 The image section for Cilium.
 */}}
 {{- define "cilium.image" -}}
@@ -122,5 +133,35 @@ The image section for Cilium PreFlight.
 repository: {{ printf "%s/%s" .Values.components.cilium.preflight.image.registry .Values.components.cilium.preflight.image.repository }}
 {{- else if .Values.components.cilium.preflight.image.repository }}
 repository: {{ printf "%s/%s" (default "quay.io" .Values.global.container.registry) .Values.components.cilium.preflight.image.repository }}
+{{- end }}
+{{- end }}
+
+{{/*
+The image section for Cilium IPAM.
+*/}}
+{{- define "cilium.ipam" -}}
+{{- if eq .Values.global.provider "azure" }}
+ipam:
+  mode: kubernetes
+{{- else if eq .Values.global.provider "aws" }}
+ipam:
+  mode: eni
+
+eni:
+    enabled: true
+    # -- Release IPs not used from the ENI
+    awsReleaseExcessIPs: {{ .Values.components.cilium.eni.awsReleaseExcessIPs }}
+    # -- Enable ENI prefix delegation
+    awsEnablePrefixDelegation: {{ .Values.components.cilium.eni.awsEnablePrefixDelegation }}
+    # -- Filter via subnet IDs which will dictate which subnets are going to be used to create new ENIs
+    # Important note: This requires that each instance has an ENI with a matching subnet attached
+    # when Cilium is deployed. If you only want to control subnets for ENIs attached by Cilium,
+    # use the CNI configuration file settings (cni.customConf) instead.
+    subnetIDsFilter: {{ .Values.components.cilium.eni.subnetIDsFilter }}
+    # -- Filter via tags (k=v) which will dictate which subnets are going to be used to create new ENIs
+    # Important note: This requires that each instance has an ENI with a matching subnet attached
+    # when Cilium is deployed. If you only want to control subnets for ENIs attached by Cilium,
+    # use the CNI configuration file settings (cni.customConf) instead.
+    subnetTagsFilter: {{ .Values.components.cilium.eni.subnetTagsFilter }}
 {{- end }}
 {{- end }}

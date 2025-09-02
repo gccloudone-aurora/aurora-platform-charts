@@ -29,6 +29,9 @@ global:
       targetRevision:
       repository:
 
+  # azure or aws
+  provider: azure
+
   # Cluster name for the Application targets.
   cluster: in-cluster
 
@@ -459,6 +462,8 @@ components:
 
     imagePullSecrets:
       - name: cilium-image-pull-secret
+
+    ipamMode: "kubernetes"  
 
     enableIPv4Masquerade: false
     enableIPv6Masquerade: false
