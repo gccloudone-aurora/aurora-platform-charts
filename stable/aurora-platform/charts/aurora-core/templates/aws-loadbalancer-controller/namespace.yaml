@@ -1,4 +1,5 @@
 {{ if .Values.components.awsLoadbalancerController.enabled -}}
+{{ if eq .Values.global.provider "aws" -}}
 
 apiVersion: argoproj.io/v1alpha1
 kind: Application
@@ -82,4 +83,5 @@ spec:
       prune: true
       selfHeal: true
 
+{{- end }}
 {{- end }}

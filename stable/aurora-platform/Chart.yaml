@@ -28,10 +28,6 @@ dependencies:
     condition: core.enabled
     version: 0.0.1
     alias: core
-  - name: aurora-core-aws
-    condition: coreAws.enabled
-    version: 0.0.1
-    alias: coreAws    
   - name: aurora-app
     condition: app.enabled
     version: 0.0.1
