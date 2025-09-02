@@ -29,6 +29,9 @@ global:
       targetRevision:
       repository:
 
+  # azure or aws
+  provider: azure
+
   # Cluster name for the Application targets.
   cluster: in-cluster
 
@@ -220,6 +223,84 @@ components:
     aurora:
       secretName: "aurora-image-pull-secret"
       # secretDockerConfigJson: ""
+
+  awsEbsCsiDriver:
+    enabled: true
+
+    helm: {}
+      # chart: aws-ebs-csi-driver
+      # repository: https://kubernetes-sigs.github.io/aws-ebs-csi-driver
+      # targetRevision: 2.47.0
+
+    image:
+      # registry: public.ecr.aws  
+      repository: ebs-csi-driver/aws-ebs-csi-driver
+      # tag: ""
+      # pullPolicy: IfNotPresent
+
+    controller:
+      replicas: 2
+      resources:
+        requests:
+          cpu: 10m
+          memory: 40Mi
+        limits:
+          memory: 256Mi
+      nodeSelector: {}    
+
+    node:
+      resources:      
+        requests:
+          cpu: 10m
+          memory: 40Mi
+        limits:
+          memory: 256Mi
+      nodeSelector: {}
+
+    # sidecars
+    provisioner:
+      image:
+        # registry: public.ecr.aws  
+        repository: csi-components/csi-provisioner
+        # tag: "v5.3.0-eksbuild.3"
+        # pullPolicy: IfNotPresent
+      resources: {}
+
+    attacher:
+      image:
+        # registry: public.ecr.aws  
+        repository: csi-components/csi-attacher
+        # tag: "v4.9.0-eksbuild.3"
+        # pullPolicy: IfNotPresent
+      resources: {}
+    snapshotter:
+      image:
+        # registry: public.ecr.aws  
+        repository: csi-components/csi-snapshotter
+        # tag: "v8.3.0-eksbuild.1"
+        # pullPolicy: IfNotPresent
+      resources: {}
+    resizer:
+      image:
+        # registry: public.ecr.aws  
+        repository: csi-components/csi-resizer
+        # tag: "v1.14.0-eksbuild.3"
+        # pullPolicy: IfNotPresent
+      resources: {}
+    nodeDriverRegistrar:
+      image:
+        # registry: public.ecr.aws  
+        repository: csi-components/csi-node-driver-registrar
+        # tag: "v2.14.0-eksbuild.4"
+        # pullPolicy: IfNotPresent
+      resources: {}
+    volumemodifier:
+      image:
+        # registry: public.ecr.aws  
+        repository: ebs-csi-driver/volume-modifier-for-k8s
+        # tag:  "v0.7.0"
+        # pullPolicy: IfNotPresent
+      resources: {}
 
   certManager:
     enabled: true

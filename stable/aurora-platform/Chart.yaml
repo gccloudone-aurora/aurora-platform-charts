@@ -27,7 +27,7 @@ dependencies:
   - name: aurora-core
     condition: core.enabled
     version: 0.0.1
-    alias: core
+    alias: core  
   - name: aurora-app
     condition: app.enabled
     version: 0.0.1
