@@ -64,9 +64,9 @@ region: ca-central-1
 {{- end }}
 
 {{/*
-snapshotLocation config
+volumeSnapshotLocation config
 */}}
-{{- define "velero.snapshotLocation.config" -}}
+{{- define "velero.volumeSnapshotLocation.config" -}}
 {{- if eq .Values.global.provider "azure" }}
 resourceGroup: {{ required "velero.volumeSnapshot.resourceGroupName is required" .Values.components.velero.volumeSnapshot.resourceGroupName | quote }}
 incremental: true
