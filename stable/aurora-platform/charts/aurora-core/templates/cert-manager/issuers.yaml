@@ -41,7 +41,7 @@ spec:
                     caBundle: {{ .Values.components.certManager.issuers.caBundle }}
                     {{ end }}
                     solvers:
-                    - dns01: {{  include "certManager.issuer.dns01Solver" . | nindent 24 }}
+                    - dns01: {{ include "certManager.issuer.dns01Solver" . | nindent 24 }}
                       selector:
                         matchLabels:
                           use-general-solver: "true"
@@ -67,7 +67,7 @@ spec:
                     caBundle: {{ .Values.components.certManager.issuers.caBundle }}
                     {{ end }}
                     solvers:
-                    - dns01: {{  include "certManager.issuer.dns01Solver" . | nindent 24 }}
+                    - dns01: {{ include "certManager.issuer.dns01Solver" . | nindent 24 }}
                       selector:
                         matchLabels:
                           use-general-solver: "true"                    
