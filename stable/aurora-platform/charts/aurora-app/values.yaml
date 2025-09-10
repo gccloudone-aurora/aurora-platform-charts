@@ -296,7 +296,7 @@ components:
                 matchLabels:
                   istio: general
 
-      # loadBalancerIP: XXX.XX.XX.XX   
+      # loadBalancerIP: XXX.XX.XX.XX
 
       additionalDnsNames: []
 
