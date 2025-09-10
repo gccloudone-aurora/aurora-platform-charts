@@ -30,7 +30,7 @@ global:
       repository: "https://gccloudone-aurora.github.io/aurora-platform-charts"
 
   # azure or aws
-  provider: "azure"
+  provider: azure
 
   # Cluster name for the Application targets.
   cluster: in-cluster
