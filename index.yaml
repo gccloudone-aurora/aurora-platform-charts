@@ -3,6 +3,16 @@ entries:
   argocd-instance:
   - apiVersion: v2
     appVersion: 2.5.15
+    created: "2025-09-10T16:04:27.50597983Z"
+    description: A Helm chart that configures Argo CD.
+    digest: ec7a17f80e19dac1048327aab1f8241a0e432db223d7cf1864709667b357f190
+    name: argocd-instance
+    type: application
+    urls:
+    - https://github.com/gccloudone-aurora/aurora-platform-charts/releases/download/argocd-instance-0.2.0/argocd-instance-0.2.0.tgz
+    version: 0.2.0
+  - apiVersion: v2
+    appVersion: 2.5.15
     created: "2025-09-09T01:06:52.839191979Z"
     description: A Helm chart that configures Argo CD.
     digest: 05756291be3330022775e6b48f38b4ca2c0daeb3c05e9714980f12a1c1e6c588
@@ -84,6 +94,16 @@ entries:
   argocd-operator:
   - apiVersion: v2
     appVersion: 0.4.0
+    created: "2025-09-10T16:04:27.673939118Z"
+    description: A Helm chart that deploys ArgoCD Operator.
+    digest: f336767f20aaf696bdd63cf7df6e4ab2aa38d8c745cfbbd9fc4107c0dd106535
+    name: argocd-operator
+    type: application
+    urls:
+    - https://github.com/gccloudone-aurora/aurora-platform-charts/releases/download/argocd-operator-0.0.3/argocd-operator-0.0.3.tgz
+    version: 0.0.3
+  - apiVersion: v2
+    appVersion: 0.4.0
     created: "2025-09-10T12:52:59.890994092Z"
     description: A Helm chart that deploys ArgoCD Operator.
     digest: b94ebee0860b4ea0d750228d0ce45075a439bae028c92c3b50ea77d8aa18430d
@@ -118,6 +138,38 @@ entries:
     - https://github.com/gccloudone-aurora/aurora-platform-charts/releases/download/aurora-namespace-0.0.1/aurora-namespace-0.0.1.tgz
     version: 0.0.1
   aurora-platform:
+  - apiVersion: v2
+    appVersion: 2.0.0
+    created: "2025-09-10T16:04:27.838383001Z"
+    dependencies:
+    - alias: core
+      condition: core.enabled
+      name: aurora-core
+      repository: ""
+      version: 0.0.1
+    - alias: app
+      condition: app.enabled
+      import-values:
+      - child: data
+        parent: global.imports
+      name: aurora-app
+      repository: ""
+      version: 0.0.1
+    - alias: mgmt
+      condition: mgmt.enabled
+      import-values:
+      - child: data
+        parent: global.imports
+      name: aurora-mgmt
+      repository: ""
+      version: 0.0.1
+    description: Aurora Platform
+    digest: d654fb6c53fcb28d73806c39d3684abfe152fdab245ba227dc5fd1e6d69f4411
+    name: aurora-platform
+    type: application
+    urls:
+    - https://github.com/gccloudone-aurora/aurora-platform-charts/releases/download/aurora-platform-0.0.32/aurora-platform-0.0.32.tgz
+    version: 0.0.32
   - apiVersion: v2
     appVersion: 2.0.0
     created: "2025-09-10T12:53:00.114903163Z"
@@ -1169,4 +1221,4 @@ entries:
     urls:
     - https://github.com/gccloudone-aurora/aurora-platform-charts/releases/download/raw-0.0.1/raw-0.0.1.tgz
     version: 0.0.1
-generated: "2025-09-10T12:53:00.115199256Z"
+generated: "2025-09-10T16:04:27.839063378Z"
