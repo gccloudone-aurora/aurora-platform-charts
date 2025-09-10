@@ -962,6 +962,83 @@ components:
         - sidecar.istio.io/inject
         - topology.istio.io/subzone
 
+  falco:
+    enabled: true
+
+
+
+    # additional resources to deploy alongside Falco
+    resources: []
+    #
+    # podResources:
+    #   requests:
+    #     cpu: 100m
+    #     memory: 512Mi
+    #   limits:
+    #     cpu: 1000m
+    #     memory: 1024Mi
+    #
+    tolerations:
+      - key: CriticalAddonsOnly
+        operator: Exists
+      - effect: NoSchedule
+        key: node-role.kubernetes.io/master
+      - effect: NoSchedule
+        key: node-role.kubernetes.io/control-plane
+    priorityClassName: system-cluster-critical
+
+    falcoctl:
+      artifact:
+        follow:
+          enabled: false
+        install:
+          enabled: true
+          mounts:
+            # volumeMounts specifically for the falcoctl containers
+            volumeMounts: []
+ 
+    images:
+      falco:
+        image:
+          # registry: docker.io
+          repository: falcosecurity/falco
+          tag: "0.41.3"
+          # pullPolicy: IfNotPresent
+
+      falcoDriverLoader:
+        image:
+          # registry: docker.io
+          repository: falcosecurity/falco-driver-loader
+          tag: "0.41.3"
+          # pullPolicy: IfNotPresent
+
+      falcoctl:
+        image:
+          # registry: docker.io
+          repository: falcosecurity/falcoctl
+          tag: "0.11.2"
+          # pullPolicy: IfNotPresent
+
+      falcoSideKick:
+        image:
+          # registry: docker.io
+          repository: falcosecurity/falcosidekick
+          tag: "2.31.1"
+          # pullPolicy: IfNotPresent
+ 
+      k8sMetacollector:
+        image:
+          # registry: docker.io
+          repository: falcosecurity/k8s-metacollector
+          tag: "0.1.1"
+          # pullPolicy: IfNotPresent
+
+    mounts:
+      # -- A list of volumes you want to add to the Falco pods.
+      volumes: []
+      # -- A list of volumes you want to add to the Falco pods.
+      volumeMounts: []
+
   kubecost:
     enabled: false
 
