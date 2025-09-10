@@ -84,6 +84,16 @@ entries:
   argocd-operator:
   - apiVersion: v2
     appVersion: 0.4.0
+    created: "2025-09-10T12:52:59.890994092Z"
+    description: A Helm chart that deploys ArgoCD Operator.
+    digest: b94ebee0860b4ea0d750228d0ce45075a439bae028c92c3b50ea77d8aa18430d
+    name: argocd-operator
+    type: application
+    urls:
+    - https://github.com/gccloudone-aurora/aurora-platform-charts/releases/download/argocd-operator-0.0.2/argocd-operator-0.0.2.tgz
+    version: 0.0.2
+  - apiVersion: v2
+    appVersion: 0.4.0
     created: "2025-02-25T23:44:29.801270228Z"
     description: A Helm chart that deploys ArgoCD Operator.
     digest: d3e0f85dcd92652f65e29fdb4247fd36f2ff12ffd11f2b6fffcb85a3d2f2c40c
@@ -108,6 +118,38 @@ entries:
     - https://github.com/gccloudone-aurora/aurora-platform-charts/releases/download/aurora-namespace-0.0.1/aurora-namespace-0.0.1.tgz
     version: 0.0.1
   aurora-platform:
+  - apiVersion: v2
+    appVersion: 2.0.0
+    created: "2025-09-10T12:53:00.114903163Z"
+    dependencies:
+    - alias: core
+      condition: core.enabled
+      name: aurora-core
+      repository: ""
+      version: 0.0.1
+    - alias: app
+      condition: app.enabled
+      import-values:
+      - child: data
+        parent: global.imports
+      name: aurora-app
+      repository: ""
+      version: 0.0.1
+    - alias: mgmt
+      condition: mgmt.enabled
+      import-values:
+      - child: data
+        parent: global.imports
+      name: aurora-mgmt
+      repository: ""
+      version: 0.0.1
+    description: Aurora Platform
+    digest: a7079ed90b2afd7c40a2d05cd8a2a02a465479022508bbaec7aeada3dcb7fc7a
+    name: aurora-platform
+    type: application
+    urls:
+    - https://github.com/gccloudone-aurora/aurora-platform-charts/releases/download/aurora-platform-0.0.31/aurora-platform-0.0.31.tgz
+    version: 0.0.31
   - apiVersion: v2
     appVersion: 2.0.0
     created: "2025-09-09T01:06:53.273514352Z"
@@ -1127,4 +1169,4 @@ entries:
     urls:
     - https://github.com/gccloudone-aurora/aurora-platform-charts/releases/download/raw-0.0.1/raw-0.0.1.tgz
     version: 0.0.1
-generated: "2025-09-09T01:06:53.273823633Z"
+generated: "2025-09-10T12:53:00.115199256Z"
