@@ -140,6 +140,38 @@ entries:
   aurora-platform:
   - apiVersion: v2
     appVersion: 2.0.0
+    created: "2025-09-10T18:30:54.180051029Z"
+    dependencies:
+    - alias: core
+      condition: core.enabled
+      name: aurora-core
+      repository: ""
+      version: 0.0.1
+    - alias: app
+      condition: app.enabled
+      import-values:
+      - child: data
+        parent: global.imports
+      name: aurora-app
+      repository: ""
+      version: 0.0.1
+    - alias: mgmt
+      condition: mgmt.enabled
+      import-values:
+      - child: data
+        parent: global.imports
+      name: aurora-mgmt
+      repository: ""
+      version: 0.0.1
+    description: Aurora Platform
+    digest: 5313df8487dc1d7fae79f4e0993a5b302738b8f6114ed00687722b761ab1ed5f
+    name: aurora-platform
+    type: application
+    urls:
+    - https://github.com/gccloudone-aurora/aurora-platform-charts/releases/download/aurora-platform-0.0.35/aurora-platform-0.0.35.tgz
+    version: 0.0.35
+  - apiVersion: v2
+    appVersion: 2.0.0
     created: "2025-09-10T18:24:41.707297927Z"
     dependencies:
     - alias: core
@@ -1285,4 +1317,4 @@ entries:
     urls:
     - https://github.com/gccloudone-aurora/aurora-platform-charts/releases/download/raw-0.0.1/raw-0.0.1.tgz
     version: 0.0.1
-generated: "2025-09-10T18:24:41.707592089Z"
+generated: "2025-09-10T18:30:54.180321026Z"
