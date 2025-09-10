@@ -1,5 +1,5 @@
-{{ if .Values.components.awsLoadbalancerController.enabled -}}
 {{ if eq .Values.global.provider "aws" -}}
+{{ if .Values.components.awsLoadbalancerController.enabled -}}
 
 apiVersion: argoproj.io/v1alpha1
 kind: Application
