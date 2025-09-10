@@ -224,6 +224,43 @@ components:
       secretName: "aurora-image-pull-secret"
       # secretDockerConfigJson: ""
 
+  awsLoadbalancerController:
+    enabled: true
+
+    helm: {}
+      # chart: aws-load-balancer-controller
+      # repository: https://aws.github.io/eks-charts
+      # targetRevision: 1.13.4
+
+    imagePullSecrets: []
+    image:
+      # registry: public.ecr.aws
+      repository: eks/aws-load-balancer-controller
+      # tag: v2.13.4
+      # pullPolicy: IfNotPresent
+
+    replicas: 2
+    resources:
+      limits:
+        cpu: 100m
+        memory: 128Mi
+      requests:
+        cpu: 100m
+        memory: 128Mi
+
+    nodeSelector:
+      kubernetes.io/os: linux
+      node.ssc-spc.gc.ca/purpose: system
+    tolerations:
+      - key: CriticalAddonsOnly
+        operator: Exists
+    # affinity: {}
+
+    priorityClassName: platform-cluster-medium
+
+    enableCertManager: true
+    enableServiceMinitor: true
+
   certManager:
     enabled: true
 

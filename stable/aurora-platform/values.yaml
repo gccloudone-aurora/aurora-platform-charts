@@ -81,8 +81,9 @@ global:
 core:
   enabled: true
   components: {}
-    # auroraController: {}
     # aadPodIdentity: {}
+    # auroraController: {}
+    # awsLoadbalancerController: {}
     # certManager: {}
     # cidrAllocator: {}
     # cilium: {}
