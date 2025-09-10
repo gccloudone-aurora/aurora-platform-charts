@@ -83,7 +83,7 @@ core:
   components: {}
     # aadPodIdentity: {}
     # auroraController: {}
-    # aws-loadbalancer-controller: {}
+    # awsLoadbalancerController: {}
     # certManager: {}
     # cidrAllocator: {}
     # cilium: {}

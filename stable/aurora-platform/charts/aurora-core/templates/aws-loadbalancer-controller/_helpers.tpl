@@ -1,5 +1,5 @@
 {{/*
-The image section for Argo Controller.
+The image section for AWS Load Balancer Controller.
 */}}
 {{- define "awsLoadbalancerController.image" -}}
 {{- if (and .Values.components.awsLoadbalancerController.image.registry .Values.components.awsLoadbalancerController.image.repository) }}
