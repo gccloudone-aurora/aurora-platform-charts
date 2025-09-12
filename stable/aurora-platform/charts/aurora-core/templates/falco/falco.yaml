@@ -1,0 +1,49 @@
+{{ if .Values.components.falco.enabled -}}
+
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-falco"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    chart: falco
+    repoURL: https://falcosecurity.github.io/charts
+    targetRevision: {{ default "6.2.5" .Values.components.falco.targetRevision }}
+    plugin:
+      env:
+        - name: HELM_RELEASE_NAME
+          value: "falco"
+        - name: HELM_VALUES
+          value: |-
+            driver:
+              enabled: true
+            falcosidekick:
+              enabled: true
+            collectors:
+              kubernetes:
+                enabled: true
+            falcoctl: {{ .Values.components.falco.falcoctl }}
+
+            mounts: {{ .Values.components.falco.mounts }}
+
+            podPriorityClassName: {{ .Values.components.falco.system-cluster-critical }}
+
+            {{ if .Values.components.falco.podResources -}}
+            resources: {{ .Values.components.falco.podResources }}
+            {{- end -}}
+
+            {{ if .Values.components.falco.tolerations -}}
+            tolerations: {{ .Values.components.falco.tolerations }}
+            {{- end -}}
+  destination:
+    name: {{ .Values.global.cluster }}
+    namespace: falco-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+
+{{- end }}
