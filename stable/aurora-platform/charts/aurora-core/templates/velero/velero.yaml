@@ -36,7 +36,7 @@ spec:
                 imagePullPolicy: IfNotPresent
                 volumeMounts:
                   - mountPath: /target
-                    name: plugins    
+                    name: plugins
 
             kubectl:
               image: {{ default "{}" (include "velero.kubectl.image" .) | nindent 16 }}
