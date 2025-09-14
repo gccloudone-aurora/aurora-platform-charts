@@ -19,18 +19,6 @@ spec:
     logLevel: {{ .Values.argocdInstance.logLevel }}
     resources:  {{ toYaml .Values.argocdInstance.applicationSet.resources | nindent 6 }}
 
-  configManagementPlugins: |
-    - name: argocd-vault-plugin
-      generate:
-        command: ["argocd-vault-plugin"]
-        args: ["generate", "./"]
-    - name: argocd-vault-plugin-helm
-      init:
-        command: ["sh", "-c"]
-        args: ["helm dependency build"]
-      generate:
-        command: ["bash", "-c"]
-        args: ['helm template "$ARGOCD_APP_NAME" . --include-crds -f <(echo "$HELM_VALUES") | argocd-vault-plugin generate -']
   controller:
     processors: {}
     sharding: {}
@@ -78,6 +66,7 @@ spec:
     policy: |
       p, role:org-admin, applications, *, */*, allow
       p, role:org-admin, clusters, get, *, allow
+      p, role:org-admin, applicationsets, get, */*, allow
       p, role:org-admin, repositories, get, *, allow
       p, role:org-admin, repositories, create, *, allow
       p, role:org-admin, repositories, update, *, allow
@@ -103,14 +92,10 @@ spec:
       - command:
           - /var/run/argocd/argocd-cmp-server
         env:
-          - name: ARGOCD_ENV_AVP_TYPE
-            value: {{ .Values.argocdInstance.argocdVaultPlugin.credentials.avpType }}
-          - name: ARGOCD_ENV_AZURE_TENANT_ID
-            value: {{ .Values.argocdInstance.argocdVaultPlugin.credentials.azureTenantID }}
-          - name: ARGOCD_ENV_AZURE_CLIENT_ID
-            value: {{ .Values.argocdInstance.argocdVaultPlugin.credentials.azureClientID }}
-          - name: ARGOCD_ENV_AZURE_CLIENT_SECRET
-            value: {{ .Values.argocdInstance.argocdVaultPlugin.credentials.azureClientSecret }}
+        {{- range $key, $value := .Values.argocdInstance.argocdVaultPlugin.env }}
+          - name: {{ $key }}
+            value: "{{ $value }}"
+        {{- end }}
         image: {{ regexReplaceAll "//+" (printf "%s/%s/%s:%s" .Values.argocdInstance.argocdVaultPlugin.imageRegistry.host .Values.argocdInstance.argocdVaultPlugin.imageRegistry.repository .Values.argocdInstance.argocdVaultPlugin.image.name .Values.argocdInstance.argocdVaultPlugin.image.version) "/" }}
         name: avp
         securityContext:
@@ -127,14 +112,10 @@ spec:
       - command:
           - /var/run/argocd/argocd-cmp-server
         env:
-          - name: ARGOCD_ENV_AVP_TYPE
-            value: {{ .Values.argocdInstance.argocdVaultPlugin.credentials.avpType }}
-          - name: ARGOCD_ENV_AZURE_TENANT_ID
-            value: {{ .Values.argocdInstance.argocdVaultPlugin.credentials.azureTenantID }}
-          - name: ARGOCD_ENV_AZURE_CLIENT_ID
-            value: {{ .Values.argocdInstance.argocdVaultPlugin.credentials.azureClientID }}
-          - name: ARGOCD_ENV_AZURE_CLIENT_SECRET
-            value: {{ .Values.argocdInstance.argocdVaultPlugin.credentials.azureClientSecret }}
+        {{- range $key, $value := .Values.argocdInstance.argocdVaultPlugin.env }}
+          - name: {{ $key }}
+            value: "{{ $value }}"
+        {{- end }}
         image: {{ regexReplaceAll "//+" (printf "%s/%s/%s:%s" .Values.argocdInstance.argocdVaultPlugin.imageRegistry.host .Values.argocdInstance.argocdVaultPlugin.imageRegistry.repository .Values.argocdInstance.argocdVaultPlugin.image.name .Values.argocdInstance.argocdVaultPlugin.image.version) "/" }}
         name: avp-helm
         securityContext:

@@ -1,4 +1,5 @@
 {{ if .Values.components.aadPodIdentity.enabled -}}
+{{ if eq .Values.global.provider "azure" -}}
 
 apiVersion: argoproj.io/v1alpha1
 kind: Application
@@ -77,4 +78,5 @@ spec:
       prune: true
       selfHeal: true
 
+{{- end }}
 {{- end }}

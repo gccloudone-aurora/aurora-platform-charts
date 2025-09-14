@@ -29,6 +29,9 @@ global:
       targetRevision: "0.0.1"
       repository: "https://gccloudone-aurora.github.io/aurora-platform-charts"
 
+  # azure or aws
+  provider: azure
+
   # Cluster name for the Application targets.
   cluster: in-cluster
 
@@ -78,8 +81,10 @@ global:
 core:
   enabled: true
   components: {}
-    # auroraController: {}
     # aadPodIdentity: {}
+    # auroraController: {}
+    # awsEbsCsiDriver: {}    
+    # awsLoadbalancerController: {}
     # certManager: {}
     # cidrAllocator: {}
     # cilium: {}

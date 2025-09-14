@@ -1,4 +1,5 @@
-{{ if .Values.components.velero.enabled -}}
+{{ if and .Values.components.velero.enabled .Values.components.velero.aadPodIdentity.enabled -}}
+
 
 apiVersion: argoproj.io/v1alpha1
 kind: Application

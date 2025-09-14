@@ -10,24 +10,33 @@ argocdInstance:
       name: "argocd-repo-server"
       version: "main"
     configMapName: "cmp-plugin"
-    AADPodIdentity:
-      enabled: false
-      identityName: "argocd-vault-plugin"
-      managedIdentity:
-        clientID: ""
-        resourceID: ""
-    credentials:
-      avpType: ""
-      azureTenantID: ""
-      azureClientID: ""
-      azureClientSecret: ""
+
+    env:
+      ARGOCD_ENV_AVP_TYPE: "" # azurekeyvault, awssecretsmanager, etc
+
+      # # Azure
+      # ARGOCD_ENV_AZURE_TENANT_ID: ""
+      # ARGOCD_ENV_AZURE_CLIENT_ID: ""
+      # ARGOCD_ENV_AZURE_CLIENT_SECRET: ""
+
+      # # AWS
+      # ARGOCD_ENV_AWS_REGION: ""
+
+    azure:
+      AADPodIdentity:
+        enabled: false
+        identityName: "argocd-vault-plugin"
+        managedIdentity:
+          clientID: ""
+          resourceID: ""               
+
   disableAdmin: false
   imageRegistry:
     host: "docker.io"
     repository: ""
   image:
     name: "argoproj/argocd"
-    version: "v2.4.12"
+    version: "v2.6.6"
   ingressDomain: ""
   logLevel: "info"
   notifications:
@@ -70,7 +79,7 @@ argocdInstance:
   repo:
     image:
       name: "argoproj/argocd"
-      version: "v2.4.12"
+      version: "v2.6.6"
     resources: {}
       # limits:
       #   cpu: ""
