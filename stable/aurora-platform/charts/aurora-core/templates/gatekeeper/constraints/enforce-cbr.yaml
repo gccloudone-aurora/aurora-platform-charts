@@ -3,12 +3,12 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: "{{ .Values.global.cluster }}-gatekeeper-enforce-six-digit-wid"
+  name: "{{ .Values.global.cluster }}-gatekeeper-enforce-cbr"
   finalizers:
     - resources-finalizer.argocd.argoproj.io
   annotations:
     kubernetes.io/description: |
-      Enforces that the Workload ID (WID) label on a namespace is six digits.
+      Enforces that the CBR exists on a namespace.
 spec:
   project: {{ .Values.global.project }}
   source:
@@ -16,13 +16,13 @@ spec:
     repoURL: {{ default .Values.global.helm.repository .Values.global.raw.helm.repository }}
     targetRevision: {{ .Values.global.raw.helm.targetRevision }}
     helm:
-      releaseName: gatekeeper-enforce-six-digit-wid
+      releaseName: gatekeeper-enforce-cbr
       values: |
         resources:
           - apiVersion: constraints.gatekeeper.sh/v1beta1
             kind: MetadataRestrictions
             metadata:
-              name: enforce-six-digit-wid
+              name: enforce-cbr
             spec:
               match:
                 kinds:
@@ -30,13 +30,13 @@ spec:
                       - ''
                     kinds:
                       - Namespace
-                excludedNamespaces: {{ toYaml .Values.components.gatekeeper.constraints.enforceSixDigitWid.excludedNamespaces | nindent 18 }}
+                excludedNamespaces: {{ toYaml .Values.components.gatekeeper.constraints.enforceCBR.excludedNamespaces | nindent 18 }}
               parameters:
                 labels:
-                  - allowedRegex: {{ .Values.components.gatekeeper.constraints.enforceSixDigitWid.allowedRegex | toYaml | nindent 20  }}
-                    allowedValues: {{ .Values.components.gatekeeper.constraints.enforceSixDigitWid.allowedValues | toYaml | nindent 20 }}
+                  - allowedRegex: {{ .Values.components.gatekeeper.constraints.enforceCBR.allowedRegex | toYaml | nindent 20  }}
+                    allowedValues: {{ .Values.components.gatekeeper.constraints.enforceCBR.allowedValues | toYaml | nindent 20 }}
                     key: finance.ssc-spc.gc.ca/workload-id
-              enforcementAction: {{ .Values.components.gatekeeper.constraints.enforceSixDigitWid.enforcementAction }}
+              enforcementAction: {{ .Values.components.gatekeeper.constraints.enforceCBR.enforcementAction }}
   destination:
     name: {{ .Values.global.cluster }}
     namespace: platform-system

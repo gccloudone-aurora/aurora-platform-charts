@@ -1031,9 +1031,9 @@ components:
         allowedStorageClasses: ["*", ""]
         excludedNamespaces: []
         enforcementAction: "deny"
-      enforceSixDigitWid:
+      enforceCBR:
         excludedNamespaces: []
-        enforcementAction: "deny"
+        enforcementAction: "warn"
         allowedRegex:
           - "^[0-9]{6}$"
         allowedValues: [""]
