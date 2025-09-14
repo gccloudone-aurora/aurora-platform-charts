@@ -140,6 +140,38 @@ entries:
   aurora-platform:
   - apiVersion: v2
     appVersion: 2.0.0
+    created: "2025-09-14T02:12:09.947807925Z"
+    dependencies:
+    - alias: core
+      condition: core.enabled
+      name: aurora-core
+      repository: ""
+      version: 0.0.1
+    - alias: app
+      condition: app.enabled
+      import-values:
+      - child: data
+        parent: global.imports
+      name: aurora-app
+      repository: ""
+      version: 0.0.1
+    - alias: mgmt
+      condition: mgmt.enabled
+      import-values:
+      - child: data
+        parent: global.imports
+      name: aurora-mgmt
+      repository: ""
+      version: 0.0.1
+    description: Aurora Platform
+    digest: c75859c243da25f1a85e69338c1f519aea21efb542f3e1f6a80d164e66e8b1af
+    name: aurora-platform
+    type: application
+    urls:
+    - https://github.com/gccloudone-aurora/aurora-platform-charts/releases/download/aurora-platform-0.0.38/aurora-platform-0.0.38.tgz
+    version: 0.0.38
+  - apiVersion: v2
+    appVersion: 2.0.0
     created: "2025-09-14T01:55:44.852479415Z"
     dependencies:
     - alias: core
@@ -1346,6 +1378,20 @@ entries:
     version: 0.0.1
   istio-ingress-gateway:
   - apiVersion: v2
+    created: "2025-09-14T02:12:10.150634428Z"
+    dependencies:
+    - condition: gateway.enabled
+      name: gateway
+      repository: https://istio-release.storage.googleapis.com/charts
+      version: 1.14.3
+    description: This chart deploys an opinionated Istio Ingress Gateway.
+    digest: fb210277458e52c8973eafc256e8d69dea1e5d2c130810665bd66e1293b4c990
+    name: istio-ingress-gateway
+    type: application
+    urls:
+    - https://github.com/gccloudone-aurora/aurora-platform-charts/releases/download/istio-ingress-gateway-0.0.3/istio-ingress-gateway-0.0.3.tgz
+    version: 0.0.3
+  - apiVersion: v2
     created: "2025-02-28T20:06:29.436077036Z"
     dependencies:
     - condition: gateway.enabled
@@ -1381,4 +1427,4 @@ entries:
     urls:
     - https://github.com/gccloudone-aurora/aurora-platform-charts/releases/download/raw-0.0.1/raw-0.0.1.tgz
     version: 0.0.1
-generated: "2025-09-14T01:55:44.852796497Z"
+generated: "2025-09-14T02:12:10.150925579Z"
