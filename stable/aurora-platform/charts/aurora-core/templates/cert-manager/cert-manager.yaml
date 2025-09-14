@@ -15,7 +15,7 @@ spec:
     {{- else }}
     repoURL: {{ default "https://charts.jetstack.io" .Values.global.helm.repository }}
     {{- end }}
-    targetRevision: {{ default "v1.12.0" .Values.components.certManager.helm.targetRevision }}
+    targetRevision: {{ default "v1.18.1" .Values.components.certManager.helm.targetRevision }}
     helm:
       releaseName: cert-manager
       values: |

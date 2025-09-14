@@ -345,7 +345,7 @@ components:
     helm: {}
       # chart: cert-manager
       # repository: https://charts.jetstack.io
-      # targetRevision: v1.6.1
+      # targetRevision: v1.18.1
 
     imagePullSecrets: []
     image:
