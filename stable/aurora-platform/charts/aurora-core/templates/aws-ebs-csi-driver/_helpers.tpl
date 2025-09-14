@@ -15,8 +15,6 @@ pullPolicy: {{ .Values.components.awsEbsCsiDriver.image.pullPolicy }}
 {{- end }}
 {{- end }}
 
-
-
 {{/*
 The image section for provisioner.
 */}}
@@ -68,7 +66,6 @@ pullPolicy: {{ .Values.components.awsEbsCsiDriver.snapshotter.image.pullPolicy }
 {{- end }}
 {{- end }}
 
-
 {{/*
 The image section for resizer.
 */}}
@@ -119,4 +116,3 @@ tag: {{ .Values.components.awsEbsCsiDriver.volumemodifier.image.tag }}
 pullPolicy: {{ .Values.components.awsEbsCsiDriver.volumemodifier.image.pullPolicy }}
 {{- end }}
 {{- end }}
-

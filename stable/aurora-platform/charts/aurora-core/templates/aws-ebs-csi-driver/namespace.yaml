@@ -1,3 +1,4 @@
+{{ if eq .Values.global.provider "aws" -}}
 {{ if .Values.components.awsEbsCsiDriver.enabled -}}
 
 apiVersion: argoproj.io/v1alpha1
@@ -82,4 +83,5 @@ spec:
       prune: true
       selfHeal: true
 
+{{- end }}
 {{- end }}

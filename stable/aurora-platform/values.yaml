@@ -98,12 +98,6 @@ core:
     # vaultAgent: {}
     # velero: {}
 
-# Core AWS Platform components
-coreAws:
-  enabled: false
-  components: {}
-    # awsEbsCsiDriver: {}
-
 # Application Platform components are disabled by default
 # and enabled per-cluster which requires them.
 app:
