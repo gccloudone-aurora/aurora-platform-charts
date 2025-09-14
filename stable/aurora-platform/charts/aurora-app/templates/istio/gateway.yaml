@@ -42,9 +42,15 @@ spec:
                 # Defines the type of Service to deploy
                 type: LoadBalancer
                 annotations:
+                  {{- if eq .Values.global.provider "azure" }}
                   # Defines if an "internal" or "external" Azure load-balancer is deployed for the service.
                   service.beta.kubernetes.io/azure-load-balancer-internal: "true"
                   service.beta.kubernetes.io/azure-load-balancer-internal-subnet: "{{ required ".Values.global.load_balancer_subnet_name is required" .Values.global.load_balancer_subnet_name }}"
+                  {{- else if eq .Values.global.provider "aws" }}
+                  service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
+                  service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: "ip"
+                  {{- end}}
+
                 # Specifies the IP that the LoadBalancer should use. Skipped if empty.
                 loadBalancerIP: ""
                 # Describes how nodes distribute service traffic

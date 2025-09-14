@@ -1,4 +1,5 @@
 {{ if .Values.components.aadPodIdentity.enabled -}}
+{{ if eq .Values.global.provider "azure" -}}
 
 {{/* Common values for this configuration which are used in multiple places to prevent missing a change. */}}
 
@@ -85,4 +86,5 @@ spec:
       prune: true
       selfHeal: true
 
+{{- end }}
 {{- end }}
