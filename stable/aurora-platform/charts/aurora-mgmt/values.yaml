@@ -257,7 +257,7 @@ components:
       # fileNameSuffix: ""
       # maximumReportingWindowInDays: 30
 
-    aadPodIdentity:
+    AADPodIdentity:
       azureManagedIdentity: {}
         # clientId:
         # resourceId:

@@ -30,8 +30,8 @@ spec:
 
             aadPodIdentity:
               azureManagedIdentity:
-                clientId: {{ .Values.components.billOfLanding.aadPodIdentity.azureManagedIdentity.clientId }}
-                resourceId: {{ .Values.components.billOfLanding.aadPodIdentity.azureManagedIdentity.resourceId }}
+                clientId: {{ .Values.components.billOfLanding.AADPodIdentity.azureManagedIdentity.clientId }}
+                resourceId: {{ .Values.components.billOfLanding.AADPodIdentity.azureManagedIdentity.resourceId }}
 
             nodeSelector: {{ toYaml .Values.components.billOfLanding.nodeSelector | nindent 14 }}
             tolerations: {{ toYaml .Values.components.billOfLanding.tolerations | nindent 14 }}

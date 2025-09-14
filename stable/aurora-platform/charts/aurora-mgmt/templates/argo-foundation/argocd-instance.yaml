@@ -42,7 +42,7 @@ spec:
                     enabled: {{ default "false" .Values.components.argoFoundation.argocdInstance.argocdVaultPlugin.azure.AADPodIdentity.enabled }}
                     {{- if .Values.components.argoFoundation.argocdInstance.argocdVaultPlugin.azure.AADPodIdentity.enabled }}
                     managedIdentity:
-                      clientID: {{ .Values.components.argoFoundation.argocdInstance.argocdVaultPlugin.azure.AAdPodIdentity.managedIdentity.clientID }}
+                      clientID: {{ .Values.components.argoFoundation.argocdInstance.argocdVaultPlugin.azure.AADPodIdentity.managedIdentity.clientID }}
                       resourceID: {{ .Values.components.argoFoundation.argocdInstance.argocdVaultPlugin.azure.AADPodIdentity.managedIdentity.resourceID }}
                     {{- end }}
 
