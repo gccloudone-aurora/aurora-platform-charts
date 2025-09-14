@@ -395,9 +395,9 @@ components:
 
       dns01: {}
         # azureDNS:
-        #   hostedZoneName: 
-        #   resourceGroupName: 
-        #   subscriptionID: 
+        #   hostedZoneName:
+        #   resourceGroupName:
+        #   subscriptionID:
 
     priorityClassName: platform-cluster-medium
 
