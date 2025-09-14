@@ -15,7 +15,7 @@ spec:
     {{- else }}
     repoURL: {{ default "https://charts.jetstack.io" .Values.global.helm.repository }}
     {{- end }}
-    targetRevision: {{ default "v1.11.0" .Values.components.certManager.helm.targetRevision }}
+    targetRevision: {{ default "v1.18.1" .Values.components.certManager.helm.targetRevision }}
     helm:
       releaseName: cert-manager
       values: |
@@ -58,11 +58,13 @@ spec:
           tolerations: {{ toYaml .Values.components.certManager.startupapicheck.tolerations | nindent 12 }}
           affinity: {{ toYaml .Values.components.certManager.startupapicheck.affinity | nindent 12 }}
 
-        dns01RecursiveNameservers: {{ .Values.components.certManager.dns01RecursiveNameservers }}
-        dns01RecursiveNameserversOnly: {{ .Values.components.certManager.dns01RecursiveNameserversOnly }}
-
+        {{- if and .Values.components.certManager.aadPodIdentity.enabled (eq .Values.global.provider "azure") }}
         podLabels:
           aadpodidbinding: {{ required "certManager.aadPodIdentity.name is required" .Values.components.certManager.aadPodIdentity.name | quote }}
+        {{- end }}  
+
+        dns01RecursiveNameservers: {{ .Values.components.certManager.dns01RecursiveNameservers }}
+        dns01RecursiveNameserversOnly: {{ .Values.components.certManager.dns01RecursiveNameserversOnly }}
 
         podDnsConfig:
           nameservers: {{ toYaml .Values.components.certManager.podDnsConfig.nameservers | nindent 12 }}

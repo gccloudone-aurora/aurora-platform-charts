@@ -15,7 +15,7 @@ spec:
     {{- else }}
     repoURL: {{ default "https://gccloudone-aurora.github.io/aurora-platform-charts" .Values.global.helm.repository }}
     {{- end }}
-    targetRevision: {{ default "0.0.2" .Values.components.istio.gateway.helm.targetRevision }}
+    targetRevision: {{ default "0.0.3" .Values.components.istio.gateway.helm.targetRevision }}
     plugin:
       env:
         - name: HELM_RELEASE_NAME
@@ -42,9 +42,15 @@ spec:
                 # Defines the type of Service to deploy
                 type: LoadBalancer
                 annotations:
+                  {{- if eq .Values.global.provider "azure" }}
                   # Defines if an "internal" or "external" Azure load-balancer is deployed for the service.
                   service.beta.kubernetes.io/azure-load-balancer-internal: "true"
                   service.beta.kubernetes.io/azure-load-balancer-internal-subnet: "{{ required ".Values.global.load_balancer_subnet_name is required" .Values.global.load_balancer_subnet_name }}"
+                  {{- else if eq .Values.global.provider "aws" }}
+                  service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
+                  service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: "ip"
+                  {{- end}}
+
                 # Specifies the IP that the LoadBalancer should use. Skipped if empty.
                 loadBalancerIP: ""
                 # Describes how nodes distribute service traffic
@@ -96,7 +102,7 @@ spec:
                   - "{{ . }}"
                   {{- end }}
                 # Toggles if the Azure DNS solver should be used.
-                useAzureDNSSolver: true
+                useGeneralDNSSolver: true
                 # Defines the type of Issuer to use.
                 issuerRef:
                   # Can be ClusterIssuer or Issuer.
