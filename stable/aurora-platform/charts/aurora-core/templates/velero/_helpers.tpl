@@ -38,20 +38,16 @@ The image section for velero plugins.
 */}}
 {{- define "velero.plugin.image" -}}
   {{- $provider := .Values.global.provider -}}
-
   {{- $plugin := index .Values.components.velero.plugins $provider | default dict -}}
   {{- $image := $plugin.image | default dict -}}
-
   {{- $registry := coalesce $image.registry .Values.global.container.registry "docker.io" -}}
   {{- $repository := required (printf "Missing velero.plugin.image.repository for provider '%s'" $provider) $image.repository -}}
   {{- $tag := default "latest" $image.tag -}}
-
   {{- printf "%s/%s:%s" $registry $repository $tag -}}
 {{- end }}
 
-
 {{/*
-backupStorageLocation config
+The backupStorageLocation configuration.
 */}}
 {{- define "velero.backupStorageLocation.config" -}}
 {{- if eq .Values.global.provider "azure" }}
@@ -64,7 +60,7 @@ region: ca-central-1
 {{- end }}
 
 {{/*
-volumeSnapshotLocation config
+The volumeSnapshotLocation configuration.
 */}}
 {{- define "velero.volumeSnapshotLocation.config" -}}
 {{- if eq .Values.global.provider "azure" }}
