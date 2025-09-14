@@ -39,11 +39,11 @@ spec:
 
                 azure:
                   AADPodIdentity:
-                    enabled: {{ default "false" .Values.components.argoFoundation.argocdInstance.aadPodIdentity.enabled }}
-                    {{- if .Values.components.argoFoundation.argocdInstance.aadPodIdentity.enabled }}
+                    enabled: {{ default "false" .Values.components.argoFoundation.argocdInstance.argocdVaultPlugin.azure.AADPodIdentity.enabled }}
+                    {{- if .Values.components.argoFoundation.argocdInstance.argocdVaultPlugin.azure.AADPodIdentity.enabled }}
                     managedIdentity:
-                      clientID: {{ .Values.components.argoFoundation.argocdInstance.aadPodIdentity.managedIdentity.clientID }}
-                      resourceID: {{ .Values.components.argoFoundation.argocdInstance.aadPodIdentity.managedIdentity.resourceID }}
+                      clientID: {{ .Values.components.argoFoundation.argocdInstance.argocdVaultPlugin.azure.AAdPodIdentity.managedIdentity.clientID }}
+                      resourceID: {{ .Values.components.argoFoundation.argocdInstance.argocdVaultPlugin.azure.AADPodIdentity.managedIdentity.resourceID }}
                     {{- end }}
 
               server:

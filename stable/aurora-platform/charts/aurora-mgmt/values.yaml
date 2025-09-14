@@ -86,19 +86,19 @@ components:
           # # AWS
           # ARGOCD_ENV_AWS_REGION: ""
 
-        credentials: {}
-      #     azureTenantID: ""
-      #     azureClientID: ""
-      #     azureClientSecret: ""
+        azure:
+          AADPodIdentity:
+            enabled: false
+            identityName: "argocd-vault-plugin"
+            managedIdentity:
+              clientID: ""
+              resourceID: ""     
 
       oidcAuthSP:
         credentials: {}
       #     tenantID: ""
       #     clientID: ""
       #     clientSecret: ""
-
-      aadPodIdentity: {}
-        # enabled: false
 
       netpol: {}
         # enabled: false
