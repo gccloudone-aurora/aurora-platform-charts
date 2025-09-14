@@ -1,5 +1,5 @@
-{{ if .Values.components.certManager.enabled -}}
 {{ if eq .Values.global.provider "azure" -}}
+{{ if .Values.components.certManager.enabled -}}
 
 apiVersion: argoproj.io/v1alpha1
 kind: Application

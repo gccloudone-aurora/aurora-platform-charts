@@ -70,7 +70,7 @@ spec:
                     - dns01: {{ include "certManager.issuer.dns01Solver" . | nindent 24 }}
                       selector:
                         matchLabels:
-                          use-general-solver: "true"                    
+                          use-general-solver: "true"
   destination:
     name: {{ .Values.global.cluster }}
     namespace: platform-system
