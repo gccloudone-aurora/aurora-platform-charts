@@ -1,5 +1,5 @@
 {{/*
-The image section for awsEbsCsiDriver.
+The image section for the AWS EBS CSI Driver.
 */}}
 {{- define "awsEbsCsiDriver.image" -}}
 {{- if (and .Values.components.awsEbsCsiDriver.image.registry .Values.components.awsEbsCsiDriver.image.repository) }}
