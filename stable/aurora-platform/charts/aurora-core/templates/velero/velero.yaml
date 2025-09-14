@@ -64,12 +64,14 @@ spec:
 
             credentials:
               secretContents:
+                {{- if eq .Values.global.provider "azure" }}
                 cloud: |
                   AZURE_CLIENT_ID:
                   AZURE_CLIENT_SECRET:
                   AZURE_TENANT_ID: {{ .Values.global.tenantId }}
                   AZURE_SUBSCRIPTION_ID: {{ .Values.global.subscriptionId }}
                   AZURE_RESOURCE_GROUP: {{ printf "%s-rg-managed-aks" .Values.global.cluster }}
+                {{- end }}
 
             schedules:
               hourly-resources:
