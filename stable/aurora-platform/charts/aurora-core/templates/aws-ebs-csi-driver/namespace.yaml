@@ -1,10 +1,10 @@
-{{ if .Values.components.aadPodIdentity.enabled -}}
-{{ if eq .Values.global.provider "azure" -}}
+{{ if eq .Values.global.provider "aws" -}}
+{{ if .Values.components.awsEbsCsiDriver.enabled -}}
 
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: "{{ .Values.global.cluster }}-aad-pod-identity-namespace"
+  name: "{{ .Values.global.cluster }}-aws-ebs-csi-driver-namespace"
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
@@ -14,7 +14,7 @@ spec:
     repoURL: {{ default .Values.global.helm.repository .Values.global.namespace.helm.repository }}
     targetRevision: {{ .Values.global.namespace.helm.targetRevision }}
     helm:
-      releaseName: aad-pod-identity-system
+      releaseName: aws-ebs-csi-driver-system
       values: |
         # Information about the namespace.
         information:
@@ -56,11 +56,6 @@ spec:
           # Boolean which defines if the namespace should have Istio injection.
           # TODO: Needs to be set to true
           istioInjection: false
-
-          # Refer to https://kubernetes.io/docs/concepts/security/pod-security-admission/
-          podSecurityAdmission:
-            enforce:
-              level: privileged
 
         # Defines the access control on the namespace.
         # Roles will be assigned based on the namespace type.
