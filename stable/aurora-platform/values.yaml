@@ -95,6 +95,7 @@ core:
     # ntp: {}
     # podtracker: {}
     # prometheus: {}
+    # tetragon: {}
     # vaultAgent: {}
     # velero: {}
 
