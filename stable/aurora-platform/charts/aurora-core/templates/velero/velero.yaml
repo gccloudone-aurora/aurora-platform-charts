@@ -62,6 +62,15 @@ spec:
                 provider: {{ .Values.global.provider }}
                 config: {{ include "velero.volumeSnapshotLocation.config" . | nindent 18 }}
 
+            credentials:
+              secretContents:
+                cloud: |
+                  AZURE_CLIENT_ID:
+                  AZURE_CLIENT_SECRET:
+                  AZURE_TENANT_ID: {{ .Values.global.tenantId }}
+                  AZURE_SUBSCRIPTION_ID: {{ .Values.global.subscriptionId }}
+                  AZURE_RESOURCE_GROUP: {{ printf "%s-rg-managed-aks" .Values.global.cluster }}
+
             schedules:
               hourly-resources:
                 schedule: "0 * * * *"
