@@ -1,4 +1,4 @@
-{{- if and .Values.components.cilium.enabled (eq .Values.components.cilium.secretDockerConfigJson "") -}}
+{ if .Values.components.cilium.enabled -}}
 
 apiVersion: argoproj.io/v1alpha1
 kind: Application
