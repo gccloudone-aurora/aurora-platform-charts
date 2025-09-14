@@ -351,7 +351,7 @@ components:
     image:
       # registry: quay.io
       repository: jetstack/cert-manager-controller
-      # tag: "v1.6.1"
+      # tag: "v1.18.1"
       # pullPolicy: IfNotPresent
 
     prometheus:
@@ -396,7 +396,7 @@ components:
       image:
         # registry: quay.io
         repository: jetstack/cert-manager-webhook
-        # tag: "v1.6.1"
+        # tag: "v1.18.1"
         # pullPolicy: IfNotPresent
 
       replicas: 3
@@ -427,7 +427,7 @@ components:
       image:
         # registry: quay.io
         repository: jetstack/cert-manager-cainjector
-        # tag: "v1.6.1"
+        # tag: "v1.18.1"
         # pullPolicy: IfNotPresent
 
       replicas: 3
@@ -458,14 +458,14 @@ components:
       image:
         # registry: quay.io
         repository: jetstack/cert-manager-acmesolver
-        # tag: "v1.6.1"
+        # tag: "v1.18.1"
         # pullPolicy: IfNotPresent
 
     startupapicheck:
       image:
         # registry: quay.io
-        repository: jetstack/cert-manager-ctl
-        # tag: "v1.6.1"
+        repository: jetstack/cert-manager-startupapicheck
+        # tag: "v1.18.1"
         # pullPolicy: IfNotPresent
 
       resources: {}
