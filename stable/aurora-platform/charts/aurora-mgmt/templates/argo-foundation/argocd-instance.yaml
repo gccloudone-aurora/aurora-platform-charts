@@ -36,14 +36,15 @@ spec:
 
               argocdVaultPlugin:
                 env: {{ toYaml .Values.components.argoFoundation.argocdInstance.argocdVaultPlugin.env | nindent 18 }}
-                  
-                AADPodIdentity:
-                  enabled: {{ default "false" .Values.components.argoFoundation.argocdInstance.aadPodIdentity.enabled }}
-                  {{- if .Values.components.argoFoundation.argocdInstance.aadPodIdentity.enabled }}
-                  managedIdentity:
-                    clientID: {{ .Values.components.argoFoundation.argocdInstance.aadPodIdentity.managedIdentity.clientID }}
-                    resourceID: {{ .Values.components.argoFoundation.argocdInstance.aadPodIdentity.managedIdentity.resourceID }}
-                  {{- end }}
+
+                azure:
+                  AADPodIdentity:
+                    enabled: {{ default "false" .Values.components.argoFoundation.argocdInstance.aadPodIdentity.enabled }}
+                    {{- if .Values.components.argoFoundation.argocdInstance.aadPodIdentity.enabled }}
+                    managedIdentity:
+                      clientID: {{ .Values.components.argoFoundation.argocdInstance.aadPodIdentity.managedIdentity.clientID }}
+                      resourceID: {{ .Values.components.argoFoundation.argocdInstance.aadPodIdentity.managedIdentity.resourceID }}
+                    {{- end }}
 
               server:
                 autoscale:
