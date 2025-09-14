@@ -45,7 +45,7 @@ spec:
 
             # cilium-agent
             image: {{ default "{}" (include "cilium.image" .) | nindent 14 }}
-            imagePullSecrets: {{ include "cilium.imagePullSecrets" . | nindent 14 }}
+            imagePullSecrets: {{ toYaml .Values.components.cilium.imagePullSecrets | nindent 14 }}
             nodeSelector:
               kubernetes.io/os: linux
             tolerations:

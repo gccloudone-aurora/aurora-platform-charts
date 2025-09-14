@@ -1,17 +1,4 @@
 {{/*
-The image pull secret for Cilium.
-*/}}
-{{- define "cilium.imagePullSecrets" -}}
-{{- if not .Values.components.cilium.secretDockerConfigJson }}
-{{- .Values.components.cilium.imagePullSecrets }}
-{{- else }}
-  {{- $new := dict "name" "cilium-image-pull-secret" }}
-  {{- $merged := append .Values.components.cilium.imagePullSecrets (list $new) | uniq }}
-  {{- $merged }}
-{{- end }}
-{{- end }}
-
-{{/*
 The image section for Cilium.
 */}}
 {{- define "cilium.image" -}}
