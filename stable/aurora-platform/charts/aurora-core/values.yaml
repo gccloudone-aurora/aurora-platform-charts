@@ -1883,12 +1883,17 @@ components:
         # clientId: ""
         # resourceId: ""
 
-    plugin:
+    plugins:
       azure:
         image:
           # registry: docker.io
           repository: velero/velero-plugin-for-microsoft-azure
           tag: "v1.7.1"
+      aws:
+        image:
+          # registry: docker.io
+          repository: velero/velero-plugin-for-aws
+          tag: "v1.12.1"      
 
     kubectl:
       image:
