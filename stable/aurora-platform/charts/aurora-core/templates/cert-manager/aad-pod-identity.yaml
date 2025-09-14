@@ -1,9 +1,10 @@
+{{ if eq .Values.global.provider "azure" -}}
 {{ if .Values.components.certManager.enabled -}}
 
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: "{{ .Values.global.cluster }}-cert-manager-manifests"
+  name: "{{ .Values.global.cluster }}-cert-manager-aad-pod-identity"
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
@@ -60,4 +61,5 @@ spec:
       prune: true
       selfHeal: true
 
+{{- end }}
 {{- end }}

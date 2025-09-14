@@ -15,7 +15,7 @@ spec:
     {{- else }}
     repoURL: {{ default "https://gccloudone-aurora.github.io/aurora-platform-charts" .Values.global.helm.repository }}
     {{- end }}
-    targetRevision: {{ default "0.0.2" .Values.components.istio.gateway.helm.targetRevision }}
+    targetRevision: {{ default "0.0.3" .Values.components.istio.gateway.helm.targetRevision }}
     plugin:
       env:
         - name: HELM_RELEASE_NAME
@@ -102,7 +102,7 @@ spec:
                   - "{{ . }}"
                   {{- end }}
                 # Toggles if the Azure DNS solver should be used.
-                useAzureDNSSolver: true
+                useGeneralDNSSolver: true
                 # Defines the type of Issuer to use.
                 issuerRef:
                   # Can be ClusterIssuer or Issuer.
