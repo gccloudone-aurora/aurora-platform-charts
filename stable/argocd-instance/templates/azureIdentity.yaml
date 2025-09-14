@@ -1,25 +1,25 @@
-{{- if .Values.argocdInstance.argocdVaultPlugin.AADPodIdentity.enabled }}
+{{- if .Values.argocdInstance.argocdVaultPlugin.azure.AADPodIdentity.enabled }}
 ---
 apiVersion: aadpodidentity.k8s.io/v1
 kind: AzureIdentity
 metadata:
-  name: {{ .Values.argocdInstance.argocdVaultPlugin.AADPodIdentity.identityName }}
+  name: {{ .Values.argocdInstance.argocdVaultPlugin.azure.AADPodIdentity.identityName }}
   labels:
     {{- include "argocd-foundation.labels" $ | nindent 4 }}
   annotations:
     aadpodidentity.k8s.io/Behavior: namespaced
 spec:
-  clientID: {{ .Values.argocdInstance.argocdVaultPlugin.AADPodIdentity.managedIdentity.clientID }}
-  resourceID: {{ .Values.argocdInstance.argocdVaultPlugin.AADPodIdentity.managedIdentity.resourceID }}
+  clientID: {{ .Values.argocdInstance.argocdVaultPlugin.azure.AADPodIdentity.managedIdentity.clientID }}
+  resourceID: {{ .Values.argocdInstance.argocdVaultPlugin.azure.AADPodIdentity.managedIdentity.resourceID }}
   type: 0
 ---
 apiVersion: aadpodidentity.k8s.io/v1
 kind: AzureIdentityBinding
 metadata:
-  name: {{ .Values.argocdInstance.argocdVaultPlugin.AADPodIdentity.identityName }}
+  name: {{ .Values.argocdInstance.argocdVaultPlugin.azure.AADPodIdentity.identityName }}
   labels:
     {{- include "argocd-foundation.labels" $ | nindent 4 }}
 spec:
-  azureIdentity: {{ .Values.argocdInstance.argocdVaultPlugin.AADPodIdentity.identityName }}
-  selector: {{ .Values.argocdInstance.argocdVaultPlugin.AADPodIdentity.identityName }}
+  azureIdentity: {{ .Values.argocdInstance.argocdVaultPlugin.azure.AADPodIdentity.identityName }}
+  selector: {{ .Values.argocdInstance.argocdVaultPlugin.azure.AADPodIdentity.identityName }}
 {{- end }}
