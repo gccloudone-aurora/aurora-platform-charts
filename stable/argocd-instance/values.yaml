@@ -36,7 +36,7 @@ argocdInstance:
     repository: ""
   image:
     name: "argoproj/argocd"
-    version: "v2.4.12"
+    version: "v2.6.6"
   ingressDomain: ""
   logLevel: "info"
   notifications:
@@ -79,7 +79,7 @@ argocdInstance:
   repo:
     image:
       name: "argoproj/argocd"
-      version: "v2.4.12"
+      version: "v2.6.6"
     resources: {}
       # limits:
       #   cpu: ""
