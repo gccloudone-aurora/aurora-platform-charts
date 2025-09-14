@@ -83,6 +83,7 @@ core:
   components: {}
     # aadPodIdentity: {}
     # auroraController: {}
+    # awsEbsCsiDriver: {}    
     # awsLoadbalancerController: {}
     # certManager: {}
     # cidrAllocator: {}
