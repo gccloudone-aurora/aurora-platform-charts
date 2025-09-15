@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   call-workflow:
-    uses: gccloudone-aurora/.github/.github/workflows/add-to-aurora-reusable.yaml@main
+    uses: gccloudone-aurora/.github/.github/workflows/add-to-aurora.yaml@main
     with:
       status_field_id: "PVTSSF_lADOC7oH384BDHFszg1H9FI"
       todo_option_id:  "f75ad846"
