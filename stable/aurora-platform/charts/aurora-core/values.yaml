@@ -1907,6 +1907,62 @@ components:
         tag: "v1.1.0"
         pullPolicy: IfNotPresent
 
+  trustManager:
+    enabled: true
+
+    helm: {}
+      # chart: trust-manager
+      # repository: https://charts.jetstack.io
+      # targetRevision: v0.19.0
+
+    imagePullSecrets: []
+    image:
+      # registry: quay.io
+      repository: jetstack/trust-manager
+      # tag: "v0.19.0"
+      # pullPolicy: IfNotPresent
+
+    replicas: 1
+    resources: {}
+      # limits:
+      #   cpu: ""
+      #   memory: ""
+      # requests:
+      #   cpu: ""
+      #   memory: ""
+    nodeSelector:
+      kubernetes.io/os: linux
+      node.ssc-spc.gc.ca/purpose: system
+    tolerations:
+      - key: CriticalAddonsOnly
+        operator: Exists
+    affinity:
+      podAntiAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 1
+          podAffinityTerm:
+            topologyKey: kubernetes.io/hostname
+            labelSelector:
+              matchLabels:
+                app.kubernetes.io/instance: trust-manager
+
+    defaultPackage:
+      image:
+        # registry: quay.io
+        repository: jetstack/trust-pkg-debian-bookworm
+        tag: "20230311-deb12u1.0"
+        # pullPolicy: IfNotPresent
+
+      resources: {}
+        # limits:
+        #   cpu: ""
+        #   memory: ""
+        # requests:
+        #   cpu: ""
+        #   memory: ""
+
+    priorityClassName: platform-cluster-medium
+
   vaultAgent:
     enabled: false
 
