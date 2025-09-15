@@ -23,14 +23,14 @@ spec:
           enabled: true
 
         image: {{ default "{}" (include "trustManager.image" .) | nindent 10 }}
-        imagePullSecrets: {{ toYaml .Values.components.certManager.imagePullSecrets | nindent 12 }}
+        imagePullSecrets: {{ toYaml .Values.components.trustManager.imagePullSecrets | nindent 12 }}
         
         replicaCount: {{ .Values.components.trustManager.replicas }}
         resources: {{ toYaml .Values.components.trustManager.resources | nindent 10 }}
         nodeSelector: {{ toYaml .Values.components.trustManager.nodeSelector | nindent 10 }}
         tolerations: {{ toYaml .Values.components.trustManager.tolerations | nindent 10 }}
         affinity: {{ toYaml .Values.components.trustManager.affinity | nindent 10 }}
-        priorityClassName: {{ .Values.components.certManager.priorityClassName }}
+        priorityClassName: {{ .Values.components.trustManager.priorityClassName }}
 
         defaultPackage:
           image: {{ default "{}" (include "trustManager.webhook.image" .) | nindent 12 }}
