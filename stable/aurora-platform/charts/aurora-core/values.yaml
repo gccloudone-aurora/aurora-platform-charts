@@ -1013,14 +1013,32 @@ components:
         enforcementAction: "deny"
       gatewayContainerAllowedImages:
         allowedRepos: []
+        # - ghcr.io/
+        # - docker.io/
+        # - docker.elastic.co/
+        # - mcr.microsoft.com/
+        # - quay.io/
+        # - registry.k8s.io/
         excludedNamespaces: []
         enforcementAction: "deny"
       systemContainerAllowedImages:
         allowedRepos: []
+        # - ghcr.io/
+        # - docker.io/
+        # - docker.elastic.co/
+        # - mcr.microsoft.com/
+        # - quay.io/
+        # - registry.k8s.io/
         excludedNamespaces: []
         enforcementAction: "deny"
       solutionContainerAllowedImages:
         allowedRepos: []
+        # - ghcr.io/
+        # - docker.io/
+        # - docker.elastic.co/
+        # - mcr.microsoft.com/
+        # - quay.io/
+        # - registry.k8s.io/
         excludedNamespaces: []
         enforcementAction: "deny"
       k8sPodDisruptionBudget:
@@ -1851,7 +1869,7 @@ components:
       #  prodMinor: ""
 
   tetragon:
-    enabled: true
+    enabled: false
 
     helm: {}
       # chart: tetragon
