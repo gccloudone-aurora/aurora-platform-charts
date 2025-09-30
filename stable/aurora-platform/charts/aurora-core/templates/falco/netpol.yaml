@@ -1,0 +1,169 @@
+{{ if .Values.components.falco.enabled -}}
+
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-falco-netpol"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    chart: {{ .Values.global.raw.helm.chart }}
+    repoURL: {{ default .Values.global.helm.repository .Values.global.raw.helm.repository }}
+    targetRevision: {{ .Values.global.raw.helm.targetRevision }}
+    plugin:
+      env:
+        - name: HELM_RELEASE_NAME
+          value: "falco-netpol"
+        - name: HELM_VALUES
+          value: |
+            resources:
+              - apiVersion: networking.k8s.io/v1
+                kind: NetworkPolicy
+                metadata:
+                  name: allow-falco-access-to-artifacts
+                  labels:
+                    app.kubernetes.io/name: "falco-netpol"
+                    app.kubernetes.io/instance: "{{ .Values.global.cluster }}"
+                    app.kubernetes.io/component: auth
+                    app.kubernetes.io/part-of: falco-system
+                    app.kubernetes.io/managed-by: argo
+                    helm.sh/chart: {{ printf "%s-%s" .Chart.Name .Chart.Version }}
+                spec:
+                  podSelector:
+                    matchLabels:
+                      app.kubernetes.io/instance: falco
+                      app.kubernetes.io/name: falco
+                  policyTypes:
+                  - Egress
+                  egress:
+                  - to:
+                    - ipBlock:
+                        cidr: 185.199.0.0/16 # githubusercontent
+                    ports:
+                    - protocol: TCP
+                      port: 443
+                  - to:
+                    - ipBlock:
+                        cidr: 140.82.0.0/16 # ghcr.io
+                    ports:
+                    - protocol: TCP
+                      port: 443
+                  - to:
+                    - ipBlock:
+                        cidr: 34.117.62.14/32 # tuf-repo-cdn.sigstore.dev
+                    ports:
+                    - protocol: TCP
+                      port: 443
+              - apiVersion: networking.k8s.io/v1
+                kind: NetworkPolicy
+                metadata:
+                  name: allow-falco-to-use-kube-dns
+                  labels:
+                    app.kubernetes.io/name: "falco-netpol"
+                    app.kubernetes.io/instance: "{{ .Values.global.cluster }}"
+                    app.kubernetes.io/component: auth
+                    app.kubernetes.io/part-of: falco-system
+                    app.kubernetes.io/managed-by: argo
+                    helm.sh/chart: {{ printf "%s-%s" .Chart.Name .Chart.Version }}
+                spec:
+                  podSelector:
+                    matchLabels:
+                      app.kubernetes.io/instance: falco
+                      app.kubernetes.io/name: falco
+                  policyTypes:
+                    - Egress
+                  egress:
+                    - to:
+                      - namespaceSelector:
+                          matchLabels:
+                            kubernetes.io/metadata.name: falco-system
+                        podSelector:
+                          matchLabels:
+                            k8s-app: kube-dns
+                      ports:
+                        - port: 53
+                          protocol: "UDP"
+              - apiVersion: networking.k8s.io/v1
+                kind: NetworkPolicy
+                metadata:
+                  name: allow-falco-access-to-k8s-metacollector
+                  namespace: falco-system
+                spec:
+                  podSelector:
+                    matchLabels:
+                      app.kubernetes.io/instance: falco
+                      app.kubernetes.io/name: falco
+                  policyTypes:
+                  - Egress
+                  egress:
+                  - to:
+                    - podSelector:
+                        matchLabels:
+                          app.kubernetes.io/instance: falco
+                          app.kubernetes.io/name: k8s-metacollector
+              - apiVersion: networking.k8s.io/v1
+                kind: NetworkPolicy
+                metadata:
+                  name: allow-k8s-metacollector-from-falco
+                  namespace: falco-system
+                spec:
+                  podSelector:
+                    matchLabels:
+                      app.kubernetes.io/instance: falco
+                      app.kubernetes.io/name: k8s-metacollector
+                  policyTypes:
+                  - Egress
+                  ingress:
+                  - from:
+                    - podSelector:
+                        matchLabels:
+                          app.kubernetes.io/instance: falco
+                          app.kubernetes.io/name: falco
+              - apiVersion: networking.k8s.io/v1
+                kind: NetworkPolicy
+                metadata:
+                  name: allow-falco-access-to-falcosidekick
+                  namespace: falco-system
+                spec:
+                  podSelector:
+                    matchLabels:
+                      app.kubernetes.io/instance: falco
+                      app.kubernetes.io/name: falco
+                  policyTypes:
+                  - Egress
+                  egress:
+                  - to:
+                    - podSelector:
+                        matchLabels:
+                          app.kubernetes.io/instance: falco
+                          app.kubernetes.io/name: k8s-metacollector
+              - apiVersion: networking.k8s.io/v1
+                kind: NetworkPolicy
+                metadata:
+                  name: allow-falcosidekick-from-falco
+                  namespace: falco-system
+                spec:
+                  podSelector:
+                    matchLabels:
+                      app.kubernetes.io/instance: falco
+                      app.kubernetes.io/name: falcosidekick
+                  policyTypes:
+                  - Egress
+                  ingress:
+                  - from:
+                    - podSelector:
+                        matchLabels:
+                          app.kubernetes.io/instance: falco
+                          app.kubernetes.io/name: falco
+              {{- toYaml .Values.components.falco.resources | nindent 14 }}
+  destination:
+    name: {{ .Values.global.cluster }}
+    namespace: falco-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+
+{{- end }}
