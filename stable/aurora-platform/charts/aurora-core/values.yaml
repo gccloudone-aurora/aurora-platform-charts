@@ -965,19 +965,14 @@ components:
   falco:
     enabled: true
 
-
-
-    # additional resources to deploy alongside Falco
-    resources: []
-    #
-    # podResources:
+    resources: {}
     #   requests:
     #     cpu: 100m
     #     memory: 512Mi
     #   limits:
     #     cpu: 1000m
     #     memory: 1024Mi
-    #
+
     tolerations:
       - key: CriticalAddonsOnly
         operator: Exists

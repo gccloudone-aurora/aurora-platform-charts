@@ -9,8 +9,12 @@ metadata:
 spec:
   project: {{ .Values.global.project }}
   source:
-    chart: falco
-    repoURL: https://falcosecurity.github.io/charts
+    chart: {{ default "falco" .Values.components.falco.helm.chart }}
+    {{- if .Values.components.falco.helm.repository }}
+    repoURL: {{ .Values.components.falco.helm.repository }}
+    {{- else }}
+    repoURL: {{ default "https://falcosecurity.github.io/charts" .Values.global.helm.repository }}
+    {{- end }}
     targetRevision: {{ default "6.2.5" .Values.components.falco.targetRevision }}
     helm:
       releaseName: falco
@@ -52,13 +56,12 @@ spec:
 
         podPriorityClassName: {{ .Values.components.falco.priorityClassName }}
 
-        {{ if .Values.components.falco.podResources -}}
-        resources: {{ .Values.components.falco.podResources }}
+        {{ if .Values.components.falco.resources -}}
+        resources: {{ toYaml .Values.components.falco.resources | nindent 10 }}
         {{- end }}
 
         {{ if .Values.components.falco.tolerations -}}
-        tolerations:
-        {{- toYaml .Values.components.falco.tolerations | nindent 8 }}
+        tolerations: {{ toYaml .Values.components.falco.tolerations | nindent 10 }}
         {{- end }}
 
   destination:

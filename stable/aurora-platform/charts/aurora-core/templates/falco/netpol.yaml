@@ -3,7 +3,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: "{{ .Values.global.cluster }}-falco-manifests"
+  name: "{{ .Values.global.cluster }}-falco-netpol"
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
@@ -15,7 +15,7 @@ spec:
     plugin:
       env:
         - name: HELM_RELEASE_NAME
-          value: "falco-manifests"
+          value: "falco-netpol"
         - name: HELM_VALUES
           value: |
             resources:
@@ -24,7 +24,7 @@ spec:
                 metadata:
                   name: allow-falco-access-to-artifacts
                   labels:
-                    app.kubernetes.io/name: "falco-manifests"
+                    app.kubernetes.io/name: "falco-netpol"
                     app.kubernetes.io/instance: "{{ .Values.global.cluster }}"
                     app.kubernetes.io/component: auth
                     app.kubernetes.io/part-of: falco-system
@@ -61,7 +61,7 @@ spec:
                 metadata:
                   name: allow-falco-to-use-kube-dns
                   labels:
-                    app.kubernetes.io/name: "falco-manifests"
+                    app.kubernetes.io/name: "falco-netpol"
                     app.kubernetes.io/instance: "{{ .Values.global.cluster }}"
                     app.kubernetes.io/component: auth
                     app.kubernetes.io/part-of: falco-system
