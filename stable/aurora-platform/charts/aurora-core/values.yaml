@@ -1101,6 +1101,11 @@ components:
   falco:
     enabled: true
 
+    helm: {}
+      # chart: falco
+      # repository: https://falcosecurity.github.io/charts
+      # targetRevision: 6.2.5
+
     resources: {}
     #   requests:
     #     cpu: 100m
