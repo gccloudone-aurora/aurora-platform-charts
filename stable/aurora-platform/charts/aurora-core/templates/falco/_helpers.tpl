@@ -21,18 +21,18 @@ pullPolicy: {{ .Values.components.falco.images.falco.image.pullPolicy }}
 The image section for the Falco Sidekick image.
 */}}
 {{- define "falcosidekick.image" -}}
-{{- if (and .Values.components.falco.images.falcosidekick.image.registry .Values.components.falco.images.falcosidekick.image.repository) }}
-registry: {{ .Values.components.falco.images.falcosidekick.image.registry }}
-repository: {{ .Values.components.falco.images.falcosidekick.image.repository }}
-{{- else if .Values.components.falco.images.falcosidekick.image.repository }}
+{{- if (and .Values.components.falco.images.falcoSideKick.image.registry .Values.components.falco.images.falcoSideKick.image.repository) }}
+registry: {{ .Values.components.falco.images.falcoSideKick.image.registry }}
+repository: {{ .Values.components.falco.images.falcoSideKick.image.repository }}
+{{- else if .Values.components.falco.images.falcoSideKick.image.repository }}
 registry: {{ (default "docker.io" .Values.global.container.registry) }}
-repository: {{ .Values.components.falco.images.falcosidekick.image.repository }}
+repository: {{ .Values.components.falco.images.falcoSideKick.image.repository }}
 {{- end }}
-{{- if .Values.components.falco.images.falcosidekick.image.tag }}
-tag: {{ .Values.components.falco.images.falcosidekick.image.tag }}
+{{- if .Values.components.falco.images.falcoSideKick.image.tag }}
+tag: {{ .Values.components.falco.images.falcoSideKick.image.tag }}
 {{- end }}
-{{- if .Values.components.falco.images.falcosidekick.image.pullPolicy }}
-pullPolicy: {{ .Values.components.falco.images.falcosidekick.image.pullPolicy }}
+{{- if .Values.components.falco.images.falcoSideKick.image.pullPolicy }}
+pullPolicy: {{ .Values.components.falco.images.falcoSideKick.image.pullPolicy }}
 {{- end }}
 {{- end }}
 
@@ -40,18 +40,18 @@ pullPolicy: {{ .Values.components.falco.images.falcosidekick.image.pullPolicy }}
 The image section for the Falco Driver Loader image.
 */}}
 {{- define "falcodriverloader.image" -}}
-{{- if (and .Values.components.falco.images.falcodriverloader.image.registry .Values.components.falco.images.falcodriverloader.image.repository) }}
-registry: {{ .Values.components.falco.images.falcoctl.image.registry }}
-repository: {{ .Values.components.falco.images.falcodriverloader.image.repository }}
-{{- else if .Values.components.falco.images.falcodriverloader.image.repository }}
+{{- if (and .Values.components.falco.images.falcoDriverLoader.image.registry .Values.components.falco.images.falcoDriverLoader.image.repository) }}
+registry: {{ .Values.components.falco.images.falcoDriverLoader.image.registry }}
+repository: {{ .Values.components.falco.images.falcoDriverLoader.image.repository }}
+{{- else if .Values.components.falco.images.falcoDriverLoader.image.repository }}
 registry: {{ (default "docker.io" .Values.global.container.registry) }}
-repository: {{ .Values.components.falco.images.falcodriverloader.image.repository }}
+repository: {{ .Values.components.falco.images.falcoDriverLoader.image.repository }}
 {{- end }}
-{{- if .Values.components.falco.images.falcodriverloader.image.tag }}
-tag: {{ .Values.components.falco.images.falcodriverloader.image.tag }}
+{{- if .Values.components.falco.images.falcoDriverLoader.image.tag }}
+tag: {{ .Values.components.falco.images.falcoDriverLoader.image.tag }}
 {{- end }}
-{{- if .Values.components.falco.images.falcodriverloader.image.pullPolicy }}
-pullPolicy: {{ .Values.components.falco.images.falcodriverloader.image.pullPolicy }}
+{{- if .Values.components.falco.images.falcoDriverLoader.image.pullPolicy }}
+pullPolicy: {{ .Values.components.falco.images.falcoDriverLoader.image.pullPolicy }}
 {{- end }}
 {{- end }}
 
@@ -78,17 +78,17 @@ pullPolicy: {{ .Values.components.falco.images.falcoctl.image.pullPolicy }}
 The image section for the k8s-metacollector image.
 */}}
 {{- define "k8smetacollector.image" -}}
-{{- if (and .Values.components.falco.images.k8smetacollector.image.registry .Values.components.falco.images.k8smetacollector.image.repository) }}
-registry: {{ .Values.components.falco.images.k8smetacollector.image.registry }}
-repository: {{ .Values.components.falco.images.k8smetacollector.image.repository }}
-{{- else if .Values.components.falco.images.k8smetacollector.image.repository }}
+{{- if (and .Values.components.falco.images.k8sMetacollector.image.registry .Values.components.falco.images.k8sMetacollector.image.repository) }}
+registry: {{ .Values.components.falco.images.k8sMetacollector.image.registry }}
+repository: {{ .Values.components.falco.images.k8sMetacollector.image.repository }}
+{{- else if .Values.components.falco.images.k8sMetacollector.image.repository }}
 registry: {{ (default "docker.io" .Values.global.container.registry) }}
-repository: {{ .Values.components.falco.images.k8smetacollector.image.repository }}
+repository: {{ .Values.components.falco.images.k8sMetacollector.image.repository }}
 {{- end }}
-{{- if .Values.components.falco.images.k8smetacollector.image.tag }}
-tag: {{ .Values.components.falco.images.k8smetacollector.image.tag }}
+{{- if .Values.components.falco.images.k8sMetacollector.image.tag }}
+tag: {{ .Values.components.falco.images.k8sMetacollector.image.tag }}
 {{- end }}
-{{- if .Values.components.falco.images.k8smetacollector.image.pullPolicy }}
-pullPolicy: {{ .Values.components.falco.images.k8smetacollector.image.pullPolicy }}
+{{- if .Values.components.falco.images.k8sMetacollector.image.pullPolicy }}
+pullPolicy: {{ .Values.components.falco.images.k8sMetacollector.image.pullPolicy }}
 {{- end }}
 {{- end }}
