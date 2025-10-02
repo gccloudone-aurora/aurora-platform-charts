@@ -41,7 +41,7 @@ jobs:
           kubeconform -strict -ignore-missing-schemas -summary rendered.yaml
 
       - name: Upload rendered.yaml as artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: rendered-template
           path: rendered.yaml
