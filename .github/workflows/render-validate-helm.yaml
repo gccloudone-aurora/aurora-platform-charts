@@ -39,3 +39,9 @@ jobs:
       - name: Validate rendered YAML with kubeconform
         run: |
           kubeconform -strict -ignore-missing-schemas -summary rendered.yaml
+
+      - name: Upload rendered.yaml as artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: rendered-template
+          path: rendered.yaml
