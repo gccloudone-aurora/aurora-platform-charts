@@ -1,0 +1,473 @@
+# This file is directly grabbed from: https://github.com/gccloudone-aurora/project-aurora-template
+global:
+  apiServerCidr: "<FILLIN_API_SERVER_ADDRESS>/27"
+  azureMetadataApiCidr: "169.254.169.254/32"
+
+  # alertManagerCidrs: ["172.26.26.132/32"]
+  # loggingCidrs: ["172.26.26.132/32"]
+  # vaultCidrs: ["172.23.211.18/32"]
+
+  clusterHasLoki: false
+
+  cluster: aur-dev-cc-00-aks
+
+  # helm:
+  #   repository: https://gccloudone-aurora.github.io/aurora-platform-charts
+
+  # container:
+  #   registry: ghcr.io/gccloudone-aurora
+
+  ingressDomain: <FILLIN_INGRESS_DOMAIN>
+  ingressClassName: ingress-istio-controller
+
+  load_balancer_subnet_name: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-load-balancer-subnet-name>'
+  subscriptionId: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-subscription-id>'
+  tenantId: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-tenant-id>'
+
+core:
+  components:
+    aadPodIdentity:
+      enabled: true
+
+      mic: {}
+
+      nmi: {}
+
+    auroraController:
+      enabled: true
+
+      image:
+        tag: main
+
+      prometheus:
+        enabled: false
+        servicemonitor:
+          enabled: false
+
+      aurora:
+        secretDockerConfigJson: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-image-pull-secret>'
+
+    certManager:
+      enabled: true
+
+      webhook: {}
+
+      cainjector: {}
+
+      acmesolver: {}
+
+      startupapicheck: {}
+
+      aadPodIdentity:
+        azureManagedIdentity:
+          clientId: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-certmanager-aadpodidentity-client-id>'
+          resourceId: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-certmanager-aadpodidentity-resource-id>'
+
+      prometheus:
+        enabled: false
+        servicemonitor:
+          enabled: false
+
+      dns01RecursiveNameservers: "<FILLIN_NAME_SERVERS>:<FILLIN_NAME_SERVERS>:53"
+      dns01RecursiveNameserversOnly: true
+
+      podDnsConfig:
+        nameservers:
+          - <FILLIN_NAME_SERVERS>
+          - <FILLIN_NAME_SERVERS>
+
+      issuers:
+        email: aurora-aurore@ssc-spc.gc.ca
+        caBundle: "<FILLIN_BASE&4_CUSTOM_CA>"
+        dns01:
+          azure:
+            zone: <FILLIN_INGRESS_ZONE>.cloud-nuage.canada.ca
+            resourceGroupName: <FILLIN_RESOURCE_GROUP_NAME>
+            subscriptionId: <FILLIN_SUBSCRIPTION_ID>
+
+    cidrAllocator:
+      enabled: true
+
+      image:
+        tag: main
+
+      prometheus:
+        enabled: false
+        servicemonitor:
+          enabled: false
+
+      secretDockerConfigJson: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-image-pull-secret>'
+
+      addressPools:
+      - <FILL_IN_ADDRESS_POOLS>/23
+
+    cilium:
+      enabled: true
+
+      secretDockerConfigJson: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-image-pull-secret>'
+
+      enableIPv4Masquerade: true
+
+      bgpControlPlane:
+        enabled: false
+
+      ciliumBGPPeeringPolicy:
+        virtualRouters:
+        - exportPodCIDR: true
+          localASN: 64512
+          neighbors:
+          - peerASN: 64512
+            peerAddress: <FILLIN_PEER_ADDRESS>/32
+
+    fluentOperator:
+      enabled: false
+
+      operator:
+        initContainer: {}
+
+      fluentd:
+        output:
+          loki:
+            enable: true
+            url: "https://loki.<FILLIN_INGRESS_DOMAIN>"
+            username: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-loki-user>'
+            password: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-loki-password>'
+
+    gatekeeper:
+      enabled: true
+
+      postInstall:
+        probeWebhook: {}
+
+      postUpgrade: {}
+
+      preUninstall: {}
+
+      audit: {}
+
+      controllerManager: {}
+
+      crds: {}
+
+      templates:
+        repository: https://github.com/gccloudone-aurora/gatekeeper-policies.git
+        path: .
+        targetRevision: main
+
+      constraints:
+        gatewayContainerAllowedImages:
+          allowedRepos:
+            - ghcr.io/
+            - docker.io/
+            - docker.elastic.co/
+            - mcr.microsoft.com/
+            - quay.io/
+        restrictPodAnnotations:
+          excludedNamespaces:
+            - 'backstage'
+        systemContainerAllowedImages:
+          allowedRepos:
+            - ghcr.io/
+            - docker.io/
+            - docker.elastic.co/
+            - mcr.microsoft.com/
+            - quay.io/
+        solutionContainerAllowedImages:
+          allowedRepos:
+            - ghcr.io/
+            - docker.io/
+            - docker.elastic.co/
+            - mcr.microsoft.com/
+            - quay.io/
+
+    kubecost:
+      enabled: false
+
+      frontend: {}
+
+      costModel: {}
+
+      networkCosts: {}
+
+      clusterController: {}
+
+      token: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-kubecost-token>'
+
+      azure:
+        subscriptionId: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-subscription-id>'
+        clientId: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-kubecost-sp-client-id>'
+        clientPassword: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-kubecost-sp-client-secret>'
+        tenantId: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-tenant-id>'
+
+      cloudServiceKey: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-kubecost-cloud-service-key>'
+      productKey: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-kubecost-product-key>'
+
+    kubernetesEventExporter:
+      enabled: false
+
+      config:
+        output:
+          loki:
+            url: "https://loki.<FILLIN_INGRESS_DOMAIN>/loki/api/v1/push"
+            authorization: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-loki-authorization>'
+
+    ntp:
+      enabled: true
+
+    podtracker:
+      enabled: true
+
+      image:
+        tag: main
+
+      prometheus:
+        enabled: false
+        servicemonitor:
+          enabled: false
+
+    prometheus:
+      enabled: false
+
+      azure:
+        clientId: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-grafana-sp-client-id>'
+        clientPassword: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-grafana-sp-client-secret>'
+
+      operator:
+        admissionWebhooks: {}
+
+        prometheusConfigReloader: {}
+
+        thanos: {}
+
+      alertmanager:
+        enabled: false
+
+      prometheus:
+        prometheusSpec: {}
+
+      thanosRuler:
+        thanosRulerSpec: {}
+
+      grafana:
+        adminPassword: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-grafana-admin-password>'
+        authUrl: "https://login.microsoftonline.com/<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-tenant-id>/oauth2/v2.0/authorize"
+        tokenUrl: "https://login.microsoftonline.com/<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-tenant-id>/oauth2/v2.0/token"
+
+        downloadDashboards: {}
+
+        initChownData: {}
+
+        sidecar: {}
+
+        lokiDataSource:
+          url: "http://loki-gateway.loki.svc.cluster.local"
+          user: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-loki-user>'
+          password: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-loki-password>'
+
+      kubeStateMetrics: {}
+
+      prometheusNodeExporter: {}
+
+      blackboxExporter:
+        istioIngressGatewayProbes:
+          - name: istio-ingress-gateway
+            ipAddress: <FILLIN_ISTIO_INGRESS_GATEWAY>
+
+      msteams:
+        connectors:
+          alertTesting: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-alertmanager-notifications-msteams-connector-testing>'
+          prodCritical: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-alertmanager-notifications-msteams-connector-prod-critical>'
+          prodMajor: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-alertmanager-notifications-msteams-connector-prod-major>'
+          prodMinor: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-alertmanager-notifications-msteams-connector-prod-minor>'
+          nonProdCritical: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-alertmanager-notifications-msteams-connector-non-prod-critical>'
+          nonProdMajor: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-alertmanager-notifications-msteams-connector-non-prod-major>'
+          nonProdMinor: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-alertmanager-notifications-msteams-connector-non-prod-minor>'
+          devCritical: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-alertmanager-notifications-msteams-connector-dev-critical>'
+          devMajor: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-alertmanager-notifications-msteams-connector-dev-major>'
+          devMinor: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-alertmanager-notifications-msteams-connector-dev-minor>'
+
+      jiralert:
+        config:
+          apiURL: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-alertmanager-notifications-jira-api-url>'
+          project: 'CN'
+          user: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-alertmanager-notifications-jira-user>'
+          password: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-alertmanager-notifications-jira-password>'
+
+      priorityClassName: platform-cluster-critical
+
+    vaultAgent:
+      enabled: false
+
+      injector:
+        externalVaultAddr: https://vault.<FILLIN_INGRESS_DOMAIN>
+
+        agentImage: {}
+
+    velero:
+      enabled: false
+
+      backupStorage:
+        bucket: velero
+        resourceGroupName: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-velero-sa-resource-group-name>'
+        storageAccountName: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-velero-sa-name>'
+        subscriptionId: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-subscription-id>'
+
+      volumeSnapshot:
+        resourceGroupName: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-velero-sa-resource-group-name>'
+
+      aadPodIdentity:
+        azureManagedIdentity:
+          clientId: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-velero-aadpodidentity-client-id>'
+          resourceId: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-velero-aadpodidentity-resource-id>'
+
+app:
+  enabled: true
+
+  components:
+    argoController:
+      enabled: false
+
+      storageAccount:
+        name: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-argo-workflow-sa-name>'
+        primaryAccessKey: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-argo-workflow-sa-key>'
+
+    argoWorkflow:
+      enabled: false
+
+      workflow:
+        controller: {}
+
+        executor: {}
+
+        server: {}
+
+        storageAccount:
+          name: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-argo-workflow-sa-name>'
+          primaryBlobEndpoint: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-argo-workflow-sa-endpoint>'
+          primaryAccessKey: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-argo-workflow-sa-key>'
+
+        sso:
+          issuerUrl: "https://login.microsoftonline.com/<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-tenant-id>/v2.0"
+          clientId: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-argo-workflow-sp-client-id>'
+          clientSecret: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-argo-workflow-sp-client-secret>'
+
+    elastic:
+      enabled: true
+
+    istio:
+      enabled: true
+
+      gateway:
+        additionalDnsNames:
+          - '*.<FILLIN_INGRESS_DOMAIN>'
+          - '*.aurora.<FILLIN_INGRESS_DOMAIN>'
+
+      ingressIstioController:
+       image:
+         tag: main
+
+      istiod:
+        pilot: {}
+
+        proxy: {}
+
+    kiali:
+      enabled: false
+
+      instances:
+        - name: kiali
+          grafana:
+            token: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-kiali-grafana-token>'
+
+    sidecarTerminator:
+      enabled: true
+
+      image:
+        tag: main
+
+    solr:
+       enabled: false
+
+mgmt:
+  enabled: true
+
+  components:
+    argoFoundation:
+      argocdInstance:
+        adminSecurityGroup: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-cluster-admins>'
+        disableAdmin: false
+        ingressDomain: aur.aurora.<FILLIN_INGRESS_DOMAIN>
+        argocdVaultPlugin:
+          credentials:
+            azureClientID: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-argocd-kv-aadpodidentity-client-id>'
+        oidcAuthSP:
+          credentials:
+            tenantID: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-tenant-id>'
+            clientID: '<path:<FILLIN_ARGO_KV>#gcdc-auroramgmt-platform-kvs-argocd-oidc-sp-client-id>'
+            clientSecret: '<path:<FILLIN_ARGO_KV>#gcdc-auroramgmt-platform-kvs-argocd-oidc-sp-client-secret>'
+        aadPodIdentity:
+          enabled: true
+          managedIdentity:
+            clientID: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-argocd-kv-aadpodidentity-client-id>'
+            resourceID: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-argocd-kv-aadpodidentity-resource-id>'
+        notifications:
+          enabled: true
+        netpol:
+          enabled: true
+        server:
+          service:
+            type: "ClusterIP"
+          resources:
+            limits:
+              cpu: '1'
+              memory: 1000Mi
+            requests:
+              cpu: 250m
+              memory: 500Mi
+        register:
+          clusters:
+            aur-dev-cc-00-aks:
+              server: "<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-server>"
+              token: "<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-argocd-sa-bearer-token>"
+              caData: "<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-argocd-sa-cacert | base64encode>"
+          repositories:
+            aurora-helm:
+              type: helm
+              url: https://gccloudone-aurora.github.io/aurora-platform-charts
+            project-aurora-template:
+              type: git
+              url: https://github.com/gccloudone-aurora/project-aurora-template.git
+          repositoryCreds:
+            private-repo-creds:
+              type: git
+              url: https://github.com/gccloudone-aurora/project-aurora-template.git
+              username: "<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-github-username>"
+              password: "<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-github-password>"
+      argocdProjects:
+        platform:
+          applicationSet:
+            generator:
+              git:
+                repoURL: https://github.com/gccloudone-aurora/project-aurora-template.git
+                revision: main
+                files:
+                  - path: platform/clusters/non-prod/**/config.yaml
+            template:
+              source:
+                repoURL: https://gccloudone-aurora.github.io/aurora-platform-charts
+        solutions:
+          applicationSet:
+            generator:
+              git:
+                repoURL: https://github.com/gccloudone-aurora/project-aurora-mgmt.git
+                revision: main
+                files:
+                  - path: platform/namespaces/non-prod/**/config.yaml
+            template:
+              source:
+                repoURL: https://gccloudone-aurora.github.io/aurora-platform-charts
+
+    argoOperator: {}
+
+    billOfLanding:
+      enabled: false
