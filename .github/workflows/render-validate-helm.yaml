@@ -38,7 +38,9 @@ jobs:
 
       - name: Validate rendered YAML with kubeconform
         run: |
-          kubeconform -strict -ignore-missing-schemas -summary rendered.yaml
+          kubeconform -strict -summary \
+                      -schema-location default \
+                      -schema-location https://raw.githubusercontent.com/datreeio/CRDs-catalog/main/argoproj.io/application_v1alpha1.json rendered.yaml
 
       - name: Upload rendered.yaml as artifact
         uses: actions/upload-artifact@v4
