@@ -33,7 +33,6 @@ spec:
         priorityClassName: {{ .Values.components.trustManager.priorityClassName }}
 
         defaultPackage:
-          image: {{ default "{}" (include "trustManager.webhook.image" .) | nindent 12 }}
           resources: {{ toYaml .Values.components.trustManager.webhook.resources | nindent 12 }}
         defaultPackageImage: {{ default "{}" (include "trustManager.defaultPackage.image" .) | nindent 10 }}
 
