@@ -72,6 +72,25 @@ spec:
                   app.kubernetes.io/name: trust-manager
               policyTypes:
               - Egress
+          - apiVersion: networking.k8s.io/v1
+            kind: NetworkPolicy
+            metadata:
+              name: allow-ingress-from-apiserver-to-trust-manager
+              namespace: trust-manager-system
+            spec:
+              ingress:
+              - from:
+                - ipBlock:
+                    cidr: {{ required "global.apiServerCidr is required" .Values.global.apiServerCidr | quote }}
+                - namespaceSelector:
+                    matchLabels:
+                      kubernetes.io/metadata.name: kube-system
+                  podSelector:
+                    matchLabels:
+                      app: konnectivity-agent
+              podSelector: {}
+              policyTypes:
+              - Ingress
   destination:
     name: {{ .Values.global.cluster }}
     namespace: platform-system
