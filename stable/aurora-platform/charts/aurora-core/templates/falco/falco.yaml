@@ -1,0 +1,75 @@
+{{ if .Values.components.falco.enabled -}}
+
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-falco"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    chart: {{ default "falco" .Values.components.falco.helm.chart }}
+    {{- if .Values.components.falco.helm.repository }}
+    repoURL: {{ .Values.components.falco.helm.repository }}
+    {{- else }}
+    repoURL: {{ default "https://falcosecurity.github.io/charts" .Values.global.helm.repository }}
+    {{- end }}
+    targetRevision: {{ default "6.2.5" .Values.components.falco.targetRevision }}
+    helm:
+      releaseName: falco
+      values: |-
+        image: {{- default "{}" (include "falco.image" .) | nindent 10 }}
+
+        driver:
+          enabled: true
+          loader:
+            initContainer:
+              image: {{ default "{}" (include "falcodriverloader.image" .) | nindent 16 }}
+             
+        falcosidekick:
+          enabled: true
+          # see https://github.com/falcosecurity/charts/blob/master/charts/falcosidekick/values.yaml
+          image: {{ default "{}" (include "falcosidekick.image" .) | nindent 12 }}
+
+        collectors:
+          kubernetes:
+            enabled: true
+
+        k8s-metacollector:
+          # see https://github.com/falcosecurity/charts/blob/master/charts/k8s-metacollector/values.yaml
+          image: {{ default "{}" (include "k8smetacollector.image" .) | nindent 12 }}
+
+        falcoctl:
+          image: {{ default "{}" (include "falcoctl.image" .) | nindent 12 }}
+          {{ if .Values.components.falco.falcoctl.artifact -}}
+          artifact:
+          {{ toYaml .Values.components.falco.falcoctl.artifact | nindent 12 }}
+          {{- end }}
+          {{ if .Values.components.falco.falcoctl.config -}}
+          config:
+          {{ toYaml .Values.components.falco.falcoctl.config | nindent 12 }}
+          {{- end }}
+
+        mounts:
+        {{ toYaml .Values.components.falco.mounts | nindent 10 }}
+
+        podPriorityClassName: {{ .Values.components.falco.priorityClassName }}
+
+        {{ if .Values.components.falco.resources -}}
+        resources: {{ toYaml .Values.components.falco.resources | nindent 10 }}
+        {{- end }}
+
+        {{ if .Values.components.falco.tolerations -}}
+        tolerations: {{ toYaml .Values.components.falco.tolerations | nindent 10 }}
+        {{- end }}
+
+  destination:
+    name: {{ .Values.global.cluster }}
+    namespace: falco-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+
+{{- end }}
