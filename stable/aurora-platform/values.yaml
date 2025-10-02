@@ -97,6 +97,7 @@ core:
     # podtracker: {}
     # prometheus: {}
     # tetragon: {}
+    # trustManager: {}
     # vaultAgent: {}
     # velero: {}
 
