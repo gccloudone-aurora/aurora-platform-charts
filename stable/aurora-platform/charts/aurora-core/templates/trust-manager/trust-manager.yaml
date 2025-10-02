@@ -32,6 +32,10 @@ spec:
         affinity: {{ toYaml .Values.components.trustManager.affinity | nindent 10 }}
         priorityClassName: {{ .Values.components.trustManager.priorityClassName }}
 
+        app:
+          trust:
+            namespace: cert-manager-system
+
         defaultPackage:
           resources: {{ toYaml .Values.components.trustManager.defaultPackage.resources | nindent 12 }}
         defaultPackageImage: {{ default "{}" (include "trustManager.defaultPackage.image" .) | nindent 10 }}
