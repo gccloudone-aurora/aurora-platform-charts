@@ -2041,6 +2041,9 @@ components:
               matchLabels:
                 app.kubernetes.io/instance: trust-manager
 
+    bundle:
+      # caBundle: ""
+
     defaultPackage:
       image:
         # registry: quay.io
