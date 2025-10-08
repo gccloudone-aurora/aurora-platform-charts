@@ -56,6 +56,7 @@ jobs:
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git pull --rebase origin main
           git add .
           git diff --cached --quiet || git commit -m "feat(docs): Update README.md"
           git push
