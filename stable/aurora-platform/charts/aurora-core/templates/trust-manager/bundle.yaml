@@ -30,9 +30,10 @@ spec:
             spec:
               sources:
                 - useDefaultCAs: true
-                - configMap:
-                    name: "trust-manager-custom-ca"
-                    key: "custom.crt"
+                - inline:
+                    {{ if .Values.components.trustManager.bundle.customCA }}
+                    data: {{ .Values.components.trustManager.bundle.customCA }}
+                    {{ end }}
               destinations:
                 - configMap:
                     name: trust-manager-propagated-custom-ca
