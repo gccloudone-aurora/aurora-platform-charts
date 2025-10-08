@@ -2042,7 +2042,7 @@ components:
                 app.kubernetes.io/instance: trust-manager
 
     bundle:
-      # caBundle: ""
+      customCA: ""
 
     defaultPackage:
       image:
