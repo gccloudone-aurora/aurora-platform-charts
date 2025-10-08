@@ -42,27 +42,6 @@ jobs:
           curl -fsSL https://github.com/norwoodj/helm-docs/releases/download/v1.14.2/helm-docs_1.14.2_Linux_x86_64.tar.gz \
           | tar -xz -C /usr/local/bin helm-docs && chmod +x /usr/local/bin/helm-docs
 
-      - name: Generate Root README.md
-        run: |
-          echo "Running the generate-readme.sh script..."
-          ./scripts/generate-readme.sh
-
-      - name: Generate Charts README.md
-        run: |
-          echo "Generating README.md for each chart with helm-docs..."
-          helm-docs --chart-search-root ./stable
-
-      - name: Commit and Push Updates
-        run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git pull --rebase origin main
-          git add .
-          git diff --cached --quiet || git commit -m "feat(docs): Update README.md"
-          git push
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Configure Git User for Chart Releaser
         run: |
           git config --global user.name "chart-releaser"
