@@ -1,0 +1,52 @@
+# aurora-namespace
+
+![Version: 0.0.1](https://img.shields.io/badge/Version-0.0.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.0.0](https://img.shields.io/badge/AppVersion-2.0.0-informational?style=flat-square)
+
+Aurora Namespace
+
+## Requirements
+
+| Repository | Name | Version |
+|------------|------|---------|
+| file://../raw | raw | 0.0.1 |
+
+## Prerequisites
+
+- Kubernetes 1.28+
+- Helm v3.19.0+
+
+## Values
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| aadPodIdentities | object | `{}` |  |
+| information.FRC | string | `nil` |  |
+| information.PE | string | `nil` |  |
+| information.authorityToOperate | string | `nil` |  |
+| information.division | string | `nil` |  |
+| information.gitGroupURL | string | `nil` |  |
+| information.onboardingEpic | string | `nil` |  |
+| information.priority | string | `"medium"` |  |
+| information.productID | string | `nil` |  |
+| information.projectLead | string | `nil` |  |
+| information.projectName | string | `nil` |  |
+| information.team | string | `nil` |  |
+| information.technicalLead | string | `nil` |  |
+| information.workloadID | string | `nil` |  |
+| namespace.labels | object | `{}` |  |
+| namespace.type | string | `nil` |  |
+| netpol.allowSameNamespace | bool | `true` |  |
+| policies.allowedHosts | list | `[]` |  |
+| policies.istioInjection | bool | `false` |  |
+| policies.podSecurityAdmission.audit.level | string | `"baseline"` |  |
+| policies.podSecurityAdmission.audit.version | string | `"v1.27"` |  |
+| policies.podSecurityAdmission.enforce.level | string | `"baseline"` |  |
+| policies.podSecurityAdmission.enforce.version | string | `"v1.27"` |  |
+| policies.podSecurityAdmission.warn.level | string | `"baseline"` |  |
+| policies.podSecurityAdmission.warn.version | string | `"v1.27"` |  |
+| raw.resources | list | `[]` |  |
+| rbac.groups | list | `[]` |  |
+| resourceQuotas.pods | int | `60` |  |
+| resourceQuotas.services.loadbalancers | int | `0` |  |
+| resourceQuotas.services.nodeports | int | `0` |  |
+| resourceQuotas.storage | string | `"0"` |  |
