@@ -1,0 +1,44 @@
+# aurora-platform
+
+![Version: 0.0.61](https://img.shields.io/badge/Version-0.0.61-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.0.0](https://img.shields.io/badge/AppVersion-2.0.0-informational?style=flat-square)
+
+Aurora Platform
+
+## Requirements
+
+| Repository | Name | Version |
+|------------|------|---------|
+|  | app(aurora-app) | 0.0.1 |
+|  | core(aurora-core) | 0.0.1 |
+|  | mgmt(aurora-mgmt) | 0.0.1 |
+
+## Prerequisites
+
+- Kubernetes 1.28+
+- Helm v3.19.0+
+
+## Values
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| app.components | object | `{}` |  |
+| app.enabled | bool | `false` |  |
+| core.components | object | `{}` |  |
+| core.enabled | bool | `true` |  |
+| global.alertManagerCidrs[0] | string | `"192.0.2.10/32"` |  |
+| global.apiServerCidr | string | `"192.0.2.10/32"` |  |
+| global.azureMetadataApiCidr | string | `"169.254.169.254/32"` |  |
+| global.cluster | string | `"in-cluster"` |  |
+| global.container | object | `{}` |  |
+| global.helm | object | `{}` |  |
+| global.ingressDomain | string | `"example.ca"` |  |
+| global.loggingCidrs[0] | string | `"192.0.2.10/32"` |  |
+| global.namespace.helm.chart | string | `"aurora-namespace"` |  |
+| global.namespace.helm.repository | string | `"https://gccloudone-aurora.github.io/aurora-platform-charts"` |  |
+| global.namespace.helm.targetRevision | string | `"0.0.1"` |  |
+| global.provider | string | `"azure"` |  |
+| global.raw.helm.chart | string | `"raw"` |  |
+| global.raw.helm.repository | string | `"https://gccloudone-aurora.github.io/aurora-platform-charts"` |  |
+| global.raw.helm.targetRevision | string | `"0.0.1"` |  |
+| mgmt.components | object | `{}` |  |
+| mgmt.enabled | bool | `false` |  |
