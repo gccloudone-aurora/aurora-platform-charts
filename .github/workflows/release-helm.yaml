@@ -1,16 +1,20 @@
 name: Release Helm Charts
 
 on:
-  push:
-    branches:
-      - main
+  workflow_run:
+    workflows:
+      - Render and Validate Helm Template
+    types:
+      - completed
 
 permissions:
   contents: write
 
 jobs:
   release:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -23,17 +27,25 @@ jobs:
           curl -fsSL https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -o /usr/local/bin/yq
           chmod +x /usr/local/bin/yq
 
-      - name: Configure Git User
-        run: |
-          git config --global user.name "chart-releaser"
-          git config --global user.email "chart-releaser@users.noreply.github.com"
-
       - name: Install Helm
         uses: actions/setup-go@v5
         with:
           go-version: '1.19'
       - run: |
           curl -fsSL https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+
+      - name: Install helm-docs
+        run: |
+      - name: Install helm-docs
+        run: |
+          echo "Installing helm-docs..."
+          curl -fsSL https://github.com/norwoodj/helm-docs/releases/download/v1.14.2/helm-docs_1.14.2_Linux_x86_64.tar.gz \
+          | tar -xz -C /usr/local/bin helm-docs && chmod +x /usr/local/bin/helm-docs
+
+      - name: Configure Git User for Chart Releaser
+        run: |
+          git config --global user.name "chart-releaser"
+          git config --global user.email "chart-releaser@users.noreply.github.com"
 
       - name: Run Helm Repository Add
         run: |
