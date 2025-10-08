@@ -6,6 +6,8 @@ on:
       - Render and Validate Helm Template
     types:
       - completed
+    branches:
+      - main
 
 permissions:
   contents: write
