@@ -19,7 +19,7 @@ spec:
           - apiVersion: trust-manager.io/v1
             kind: Bundle
             metadata:
-              name: trust-bundle-solutions
+              name: trust-manager-propagated-custom-ca
               labels:
                 app.kubernetes.io/name: "trust-manager-bundle"
                 app.kubernetes.io/instance: "{{ .Values.global.cluster }}"
@@ -31,15 +31,15 @@ spec:
               sources:
                 - useDefaultCAs: true
                 {{ if .Values.components.trustManager.bundle.customCA }}
-                - inline:
-                    data: {{ .Values.components.trustManager.bundle.customCA }}
+                - inLine: |
+                    {{ .Values.components.trustManager.bundle.customCA }}
                 {{ end }}
-              destinations:
-                - configMap:
-                    name: trust-manager-propagated-custom-ca
-                    namespaceSelector:
-                      matchLabels:
-                        namespace.ssc-spc.gc.ca/trust-manager: active
+              target:
+                configMap:
+                  key: "custom.crt"
+                namespaceSelector:
+                  matchLabels:
+                    namespace.ssc-spc.gc.ca/trust-manager: active
   destination:
     name: {{ .Values.global.cluster }}
     namespace: platform-system
