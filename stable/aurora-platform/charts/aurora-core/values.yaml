@@ -1951,7 +1951,7 @@ components:
     helm: {}
       # chart: tetragon
       # repository: https://helm.cilium.io
-      # targetRevision: 1.14.19
+      # targetRevision: 1.4.0
 
     imagePullSecrets: []
 
