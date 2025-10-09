@@ -15,7 +15,7 @@ spec:
     {{- else }}
     repoURL: {{ default "https://helm.cilium.io" .Values.global.helm.repository }}
     {{- end }}
-    targetRevision: {{ default "1.14.1" .Values.components.cilium.helm.targetRevision }}
+    targetRevision: {{ default "1.14.19" .Values.components.cilium.helm.targetRevision }}
     plugin:
       env:
         - name: HELM_RELEASE_NAME

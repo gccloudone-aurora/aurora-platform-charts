@@ -574,7 +574,7 @@ components:
     helm: {}
       # chart: cilium
       # repository: https://helm.cilium.io
-      # targetRevision: 1.14.1
+      # targetRevision: 1.14.19
 
     imagePullSecrets:
       - name: cilium-image-pull-secret
@@ -590,7 +590,7 @@ components:
     image:
       # registry: docker.io
       repository: cilium/cilium
-      tag: "v1.14.1"
+      tag: "v1.14.19"
       pullPolicy: IfNotPresent
 
     apiserver:
@@ -1951,7 +1951,7 @@ components:
     helm: {}
       # chart: tetragon
       # repository: https://helm.cilium.io
-      # targetRevision: 1.14.1
+      # targetRevision: 1.14.19
 
     imagePullSecrets: []
 

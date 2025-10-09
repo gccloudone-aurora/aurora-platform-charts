@@ -188,7 +188,7 @@ Aurora Platform - Core Platform
 | components.cilium.hubble.ui.frontend.image.repository | string | `"cilium/hubble-ui"` |  |
 | components.cilium.image.pullPolicy | string | `"IfNotPresent"` |  |
 | components.cilium.image.repository | string | `"cilium/cilium"` |  |
-| components.cilium.image.tag | string | `"v1.14.1"` |  |
+| components.cilium.image.tag | string | `"v1.14.19"` |  |
 | components.cilium.imagePullSecrets[0].name | string | `"cilium-image-pull-secret"` |  |
 | components.cilium.ipamMode | string | `"kubernetes"` |  |
 | components.cilium.nodeSelector."kubernetes.io/os" | string | `"linux"` |  |
