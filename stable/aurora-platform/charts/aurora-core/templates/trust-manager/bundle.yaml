@@ -31,8 +31,7 @@ spec:
               sources:
                 - useDefaultCAs: true
                 {{ if .Values.components.trustManager.bundle.customCA }}
-                - inLine: |
-                    {{ .Values.components.trustManager.bundle.customCA }}
+                - inLine: {{ .Values.components.trustManager.bundle.customCA | quote }}
                 {{ end }}
               target:
                 configMap:
