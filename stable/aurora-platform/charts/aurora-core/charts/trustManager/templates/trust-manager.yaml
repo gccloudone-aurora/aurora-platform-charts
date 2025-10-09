@@ -1,0 +1,51 @@
+{{ if .Values.enabled -}}
+
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-trust-manager"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    chart: {{ default "trust-manager" .Values.helm.chart }}
+    {{- if .Values.helm.repository }}
+    repoURL: {{ .Values.helm.repository }}
+    {{- else }}
+    repoURL: {{ default "https://charts.jetstack.io" .Values.global.helm.repository }}
+    {{- end }}
+    targetRevision: {{ default "v0.19.0" .Values.helm.targetRevision }}
+    helm:
+      releaseName: trust-manager
+      values: |
+        crds: 
+          enabled: true
+
+        image: {{ default "{}" (include "image" .) | nindent 10 }}
+        imagePullSecrets: {{ toYaml .Values.imagePullSecrets | nindent 12 }}
+        
+        replicaCount: {{ .Values.replicas }}
+        resources: {{ toYaml .Values.resources | nindent 10 }}
+        nodeSelector: {{ toYaml .Values.nodeSelector | nindent 10 }}
+        tolerations: {{ toYaml .Values.tolerations | nindent 10 }}
+        affinity: {{ toYaml .Values.affinity | nindent 10 }}
+        priorityClassName: {{ .Values.priorityClassName }}
+
+        app:
+          trust:
+            namespace: cert-manager-system
+
+        defaultPackage:
+          resources: {{ toYaml .Values.defaultPackage.resources | nindent 12 }}
+        defaultPackageImage: {{ default "{}" (include "defaultPackage.image" .) | nindent 10 }}
+
+  destination:
+    name: {{ .Values.global.cluster }}
+    namespace: trust-manager-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+
+{{- end }}

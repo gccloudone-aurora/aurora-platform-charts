@@ -1,0 +1,155 @@
+global:
+  helm: {}
+    # Override all Helm applications to pull
+    # their helm chart from the following
+    # repository.
+    #
+    # You can override specific charts below
+    # in the components section.
+    # repository: https://myrepo.example.ca
+
+  container: {}
+    # Override all applications to pull
+    # their container from the following
+    # registry.
+    #
+    # You can override specific charts below
+    # in the components section.
+    # registry: docker.io
+
+  namespace:
+    helm:
+      chart:
+      targetRevision:
+      repository:
+
+  raw:
+    helm:
+      chart:
+      targetRevision:
+      repository:
+
+  # azure or aws
+  provider: azure
+
+  # Cluster name for the Application targets.
+  cluster: in-cluster
+
+  # Which project to place applications in.
+  project: aurora-core
+
+  # Ingress Domain
+  ingressDomain: example.ca
+
+  # The Kubernetes API Server
+  apiServerCidr: "192.0.2.10/32"
+
+  # The Azure Metadata API
+  azureMetadataApiCidr: "169.254.169.254/32"
+
+  # Alert Manager
+  alertManagerCidrs: ["192.0.2.10/32"]
+
+  # Logging
+  loggingCidrs: ["192.0.2.10/32"]
+
+  # Creates local platform logging network policies on clusters running Loki
+  # clusterHasLoki: false
+
+  # Vault
+  # vaultCidrs: ["192.0.2.10/32"]
+
+  # Ingress Class Name
+  # ingressClassName: ingress-istio-controller
+
+  # The Azure subscription ID used for the cluster
+  # subscriptionId: ""
+
+  # The Azure tenant ID used for the cluster
+  # tenantId: ""
+
+  # Load Balancer Subnet Name for all Load Balancers
+  # load_balancer_subnet_name: ""
+
+  # child values import via dependencies
+  imports:
+    app:
+      # Used in cases where a subchart's component depends on the aurora-app subchart being enabled
+      enabled: false
+    mgmt:
+      # Used in cases where a subchart's component depends on the aurora-mgmt subchart being enabled
+      enabled: false
+
+  # Role Based Access Control
+  rbac:
+    # Groups and users that should be bound to the platform-admin role.
+    # Note: if using AKS with AAD enabled, this is not necessary since admins
+    #       will be defined in the configuration.
+    platformAdmin:
+      groups: []
+      users: []
+    # Configurations for the platform-operator-daily role.
+    # A read-only aggregated role which uses the
+    # 'rbac.ssc-spc.gc.ca/aggregate-to-platform-operator-view: "true"'
+    # label as the selector.
+    platformOperator:
+      groups: []
+      users: []
+
+enabled: true
+
+helm: {}
+# chart: trust-manager
+# repository: https://charts.jetstack.io
+# targetRevision: v0.19.0
+
+imagePullSecrets: []
+image:
+  # registry: quay.io
+  repository: jetstack/trust-manager
+  # tag: "v0.19.0"
+  # pullPolicy: IfNotPresent
+
+replicas: 1
+resources: {}
+# limits:
+#   cpu: ""
+#   memory: ""
+# requests:
+#   cpu: ""
+#   memory: ""
+nodeSelector:
+  kubernetes.io/os: linux
+  node.ssc-spc.gc.ca/purpose: system
+tolerations:
+  - key: CriticalAddonsOnly
+    operator: Exists
+affinity:
+  podAntiAffinity:
+    preferredDuringSchedulingIgnoredDuringExecution:
+    - weight: 1
+      podAffinityTerm:
+        topologyKey: kubernetes.io/hostname
+        labelSelector:
+          matchLabels:
+            app.kubernetes.io/instance: trust-manager
+
+bundle:
+  customCA: ""
+
+defaultPackage:
+  image:
+    # registry: quay.io
+    repository: jetstack/trust-pkg-debian-bookworm
+    tag: "20230311-deb12u1.0"
+    # pullPolicy: IfNotPresent
+
+  resources: {}
+    # limits:
+    #   cpu: ""
+    #   memory: ""
+    # requests:
+    #   cpu: ""
+    #   memory: ""
+
+priorityClassName: platform-cluster-medium

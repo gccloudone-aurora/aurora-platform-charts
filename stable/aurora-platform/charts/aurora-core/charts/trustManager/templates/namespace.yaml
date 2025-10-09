@@ -1,4 +1,4 @@
-{{ if .Values.components.trustManager.enabled -}}
+{{ if .Values.enabled -}}
 
 apiVersion: argoproj.io/v1alpha1
 kind: Application
@@ -59,7 +59,7 @@ spec:
         # Defines the access control on the namespace.
         # Roles will be assigned based on the namespace type.
         rbac:
-          groups: {{ toYaml .Values.rbac.platformOperator.groups | nindent 12 }}
+          groups: {{ toYaml .Values.global.rbac.platformOperator.groups | nindent 12 }}
 
         # Defines resource quotas on the namespace.
         resourceQuotas:

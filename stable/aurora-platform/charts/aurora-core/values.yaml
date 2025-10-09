@@ -2002,126 +2002,6 @@ components:
         tag: "v1.1.0"
         pullPolicy: IfNotPresent
 
-  trustManager:
-    enabled: true
-
-    helm: {}
-      # chart: trust-manager
-      # repository: https://charts.jetstack.io
-      # targetRevision: v0.19.0
-
-    imagePullSecrets: []
-    image:
-      # registry: quay.io
-      repository: jetstack/trust-manager
-      # tag: "v0.19.0"
-      # pullPolicy: IfNotPresent
-
-    replicas: 1
-    resources: {}
-      # limits:
-      #   cpu: ""
-      #   memory: ""
-      # requests:
-      #   cpu: ""
-      #   memory: ""
-    nodeSelector:
-      kubernetes.io/os: linux
-      node.ssc-spc.gc.ca/purpose: system
-    tolerations:
-      - key: CriticalAddonsOnly
-        operator: Exists
-    affinity:
-      podAntiAffinity:
-        preferredDuringSchedulingIgnoredDuringExecution:
-        - weight: 1
-          podAffinityTerm:
-            topologyKey: kubernetes.io/hostname
-            labelSelector:
-              matchLabels:
-                app.kubernetes.io/instance: trust-manager
-
-    bundle:
-      customCA: ""
-
-    defaultPackage:
-      image:
-        # registry: quay.io
-        repository: jetstack/trust-pkg-debian-bookworm
-        tag: "20230311-deb12u1.0"
-        # pullPolicy: IfNotPresent
-
-      resources: {}
-        # limits:
-        #   cpu: ""
-        #   memory: ""
-        # requests:
-        #   cpu: ""
-        #   memory: ""
-
-    priorityClassName: platform-cluster-medium
-
-  vaultAgent:
-    enabled: false
-
-    helm: {}
-      # chart: vault
-      # repository: https://helm.releases.hashicorp.com
-      # targetRevision: 0.20.1
-
-    imagePullSecrets: []
-
-    injector:
-      image:
-        # registry: docker.io
-        repository: hashicorp/vault-k8s
-        # tag: "1.0.0"
-        # pullPolicy: IfNotPresent
-
-      replicas: 3
-      resources: {}
-        # limits:
-        #   cpu: 250m
-        #   memory: 256Mi
-        # requests:
-        #   cpu: 250m
-        #   memory: 256Mi
-      nodeSelector:
-        kubernetes.io/os: linux
-        node.ssc-spc.gc.ca/purpose: system
-      tolerations:
-        - key: CriticalAddonsOnly
-          operator: Exists
-      affinity:
-        podAntiAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-          - weight: 1
-            podAffinityTerm:
-              topologyKey: kubernetes.io/hostname
-              labelSelector:
-                matchLabels:
-                  app.kubernetes.io/instance: vault-agent
-
-      agentImage:
-        # registry: docker.io
-        repository: hashicorp/vault
-        # tag: "1.11.4"
-
-      agentDefaults: {}
-        # cpuLimit: "500m"
-        # cpuRequest: "250m"
-        # memLimit: "128Mi"
-        # memRequest: "64Mi"
-
-      annotations:
-        istioInject:
-          disable: true
-
-      # externalVaultAddr: ""
-      # authPath: ""
-
-    priorityClassName: platform-cluster-critical
-
   velero:
     enabled: true
 
@@ -2195,3 +2075,125 @@ components:
         # tag: "1.16.15"
 
     priorityClassName: platform-cluster-medium
+
+# for the trustManager subchart
+trustManager:
+  enabled: true
+
+  helm: {}
+    # chart: trust-manager
+    # repository: https://charts.jetstack.io
+    # targetRevision: v0.19.0
+
+  imagePullSecrets: []
+  image:
+    # registry: quay.io
+    repository: jetstack/trust-manager
+    # tag: "v0.19.0"
+    # pullPolicy: IfNotPresent
+
+  replicas: 1
+  resources: {}
+    # limits:
+    #   cpu: ""
+    #   memory: ""
+    # requests:
+    #   cpu: ""
+    #   memory: ""
+  nodeSelector:
+    kubernetes.io/os: linux
+    node.ssc-spc.gc.ca/purpose: system
+  tolerations:
+    - key: CriticalAddonsOnly
+      operator: Exists
+  affinity:
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 1
+        podAffinityTerm:
+          topologyKey: kubernetes.io/hostname
+          labelSelector:
+            matchLabels:
+              app.kubernetes.io/instance: trust-manager
+
+  bundle:
+    customCA: ""
+
+  defaultPackage:
+    image:
+      # registry: quay.io
+      repository: jetstack/trust-pkg-debian-bookworm
+      tag: "20230311-deb12u1.0"
+      # pullPolicy: IfNotPresent
+
+    resources: {}
+      # limits:
+      #   cpu: ""
+      #   memory: ""
+      # requests:
+      #   cpu: ""
+      #   memory: ""
+
+  priorityClassName: platform-cluster-medium
+
+vaultAgent:
+  enabled: false
+
+  helm: {}
+    # chart: vault
+    # repository: https://helm.releases.hashicorp.com
+    # targetRevision: 0.20.1
+
+  imagePullSecrets: []
+
+  injector:
+    image:
+      # registry: docker.io
+      repository: hashicorp/vault-k8s
+      # tag: "1.0.0"
+      # pullPolicy: IfNotPresent
+
+    replicas: 3
+    resources: {}
+      # limits:
+      #   cpu: 250m
+      #   memory: 256Mi
+      # requests:
+      #   cpu: 250m
+      #   memory: 256Mi
+    nodeSelector:
+      kubernetes.io/os: linux
+      node.ssc-spc.gc.ca/purpose: system
+    tolerations:
+      - key: CriticalAddonsOnly
+        operator: Exists
+    affinity:
+      podAntiAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 1
+          podAffinityTerm:
+            topologyKey: kubernetes.io/hostname
+            labelSelector:
+              matchLabels:
+                app.kubernetes.io/instance: vault-agent
+
+    agentImage:
+      # registry: docker.io
+      repository: hashicorp/vault
+      # tag: "1.11.4"
+
+    agentDefaults: {}
+      # cpuLimit: "500m"
+      # cpuRequest: "250m"
+      # memLimit: "128Mi"
+      # memRequest: "64Mi"
+
+    annotations:
+      istioInject:
+        disable: true
+
+    # externalVaultAddr: ""
+    # authPath: ""
+
+  priorityClassName: platform-cluster-critical
+
