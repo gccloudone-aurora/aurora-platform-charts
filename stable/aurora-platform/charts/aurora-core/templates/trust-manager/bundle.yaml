@@ -16,7 +16,7 @@ spec:
       releaseName: "trust-manager-bundle"
       values: |
         resources:
-          - apiVersion: trust-manager.io/v1
+          - apiVersion: trust.cert-manager.io/v1alpha1
             kind: Bundle
             metadata:
               name: trust-manager-propagated-custom-ca
