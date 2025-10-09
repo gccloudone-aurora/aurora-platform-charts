@@ -36,7 +36,7 @@ spec:
                 {{ end }}
               target:
                 configMap:
-                  key: "custom.crt"
+                  key: "ca-certificates.crt"
                 namespaceSelector:
                   matchLabels:
                     namespace.ssc-spc.gc.ca/trust-manager: active
