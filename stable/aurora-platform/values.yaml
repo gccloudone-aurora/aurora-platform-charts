@@ -96,6 +96,7 @@ core:
     # ntp: {}
     # podtracker: {}
     # prometheus: {}
+    # secretsStoreCSIDriver: {}
     # tetragon: {}
     # trustManager: {}
     # vaultAgent: {}

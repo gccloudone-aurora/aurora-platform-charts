@@ -1945,6 +1945,52 @@ components:
       #  prodMajor: ""
       #  prodMinor: ""
 
+  secretsStoreCSIDriver:
+    enabled: false
+    helm: {}
+      # chart: secrets-store-csi-driver
+      # repository: https://kubernetes-sigs.github.io/secrets-store-csi-driver/charts
+      # targetRevision: 1.5.4
+  
+    images:
+      driver:
+        image:
+          # registry: registry.k8s.io
+          repository: csi-secrets-store/driver
+          # tag: "v1.5.4"
+          # pullPolicy: IfNotPresent
+
+      crds:
+        image:
+          # registry: registry.k8s.io
+          repository: csi-secrets-store/driver-crds
+          # tag: "v1.5.4"
+          # pullPolicy: IfNotPresent
+
+      registrar:
+        image:
+          # registry: registry.k8s.io
+          repository: sig-storage/csi-node-driver-registrar
+          tag: v2.13.0
+
+    tolerations:
+      - key: CriticalAddonsOnly
+        operator: Exists
+      - effect: NoSchedule
+        key: node-role.kubernetes.io/master
+      - effect: NoSchedule
+        key: node-role.kubernetes.io/control-plane
+
+    resources: {}
+      # limits:
+      #   cpu: ""
+      #   memory: ""
+      # requests:
+      #   cpu: ""
+      #   memory: ""
+    
+    priorityClassName: platform-cluster-medium
+
   tetragon:
     enabled: false
 
