@@ -37,12 +37,13 @@ spec:
             metadata:
               name: aurora-platform
               namespace: platform-management-system
+
             spec:
               generators:
-                - git:
-                    repoURL: {{ .Values.components.argoFoundation.argocdProjects.platform.applicationSet.generator.git.repoURL }}
-                    revision: {{ .Values.components.argoFoundation.argocdProjects.platform.applicationSet.generator.git.revision }}
-                    files: {{ toYaml .Values.components.argoFoundation.argocdProjects.platform.applicationSet.generator.git.files | nindent 22 }}
+                merge:
+                  generators:
+                    {{ toYaml .Values.components.argoFoundation.argocdProjects.platform.applicationSet.generators | nindent 20 }}
+
               syncPolicy:
                 preserveResourcesOnDeletion: true
               template:
