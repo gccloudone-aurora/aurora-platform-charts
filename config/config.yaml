@@ -446,23 +446,33 @@ mgmt:
       argocdProjects:
         platform:
           applicationSet:
-            generator:
-              git:
-                repoURL: https://github.com/gccloudone-aurora/project-aurora-template.git
-                revision: main
-                files:
-                  - path: platform/clusters/non-prod/**/config.yaml
+            generators:
+              - git:
+                  repoURL: https://github.com/gccloudone-aurora/project-aurora-mgmt.git
+                  revision: main
+                  files:
+                    - path: platform/clusters/non-prod/**/config.yaml
+              - git:
+                  repoURL: https://github.com/gccloudone-aurora/project-aurora-sdlc.git
+                  revision: main
+                  files:
+                    - path: platform/clusters/non-prod/**/config.yaml
             template:
               source:
                 repoURL: https://gccloudone-aurora.github.io/aurora-platform-charts
         solutions:
           applicationSet:
-            generator:
-              git:
-                repoURL: https://github.com/gccloudone-aurora/project-aurora-mgmt.git
-                revision: main
-                files:
-                  - path: platform/namespaces/non-prod/**/config.yaml
+            generators:
+              - git:
+                  repoURL: https://github.com/gccloudone-aurora/project-aurora-mgmt.git
+                  revision: main
+                  files:
+                    - path: platform/namespaces/non-prod/**/config.yaml
+              - git:
+                  repoURL: https://github.com/gccloudone-aurora/project-aurora-sdlc.git
+                  revision: main
+                  files:
+                    - path: platform/namespaces/non-prod/**/config.yaml
             template:
               source:
                 repoURL: https://gccloudone-aurora.github.io/aurora-platform-charts

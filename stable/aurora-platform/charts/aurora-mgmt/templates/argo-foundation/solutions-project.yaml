@@ -39,9 +39,11 @@ spec:
               namespace: platform-management-system
             spec:
               generators:
-                merge:
-                  generators:
-                    {{ toYaml .Values.components.argoFoundation.argocdProjects.solutions.applicationSet.generators | nindent 20 }}
+                - merge:
+                    generators:
+                      {{ toYaml .Values.components.argoFoundation.argocdProjects.solutions.applicationSet.generators | nindent 22 }}
+                    mergeKeys:
+                      - repoURL
               syncPolicy:
                 preserveResourcesOnDeletion: true
               template:
