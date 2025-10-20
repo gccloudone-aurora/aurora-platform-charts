@@ -22,11 +22,49 @@ Please consult the [Project Aurora Template](https://github.com/gccloudone-auror
 - **Version:** 0.0.1
 - **Description:** Aurora Namespace
 - **Documentation:** [README](./stable/aurora-namespace/README.md)
+- **Dependencies:**
+  - [raw](./stable/raw/README.md) (local, version: 0.0.1)
 
 ## aurora-platform
-- **Version:** 0.0.61
+- **Version:** 0.0.70
 - **Description:** Aurora Platform
 - **Documentation:** [README](./stable/aurora-platform/README.md)
+- **Dependencies:**
+  - [aurora-core](./stable/aurora-platform/charts/aurora-core/README.md) (local, version: 0.0.1)
+    - [aad-pod-identity](./stable/aurora-platform/charts/aurora-core/templates/aad-pod-identity)
+    - [aurora-controller](./stable/aurora-platform/charts/aurora-core/templates/aurora-controller)
+    - [aws-ebs-csi-driver](./stable/aurora-platform/charts/aurora-core/templates/aws-ebs-csi-driver)
+    - [aws-loadbalancer-controller](./stable/aurora-platform/charts/aurora-core/templates/aws-loadbalancer-controller)
+    - [cert-manager](./stable/aurora-platform/charts/aurora-core/templates/cert-manager)
+    - [cidr-allocator](./stable/aurora-platform/charts/aurora-core/templates/cidr-allocator)
+    - [cilium](./stable/aurora-platform/charts/aurora-core/templates/cilium)
+    - [falco](./stable/aurora-platform/charts/aurora-core/templates/falco)
+    - [fluent-operator](./stable/aurora-platform/charts/aurora-core/templates/fluent-operator)
+    - [gatekeeper](./stable/aurora-platform/charts/aurora-core/templates/gatekeeper)
+    - [global](./stable/aurora-platform/charts/aurora-core/templates/global)
+    - [kubecost](./stable/aurora-platform/charts/aurora-core/templates/kubecost)
+    - [kubernetes-event-exporter](./stable/aurora-platform/charts/aurora-core/templates/kubernetes-event-exporter)
+    - [ntp](./stable/aurora-platform/charts/aurora-core/templates/ntp)
+    - [podtracker](./stable/aurora-platform/charts/aurora-core/templates/podtracker)
+    - [priority-classes](./stable/aurora-platform/charts/aurora-core/templates/priority-classes)
+    - [prometheus](./stable/aurora-platform/charts/aurora-core/templates/prometheus)
+    - [rbac](./stable/aurora-platform/charts/aurora-core/templates/rbac)
+    - [tetragon](./stable/aurora-platform/charts/aurora-core/templates/tetragon)
+    - [trust-manager](./stable/aurora-platform/charts/aurora-core/templates/trust-manager)
+    - [vault-agent](./stable/aurora-platform/charts/aurora-core/templates/vault-agent)
+    - [velero](./stable/aurora-platform/charts/aurora-core/templates/velero)
+  - [aurora-app](./stable/aurora-platform/charts/aurora-app/README.md) (local, version: 0.0.1)
+    - [argo-controller](./stable/aurora-platform/charts/aurora-app/templates/argo-controller)
+    - [argo-workflow](./stable/aurora-platform/charts/aurora-app/templates/argo-workflow)
+    - [elastic](./stable/aurora-platform/charts/aurora-app/templates/elastic)
+    - [istio](./stable/aurora-platform/charts/aurora-app/templates/istio)
+    - [kiali](./stable/aurora-platform/charts/aurora-app/templates/kiali)
+    - [sidecar-terminator](./stable/aurora-platform/charts/aurora-app/templates/sidecar-terminator)
+    - [solr](./stable/aurora-platform/charts/aurora-app/templates/solr)
+  - [aurora-mgmt](./stable/aurora-platform/charts/aurora-mgmt/README.md) (local, version: 0.0.1)
+    - [argo-foundation](./stable/aurora-platform/charts/aurora-mgmt/templates/argo-foundation)
+    - [argo-operator](./stable/aurora-platform/charts/aurora-mgmt/templates/argo-operator)
+    - [bill-of-landing](./stable/aurora-platform/charts/aurora-mgmt/templates/bill-of-landing)
 
 ## aurora-app
 - **Version:** 0.0.1
@@ -57,6 +95,8 @@ Please consult the [Project Aurora Template](https://github.com/gccloudone-auror
 - **Version:** 0.0.3
 - **Description:** This chart deploys an opinionated Istio Ingress Gateway.
 - **Documentation:** [README](./stable/istio-ingress-gateway/README.md)
+- **Dependencies:**
+  - gateway (https://istio-release.storage.googleapis.com/charts, version: 1.14.3)
 
 ## raw
 - **Version:** 0.0.1
