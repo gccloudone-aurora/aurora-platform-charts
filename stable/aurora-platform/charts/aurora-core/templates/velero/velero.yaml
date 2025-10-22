@@ -70,7 +70,7 @@ spec:
                   AZURE_CLIENT_SECRET:
                   AZURE_TENANT_ID: {{ .Values.global.tenantId }}
                   AZURE_SUBSCRIPTION_ID: {{ .Values.global.subscriptionId }}
-                  AZURE_RESOURCE_GROUP: {{ printf "%s-rg-managed-aks" .Values.global.cluster }}
+                  AZURE_RESOURCE_GROUP: {{ printf "%s-aks-managed-rg" .Values.global.cluster }}
                 {{- end }}
 
             schedules:
