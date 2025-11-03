@@ -2,7 +2,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: "{{ .Values.global.cluster }}-rbac-securityOperations"
+  name: "{{ .Values.global.cluster }}-rbac-security-operations"
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
@@ -12,7 +12,7 @@ spec:
     repoURL: {{ default .Values.global.helm.repository .Values.global.raw.helm.repository }}
     targetRevision: {{ .Values.global.raw.helm.targetRevision }}
     helm:
-      releaseName: rbac-securityOperations
+      releaseName: rbac-security-operations
       values: |
         resources:
           - apiVersion: rbac.authorization.k8s.io/v1
