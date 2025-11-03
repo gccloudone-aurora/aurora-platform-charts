@@ -103,7 +103,7 @@ spec:
                   - get
                   - list
                   - watch
-                  
+
   destination:
     name: {{ .Values.global.cluster }}
     namespace: platform-system

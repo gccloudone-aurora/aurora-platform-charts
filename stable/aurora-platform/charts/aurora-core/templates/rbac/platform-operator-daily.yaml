@@ -17,13 +17,13 @@ spec:
           - apiVersion: rbac.authorization.k8s.io/v1
             kind: ClusterRole
             metadata:
-              name: platform-operator-maintenance
+              name: platform-operator-daily
               annotations:
                 kubernetes.io/description: |-
                   The permissions that platform-operators need for daily activities in platform namespaces.
                   This is an aggregated role and should not be modified directly.
               labels:
-                app.kubernetes.io/name: "rbac-platform-operator-maintenance"
+                app.kubernetes.io/name: "rbac-platform-operator-daily"
                 app.kubernetes.io/instance: "{{ .Values.global.cluster }}"
                 app.kubernetes.io/part-of: platform-operator-rbac
                 app.kubernetes.io/managed-by: argo
@@ -31,9 +31,9 @@ spec:
             aggregationRule:
               clusterRoleSelectors:
               - matchLabels:
-                  rbac.ssc-spc.gc.ca/aggregate-to-platform-operator-maintenance: "true"
+                  rbac.ssc-spc.gc.ca/aggregate-to-platform-operator-daily: "true"
             rules: [] # The control plane automatically fills in the rules
-            
+
           - apiVersion: rbac.authorization.k8s.io/v1
             kind: ClusterRoleBinding
             metadata:
@@ -60,3 +60,18 @@ spec:
                 name: {{ . }}
               {{- end }}
               {{- range .Values.rbac.platformOperator.users }}
+              - apiGroup: rbac.authorization.k8s.io
+                kind: User
+                name: {{ . }}
+              {{- end }}
+            {{- else }}
+            subjects: []
+            {{- end }}
+            
+  destination:
+    name: {{ .Values.global.cluster }}
+    namespace: platform-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
