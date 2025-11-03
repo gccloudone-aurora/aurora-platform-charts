@@ -28,6 +28,7 @@ spec:
                 app.kubernetes.io/part-of: platform-operator-rbac
                 app.kubernetes.io/managed-by: argo
                 helm.sh/chart: {{ printf "%s-%s" .Chart.Name .Chart.Version }}
+                rbac.ssc-spc.gc.ca/aggregate-to-platform-operator-daily
             aggregationRule:
               clusterRoleSelectors:
               - matchLabels:

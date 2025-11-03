@@ -1,0 +1,62 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-rbac-platform-operator-daily"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    chart: {{ .Values.global.raw.helm.chart }}
+    repoURL: {{ default .Values.global.helm.repository .Values.global.raw.helm.repository }}
+    targetRevision: {{ .Values.global.raw.helm.targetRevision }}
+    helm:
+      releaseName: rbac-platform-operator-daily
+      values: |
+        resources:
+          - apiVersion: rbac.authorization.k8s.io/v1
+            kind: ClusterRole
+            metadata:
+              name: platform-operator-maintenance
+              annotations:
+                kubernetes.io/description: |-
+                  The permissions that platform-operators need for daily activities in platform namespaces.
+                  This is an aggregated role and should not be modified directly.
+              labels:
+                app.kubernetes.io/name: "rbac-platform-operator-maintenance"
+                app.kubernetes.io/instance: "{{ .Values.global.cluster }}"
+                app.kubernetes.io/part-of: platform-operator-rbac
+                app.kubernetes.io/managed-by: argo
+                helm.sh/chart: {{ printf "%s-%s" .Chart.Name .Chart.Version }}
+            aggregationRule:
+              clusterRoleSelectors:
+              - matchLabels:
+                  rbac.ssc-spc.gc.ca/aggregate-to-platform-operator-maintenance: "true"
+            rules: [] # The control plane automatically fills in the rules
+            
+          - apiVersion: rbac.authorization.k8s.io/v1
+            kind: ClusterRoleBinding
+            metadata:
+              name: platform-operator-daily
+              annotations:
+                kubernetes.io/description: |-
+                  The permissions that platform-operators need for daily activities.
+                  This is an aggregated role and should not be modified directly.
+              labels:
+                app.kubernetes.io/name: "rbac-platform-operator-daily"
+                app.kubernetes.io/instance: "{{ .Values.global.cluster }}"
+                app.kubernetes.io/part-of: platform-operator-rbac
+                app.kubernetes.io/managed-by: argo
+                helm.sh/chart: {{ printf "%s-%s" .Chart.Name .Chart.Version }}
+            roleRef:
+              apiGroup: rbac.authorization.k8s.io
+              kind: ClusterRole
+              name: platform-operator-daily
+            {{- if (or .Values.rbac.platformOperator.groups .Values.rbac.platformOperator.users) }}
+            subjects:
+              {{- range .Values.rbac.platformOperator.groups }}
+              - apiGroup: rbac.authorization.k8s.io
+                kind: Group
+                name: {{ . }}
+              {{- end }}
+              {{- range .Values.rbac.platformOperator.users }}
