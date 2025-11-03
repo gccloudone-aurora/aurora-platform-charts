@@ -103,14 +103,7 @@ spec:
                   - get
                   - list
                   - watch
-
-              - apiGroup: rbac.authorization.k8s.io
-                kind: User
-                name: {{ . }}
-              {{- end }}
-            {{- else }}
-            subjects: []
-            {{- end }}
+                  
   destination:
     name: {{ .Values.global.cluster }}
     namespace: platform-system
