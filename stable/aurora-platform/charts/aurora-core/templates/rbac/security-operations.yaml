@@ -22,21 +22,21 @@ spec:
               annotations:
                 kubernetes.io/description: |-
                   Binding to the view role
-              roleRef:
-                apiGroup: rbac.authorization.k8s.io
-                kind: ClusterRole
-                name: view
-              subjects:
-                {{- range .Values.rbac.securityOperations.groups }}
-                - apiGroup: rbac.authorization.k8s.io
-                  kind: Group
-                  name: {{ . }}
-                {{- end }}
-                {{- range .Values.rbac.securityOperations.users }}
-                - apiGroup: rbac.authorization.k8s.io
-                  kind: User
-                  name: {{ . }}
-                {{- end }}
+            roleRef:
+              apiGroup: rbac.authorization.k8s.io
+              kind: ClusterRole
+              name: view
+            subjects:
+              {{- range .Values.rbac.securityOperations.groups }}
+              - apiGroup: rbac.authorization.k8s.io
+                kind: Group
+                name: {{ . }}
+              {{- end }}
+              {{- range .Values.rbac.securityOperations.users }}
+              - apiGroup: rbac.authorization.k8s.io
+                kind: User
+                name: {{ . }}
+              {{- end }}
   destination:
     name: {{ .Values.global.cluster }}
     namespace: platform-system
