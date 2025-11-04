@@ -95,6 +95,11 @@ rbac:
   platformOperator:
     groups: []
     users: []
+  # Configurations for the role given to SecOps.
+  # A read-only role which uses the built-in Kubernetes `view` role.
+  securityOperations:
+    groups: []
+    users: []
 
 # Components
 components:
