@@ -50,6 +50,12 @@ spec:
 
               sourceNamespaces: {{ toYaml .Values.components.argocdSolutions.argocdInstance.sourceNamespaces | nindent 16 }}
 
+              globalProjects:
+                - projectName: "global-multi-tenant"
+                  labelSelector:
+                    key: "argocd.argoproj.io/project-inherit"
+                    value: "global-multi-tenant"
+
               server:
                 autoscale:
                   enabled: true
