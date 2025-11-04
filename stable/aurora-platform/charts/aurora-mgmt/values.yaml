@@ -163,18 +163,18 @@ components:
         #       repoURL
 
       solutions:
-        # applicationSet:
-        #   generator:
-        #     git:
-        #       repoURL
-        #       revision
-        #       files:
-        #   template:
-        #     source:
-        #       repoURL
-        #       helmValues:
-        #         argocdProject:
-        #           sourceRepos
+        applicationSet:
+          generator:
+            # git:
+            #   repoURL:
+            #   revision:
+            #   files:
+          template:
+            source:
+              # repoURL:
+              helmValues:
+                argocdProject:
+                  sourceRepos: []
 
       syncWindows:
         - clusters:
@@ -314,38 +314,6 @@ components:
         clusters: {}
         repositories: {}
         repositoryCreds: {}
-
-    argocdProjects:
-      platform:
-        # applicationSet:
-        #   generator:
-        #     git:
-        #       repoURL
-        #       revision
-        #       files:
-        #   template:
-        #     source:
-        #       repoURL
-
-      solutions:
-        # applicationSet:
-        #   generator:
-        #     git:
-        #       repoURL
-        #       revision
-        #       files:
-        #   template:
-        #     source:
-        #       repoURL
-
-      syncWindows:
-        - clusters:
-            - '*'
-          duration: 5h
-          kind: allow
-          manualSync: true
-          schedule: '* 19 * * 2,4'
-          timeZone: America/Toronto
 
   billOfLanding:
     enabled: false
