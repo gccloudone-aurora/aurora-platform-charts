@@ -32,6 +32,12 @@ argocdInstance:
 
   sourceNamespaces: []             
 
+  globalProjects: []
+    # - projectName: "global"
+    #   labelSelector:
+    #     key: "argocd.argoproj.io/project-inherit"
+    #     value: "global"
+
   disableAdmin: false
   imageRegistry:
     host: "docker.io"
