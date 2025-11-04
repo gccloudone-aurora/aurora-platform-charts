@@ -127,3 +127,4 @@ mgmt:
   components: {}
     # argoFoundation: {}
     # argoOperator: {}
+    # argocdSolutions: {}

@@ -163,18 +163,18 @@ components:
         #       repoURL
 
       solutions:
-        applicationSet:
-          generator:
-            # git:
-            #   repoURL:
-            #   revision:
-            #   files:
-          template:
-            source:
-              # repoURL:
-              helmValues:
-                argocdProject:
-                  sourceRepos: []
+        # applicationSet:
+        #   generator:
+        #     git:
+        #       repoURL:
+        #       revision:
+        #       files:
+        #   template:
+        #     source:
+        #       repoURL:
+        #       helmValues:
+        #         argocdProject:
+        #           sourceRepos: []
 
       syncWindows:
         - clusters:
