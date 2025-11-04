@@ -28,7 +28,9 @@ argocdInstance:
         identityName: "argocd-vault-plugin"
         managedIdentity:
           clientID: ""
-          resourceID: ""               
+          resourceID: ""
+
+  sourceNamespaces: []             
 
   disableAdmin: false
   imageRegistry:
