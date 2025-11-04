@@ -1,3 +1,5 @@
+{{ if .Values.components.awsEbsCsiDriver.enabled -}}
+
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
@@ -7,13 +9,13 @@ metadata:
 spec:
   project: {{ .Values.global.project }}
   source:
-    chart: {{ default "argocd-instance" .Values.components.argoFoundation.argocdInstance.helm.chart }}
-    {{- if .Values.components.argoFoundation.argocdInstance.helm.repository }}
-    repoURL: {{ .Values.components.argoFoundation.argocdInstance.helm.repository }}
+    chart: {{ default "argocd-instance" .Values.components.argocdSolutions.argocdInstance.helm.chart }}
+    {{- if .Values.components.argocdSolutions.argocdInstance.helm.repository }}
+    repoURL: {{ .Values.components.argocdSolutions.argocdInstance.helm.repository }}
     {{- else }}
     repoURL: {{ default "https://gccloudone-aurora.github.io/aurora-platform-charts" .Values.global.helm.repository }}
     {{- end }}
-    targetRevision: {{ default "0.3.0" .Values.components.argoFoundation.argocdInstance.helm.targetRevision }}
+    targetRevision: {{ default "0.4.0" .Values.components.argocdSolutions.argocdInstance.helm.targetRevision }}
     plugin:
       env:
         - name: HELM_RELEASE_NAME
@@ -22,67 +24,69 @@ spec:
           value: |
             argocdInstance:
 
-              nodeSelector: {{ toYaml .Values.components.argoFoundation.argocdInstance.nodeSelector | nindent 16 }}
-              tolerations: {{ toYaml .Values.components.argoFoundation.argocdInstance.tolerations | nindent 16 }}
+              nodeSelector: {{ toYaml .Values.components.argocdSolutions.argocdInstance.nodeSelector | nindent 16 }}
+              tolerations: {{ toYaml .Values.components.argocdSolutions.argocdInstance.tolerations | nindent 16 }}
 
-              ingressDomain: "{{ .Values.components.argoFoundation.argocdInstance.ingressDomain }}"
+              ingressDomain: "{{ .Values.components.argocdSolutions.argocdInstance.ingressDomain }}"
 
-              adminSecurityGroup: {{ .Values.components.argoFoundation.argocdInstance.adminSecurityGroup }}
-              disableAdmin: "{{ .Values.components.argoFoundation.argocdInstance.disableAdmin }}"
+              adminSecurityGroup: {{ .Values.components.argocdSolutions.argocdInstance.adminSecurityGroup }}
+              disableAdmin: "{{ .Values.components.argocdSolutions.argocdInstance.disableAdmin }}"
               oidcAuthSP:
-                tenantID: "{{ .Values.components.argoFoundation.argocdInstance.oidcAuthSP.credentials.tenantID }}"
-                clientID: "{{ .Values.components.argoFoundation.argocdInstance.oidcAuthSP.credentials.clientID }}"
-                clientSecret: "{{ .Values.components.argoFoundation.argocdInstance.oidcAuthSP.credentials.clientSecret }}"
+                tenantID: "{{ .Values.components.argocdSolutions.argocdInstance.oidcAuthSP.credentials.tenantID }}"
+                clientID: "{{ .Values.components.argocdSolutions.argocdInstance.oidcAuthSP.credentials.clientID }}"
+                clientSecret: "{{ .Values.components.argocdSolutions.argocdInstance.oidcAuthSP.credentials.clientSecret }}"
 
               argocdVaultPlugin:
-                env: {{ toYaml .Values.components.argoFoundation.argocdInstance.argocdVaultPlugin.env | nindent 18 }}
+                env: {{ toYaml .Values.components.argocdSolutions.argocdInstance.argocdVaultPlugin.env | nindent 18 }}
 
                 azure:
                   AADPodIdentity:
-                    enabled: {{ default "false" .Values.components.argoFoundation.argocdInstance.argocdVaultPlugin.azure.AADPodIdentity.enabled }}
-                    {{- if .Values.components.argoFoundation.argocdInstance.argocdVaultPlugin.azure.AADPodIdentity.enabled }}
+                    enabled: {{ default "false" .Values.components.argocdSolutions.argocdInstance.argocdVaultPlugin.azure.AADPodIdentity.enabled }}
+                    {{- if .Values.components.argocdSolutions.argocdInstance.argocdVaultPlugin.azure.AADPodIdentity.enabled }}
                     managedIdentity:
-                      clientID: {{ .Values.components.argoFoundation.argocdInstance.argocdVaultPlugin.azure.AADPodIdentity.managedIdentity.clientID }}
-                      resourceID: {{ .Values.components.argoFoundation.argocdInstance.argocdVaultPlugin.azure.AADPodIdentity.managedIdentity.resourceID }}
+                      clientID: {{ .Values.components.argocdSolutions.argocdInstance.argocdVaultPlugin.azure.AADPodIdentity.managedIdentity.clientID }}
+                      resourceID: {{ .Values.components.argocdSolutions.argocdInstance.argocdVaultPlugin.azure.AADPodIdentity.managedIdentity.resourceID }}
                     {{- end }}
+
+              sourceNamespaces: {{ toYaml .Values.components.argocdSolutions.argocdInstance.sourceNamespaces }}
 
               server:
                 autoscale:
                   enabled: true
-                {{- if .Values.components.argoFoundation.argocdInstance.server.service }}
-                service: {{ toYaml .Values.components.argoFoundation.argocdInstance.server.service | nindent 18 }}
+                {{- if .Values.components.argocdSolutions.argocdInstance.server.service }}
+                service: {{ toYaml .Values.components.argocdSolutions.argocdInstance.server.service | nindent 18 }}
                 {{- end }}
-                resources: {{ toYaml .Values.components.argoFoundation.argocdInstance.server.resources | nindent 18 }}
+                resources: {{ toYaml .Values.components.argocdSolutions.argocdInstance.server.resources | nindent 18 }}
 
               repo:
-                resources: {{ toYaml .Values.components.argoFoundation.argocdInstance.repo.resources | nindent 18 }}
+                resources: {{ toYaml .Values.components.argocdSolutions.argocdInstance.repo.resources | nindent 18 }}
 
               controller:
-                resources: {{ toYaml .Values.components.argoFoundation.argocdInstance.controller.resources | nindent 18 }}
+                resources: {{ toYaml .Values.components.argocdSolutions.argocdInstance.controller.resources | nindent 18 }}
 
               applicationSet:
-                resources: {{ toYaml .Values.components.argoFoundation.argocdInstance.applicationSet.resources | nindent 18 }}
+                resources: {{ toYaml .Values.components.argocdSolutions.argocdInstance.applicationSet.resources | nindent 18 }}
 
               redis:
-                resources: {{ toYaml .Values.components.argoFoundation.argocdInstance.redis.resources | nindent 18 }}
+                resources: {{ toYaml .Values.components.argocdSolutions.argocdInstance.redis.resources | nindent 18 }}
 
               notifications:
-                enabled: {{ .Values.components.argoFoundation.argocdInstance.notifications.enabled }}
+                enabled: {{ .Values.components.argocdSolutions.argocdInstance.notifications.enabled }}
 
             netpol:
-              enabled: {{ .Values.components.argoFoundation.argocdInstance.netpol.enabled }}
+              enabled: {{ .Values.components.argocdSolutions.argocdInstance.netpol.enabled }}
 
             register:
-              {{- if .Values.components.argoFoundation.argocdInstance.register.clusters }}
-              clusters: {{  toYaml .Values.components.argoFoundation.argocdInstance.register.clusters | nindent 16 }}
+              {{- if .Values.components.argocdSolutions.argocdInstance.register.clusters }}
+              clusters: {{  toYaml .Values.components.argocdSolutions.argocdInstance.register.clusters | nindent 16 }}
               {{- end }}
 
-              {{- if .Values.components.argoFoundation.argocdInstance.register.repositories }}
-              repositories: {{  toYaml .Values.components.argoFoundation.argocdInstance.register.repositories | nindent 16 }}
+              {{- if .Values.components.argocdSolutions.argocdInstance.register.repositories }}
+              repositories: {{  toYaml .Values.components.argocdSolutions.argocdInstance.register.repositories | nindent 16 }}
               {{- end }}
 
-              {{- if .Values.components.argoFoundation.argocdInstance.register.repositoryCreds }}
-              repositoryCreds: {{  toYaml .Values.components.argoFoundation.argocdInstance.register.repositoryCreds | nindent 16 }}
+              {{- if .Values.components.argocdSolutions.argocdInstance.register.repositoryCreds }}
+              repositoryCreds: {{  toYaml .Values.components.argocdSolutions.argocdInstance.register.repositoryCreds | nindent 16 }}
               {{- end }}
 
   destination:
@@ -92,3 +96,5 @@ spec:
     automated:
       prune: true
       selfHeal: true
+
+{{- end }}

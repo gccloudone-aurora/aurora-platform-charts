@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: "{{ .Values.global.cluster }}-argocd-solution-global-project"
+  name: "{{ .Values.global.cluster }}-argocd-solutions-global-project"
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
@@ -33,7 +33,7 @@ spec:
                   kind: "*"
   destination:
     name: {{ .Values.global.cluster }}
-    namespace: platform-management-system
+    namespace: argocd-solutions-system
   syncPolicy:
     automated:
       prune: true
