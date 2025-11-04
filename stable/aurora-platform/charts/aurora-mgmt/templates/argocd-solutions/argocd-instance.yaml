@@ -1,4 +1,4 @@
-{{ if .Values.components.awsEbsCsiDriver.enabled -}}
+{{ if .Values.components.argocdSolutions.enabled -}}
 
 apiVersion: argoproj.io/v1alpha1
 kind: Application
