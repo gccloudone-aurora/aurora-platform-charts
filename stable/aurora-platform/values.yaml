@@ -80,6 +80,11 @@ global:
 # Core Platform components
 core:
   enabled: true
+  rbac: {}
+    # platformAdmin: {}
+    # platformOperator: {}
+    # securityOperations: {}
+
   components: {}
     # aadPodIdentity: {}
     # auroraController: {}
