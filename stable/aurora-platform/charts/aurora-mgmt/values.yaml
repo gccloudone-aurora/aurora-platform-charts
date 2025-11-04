@@ -192,7 +192,7 @@ components:
     image:
       # registry: quay.io
       repository: argoprojlabs/argocd-operator
-      tag: "v0.4.0"
+      tag: "v0.10.0"
       # pullPolicy: IfNotPresent
 
     priorityClassName: platform-cluster-medium
