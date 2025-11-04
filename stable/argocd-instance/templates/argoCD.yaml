@@ -227,6 +227,9 @@ spec:
       type: {{ .Values.argocdInstance.server.service.type }}
     resources:  {{ toYaml .Values.argocdInstance.server.resources | nindent 6 }}
 
+  # Defines wich namespaces to look for applications in
+  sourceNamespaces: {{ toYaml .Values.argocdInstance.sourceNamespaces }}
+
   tls:
     ca: {}
   version: {{ .Values.argocdInstance.image.version }}
