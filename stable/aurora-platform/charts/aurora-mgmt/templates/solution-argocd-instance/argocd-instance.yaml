@@ -48,7 +48,7 @@ spec:
                       resourceID: {{ .Values.components.argocdSolutions.argocdInstance.argocdVaultPlugin.azure.AADPodIdentity.managedIdentity.resourceID }}
                     {{- end }}
 
-              sourceNamespaces: {{ toYaml .Values.components.argocdSolutions.argocdInstance.sourceNamespaces }}
+              sourceNamespaces: {{ toYaml .Values.components.argocdSolutions.argocdInstance.sourceNamespaces | nindent 16 }}
 
               server:
                 autoscale:
