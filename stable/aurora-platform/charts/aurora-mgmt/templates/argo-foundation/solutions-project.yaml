@@ -56,6 +56,11 @@ spec:
                       releaseName: '{{ "{{" }} path.basename }}'
                       values: |
                         {{ "{{" }} settings }}
+                        
+                        {{- if .Values.components.argocdSolutions.enabled }}
+                        argocdProject:
+                          sourceRepos: {{ toYaml .Values.components.argoFoundation.argocdProjects.solutions.applicationSet.template.source.helmValues.argocdProject.sourceRepos }}
+                        {{- end }}
                     repoURL: {{ .Values.components.argoFoundation.argocdProjects.solutions.applicationSet.template.source.repoURL }}
                     targetRevision: '{{ "{{" }} version }}'
                   syncPolicy:

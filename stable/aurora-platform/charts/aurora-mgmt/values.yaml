@@ -172,6 +172,9 @@ components:
         #   template:
         #     source:
         #       repoURL
+        #       helmValues:
+        #         argocd:
+        #           sourceRepos
 
       syncWindows:
         - clusters:

@@ -4,48 +4,37 @@ metadata:
   name: {{ $.Release.Name }}
   labels:
     argocd.argoproj.io/project-inherit: global
-  # This metadata is for Argo CD's internal use and grouping
 spec:
-  # Only allow applications to sync from Acme Corp's official GitOps repository.
-  # This prevents them from deploying arbitrary code from unapproved repos.
-  sourceRepos: {{ toYaml .Values.argoCD.sourceRepos }}
+
+  # Which namespaces can use this AppProject 
+  sourceNamespaces:
+    - {{ $.Release.Name }}
+
+  # Which repositories are allowed
+  sourceRepos: {{ toYaml .Values.argocdProject.sourceRepos }}
 
   # The clusters where the tenant's applications are hosted
   destinations:
   - server: "*"
     namespace: {{ $.Release.Name }}
-  
-  # Blacklist ALL cluster-scoped resources (e.g., ClusterRole, PersistentVolume) 
-  # by setting a general whitelist and then blacklisting high-risk kinds explicitly.
-  clusterResourceBlacklist:
-  - group: '*'
-    kind: '*'
-
-  # Only allow the tenant to manage common resources (Deployments, Services, etc.)
-  namespaceResourceWhitelist:
-  - group: '*'
-    kind: '*' # Allow all namespace-scoped resources, as long as the destination is their namespace
 
   roles:
-  # # Role for "developers" - can view and sync, but not delete Applications
-  # - name: developer-role
-  #   description: Developer access for Acme Corp applications
-  #   # Bind this role to an OIDC group from your SSO provider (e.g., Okta, Keycloak)
-  #   groups:
-  #   - 'acme-corp-developers'
-  #   # Define the RBAC policies for this role
-  #   policies:
-  #   # Allow read-only access to all applications in this project
-  #   - p, proj:acme-corp:developer-role, applications, get, acme-corp/*, allow
-  #   # Allow sync (manual or automatic), but deny delete and terminate/force-sync
-  #   - p, proj:acme-corp:developer-role, applications, sync, acme-corp/*, allow
-  #   - p, proj:acme-corp:developer-role, applications, action/terminate, acme-corp/*, deny
+  # Role for "developers" - can view and sync, but not delete Applications
+  - name: developer-role
+    description: Developer access applications
+    groups: {{ toYaml (default .Values.rbac.groups .Values.argocdProject.developerGroups) | nindent 6 }}
+    policies:
+    # Allow read-only access to all applications in this project
+    - p, proj:{{ $.Release.Name }}:developer-role, applications, get, {{ $.Release.Name }}/*, allow
+    # Allow sync (manual or automatic), but deny delete and terminate/force-sync
+    - p, proj:{{ $.Release.Name }}:developer-role, applications, sync, {{ $.Release.Name }}/*, allow
+    - p, proj:{{ $.Release.Name }}:developer-role, applications, action/terminate, {{ $.Release.Name }}/*, deny
 
   # Role for "admins" - full control including delete/force-sync
   - name: admin-role
     description: Admin access for applications
-    groups: {{ toYaml .Values.rbac.groups }}
+    groups: {{ toYaml (default .Values.rbac.groups .Values.argocdProject.adminGroups) | nindent 6 }}
     policies:
     # Full control over applications in this project
-    - p, proj:acme-corp:admin-role, applications, *, {{ $.Release.Name }}/*, allow
-    - p, proj:acme-corp:admin-role, applicationsets, *, {{ $.Release.Name }}/*, allow
+    - p, proj:{{ $.Release.Name }}:admin-role, applications, *, {{ $.Release.Name }}/*, allow
+    - p, proj:{{ $.Release.Name }}:admin-role, applicationsets, *, {{ $.Release.Name }}/*, allow
