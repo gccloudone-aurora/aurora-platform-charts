@@ -1,0 +1,40 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-argocd-solution-global-project"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    chart: {{ .Values.global.raw.helm.chart }}
+    repoURL: {{ default .Values.global.helm.repository .Values.global.raw.helm.repository }}
+    targetRevision: {{ .Values.global.raw.helm.targetRevision }}
+    helm:
+      releaseName: argocd-foundation-platform-projects
+      values: |
+          - apiVersion: argoproj.io/v1alpha1
+            kind: AppProject
+            metadata:
+              name: global-multi-tenant
+            spec:
+              description: "Global multi-tenant restrictions"
+              clusterResourceBlacklist:
+                - group: "*"
+                  kind: "*"
+              namespaceResourceBlacklist:
+                - group: ""
+                  kind: Namespace
+                - group: ""
+                  kind: ResourceQuota
+                - group: ""
+                  kind: LimitRange
+                - group: "storage.k8s.io"
+                  kind: "*"
+  destination:
+    name: {{ .Values.global.cluster }}
+    namespace: platform-management-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
