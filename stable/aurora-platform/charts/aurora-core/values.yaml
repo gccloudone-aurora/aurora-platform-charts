@@ -89,10 +89,15 @@ rbac:
     groups: []
     users: []
   # Configurations for the platform-operator-daily role.
-  # A read-only aggregated role which uses the
-  # 'rbac.ssc-spc.gc.ca/aggregate-to-platform-operator-view: "true"'
+  # An aggregated role which uses the
+  # 'rbac.ssc-spc.gc.ca/aggregate-to-platform-operator-daily: "true"'
   # label as the selector.
   platformOperator:
+    groups: []
+    users: []
+  # Configurations for the role given to SecOps.
+  # A read-only role which uses the built-in Kubernetes `view` role.
+  securityOperations:
     groups: []
     users: []
 
