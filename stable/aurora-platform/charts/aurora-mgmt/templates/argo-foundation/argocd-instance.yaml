@@ -13,7 +13,7 @@ spec:
     {{- else }}
     repoURL: {{ default "https://gccloudone-aurora.github.io/aurora-platform-charts" .Values.global.helm.repository }}
     {{- end }}
-    targetRevision: {{ default "0.3.8" .Values.components.argoFoundation.argocdInstance.helm.targetRevision }}
+    targetRevision: {{ default "0.3.9" .Values.components.argoFoundation.argocdInstance.helm.targetRevision }}
     plugin:
       env:
         - name: HELM_RELEASE_NAME
