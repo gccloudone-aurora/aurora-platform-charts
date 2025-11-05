@@ -25,7 +25,6 @@ spec:
     logLevel: {{ .Values.argocdInstance.logLevel }}
     resources:  {{ toYaml .Values.argocdInstance.controller.resources | nindent 6 }}
 
-  dex: {}
   disableAdmin: {{ .Values.argocdInstance.disableAdmin }}
   extraConfig:
     resource.compareoptions: |
