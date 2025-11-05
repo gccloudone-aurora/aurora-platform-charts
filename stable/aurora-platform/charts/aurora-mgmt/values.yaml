@@ -62,7 +62,7 @@ components:
       helm: {}
       # chart: argocd-instance
       # repository: https://gccloudone-aurora.github.io/aurora-platform-charts
-      # targetRevision: 0.0.6
+      # targetRevision: 0.0.7
 
       # disableAdmin: true
       # ingressDomain: ""
@@ -77,7 +77,7 @@ components:
       argocdVaultPlugin:
         env: {}
           # ARGOCD_ENV_AVP_TYPE: ""
-          
+
           # # Azure
           # ARGOCD_ENV_AZURE_TENANT_ID: ""
           # ARGOCD_ENV_AZURE_CLIENT_ID: ""
@@ -92,7 +92,7 @@ components:
             identityName: "argocd-vault-plugin"
             managedIdentity:
               clientID: ""
-              resourceID: ""     
+              resourceID: ""
 
       oidcAuthSP:
         credentials: {}

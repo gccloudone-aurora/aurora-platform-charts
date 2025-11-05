@@ -24,7 +24,7 @@ operator:
   securityContext:
     allowPrivilegeEscalation: false
     capabilities:
-        drop:
+      drop:
         - ALL
     readOnlyRootFilesystem: true
     runAsNonRoot: true

@@ -140,55 +140,60 @@ spec:
         name: custom-certs
     resources:  {{ toYaml .Values.argocdInstance.repo.resources | nindent 6 }}
   resourceHealthChecks:
-    kiali.io/Kiali: |
-      local health_status = {}
-      if obj.status ~= nil then
-        if obj.status.conditions ~= nil then
-          for i, condition in ipairs(obj.status.conditions) do
-            health_status.message = condition.message
-            if condition.type == "Successful" and condition.status == "True" then
-              health_status.status = "Healthy"
-              return health_status
-            end
-            if condition.type == "Failure" and condition.status == "True" then
-              health_status.status = "Degraded"
-              return health_status
-            end
-            if condition.type == "Running" and condition.reason == "Running" then
-              health_status.status = "Progressing"
-              return health_status
+    - group: kiali.io
+      kind: Kiali
+      check: |
+        local health_status = {}
+        if obj.status ~= nil then
+          if obj.status.conditions ~= nil then
+            for i, condition in ipairs(obj.status.conditions) do
+              health_status.message = condition.message
+              if condition.type == "Successful" and condition.status == "True" then
+                health_status.status = "Healthy"
+                return health_status
+              end
+              if condition.type == "Failure" and condition.status == "True" then
+                health_status.status = "Degraded"
+                return health_status
+              end
+              if condition.type == "Running" and condition.reason == "Running" then
+                health_status.status = "Progressing"
+                return health_status
+              end
             end
           end
         end
-      end
-      health_status.status = "Progressing"
-      health_status.message = "Waiting for Kiali"
-      return health_status
+        health_status.status = "Progressing"
+        health_status.message = "Waiting for Kiali"
+        return health_status
   resourceIgnoreDifferences:
-    apiextensions.k8s.io/CustomResourceDefinition: |
+    - group: apiextensions.k8s.io
+      kind: CustomResourceDefinition
+      jsonPointers:
+        - /spec/conversion/webhook/clientConfig/caBundle
+    - group: admissionregistration.k8s.io
+      kind: MutatingWebhookConfiguration
       jqPathExpressions:
-      - .spec.conversion?.webhook?.clientConfig.caBundle
-    admissionregistration.k8s.io/MutatingWebhookConfiguration: |
+        - .webhooks[]?.clientConfig.caBundle
+        - .webhooks[]?.namespaceSelector.matchExpressions[] | select(.key == "control-plane")
+        - .webhooks[]?.namespaceSelector.matchExpressions[] | select(.key == "kubernetes.azure.com/managedby")
+      managedFieldsManagers:
+        - cainjector
+        - domain-mapping-webhook
+        - webhook
+    - group: admissionregistration.k8s.io
+      kind: ValidatingWebhookConfiguration
       jqPathExpressions:
-      - .webhooks[]?.clientConfig.caBundle
-      - .webhooks[]?.namespaceSelector.matchExpressions[] | select(.key =="control-plane")
-      - .webhooks[]?.namespaceSelector.matchExpressions[] | select(.key =="kubernetes.azure.com/managedby")
+        - .webhooks[]?.clientConfig.caBundle
+        - .webhooks[]?.namespaceSelector.matchExpressions[] | select(.key == "control-plane")
+        - .webhooks[]?.namespaceSelector.matchExpressions[] | select(.key == "kubernetes.azure.com/managedby")
       managedFieldsManagers:
-      - cainjector
-      - domain-mapping-webhook
-      - webhook
-    admissionregistration.k8s.io/ValidatingWebhookConfiguration: |
-      jqPathExpressions:
-      - .webhooks[]?.clientConfig.caBundle
-      - .webhooks[]?.namespaceSelector.matchExpressions[] | select(.key =="control-plane")
-      - .webhooks[]?.namespaceSelector.matchExpressions[] | select(.key =="kubernetes.azure.com/managedby")
+        - cainjector
+        - domain-mapping-webhook
+        - webhook
+    - kind: ServiceAccount
       managedFieldsManagers:
-      - cainjector
-      - domain-mapping-webhook
-      - webhook
-    /ServiceAccount: |
-      managedFieldsManagers:
-      - aurora-controller
+        - aurora-controller
   resourceExclusions: |
     - apiGroups:
         - cilium.io
