@@ -167,33 +167,30 @@ spec:
         health_status.message = "Waiting for Kiali"
         return health_status
   resourceIgnoreDifferences:
-    - group: apiextensions.k8s.io
-      kind: CustomResourceDefinition
-      jsonPointers:
-        - /spec/conversion/webhook/clientConfig/caBundle
-    - group: admissionregistration.k8s.io
-      kind: MutatingWebhookConfiguration
+    apiextensions.k8s.io/CustomResourceDefinition: |
       jqPathExpressions:
-        - .webhooks[]?.clientConfig.caBundle
-        - .webhooks[]?.namespaceSelector.matchExpressions[] | select(.key == "control-plane")
-        - .webhooks[]?.namespaceSelector.matchExpressions[] | select(.key == "kubernetes.azure.com/managedby")
-      managedFieldsManagers:
-        - cainjector
-        - domain-mapping-webhook
-        - webhook
-    - group: admissionregistration.k8s.io
-      kind: ValidatingWebhookConfiguration
+      - .spec.conversion?.webhook?.clientConfig.caBundle
+    admissionregistration.k8s.io/MutatingWebhookConfiguration: |
       jqPathExpressions:
-        - .webhooks[]?.clientConfig.caBundle
-        - .webhooks[]?.namespaceSelector.matchExpressions[] | select(.key == "control-plane")
-        - .webhooks[]?.namespaceSelector.matchExpressions[] | select(.key == "kubernetes.azure.com/managedby")
+      - .webhooks[]?.clientConfig.caBundle
+      - .webhooks[]?.namespaceSelector.matchExpressions[] | select(.key == "control-plane")
+      - .webhooks[]?.namespaceSelector.matchExpressions[] | select(.key == "kubernetes.azure.com/managedby")
       managedFieldsManagers:
-        - cainjector
-        - domain-mapping-webhook
-        - webhook
-    - kind: ServiceAccount
+      - cainjector
+      - domain-mapping-webhook
+      - webhook
+    admissionregistration.k8s.io/ValidatingWebhookConfiguration: |
+      jqPathExpressions:
+      - .webhooks[]?.clientConfig.caBundle
+      - .webhooks[]?.namespaceSelector.matchExpressions[] | select(.key == "control-plane")
+      - .webhooks[]?.namespaceSelector.matchExpressions[] | select(.key == "kubernetes.azure.com/managedby")
       managedFieldsManagers:
-        - aurora-controller
+      - cainjector
+      - domain-mapping-webhook
+      - webhook
+    /ServiceAccount: |
+      managedFieldsManagers:
+      - aurora-controller
   resourceExclusions: |
     - apiGroups:
         - cilium.io

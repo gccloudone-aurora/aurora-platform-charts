@@ -22,11 +22,6 @@ operator:
   replicaCount: 1
   # -- Defines privilege and access control settings for the ArgoCD controller Pod or Container
   securityContext:
-    allowPrivilegeEscalation: false
-    capabilities:
-      drop:
-        - ALL
-    readOnlyRootFilesystem: true
     runAsNonRoot: true
   # -- Liveness and Readiness Probes
   livenessProbe:
