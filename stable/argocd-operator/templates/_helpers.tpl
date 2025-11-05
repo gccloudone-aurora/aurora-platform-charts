@@ -45,4 +45,5 @@ Selector labels Operator
 {{- define "argocd-operator.selectorLabels" -}}
 app.kubernetes.io/name: {{ include "argocd-operator.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
+control-plane: argocd-operator
 {{- end -}}

@@ -8,7 +8,7 @@ operator:
   # -- Configures the image to use for the argocd-operator pod(s)
   image:
     repository: quay.io/argoprojlabs/argocd-operator
-    tag: v0.4.0
+    tag: v0.10.0
     pullPolicy: IfNotPresent
   # -- One or many secret(s), that store Docker credentials that are used for accessing a private image registry
   imagePullSecrets: []
@@ -22,10 +22,20 @@ operator:
   replicaCount: 1
   # -- Defines privilege and access control settings for the ArgoCD controller Pod or Container
   securityContext:
-    runAsUser: 1000
-    runAsGroup: 1000
     runAsNonRoot: true
-    fsGroup: 1000
+  # -- Liveness and Readiness Probes
+  livenessProbe:
+    httpGet:
+      path: /healthz
+      port: 8081
+    initialDelaySeconds: 15
+    periodSeconds: 20
+  readinessProbe:
+    httpGet:
+      path: /readyz
+      port: 8081
+    initialDelaySeconds: 5
+    periodSeconds: 10
   # -- Resource requests and limits to define the allowed compute and storage for each deployment
   resources:
     requests:

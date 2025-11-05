@@ -7,6 +7,18 @@ rules:
   - ""
   resources:
   - configmaps
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - configmaps
   - endpoints
   - events
   - namespaces
@@ -72,6 +84,13 @@ rules:
   verbs:
   - '*'
 - apiGroups:
+  - argoproj.io
+  resources:
+  - notificationsconfigurations
+  - notificationsconfigurations/finalizers
+  verbs:
+  - '*'
+- apiGroups:
   - autoscaling
   resources:
   - horizontalpodautoscalers
@@ -96,6 +115,7 @@ rules:
   - monitoring.coreos.com
   resources:
   - prometheuses
+  - prometheusrules
   - servicemonitors
   verbs:
   - '*'

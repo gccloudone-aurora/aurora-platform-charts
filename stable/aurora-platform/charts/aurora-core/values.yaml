@@ -89,8 +89,8 @@ rbac:
     groups: []
     users: []
   # Configurations for the platform-operator-daily role.
-  # A read-only aggregated role which uses the
-  # 'rbac.ssc-spc.gc.ca/aggregate-to-platform-operator-view: "true"'
+  # An aggregated role which uses the
+  # 'rbac.ssc-spc.gc.ca/aggregate-to-platform-operator-daily: "true"'
   # label as the selector.
   platformOperator:
     groups: []

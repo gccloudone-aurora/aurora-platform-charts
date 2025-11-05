@@ -1,6 +1,6 @@
 # argocd-operator
 
-![Version: 0.0.3](https://img.shields.io/badge/Version-0.0.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.4.0](https://img.shields.io/badge/AppVersion-0.4.0-informational?style=flat-square)
+![Version: 0.0.8](https://img.shields.io/badge/Version-0.0.8-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.10.0](https://img.shields.io/badge/AppVersion-0.10.0-informational?style=flat-square)
 
 A Helm chart that deploys ArgoCD Operator.
 
@@ -15,7 +15,7 @@ A Helm chart that deploys ArgoCD Operator.
 |-----|------|---------|-------------|
 | operator.affinity | object | `{}` | A more expressive way to constrain ArgoCD controller Pods to specific nodes |
 | operator.extraEnv | list | `[]` | A list of environment objects used to inject additional environment variables into the controller pod |
-| operator.image | object | `{"pullPolicy":"IfNotPresent","repository":"quay.io/argoprojlabs/argocd-operator","tag":"v0.4.0"}` | Configures the image to use for the argocd-operator pod(s) |
+| operator.image | object | `{"pullPolicy":"IfNotPresent","repository":"quay.io/argoprojlabs/argocd-operator","tag":"v0.10.0"}` | Configures the image to use for the argocd-operator pod(s) |
 | operator.imagePullSecrets | list | `[]` | One or many secret(s), that store Docker credentials that are used for accessing a private image registry |
 | operator.nodeSelector | object | `{}` | Constrain ArgoCD controller Pods to be scheduled to nodes with specific labels |
 | operator.nsClusterConfig | string | `""` | List of namespaces of cluster-scoped Argo CD instances |
