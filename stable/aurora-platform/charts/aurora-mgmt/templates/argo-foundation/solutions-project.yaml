@@ -56,8 +56,8 @@ spec:
                       releaseName: '{{ "{{" }} path.basename }}'
                       values: |
                         {{ "{{" }} settings }}
-                        
-                        {{- if .Values.components.argocdSolutions.enabled }}
+
+                        {{- if .Values.components.argoSolution.enabled }}
                         argocdProject:
                           sourceRepos: {{ toYaml .Values.components.argoFoundation.argocdProjects.solutions.applicationSet.template.source.helmValues.argocdProject.sourceRepos | nindent 28 }}
                         {{- end }}

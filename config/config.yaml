@@ -480,8 +480,8 @@ mgmt:
                   argocdProject:
                     sourceRepos: []
 
-
-    argocdSolutions:
+    argoSolution:
+      enabled: true
       argocdInstance:
         adminSecurityGroup: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-cluster-admins>'
         disableAdmin: false
