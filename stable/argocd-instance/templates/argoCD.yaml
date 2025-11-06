@@ -41,7 +41,7 @@ spec:
                 - {{ .labelSelector.value }}
         projectName: {{ .projectName }}
       {{- end }}
-    {{- end }}
+  {{- end }}
 
 
   grafana:
