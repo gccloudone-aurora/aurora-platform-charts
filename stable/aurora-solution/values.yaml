@@ -94,6 +94,14 @@ aadPodIdentities: {}
   #   clientID: ""     # @schema type:[string]
   #   resourceID: ""   # @schema type:[string]
 
+
+argocdProject:
+  enabled: true
+  sourceRepos: []
+  developerGroups: []   # defaults to rbac.groups if empty
+  adminGroups: []       # defaults to rbac.groups if empty
+
+
 # Defines cluster specific resources to be created in the namespace
 # Can be one of [aadPodIdentities].
 clusters: {}

@@ -62,7 +62,7 @@ components:
       helm: {}
       # chart: argocd-instance
       # repository: https://gccloudone-aurora.github.io/aurora-platform-charts
-      # targetRevision: 0.0.8
+      # targetRevision: 0.5.0
 
       # disableAdmin: true
       # ingressDomain: ""
@@ -166,12 +166,15 @@ components:
         # applicationSet:
         #   generator:
         #     git:
-        #       repoURL
-        #       revision
+        #       repoURL:
+        #       revision:
         #       files:
         #   template:
         #     source:
-        #       repoURL
+        #       repoURL:
+        #       helmValues:
+        #         argocdProject:
+        #           sourceRepos: []
 
       syncWindows:
         - clusters:
@@ -212,6 +215,105 @@ components:
       - key: CriticalAddonsOnly
         operator: Exists
     affinity: {}
+
+  argoSolution:
+    enabled: true
+
+    argocdInstance:
+      helm: {}
+      # chart: argocd-instance
+      # repository: https://gccloudone-aurora.github.io/aurora-platform-charts
+      # targetRevision: 0.5.0
+
+      # disableAdmin: true
+      # ingressDomain: ""
+
+      nodeSelector:
+        kubernetes.io/os: linux
+        node.ssc-spc.gc.ca/purpose: system
+      tolerations:
+        - key: CriticalAddonsOnly
+          operator: Exists
+
+      argocdVaultPlugin:
+        env: {}
+          # ARGOCD_ENV_AVP_TYPE: ""
+
+          # # Azure
+          # ARGOCD_ENV_AZURE_TENANT_ID: ""
+          # ARGOCD_ENV_AZURE_CLIENT_ID: ""
+          # ARGOCD_ENV_AZURE_CLIENT_SECRET: ""
+
+          # # AWS
+          # ARGOCD_ENV_AWS_REGION: ""
+
+        azure:
+          AADPodIdentity:
+            enabled: false
+            identityName: "argocd-vault-plugin"
+            managedIdentity:
+              clientID: ""
+              resourceID: ""
+
+      sourceNamespaces:
+        - "*"
+        - "!*-system"
+
+      oidcAuthSP:
+        credentials: {}
+      #     tenantID: ""
+      #     clientID: ""
+      #     clientSecret: ""
+
+      netpol: {}
+        # enabled: false
+
+      notifications: {}
+        # enabled: false
+
+      server:
+        service: {}
+          # type: ""
+
+      repo:
+        resources: {}
+          # limits:
+          #   cpu: ""
+          #   memory: ""
+          # requests:
+          #   cpu: ""
+          #   memory: ""
+
+      controller:
+        resources: {}
+          # limits:
+          #   cpu: ""
+          #   memory: ""
+          # requests:
+          #   cpu: ""
+          #   memory: ""
+      applicationSet:
+        resources: {}
+          # limits:
+          #   cpu: ""
+          #   memory: ""
+          # requests:
+          #   cpu: ""
+          #   memory: ""
+
+      redis:
+        resources: {}
+          # limits:
+          #   cpu: ""
+          #   memory: ""
+          # requests:
+          #   cpu: ""
+          #   memory: ""
+
+      register:
+        clusters: {}
+        repositories: {}
+        repositoryCreds: {}
 
   billOfLanding:
     enabled: false

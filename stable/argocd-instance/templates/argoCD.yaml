@@ -29,6 +29,21 @@ spec:
   extraConfig:
     resource.compareoptions: |
       ignoreAggregatedRoles: true
+
+{{- if not .Values.argocdInstance.globalProjects | empty }}
+  globalProjects: |-
+    {{- range .Values.argocdInstance.globalProjects }}
+    - labelSelector:
+        matchExpressions:
+          - key: {{ .labelSelector.key }}
+            operator: In
+            values:
+              - {{ .labelSelector.value }}
+      projectName: {{ .projectName }}
+    {{- end }}
+  {{- end }}
+
+
   grafana:
     enabled: false
     ingress:
@@ -236,6 +251,9 @@ spec:
     service:
       type: {{ .Values.argocdInstance.server.service.type }}
     resources:  {{ toYaml .Values.argocdInstance.server.resources | nindent 6 }}
+
+  # Defines wich namespaces to look for applications in
+  sourceNamespaces: {{ toYaml .Values.argocdInstance.sourceNamespaces }}
 
   tls:
     ca: {}

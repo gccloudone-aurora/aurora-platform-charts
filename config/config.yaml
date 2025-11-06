@@ -398,18 +398,20 @@ mgmt:
         disableAdmin: false
         ingressDomain: aur.aurora.<FILLIN_INGRESS_DOMAIN>
         argocdVaultPlugin:
-          credentials:
-            azureClientID: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-argocd-kv-aadpodidentity-client-id>'
+          env:
+            ARGOCD_ENV_AVP_TYPE: "azurekeyvault"
+            ARGOCD_ENV_AZURE_CLIENT_ID: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-argocd-kv-aadpodidentity-client-id>'
+          azure:
+            AADPodIdentity:
+              enabled: true
+              managedIdentity:
+                clientID: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-argocd-kv-aadpodidentity-client-id>'
+                resourceID: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-argocd-kv-aadpodidentity-resource-id>'
         oidcAuthSP:
           credentials:
             tenantID: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-tenant-id>'
             clientID: '<path:<FILLIN_ARGO_KV>#gcdc-auroramgmt-platform-kvs-argocd-oidc-sp-client-id>'
             clientSecret: '<path:<FILLIN_ARGO_KV>#gcdc-auroramgmt-platform-kvs-argocd-oidc-sp-client-secret>'
-        aadPodIdentity:
-          enabled: true
-          managedIdentity:
-            clientID: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-argocd-kv-aadpodidentity-client-id>'
-            resourceID: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-argocd-kv-aadpodidentity-resource-id>'
         notifications:
           enabled: true
         netpol:
@@ -476,6 +478,54 @@ mgmt:
             template:
               source:
                 repoURL: https://gccloudone-aurora.github.io/aurora-platform-charts
+                helmValues:
+                  argocdProject:
+                    sourceRepos: []
+
+    argoSolution:
+      enabled: true
+      argocdInstance:
+        adminSecurityGroup: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-cluster-admins>'
+        disableAdmin: false
+        ingressDomain: sol.aurora.<FILLIN_INGRESS_DOMAIN>
+        oidcAuthSP:
+          credentials:
+            tenantID: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-tenant-id>'
+            clientID: '<path:<FILLIN_ARGO_KV>#gcdc-auroramgmt-platform-kvs-argocd-oidc-sp-client-id>'
+            clientSecret: '<path:<FILLIN_ARGO_KV>#gcdc-auroramgmt-platform-kvs-argocd-oidc-sp-client-secret>'
+        notifications:
+          enabled: true
+        netpol:
+          enabled: true
+        server:
+          service:
+            type: "ClusterIP"
+          resources:
+            limits:
+              cpu: '1'
+              memory: 1000Mi
+            requests:
+              cpu: 250m
+              memory: 500Mi
+        register:
+          clusters:
+            aur-dev-cc-00-aks:
+              server: "<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-server>"
+              token: "<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-argocd-sa-bearer-token>"
+              caData: "<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-argocd-sa-cacert | base64encode>"
+          repositories:
+            aurora-helm:
+              type: helm
+              url: https://gccloudone-aurora.github.io/aurora-platform-charts
+            project-aurora-template:
+              type: git
+              url: https://github.com/gccloudone-aurora/project-aurora-template.git
+          repositoryCreds:
+            private-repo-creds:
+              type: git
+              url: https://github.com/gccloudone-aurora/project-aurora-template.git
+              username: "<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-github-username>"
+              password: "<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-github-password>"
 
     argoOperator: {}
 

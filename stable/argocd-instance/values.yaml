@@ -29,7 +29,15 @@ argocdInstance:
         identityName: "argocd-vault-plugin"
         managedIdentity:
           clientID: ""
-          resourceID: ""               
+          resourceID: ""
+
+  sourceNamespaces: []             
+
+  globalProjects: []
+    # - projectName: "global"
+    #   labelSelector:
+    #     key: "argocd.argoproj.io/project-inherit"
+    #     value: "global"
 
   disableAdmin: false
   imageRegistry:
