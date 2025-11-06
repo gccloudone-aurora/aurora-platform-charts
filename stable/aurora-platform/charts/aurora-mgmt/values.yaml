@@ -62,7 +62,7 @@ components:
       helm: {}
       # chart: argocd-instance
       # repository: https://gccloudone-aurora.github.io/aurora-platform-charts
-      # targetRevision: 0.0.6
+      # targetRevision: 0.0.8
 
       # disableAdmin: true
       # ingressDomain: ""
@@ -195,7 +195,7 @@ components:
     image:
       # registry: quay.io
       repository: argoprojlabs/argocd-operator
-      tag: "v0.4.0"
+      tag: "v0.10.0"
       # pullPolicy: IfNotPresent
 
     priorityClassName: platform-cluster-medium

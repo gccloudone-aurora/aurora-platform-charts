@@ -25,7 +25,6 @@ spec:
     logLevel: {{ .Values.argocdInstance.logLevel }}
     resources:  {{ toYaml .Values.argocdInstance.controller.resources | nindent 6 }}
 
-  dex: {}
   disableAdmin: {{ .Values.argocdInstance.disableAdmin }}
   extraConfig:
     resource.compareoptions: |
@@ -77,15 +76,17 @@ spec:
     route:
       enabled: false
   rbac:
-    defaultPolicy: role:readonly
+    defaultPolicy: ""
     policy: |
       p, role:org-admin, applications, *, */*, allow
-      p, role:org-admin, clusters, get, *, allow
       p, role:org-admin, applicationsets, get, */*, allow
+      p, role:org-admin, clusters, get, *, allow
+      p, role:org-admin, projects, get, *, allow
       p, role:org-admin, repositories, get, *, allow
       p, role:org-admin, repositories, create, *, allow
       p, role:org-admin, repositories, update, *, allow
       p, role:org-admin, repositories, delete, *, allow
+      p, role:org-admin, accounts, get, *, allow
       p, role:org-admin, accounts, update, *, allow
       g, {{ .Values.argocdInstance.adminSecurityGroup | quote }}, role:org-admin
     scopes: '[groups]'
@@ -154,10 +155,10 @@ spec:
           optional: true
         name: custom-certs
     resources:  {{ toYaml .Values.argocdInstance.repo.resources | nindent 6 }}
-
-  resourceCustomizations: |
-    kiali.io/Kiali:
-      health.lua: |
+  resourceHealthChecks:
+    - group: kiali.io
+      kind: Kiali
+      check: |
         local health_status = {}
         if obj.status ~= nil then
           if obj.status.conditions ~= nil then
@@ -181,34 +182,39 @@ spec:
         health_status.status = "Progressing"
         health_status.message = "Waiting for Kiali"
         return health_status
-    apiextensions.k8s.io/CustomResourceDefinition:
-      ignoreDifferences: |
-        jqPathExpressions:
-        - .spec.conversion?.webhook?.clientConfig.caBundle
-    admissionregistration.k8s.io/MutatingWebhookConfiguration:
-      ignoreDifferences: |
-        jqPathExpressions:
-        - .webhooks[]?.clientConfig.caBundle
-        - .webhooks[]?.namespaceSelector.matchExpressions[] | select(.key =="control-plane")
-        - .webhooks[]?.namespaceSelector.matchExpressions[] | select(.key =="kubernetes.azure.com/managedby")
-        managedFieldsManagers:
-        - cainjector
-        - domain-mapping-webhook
-        - webhook
-    admissionregistration.k8s.io/ValidatingWebhookConfiguration:
-      ignoreDifferences: |
-        jqPathExpressions:
-        - .webhooks[]?.clientConfig.caBundle
-        - .webhooks[]?.namespaceSelector.matchExpressions[] | select(.key =="control-plane")
-        - .webhooks[]?.namespaceSelector.matchExpressions[] | select(.key =="kubernetes.azure.com/managedby")
-        managedFieldsManagers:
-        - cainjector
-        - domain-mapping-webhook
-        - webhook
-    /ServiceAccount:
-      ignoreDifferences: |
-        managedFieldsManagers:
-        - aurora-controller
+  resourceIgnoreDifferences:
+    resourceIdentifiers:
+      - group: apiextensions.k8s.io
+        kind: CustomResourceDefinition
+        customization:
+          jqPathExpressions:
+            - .spec.conversion?.webhook?.clientConfig.caBundle
+      - group: admissionregistration.k8s.io
+        kind: MutatingWebhookConfiguration
+        customization:
+          jqPathExpressions:
+            - .webhooks[]?.clientConfig.caBundle
+            - .webhooks[]?.namespaceSelector.matchExpressions[] | select(.key == "control-plane")
+            - .webhooks[]?.namespaceSelector.matchExpressions[] | select(.key == "kubernetes.azure.com/managedby")
+          managedFieldsManagers:
+            - cainjector
+            - domain-mapping-webhook
+            - webhook
+      - group: admissionregistration.k8s.io
+        kind: ValidatingWebhookConfiguration
+        customization:
+          jqPathExpressions:
+            - .webhooks[]?.clientConfig.caBundle
+            - .webhooks[]?.namespaceSelector.matchExpressions[] | select(.key == "control-plane")
+            - .webhooks[]?.namespaceSelector.matchExpressions[] | select(.key == "kubernetes.azure.com/managedby")
+          managedFieldsManagers:
+            - cainjector
+            - domain-mapping-webhook
+            - webhook
+      - kind: ServiceAccount
+        customization:
+          managedFieldsManagers:
+            - aurora-controller
   resourceExclusions: |
     - apiGroups:
         - cilium.io
