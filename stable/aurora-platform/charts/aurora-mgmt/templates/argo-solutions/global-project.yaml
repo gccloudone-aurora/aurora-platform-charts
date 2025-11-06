@@ -1,7 +1,9 @@
+{{ if .Values.components.argoSolution.enabled -}}
+
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: "{{ .Values.global.cluster }}-solution-argocd-instance-global-project"
+  name: "{{ .Values.global.cluster }}-argo-solution-global-project"
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
@@ -33,8 +35,10 @@ spec:
                   kind: "*"
   destination:
     name: {{ .Values.global.cluster }}
-    namespace: argocd-solutions-system
+    namespace: platform-solution-system
   syncPolicy:
     automated:
       prune: true
       selfHeal: true
+
+{{- end }}

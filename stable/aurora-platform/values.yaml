@@ -88,7 +88,7 @@ core:
   components: {}
     # aadPodIdentity: {}
     # auroraController: {}
-    # awsEbsCsiDriver: {}    
+    # awsEbsCsiDriver: {}
     # awsLoadbalancerController: {}
     # certManager: {}
     # cidrAllocator: {}
@@ -127,4 +127,4 @@ mgmt:
   components: {}
     # argoFoundation: {}
     # argoOperator: {}
-    # argocdSolutions: {}
+    # argoSolution: {}

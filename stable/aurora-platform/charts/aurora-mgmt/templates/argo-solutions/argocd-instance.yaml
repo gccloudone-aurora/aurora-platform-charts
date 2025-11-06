@@ -1,0 +1,106 @@
+{{ if .Values.components.argoSolution.enabled -}}
+
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-argo-solution-argocd-instance"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    chart: {{ default "argocd-instance" .Values.components.argoSolution.argocdInstance.helm.chart }}
+    {{- if .Values.components.argoSolution.argocdInstance.helm.repository }}
+    repoURL: {{ .Values.components.argoSolution.argocdInstance.helm.repository }}
+    {{- else }}
+    repoURL: {{ default "https://gccloudone-aurora.github.io/aurora-platform-charts" .Values.global.helm.repository }}
+    {{- end }}
+    targetRevision: {{ default "0.4.0" .Values.components.argoSolution.argocdInstance.helm.targetRevision }}
+    plugin:
+      env:
+        - name: HELM_RELEASE_NAME
+          value: "argocd-instance"
+        - name: HELM_VALUES
+          value: |
+            argocdInstance:
+
+              nodeSelector: {{ toYaml .Values.components.argoSolution.argocdInstance.nodeSelector | nindent 16 }}
+              tolerations: {{ toYaml .Values.components.argoSolution.argocdInstance.tolerations | nindent 16 }}
+
+              ingressDomain: "{{ .Values.components.argoSolution.argocdInstance.ingressDomain }}"
+
+              adminSecurityGroup: {{ .Values.components.argoSolution.argocdInstance.adminSecurityGroup }}
+              disableAdmin: "{{ .Values.components.argoSolution.argocdInstance.disableAdmin }}"
+              oidcAuthSP:
+                tenantID: "{{ .Values.components.argoSolution.argocdInstance.oidcAuthSP.credentials.tenantID }}"
+                clientID: "{{ .Values.components.argoSolution.argocdInstance.oidcAuthSP.credentials.clientID }}"
+                clientSecret: "{{ .Values.components.argoSolution.argocdInstance.oidcAuthSP.credentials.clientSecret }}"
+
+              argocdVaultPlugin:
+                env: {{ toYaml .Values.components.argoSolution.argocdInstance.argocdVaultPlugin.env | nindent 18 }}
+
+                azure:
+                  AADPodIdentity:
+                    enabled: {{ default "false" .Values.components.argoSolution.argocdInstance.argocdVaultPlugin.azure.AADPodIdentity.enabled }}
+                    {{- if .Values.components.argoSolution.argocdInstance.argocdVaultPlugin.azure.AADPodIdentity.enabled }}
+                    managedIdentity:
+                      clientID: {{ .Values.components.argoSolution.argocdInstance.argocdVaultPlugin.azure.AADPodIdentity.managedIdentity.clientID }}
+                      resourceID: {{ .Values.components.argoSolution.argocdInstance.argocdVaultPlugin.azure.AADPodIdentity.managedIdentity.resourceID }}
+                    {{- end }}
+
+              sourceNamespaces: {{ toYaml .Values.components.argoSolution.argocdInstance.sourceNamespaces | nindent 16 }}
+
+              globalProjects:
+                - projectName: "global-multi-tenant"
+                  labelSelector:
+                    key: "argocd.argoproj.io/project-inherit"
+                    value: "global-multi-tenant"
+
+              server:
+                autoscale:
+                  enabled: true
+                {{- if .Values.components.argoSolution.argocdInstance.server.service }}
+                service: {{ toYaml .Values.components.argoSolution.argocdInstance.server.service | nindent 18 }}
+                {{- end }}
+                resources: {{ toYaml .Values.components.argoSolution.argocdInstance.server.resources | nindent 18 }}
+
+              repo:
+                resources: {{ toYaml .Values.components.argoSolution.argocdInstance.repo.resources | nindent 18 }}
+
+              controller:
+                resources: {{ toYaml .Values.components.argoSolution.argocdInstance.controller.resources | nindent 18 }}
+
+              applicationSet:
+                resources: {{ toYaml .Values.components.argoSolution.argocdInstance.applicationSet.resources | nindent 18 }}
+
+              redis:
+                resources: {{ toYaml .Values.components.argoSolution.argocdInstance.redis.resources | nindent 18 }}
+
+              notifications:
+                enabled: {{ .Values.components.argoSolution.argocdInstance.notifications.enabled }}
+
+            netpol:
+              enabled: {{ .Values.components.argoSolution.argocdInstance.netpol.enabled }}
+
+            register:
+              {{- if .Values.components.argoSolution.argocdInstance.register.clusters }}
+              clusters: {{  toYaml .Values.components.argoSolution.argocdInstance.register.clusters | nindent 16 }}
+              {{- end }}
+
+              {{- if .Values.components.argoSolution.argocdInstance.register.repositories }}
+              repositories: {{  toYaml .Values.components.argoSolution.argocdInstance.register.repositories | nindent 16 }}
+              {{- end }}
+
+              {{- if .Values.components.argoSolution.argocdInstance.register.repositoryCreds }}
+              repositoryCreds: {{  toYaml .Values.components.argoSolution.argocdInstance.register.repositoryCreds | nindent 16 }}
+              {{- end }}
+
+  destination:
+    name: '{{ .Values.global.cluster }}'
+    namespace: platform-solution-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+
+{{- end }}

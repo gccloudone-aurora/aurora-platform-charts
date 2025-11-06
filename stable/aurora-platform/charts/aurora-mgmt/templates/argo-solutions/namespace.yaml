@@ -1,7 +1,9 @@
+{{ if .Values.components.argoSolution.enabled -}}
+
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: "{{ .Values.global.cluster }}-solution-argocd-instance-namespace"
+  name: "{{ .Values.global.cluster }}-argo-solution-namespace"
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
@@ -11,7 +13,7 @@ spec:
     repoURL: {{ default .Values.global.helm.repository .Values.global.namespace.helm.repository }}
     targetRevision: {{ .Values.global.namespace.helm.targetRevision }}
     helm:
-      releaseName: argocd-solutions-system
+      releaseName: platform-solution-system
       values: |
         # Information about the namespace.
         information:
@@ -79,3 +81,5 @@ spec:
     automated:
       prune: true
       selfHeal: true
+
+{{- end }}
