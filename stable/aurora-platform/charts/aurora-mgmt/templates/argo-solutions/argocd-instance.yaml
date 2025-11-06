@@ -15,7 +15,7 @@ spec:
     {{- else }}
     repoURL: {{ default "https://gccloudone-aurora.github.io/aurora-platform-charts" .Values.global.helm.repository }}
     {{- end }}
-    targetRevision: {{ default "0.4.0" .Values.components.argoSolution.argocdInstance.helm.targetRevision }}
+    targetRevision: {{ default "0.5.0" .Values.components.argoSolution.argocdInstance.helm.targetRevision }}
     plugin:
       env:
         - name: HELM_RELEASE_NAME
@@ -37,16 +37,7 @@ spec:
                 clientSecret: "{{ .Values.components.argoSolution.argocdInstance.oidcAuthSP.credentials.clientSecret }}"
 
               argocdVaultPlugin:
-                env: {{ toYaml .Values.components.argoSolution.argocdInstance.argocdVaultPlugin.env | nindent 18 }}
-
-                azure:
-                  AADPodIdentity:
-                    enabled: {{ default "false" .Values.components.argoSolution.argocdInstance.argocdVaultPlugin.azure.AADPodIdentity.enabled }}
-                    {{- if .Values.components.argoSolution.argocdInstance.argocdVaultPlugin.azure.AADPodIdentity.enabled }}
-                    managedIdentity:
-                      clientID: {{ .Values.components.argoSolution.argocdInstance.argocdVaultPlugin.azure.AADPodIdentity.managedIdentity.clientID }}
-                      resourceID: {{ .Values.components.argoSolution.argocdInstance.argocdVaultPlugin.azure.AADPodIdentity.managedIdentity.resourceID }}
-                    {{- end }}
+                enabled: false
 
               sourceNamespaces: {{ toYaml .Values.components.argoSolution.argocdInstance.sourceNamespaces | nindent 16 }}
 
