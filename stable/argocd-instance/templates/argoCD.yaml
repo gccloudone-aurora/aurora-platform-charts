@@ -104,6 +104,7 @@ spec:
       - mountPath: /etc/ssl/certs/custom.crt
         name: custom-certs
         subPath: custom.crt
+    {{- if .Values.argocdInstance.argocdVaultPlugin.enabled }}
     sidecarContainers:
       - command:
           - /var/run/argocd/argocd-cmp-server
@@ -145,11 +146,14 @@ spec:
           - mountPath: /home/argocd/cmp-server/config/plugin.yaml
             name: {{ .Values.argocdInstance.argocdVaultPlugin.configMapName }}
             subPath: avp-helm.yaml
+    {{- end }}
     version: {{ .Values.argocdInstance.repo.image.version }}
     volumes:
+      {{- if .Values.argocdInstance.argocdVaultPlugin.enabled }}
       - configMap:
           name: {{ .Values.argocdInstance.argocdVaultPlugin.configMapName }}
         name: {{ .Values.argocdInstance.argocdVaultPlugin.configMapName }}
+      {{- end }}
       - configMap:
           name: custom-certs
           optional: true

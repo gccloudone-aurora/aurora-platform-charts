@@ -1,3 +1,4 @@
+{{- if .Values.argocdInstance.argocdVaultPlugin.enabled }}
 {{- if .Values.argocdInstance.argocdVaultPlugin.azure.AADPodIdentity.enabled }}
 ---
 apiVersion: aadpodidentity.k8s.io/v1
@@ -22,4 +23,5 @@ metadata:
 spec:
   azureIdentity: {{ .Values.argocdInstance.argocdVaultPlugin.azure.AADPodIdentity.identityName }}
   selector: {{ .Values.argocdInstance.argocdVaultPlugin.azure.AADPodIdentity.identityName }}
+{{- end }}
 {{- end }}
