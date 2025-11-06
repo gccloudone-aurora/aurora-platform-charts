@@ -46,6 +46,11 @@ spec:
                       resourceID: {{ .Values.components.argoFoundation.argocdInstance.argocdVaultPlugin.azure.AADPodIdentity.managedIdentity.resourceID }}
                     {{- end }}
 
+              {{- if .Values.components.argoSolution.enabled }}
+              sourceNamespaces:
+                - platform-solution-system
+              {{- end }}
+
               server:
                 autoscale:
                   enabled: true
