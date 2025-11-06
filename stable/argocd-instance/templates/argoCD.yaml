@@ -30,17 +30,17 @@ spec:
     resource.compareoptions: |
       ignoreAggregatedRoles: true
 
-{{- if not .Values.argocdInstance.globalProjects | empty }}
-  globalProjects: |-
-    {{- range .Values.argocdInstance.globalProjects }}
-    - labelSelector:
-        matchExpressions:
-          - key: {{ .labelSelector.key }}
-            operator: In
-            values:
-              - {{ .labelSelector.value }}
-      projectName: {{ .projectName }}
-    {{- end }}
+  {{- if not .Values.argocdInstance.globalProjects | empty }}
+    globalProjects: |-
+      {{- range .Values.argocdInstance.globalProjects }}
+      - labelSelector:
+          matchExpressions:
+            - key: {{ .labelSelector.key }}
+              operator: In
+              values:
+                - {{ .labelSelector.value }}
+        projectName: {{ .projectName }}
+      {{- end }}
   {{- end }}
 
 
