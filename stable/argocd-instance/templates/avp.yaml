@@ -1,3 +1,5 @@
+{{- if .Values.argocdInstance.argocdVaultPlugin.enabled }}
+
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -45,3 +47,5 @@ data:
           - generate
           - "."
       lockRepo: false
+
+{{- end }}

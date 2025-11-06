@@ -3,6 +3,7 @@ argocdInstance:
   nodeSelector: {}
   tolerations: []
   argocdVaultPlugin:
+    enabled: true
     imageRegistry:
       host: "ghcr.io"
       repository: "gccloudone-aurora"
