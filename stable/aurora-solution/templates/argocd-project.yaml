@@ -1,3 +1,5 @@
+{{- if .Values.argocdProject.enabled }}
+
 apiVersion: argoproj.io/v1alpha1
 kind: AppProject
 metadata:
@@ -38,3 +40,5 @@ spec:
     # Full control over applications in this project
     - p, proj:{{ $.Release.Name }}:admin-role, applications, *, {{ $.Release.Name }}/*, allow
     - p, proj:{{ $.Release.Name }}:admin-role, applicationsets, *, {{ $.Release.Name }}/*, allow
+
+{{- end }}

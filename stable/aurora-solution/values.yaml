@@ -96,6 +96,7 @@ aadPodIdentities: {}
 
 
 argocdProject:
+  enabled: true
   sourceRepos: []
   developerGroups: []   # defaults to rbac.groups if empty
   adminGroups: []       # defaults to rbac.groups if empty
