@@ -13,7 +13,7 @@ spec:
     {{- else }}
     repoURL: {{ default "https://gccloudone-aurora.github.io/aurora-platform-charts" .Values.global.helm.repository }}
     {{- end }}
-    targetRevision: {{ default "0.5.2" .Values.components.argoFoundation.argocdInstance.helm.targetRevision }}
+    targetRevision: {{ default "0.5.3" .Values.components.argoFoundation.argocdInstance.helm.targetRevision }}
     plugin:
       env:
         - name: HELM_RELEASE_NAME
@@ -33,6 +33,8 @@ spec:
                 tenantID: "{{ .Values.components.argoFoundation.argocdInstance.oidcAuthSP.credentials.tenantID }}"
                 clientID: "{{ .Values.components.argoFoundation.argocdInstance.oidcAuthSP.credentials.clientID }}"
                 clientSecret: "{{ .Values.components.argoFoundation.argocdInstance.oidcAuthSP.credentials.clientSecret }}"
+
+              installationID: "platform"
 
               argocdVaultPlugin:
                 env: {{ toYaml .Values.components.argoFoundation.argocdInstance.argocdVaultPlugin.env | nindent 18 }}

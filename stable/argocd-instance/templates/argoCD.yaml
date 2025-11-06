@@ -43,6 +43,10 @@ spec:
       {{- end }}
   {{- end }}
 
+  {{- if .Values.argocdInstance.installationID }}
+    installationID: {{ .Values.argocdInstance.installationID }} 
+  {{- end }}
+
 
   grafana:
     enabled: false
