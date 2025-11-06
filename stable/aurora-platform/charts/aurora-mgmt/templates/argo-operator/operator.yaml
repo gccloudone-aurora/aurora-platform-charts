@@ -29,7 +29,7 @@ spec:
           affinity: {{ toYaml .Values.components.argoOperator.affinity | nindent 12 }}
 
           nsToWatch: ""
-          nsClusterConfig: platform-management-system
+          nsClusterConfig: platform-management-system,platform-solution-system
   destination:
     name: '{{ .Values.global.cluster }}'
     namespace: argo-operator-system
