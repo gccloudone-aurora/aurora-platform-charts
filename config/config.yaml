@@ -460,6 +460,9 @@ mgmt:
             template:
               source:
                 repoURL: https://gccloudone-aurora.github.io/aurora-platform-charts
+                helmValues:
+                  argocdProject:
+                    sourceRepos: []
         solutions:
           applicationSet:
             generators:
@@ -486,9 +489,6 @@ mgmt:
         adminSecurityGroup: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-cluster-admins>'
         disableAdmin: false
         ingressDomain: aur.aurora.<FILLIN_INGRESS_DOMAIN>
-        argocdVaultPlugin:
-          credentials:
-            azureClientID: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-argocd-kv-aadpodidentity-client-id>'
         oidcAuthSP:
           credentials:
             tenantID: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-tenant-id>'
