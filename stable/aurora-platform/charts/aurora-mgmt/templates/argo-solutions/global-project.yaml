@@ -15,6 +15,7 @@ spec:
     helm:
       releaseName: argocd-foundation-platform-projects
       values: |
+        resources:
           - apiVersion: argoproj.io/v1alpha1
             kind: AppProject
             metadata:
