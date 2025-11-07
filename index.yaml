@@ -2,6 +2,16 @@ apiVersion: v1
 entries:
   argocd-instance:
   - apiVersion: v2
+    appVersion: 2.11.14
+    created: "2025-11-07T22:48:32.069406191Z"
+    description: A Helm chart that configures Argo CD.
+    digest: a1144f1d8f94e506837b76d1cd8bb83cdaea84b5d5e60d6105d3f2d4688b08f5
+    name: argocd-instance
+    type: application
+    urls:
+    - https://github.com/gccloudone-aurora/aurora-platform-charts/releases/download/argocd-instance-0.6.0/argocd-instance-0.6.0.tgz
+    version: 0.6.0
+  - apiVersion: v2
     appVersion: 2.6.6
     created: "2025-11-06T17:44:09.590251346Z"
     description: A Helm chart that configures Argo CD.
@@ -338,6 +348,38 @@ entries:
     - https://github.com/gccloudone-aurora/aurora-platform-charts/releases/download/aurora-namespace-0.0.1/aurora-namespace-0.0.1.tgz
     version: 0.0.1
   aurora-platform:
+  - apiVersion: v2
+    appVersion: 2.0.0
+    created: "2025-11-07T22:48:32.219179401Z"
+    dependencies:
+    - alias: core
+      condition: core.enabled
+      name: aurora-core
+      repository: ""
+      version: 0.0.1
+    - alias: app
+      condition: app.enabled
+      import-values:
+      - child: data
+        parent: global.imports
+      name: aurora-app
+      repository: ""
+      version: 0.0.1
+    - alias: mgmt
+      condition: mgmt.enabled
+      import-values:
+      - child: data
+        parent: global.imports
+      name: aurora-mgmt
+      repository: ""
+      version: 0.0.1
+    description: Aurora Platform
+    digest: 236d273e8e866a4da180192ee2e481d90edbff3fc435a5d5bcc6bcb403cd780a
+    name: aurora-platform
+    type: application
+    urls:
+    - https://github.com/gccloudone-aurora/aurora-platform-charts/releases/download/aurora-platform-0.0.97/aurora-platform-0.0.97.tgz
+    version: 0.0.97
   - apiVersion: v2
     appVersion: 2.0.0
     created: "2025-11-07T22:26:08.173773849Z"
@@ -3493,4 +3535,4 @@ entries:
     urls:
     - https://github.com/gccloudone-aurora/aurora-platform-charts/releases/download/raw-0.0.1/raw-0.0.1.tgz
     version: 0.0.1
-generated: "2025-11-07T22:26:08.174060536Z"
+generated: "2025-11-07T22:48:32.219528171Z"
