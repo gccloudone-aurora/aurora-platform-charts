@@ -1,7 +1,95 @@
 argocdInstance:
+
   applicationInstanceLabelKey: "platform.ssc-spc.gc.ca/application-name"
+
+  disableAdmin: false
+
+  ingressDomain: ""
+
+  logLevel: "info"
+
+  oidcAuthSP:
+    tenantID: ""
+    clientID: ""
+    clientSecret: ""
+
+  sourceNamespaces: []             
+
+  globalProjects: []
+    # - projectName: "global"
+    #   labelSelector:
+    #     key: "argocd.argoproj.io/project-inherit"
+    #     value: "global"
+
+
+  ##### Components #####
+
+  imageRegistry:
+    host: "docker.io"
+    repository: ""
+
+  image:
+    name: "argoproj/argocd"
+    version: "v2.11.14"
+
   nodeSelector: {}
   tolerations: []
+
+  applicationSet:
+    resources: {}
+      # limits:
+      #   cpu: ""
+      #   memory: ""
+      # requests:
+      #   cpu: ""
+      #   memory: ""
+
+  controller:
+    resources: {}
+      # limits:
+      #   cpu: ""
+      #   memory: ""
+      # requests:
+      #   cpu: ""
+      #   memory: ""
+
+  notifications:
+    enabled: false
+
+  redis:
+    image:
+      name: "redis"
+      version: "6.2.6"
+    resources: {}
+      # limits:
+      #   cpu: ""
+      #   memory: ""
+      # requests:
+      #   cpu: ""
+      #   memory: ""
+
+  repo:
+    resources: {}
+      # limits:
+      #   cpu: ""
+      #   memory: ""
+      # requests:
+      #   cpu: ""
+      #   memory: ""
+
+  server:
+    autoscale:
+      enabled: false
+    service:
+      type: NodePort
+    resources: {}
+      # limits:
+      #   cpu: ""
+      #   memory: ""
+      # requests:
+      #   cpu: ""
+      #   memory: ""
+
   argocdVaultPlugin:
     enabled: true
     imageRegistry:
@@ -31,84 +119,6 @@ argocdInstance:
           clientID: ""
           resourceID: ""
 
-  sourceNamespaces: []             
-
-  globalProjects: []
-    # - projectName: "global"
-    #   labelSelector:
-    #     key: "argocd.argoproj.io/project-inherit"
-    #     value: "global"
-
-  disableAdmin: false
-  imageRegistry:
-    host: "docker.io"
-    repository: ""
-  image:
-    name: "argoproj/argocd"
-    version: "v2.6.6"
-  ingressDomain: ""
-  logLevel: "info"
-  notifications:
-    enabled: false
-  oidcAuthSP:
-    tenantID: ""
-    clientID: ""
-    clientSecret: ""
-
-  applicationSet:
-    resources: {}
-      # limits:
-      #   cpu: ""
-      #   memory: ""
-      # requests:
-      #   cpu: ""
-      #   memory: ""
-
-  controller:
-    resources: {}
-      # limits:
-      #   cpu: ""
-      #   memory: ""
-      # requests:
-      #   cpu: ""
-      #   memory: ""
-
-  redis:
-    image:
-      name: "redis"
-      version: "6.2.6"
-    resources: {}
-      # limits:
-      #   cpu: ""
-      #   memory: ""
-      # requests:
-      #   cpu: ""
-      #   memory: ""
-
-  repo:
-    image:
-      name: "argoproj/argocd"
-      version: "v2.6.6"
-    resources: {}
-      # limits:
-      #   cpu: ""
-      #   memory: ""
-      # requests:
-      #   cpu: ""
-      #   memory: ""
-
-  server:
-    autoscale:
-      enabled: false
-    service:
-      type: NodePort
-    resources: {}
-      # limits:
-      #   cpu: ""
-      #   memory: ""
-      # requests:
-      #   cpu: ""
-      #   memory: ""
 
 register:
   clusters: {}
