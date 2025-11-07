@@ -11,6 +11,10 @@ spec:
   image: {{ regexReplaceAll "//+" (printf "%s/%s/%s" .Values.argocdInstance.imageRegistry.host .Values.argocdInstance.imageRegistry.repository .Values.argocdInstance.image.name) "/" }}
   version: {{ .Values.argocdInstance.image.version }}
 
+  {{- if .Values.argocdInstance.installationID }}
+    installationID: {{ .Values.argocdInstance.installationID }} 
+  {{- end }}
+
   ha:
     enabled: false
 

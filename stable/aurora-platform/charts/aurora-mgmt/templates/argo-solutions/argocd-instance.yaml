@@ -36,6 +36,8 @@ spec:
                 clientID: "{{ .Values.components.argoSolution.argocdInstance.oidcAuthSP.credentials.clientID }}"
                 clientSecret: "{{ .Values.components.argoSolution.argocdInstance.oidcAuthSP.credentials.clientSecret }}"
 
+              installationID: "solution"
+
               argocdVaultPlugin:
                 enabled: false
 
