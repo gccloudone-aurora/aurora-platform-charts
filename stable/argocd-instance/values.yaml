@@ -23,7 +23,6 @@ argocdInstance:
 
   # installationID: ""
 
-  disableAdmin: false
 
   ##### Components #####
 
