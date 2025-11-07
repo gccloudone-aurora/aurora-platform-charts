@@ -9,12 +9,12 @@ Please consult the [Project Aurora Template](https://github.com/gccloudone-auror
 <!-- START OF CHARTS SECTION -->
 
 ## argocd-instance
-- **Version:** 0.5.0
+- **Version:** 0.5.2
 - **Description:** A Helm chart that configures Argo CD.
 - **Documentation:** [README](./stable/argocd-instance/README.md)
 
 ## argocd-operator
-- **Version:** 0.0.8
+- **Version:** 0.0.9
 - **Description:** A Helm chart that deploys ArgoCD Operator.
 - **Documentation:** [README](./stable/argocd-operator/README.md)
 
@@ -26,7 +26,7 @@ Please consult the [Project Aurora Template](https://github.com/gccloudone-auror
   - [raw](./stable/raw/README.md) (local, version: 0.0.1)
 
 ## aurora-platform
-- **Version:** 0.0.8
+- **Version:** 0.0.96
 - **Description:** Aurora Platform
 - **Documentation:** [README](./stable/aurora-platform/README.md)
 - **Dependencies:**
@@ -49,6 +49,7 @@ Please consult the [Project Aurora Template](https://github.com/gccloudone-auror
     - [priority-classes](./stable/aurora-platform/charts/aurora-core/templates/priority-classes)
     - [prometheus](./stable/aurora-platform/charts/aurora-core/templates/prometheus)
     - [rbac](./stable/aurora-platform/charts/aurora-core/templates/rbac)
+    - [secrets-store-csi-driver](./stable/aurora-platform/charts/aurora-core/templates/secrets-store-csi-driver)
     - [tetragon](./stable/aurora-platform/charts/aurora-core/templates/tetragon)
     - [trust-manager](./stable/aurora-platform/charts/aurora-core/templates/trust-manager)
     - [vault-agent](./stable/aurora-platform/charts/aurora-core/templates/vault-agent)
@@ -64,6 +65,7 @@ Please consult the [Project Aurora Template](https://github.com/gccloudone-auror
   - [aurora-mgmt](./stable/aurora-platform/charts/aurora-mgmt/README.md) (local, version: 0.0.1)
     - [argo-foundation](./stable/aurora-platform/charts/aurora-mgmt/templates/argo-foundation)
     - [argo-operator](./stable/aurora-platform/charts/aurora-mgmt/templates/argo-operator)
+    - [argo-solutions](./stable/aurora-platform/charts/aurora-mgmt/templates/argo-solutions)
     - [bill-of-landing](./stable/aurora-platform/charts/aurora-mgmt/templates/bill-of-landing)
 
 ## aurora-app

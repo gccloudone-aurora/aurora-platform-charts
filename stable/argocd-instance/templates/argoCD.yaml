@@ -7,46 +7,16 @@ metadata:
   finalizers:
     - argoproj.io/finalizer
 spec:
-  applicationInstanceLabelKey: {{ .Values.argocdInstance.applicationInstanceLabelKey }}
 
-  nodePlacement:
-    nodeSelector: {{ toYaml .Values.argocdInstance.nodeSelector | nindent 6 }}
-    tolerations: {{ toYaml .Values.argocdInstance.tolerations | nindent 6 }}
-
-  applicationSet:
-    image: {{ regexReplaceAll "//+" (printf "%s/%s/%s" .Values.argocdInstance.imageRegistry.host .Values.argocdInstance.imageRegistry.repository .Values.argocdInstance.image.name) "/" }}
-    version: {{ .Values.argocdInstance.image.version }}
-    logLevel: {{ .Values.argocdInstance.logLevel }}
-    resources:  {{ toYaml .Values.argocdInstance.applicationSet.resources | nindent 6 }}
-
-  controller:
-    processors: {}
-    sharding: {}
-    logLevel: {{ .Values.argocdInstance.logLevel }}
-    resources:  {{ toYaml .Values.argocdInstance.controller.resources | nindent 6 }}
-
-  disableAdmin: {{ .Values.argocdInstance.disableAdmin }}
-  extraConfig:
-    resource.compareoptions: |
-      ignoreAggregatedRoles: true
-
-  {{- if not .Values.argocdInstance.globalProjects | empty }}
-    globalProjects: |-
-      {{- range .Values.argocdInstance.globalProjects }}
-      - labelSelector:
-          matchExpressions:
-            - key: {{ .labelSelector.key }}
-              operator: In
-              values:
-                - {{ .labelSelector.value }}
-        projectName: {{ .projectName }}
-      {{- end }}
-  {{- end }}
+  image: {{ regexReplaceAll "//+" (printf "%s/%s/%s" .Values.argocdInstance.imageRegistry.host .Values.argocdInstance.imageRegistry.repository .Values.argocdInstance.image.name) "/" }}
+  version: {{ .Values.argocdInstance.image.version }}
 
   {{- if .Values.argocdInstance.installationID }}
     installationID: {{ .Values.argocdInstance.installationID }} 
   {{- end }}
 
+  ha:
+    enabled: false
 
   grafana:
     enabled: false
@@ -54,54 +24,64 @@ spec:
       enabled: false
     route:
       enabled: false
-  ha:
-    enabled: false
-  initialSSHKnownHosts: {}
-  kustomizeBuildOptions: --load-restrictor LoadRestrictionsNone --enable-helm
-  image: {{ regexReplaceAll "//+" (printf "%s/%s/%s" .Values.argocdInstance.imageRegistry.host .Values.argocdInstance.imageRegistry.repository .Values.argocdInstance.image.name) "/" }}
-  notifications:
-    enabled: {{ .Values.argocdInstance.notifications.enabled }}
-    logLevel: {{ .Values.argocdInstance.logLevel }}
-  {{- if and .Values.argocdInstance.oidcAuthSP.tenantID .Values.argocdInstance.oidcAuthSP.clientID .Values.argocdInstance.oidcAuthSP.clientSecret }}
-  oidcConfig: |
-    name: aurora
-    issuer: {{ printf "https://login.microsoftonline.com/%s/v2.0" .Values.argocdInstance.oidcAuthSP.tenantID }}
-    clientID: {{ .Values.argocdInstance.oidcAuthSP.clientID }}
-    clientSecret: {{ .Values.argocdInstance.oidcAuthSP.clientSecret }}
-    requestedIDTokenClaims:
-      groups:
-        essential: true
-    requestedScopes: ["openid","profile","email"]
-  {{- end }}
+
   prometheus:
     enabled: false
     ingress:
       enabled: false
     route:
       enabled: false
-  rbac:
-    defaultPolicy: ""
-    policy: |
-      p, role:org-admin, applications, *, */*, allow
-      p, role:org-admin, applicationsets, get, */*, allow
-      p, role:org-admin, clusters, get, *, allow
-      p, role:org-admin, projects, get, *, allow
-      p, role:org-admin, repositories, get, *, allow
-      p, role:org-admin, repositories, create, *, allow
-      p, role:org-admin, repositories, update, *, allow
-      p, role:org-admin, repositories, delete, *, allow
-      p, role:org-admin, accounts, get, *, allow
-      p, role:org-admin, accounts, update, *, allow
-      g, {{ .Values.argocdInstance.adminSecurityGroup | quote }}, role:org-admin
-    scopes: '[groups]'
+
+  tls:
+    ca: {}      
+
+  nodePlacement:
+    nodeSelector: {{ toYaml .Values.argocdInstance.nodeSelector | nindent 6 }}
+    tolerations: {{ toYaml .Values.argocdInstance.tolerations | nindent 6 }}
+
+  controller:
+    processors: {}
+    sharding: {}
+    logLevel: {{ .Values.argocdInstance.logLevel }}
+    resources:  {{ toYaml .Values.argocdInstance.controller.resources | nindent 6 }}
+
+  applicationSet:
+    image: {{ regexReplaceAll "//+" (printf "%s/%s/%s" .Values.argocdInstance.imageRegistry.host .Values.argocdInstance.imageRegistry.repository .Values.argocdInstance.image.name) "/" }}
+    version: {{ .Values.argocdInstance.image.version }}
+    logLevel: {{ .Values.argocdInstance.logLevel }}
+    resources:  {{ toYaml .Values.argocdInstance.applicationSet.resources | nindent 6 }}
 
   redis:
     image: {{ regexReplaceAll "//+" (printf "%s/%s/%s" .Values.argocdInstance.imageRegistry.host .Values.argocdInstance.imageRegistry.repository .Values.argocdInstance.redis.image.name) "/" }}
     version: {{ .Values.argocdInstance.redis.image.version }}
     resources:  {{ toYaml .Values.argocdInstance.redis.resources | nindent 6 }}
 
+  server:
+    autoscale:
+      enabled: {{ .Values.argocdInstance.server.autoscale.enabled }}
+    grpc:
+      ingress:
+        enabled: false
+    {{- if .Values.argocdInstance.ingressDomain }}
+    host: {{ .Values.argocdInstance.ingressDomain }}
+    {{- end }}
+    ingress:
+      enabled: false
+    insecure: true
+    logLevel: {{ .Values.argocdInstance.logLevel }}
+    route:
+      enabled: false
+    service:
+      type: {{ .Values.argocdInstance.server.service.type }}
+    resources:  {{ toYaml .Values.argocdInstance.server.resources | nindent 6 }}
+
+  notifications:
+    enabled: {{ .Values.argocdInstance.notifications.enabled }}
+    logLevel: {{ .Values.argocdInstance.logLevel }}
+
   repo:
-    image: {{ regexReplaceAll "//+" (printf "%s/%s/%s" .Values.argocdInstance.imageRegistry.host .Values.argocdInstance.imageRegistry.repository .Values.argocdInstance.repo.image.name) "/" }}
+    image: {{ regexReplaceAll "//+" (printf "%s/%s/%s" .Values.argocdInstance.imageRegistry.host .Values.argocdInstance.imageRegistry.repository .Values.argocdInstance.image.name) "/" }}
+    version: {{ .Values.argocdInstance.image.version }}
     logLevel: {{ .Values.argocdInstance.logLevel }}
     mountsatoken: true
     volumeMounts:
@@ -151,7 +131,6 @@ spec:
             name: {{ .Values.argocdInstance.argocdVaultPlugin.configMapName }}
             subPath: avp-helm.yaml
     {{- end }}
-    version: {{ .Values.argocdInstance.repo.image.version }}
     volumes:
       {{- if .Values.argocdInstance.argocdVaultPlugin.enabled }}
       - configMap:
@@ -163,6 +142,62 @@ spec:
           optional: true
         name: custom-certs
     resources:  {{ toYaml .Values.argocdInstance.repo.resources | nindent 6 }}
+
+
+  ####### Argo CD Configuration #######
+
+ 
+  disableAdmin: {{ .Values.argocdInstance.disableAdmin }}
+
+  extraConfig:
+    resource.compareoptions: |
+      ignoreAggregatedRoles: true
+
+  {{- if not .Values.argocdInstance.globalProjects | empty }}
+    globalProjects: |-
+      {{- range .Values.argocdInstance.globalProjects }}
+      - labelSelector:
+          matchExpressions:
+            - key: {{ .labelSelector.key }}
+              operator: In
+              values:
+                - {{ .labelSelector.value }}
+        projectName: {{ .projectName }}
+      {{- end }}
+  {{- end }}
+
+  initialSSHKnownHosts: {}
+  kustomizeBuildOptions: --load-restrictor LoadRestrictionsNone --enable-helm
+
+  {{- if and .Values.argocdInstance.oidcAuthSP.tenantID .Values.argocdInstance.oidcAuthSP.clientID .Values.argocdInstance.oidcAuthSP.clientSecret }}
+  oidcConfig: |
+    name: aurora
+    issuer: {{ printf "https://login.microsoftonline.com/%s/v2.0" .Values.argocdInstance.oidcAuthSP.tenantID }}
+    clientID: {{ .Values.argocdInstance.oidcAuthSP.clientID }}
+    clientSecret: {{ .Values.argocdInstance.oidcAuthSP.clientSecret }}
+    requestedIDTokenClaims:
+      groups:
+        essential: true
+    requestedScopes: ["openid","profile","email"]
+  {{- end }}
+
+  rbac:
+    defaultPolicy: ""
+    policy: |
+      p, role:org-admin, applications, *, */*, allow
+      p, role:org-admin, applicationsets, get, */*, allow
+      p, role:org-admin, clusters, get, *, allow
+      p, role:org-admin, projects, get, *, allow
+      p, role:org-admin, repositories, get, *, allow
+      p, role:org-admin, repositories, create, *, allow
+      p, role:org-admin, repositories, update, *, allow
+      p, role:org-admin, repositories, delete, *, allow
+      p, role:org-admin, accounts, get, *, allow
+      p, role:org-admin, accounts, update, *, allow
+      g, {{ .Values.argocdInstance.adminSecurityGroup | quote }}, role:org-admin
+    scopes: '[groups]'
+
+
   resourceHealthChecks:
     - group: kiali.io
       kind: Kiali
@@ -236,29 +271,12 @@ spec:
         - Backup
       clusters:
         - '*'
+
+  # How Argo CD tracks which Kubernetes resources belong to an Application.
   resourceTrackingMethod: annotation
-  server:
-    autoscale:
-      enabled: {{ .Values.argocdInstance.server.autoscale.enabled }}
-    grpc:
-      ingress:
-        enabled: false
-    {{- if .Values.argocdInstance.ingressDomain }}
-    host: {{ .Values.argocdInstance.ingressDomain }}
-    {{- end }}
-    ingress:
-      enabled: false
-    insecure: true
-    logLevel: {{ .Values.argocdInstance.logLevel }}
-    route:
-      enabled: false
-    service:
-      type: {{ .Values.argocdInstance.server.service.type }}
-    resources:  {{ toYaml .Values.argocdInstance.server.resources | nindent 6 }}
+
+  # The metadata.label key name where Argo CD injects the app name as a tracking label.
+  applicationInstanceLabelKey: {{ .Values.argocdInstance.applicationInstanceLabelKey }}  
 
   # Defines which namespaces to look for applications in
   sourceNamespaces: {{ toYaml .Values.argocdInstance.sourceNamespaces | nindent 4 }}
-
-  tls:
-    ca: {}
-  version: {{ .Values.argocdInstance.image.version }}
