@@ -14,7 +14,7 @@ Please consult the [Project Aurora Template](https://github.com/gccloudone-auror
 - **Documentation:** [README](./stable/argocd-instance/README.md)
 
 ## argocd-operator
-- **Version:** 0.0.9
+- **Version:** 0.0.10
 - **Description:** A Helm chart that deploys ArgoCD Operator.
 - **Documentation:** [README](./stable/argocd-operator/README.md)
 
