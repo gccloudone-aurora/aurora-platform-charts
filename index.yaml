@@ -3,6 +3,16 @@ entries:
   argocd-instance:
   - apiVersion: v2
     appVersion: v2.14.21
+    created: "2025-11-08T03:19:16.007978891Z"
+    description: A Helm chart that configures Argo CD.
+    digest: 27085a0f6ceb30fdf288e1793729f9629e37d18c21f73eb59ce0cb908828aa71
+    name: argocd-instance
+    type: application
+    urls:
+    - https://github.com/gccloudone-aurora/aurora-platform-charts/releases/download/argocd-instance-0.8.2/argocd-instance-0.8.2.tgz
+    version: 0.8.2
+  - apiVersion: v2
+    appVersion: v2.14.21
     created: "2025-11-08T02:42:04.449767635Z"
     description: A Helm chart that configures Argo CD.
     digest: a9882d4087492a661bdb99ebb89ee069ef5e46cf4ba5ab7c32aa16b789258654
@@ -398,6 +408,38 @@ entries:
     - https://github.com/gccloudone-aurora/aurora-platform-charts/releases/download/aurora-namespace-0.0.1/aurora-namespace-0.0.1.tgz
     version: 0.0.1
   aurora-platform:
+  - apiVersion: v2
+    appVersion: 2.0.0
+    created: "2025-11-08T03:19:16.241998231Z"
+    dependencies:
+    - alias: core
+      condition: core.enabled
+      name: aurora-core
+      repository: ""
+      version: 0.0.1
+    - alias: app
+      condition: app.enabled
+      import-values:
+      - child: data
+        parent: global.imports
+      name: aurora-app
+      repository: ""
+      version: 0.0.1
+    - alias: mgmt
+      condition: mgmt.enabled
+      import-values:
+      - child: data
+        parent: global.imports
+      name: aurora-mgmt
+      repository: ""
+      version: 0.0.1
+    description: Aurora Platform
+    digest: c99ad5e1f6203fdc4769ccc6bd8240519805578c67bddd4735ad9c02226611e9
+    name: aurora-platform
+    type: application
+    urls:
+    - https://github.com/gccloudone-aurora/aurora-platform-charts/releases/download/aurora-platform-0.0.104/aurora-platform-0.0.104.tgz
+    version: 0.0.104
   - apiVersion: v2
     appVersion: 2.0.0
     created: "2025-11-08T02:42:04.600845571Z"
@@ -3738,6 +3780,20 @@ entries:
     version: 0.0.1
   istio-ingress-gateway:
   - apiVersion: v2
+    created: "2025-11-08T03:19:16.473434558Z"
+    dependencies:
+    - condition: gateway.enabled
+      name: gateway
+      repository: https://istio-release.storage.googleapis.com/charts
+      version: 1.14.3
+    description: This chart deploys an opinionated Istio Ingress Gateway.
+    digest: 22cfdc380b5c0d6b2d2d08e658f948399aa04e83b80a9253e4abf5449cfd3e68
+    name: istio-ingress-gateway
+    type: application
+    urls:
+    - https://github.com/gccloudone-aurora/aurora-platform-charts/releases/download/istio-ingress-gateway-0.0.4/istio-ingress-gateway-0.0.4.tgz
+    version: 0.0.4
+  - apiVersion: v2
     created: "2025-09-14T02:12:10.150634428Z"
     dependencies:
     - condition: gateway.enabled
@@ -3787,4 +3843,4 @@ entries:
     urls:
     - https://github.com/gccloudone-aurora/aurora-platform-charts/releases/download/raw-0.0.1/raw-0.0.1.tgz
     version: 0.0.1
-generated: "2025-11-08T02:42:04.601292483Z"
+generated: "2025-11-08T03:19:16.473958882Z"
