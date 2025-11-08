@@ -304,6 +304,16 @@ entries:
   argocd-operator:
   - apiVersion: v2
     appVersion: 0.14.0
+    created: "2025-11-08T18:26:11.837912693Z"
+    description: A Helm chart that deploys ArgoCD Operator.
+    digest: 51b87b93d952ed7031eedd702be81813ddb00097fbc0cf2e141a782cf37e1af3
+    name: argocd-operator
+    type: application
+    urls:
+    - https://github.com/gccloudone-aurora/aurora-platform-charts/releases/download/argocd-operator-0.0.11/argocd-operator-0.0.11.tgz
+    version: 0.0.11
+  - apiVersion: v2
+    appVersion: 0.14.0
     created: "2025-11-08T04:08:39.747232517Z"
     description: A Helm chart that deploys ArgoCD Operator.
     digest: 781d84334a9e9b28aca5567ffc2b863d75f1efc7e70bdddcfa5c483a6c975182
@@ -418,6 +428,38 @@ entries:
     - https://github.com/gccloudone-aurora/aurora-platform-charts/releases/download/aurora-namespace-0.0.1/aurora-namespace-0.0.1.tgz
     version: 0.0.1
   aurora-platform:
+  - apiVersion: v2
+    appVersion: 2.0.0
+    created: "2025-11-08T18:26:12.035403916Z"
+    dependencies:
+    - alias: core
+      condition: core.enabled
+      name: aurora-core
+      repository: ""
+      version: 0.0.1
+    - alias: app
+      condition: app.enabled
+      import-values:
+      - child: data
+        parent: global.imports
+      name: aurora-app
+      repository: ""
+      version: 0.0.1
+    - alias: mgmt
+      condition: mgmt.enabled
+      import-values:
+      - child: data
+        parent: global.imports
+      name: aurora-mgmt
+      repository: ""
+      version: 0.0.1
+    description: Aurora Platform
+    digest: 459460f9b7dc3578147c60ddedd5aaa4cdc9f7335045a9e361cd6d8d0a58bcb2
+    name: aurora-platform
+    type: application
+    urls:
+    - https://github.com/gccloudone-aurora/aurora-platform-charts/releases/download/aurora-platform-0.0.106/aurora-platform-0.0.106.tgz
+    version: 0.0.106
   - apiVersion: v2
     appVersion: 2.0.0
     created: "2025-11-08T04:08:39.943386233Z"
@@ -3885,4 +3927,4 @@ entries:
     urls:
     - https://github.com/gccloudone-aurora/aurora-platform-charts/releases/download/raw-0.0.1/raw-0.0.1.tgz
     version: 0.0.1
-generated: "2025-11-08T04:08:39.94370107Z"
+generated: "2025-11-08T18:26:12.035725547Z"
