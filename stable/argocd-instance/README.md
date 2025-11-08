@@ -29,7 +29,7 @@ A Helm chart that configures Argo CD.
 | argocdInstance.disableAdmin | bool | `false` |  |
 | argocdInstance.image.name | string | `"argoproj/argocd"` |  |
 | argocdInstance.image.version | string | `"v2.6.6"` |  |
-| argocdInstance.imageRegistry.host | string | `"docker.io"` |  |
+| argocdInstance.imageRegistry.host | string | `"quay.io"` |  |
 | argocdInstance.imageRegistry.repository | string | `""` |  |
 | argocdInstance.ingressDomain | string | `""` |  |
 | argocdInstance.logLevel | string | `"info"` |  |

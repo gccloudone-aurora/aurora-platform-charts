@@ -13,7 +13,7 @@ argocdInstance:
     clientID: ""
     clientSecret: ""
 
-  sourceNamespaces: []             
+  sourceNamespaces: []
 
   globalProjects: []
     # - projectName: "global"
@@ -21,11 +21,13 @@ argocdInstance:
     #     key: "argocd.argoproj.io/project-inherit"
     #     value: "global"
 
+  # installationID: ""
+
 
   ##### Components #####
 
   imageRegistry:
-    host: "docker.io"
+    host: "quay.io"
     repository: ""
 
   image:
