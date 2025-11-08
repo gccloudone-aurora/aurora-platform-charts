@@ -34,6 +34,8 @@ spec:
                 clientID: "{{ .Values.components.argoFoundation.argocdInstance.oidcAuthSP.credentials.clientID }}"
                 clientSecret: "{{ .Values.components.argoFoundation.argocdInstance.oidcAuthSP.credentials.clientSecret }}"
 
+              installationID: "platform"
+
               argocdVaultPlugin:
                 env: {{ toYaml .Values.components.argoFoundation.argocdInstance.argocdVaultPlugin.env | nindent 18 }}
 

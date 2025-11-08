@@ -11,6 +11,10 @@ spec:
   image: {{ regexReplaceAll "//+" (printf "%s/%s/%s" .Values.argocdInstance.imageRegistry.host .Values.argocdInstance.imageRegistry.repository .Values.argocdInstance.image.name) "/" }}
   version: {{ .Values.argocdInstance.image.version }}
 
+  {{- if .Values.argocdInstance.installationID }}
+  installationID: {{ .Values.argocdInstance.installationID }}
+  {{- end }}
+
   ha:
     enabled: false
 
@@ -29,7 +33,7 @@ spec:
       enabled: false
 
   tls:
-    ca: {}      
+    ca: {}
 
   nodePlacement:
     nodeSelector: {{ toYaml .Values.argocdInstance.nodeSelector | nindent 6 }}
@@ -142,7 +146,7 @@ spec:
 
   ####### Argo CD Configuration #######
 
- 
+
   disableAdmin: {{ .Values.argocdInstance.disableAdmin }}
 
   extraConfig:
@@ -272,7 +276,7 @@ spec:
   resourceTrackingMethod: annotation
 
   # The metadata.label key name where Argo CD injects the app name as a tracking label.
-  applicationInstanceLabelKey: {{ .Values.argocdInstance.applicationInstanceLabelKey }}  
+  applicationInstanceLabelKey: {{ .Values.argocdInstance.applicationInstanceLabelKey }}
 
   # Defines which namespaces to look for applications in
   sourceNamespaces: {{ toYaml .Values.argocdInstance.sourceNamespaces | nindent 4 }}
