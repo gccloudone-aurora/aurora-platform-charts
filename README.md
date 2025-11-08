@@ -9,7 +9,7 @@ Please consult the [Project Aurora Template](https://github.com/gccloudone-auror
 <!-- START OF CHARTS SECTION -->
 
 ## argocd-instance
-- **Version:** 0.6.1
+- **Version:** 0.6.2
 - **Description:** A Helm chart that configures Argo CD.
 - **Documentation:** [README](./stable/argocd-instance/README.md)
 
@@ -26,7 +26,7 @@ Please consult the [Project Aurora Template](https://github.com/gccloudone-auror
   - [raw](./stable/raw/README.md) (local, version: 0.0.1)
 
 ## aurora-platform
-- **Version:** 0.0.99
+- **Version:** 0.0.100
 - **Description:** Aurora Platform
 - **Documentation:** [README](./stable/aurora-platform/README.md)
 - **Dependencies:**
