@@ -4,7 +4,7 @@ kind: Certificate
 metadata:
   name: argocd-server-tls
   labels:
-    use-azuredns-solver: "true"
+    use-general-solver: "true"
     {{- include "argocd-foundation.labels" $ | nindent 4 }}
 spec:
   commonName: {{ .Values.argocdInstance.ingressDomain }}

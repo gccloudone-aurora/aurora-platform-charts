@@ -94,7 +94,7 @@ Please consult the [Project Aurora Template](https://github.com/gccloudone-auror
 - **Documentation:** [README](./stable/istio-custom-responses/README.md)
 
 ## istio-ingress-gateway
-- **Version:** 0.0.3
+- **Version:** 0.0.4
 - **Description:** This chart deploys an opinionated Istio Ingress Gateway.
 - **Documentation:** [README](./stable/istio-ingress-gateway/README.md)
 - **Dependencies:**

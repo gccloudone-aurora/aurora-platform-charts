@@ -5,7 +5,7 @@ metadata:
   labels:
     {{- include "istio-ingress-gateway.labels" . | nindent 4 }}
     {{- if .Values.https.certificate.useGeneralDNSSolver }}
-    use-generaldns-solver: "true"
+    use-general-solver: "true"
     {{- end }}
   name: {{ include "istio-ingress-gateway.fullname" . }}
   namespace: {{ .Release.Namespace }}
