@@ -52,7 +52,7 @@ spec:
     resources:  {{ toYaml .Values.argocdInstance.applicationSet.resources | nindent 6 }}
 
   redis:
-    image: {{ regexReplaceAll "//+" (printf "%s/%s/%s" .Values.argocdInstance.imageRegistry.host .Values.argocdInstance.imageRegistry.repository .Values.argocdInstance.redis.image.name) "/" }}
+    image: {{ regexReplaceAll "//+" (printf "%s/%s/%s" .Values.argocdInstance.redis.imageRegistry.host .Values.argocdInstance.redis.imageRegistry.repository .Values.argocdInstance.redis.image.name) "/" }}
     version: {{ .Values.argocdInstance.redis.image.version }}
     resources:  {{ toYaml .Values.argocdInstance.redis.resources | nindent 6 }}
 

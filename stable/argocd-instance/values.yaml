@@ -59,6 +59,10 @@ argocdInstance:
     enabled: false
 
   redis:
+    imageRegistry:
+      host: "docker.io"
+      repository: ""
+
     image:
       name: "redis"
       version: "6.2.6"
