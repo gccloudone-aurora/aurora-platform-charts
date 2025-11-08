@@ -8,7 +8,7 @@ operator:
   # -- Configures the image to use for the argocd-operator pod(s)
   image:
     repository: quay.io/argoprojlabs/argocd-operator
-    tag: v0.14.0
+    tag: v0.15.0
     pullPolicy: IfNotPresent
   # -- One or many secret(s), that store Docker credentials that are used for accessing a private image registry
   imagePullSecrets: []

@@ -83,6 +83,10 @@ spec:
     image: {{ regexReplaceAll "//+" (printf "%s/%s/%s" .Values.argocdInstance.imageRegistry.host .Values.argocdInstance.imageRegistry.repository .Values.argocdInstance.image.name) "/" }}
     version: {{ .Values.argocdInstance.image.version }}
     logLevel: {{ .Values.argocdInstance.logLevel }}
+    {{- if .Values.argocdInstance.argocdVaultPlugin.enabled }}
+    labels:
+      aadpodidbinding: argocd-vault-plugin
+    {{- end }}
     mountsatoken: true
     volumeMounts:
       - mountPath: /etc/ssl/certs/custom.crt
