@@ -37,6 +37,8 @@ spec:
               installationID: "platform"
 
               argocdVaultPlugin:
+                enabled: true
+
                 env: {{ toYaml .Values.components.argoFoundation.argocdInstance.argocdVaultPlugin.env | nindent 18 }}
 
                 azure:
