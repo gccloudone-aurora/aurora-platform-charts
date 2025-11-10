@@ -6,6 +6,7 @@ metadata:
   name: {{ $.Release.Name }}
   labels:
     argocd.argoproj.io/project-inherit: global
+    project.ssc-spc.gc.ca/sync: argo
 spec:
 
   # Which namespaces can use this AppProject 
