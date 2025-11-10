@@ -15,7 +15,7 @@ spec:
     {{- else }}
     repoURL: {{ default "https://gccloudone-aurora.github.io/argo-controller" .Values.global.helm.repository }}
     {{- end }}
-    targetRevision: {{ default "0.0.2" .Values.components.argoController.helm.targetRevision }}
+    targetRevision: {{ default "0.0.3" .Values.components.argoController.helm.targetRevision }}
     helm:
       releaseName: argo-controller
       values: |
