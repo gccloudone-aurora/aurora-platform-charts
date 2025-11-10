@@ -15,12 +15,29 @@ spec:
     {{- else }}
     repoURL: {{ default "https://gccloudone-aurora.github.io/argo-controller" .Values.global.helm.repository }}
     {{- end }}
-    targetRevision: {{ default "0.0.1" .Values.components.argoController.helm.targetRevision }}
+    targetRevision: {{ default "0.0.2" .Values.components.argoController.helm.targetRevision }}
     helm:
       releaseName: argo-controller
       values: |
         image: {{ default "{}" (include "argoController.image" .) | nindent 10 }}
         imagePullSecrets: {{ toYaml .Values.components.argoController.imagePullSecrets | nindent 10 }}
+
+        controllers:
+          syncAppProjects:
+            enabled: {{ .Values.components.argoController.controllers.syncAppProjects.enabled }}
+
+          imagePullSecrets:
+            enabled: {{ .Values.components.argoController.controllers.imagePullSecrets.enabled }}
+            componentsImagePullSecretName: {{ .Values.components.argoController.controllers.imagePullSecrets.componentsImagePullSecretName }}
+
+          workflows:
+            emabled: {{ .Values.components.argoController.controllers.workflows.enabled }}
+            args:
+              namespaceAdminsRoleBindingName: "solution-builder"
+              userInterfaceClusterRoleName: {{ include "argoController.userInterfaceClusterRoleName" . }}
+              argoWorkflowsClusterRoleName: {{ include "argoController.argoWorkflowsClusterRoleName" . }}
+            storageAccount:
+                existingSecret: argo-controller-storage-credentials
 
         replicaCount: {{ .Values.components.argoController.replicas }}
         resources: {{ toYaml .Values.components.argoController.resources | nindent 10 }}
@@ -28,19 +45,7 @@ spec:
         nodeSelector: {{ toYaml .Values.components.argoController.nodeSelector | nindent 10 }}
         tolerations: {{ toYaml .Values.components.argoController.tolerations | nindent 10 }}
         affinity: {{ toYaml .Values.components.argoController.affinity | nindent 10 }}
-
-        componentsImagePullSecretName: {{ .Values.components.argoController.componentsImagePullSecretName }}
-
-        storageAccount:
-            existingSecret: argo-controller-storage-credentials
-
         priorityClassName: {{ .Values.components.argoController.priorityClassName }}
-
-        workflows:
-          args:
-            namespaceAdminsRoleBindingName: "solution-builder"
-            userInterfaceClusterRoleName: {{ include "argoController.userInterfaceClusterRoleName" . }}
-            argoWorkflowsClusterRoleName: {{ include "argoController.argoWorkflowsClusterRoleName" . }}
 
   destination:
     name: {{ .Values.global.cluster }}

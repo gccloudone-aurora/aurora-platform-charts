@@ -62,15 +62,26 @@ components:
     helm: {}
       # chart: argo-controller
       # repository: https://gccloudone-aurora.github.io/aurora-platform-charts
-      # targetRevision: 0.0.1
+      # targetRevision: 0.0.2
 
     imagePullSecrets: []
 
     image:
       # registry: ghcr.io
       repository: gccloudone-aurora/argo-controller
-      # tag: "main"
+      # tag: "v0.0.2"
       # pullPolicy: IfNotPresent
+
+    controllers:
+      syncAppProjects:
+        enabled: false
+
+      imagePullSecrets:
+        enabled: false
+        componentsImagePullSecretName: ""
+
+      workflows:
+        emabled: false
 
     priorityClassName: platform-cluster-medium
 
@@ -97,13 +108,6 @@ components:
             labelSelector:
               matchLabels:
                 app.kubernetes.io/name: aurora-controller
-
-    componentsImagePullSecretName: ""
-
-    # The credentials used to access the storage account
-    # storageAccount:
-    #   name: ""
-    #   primaryAccessKey: ""
 
   argoWorkflow:
     enabled: true
