@@ -97,6 +97,7 @@ aadPodIdentities: {}
 
 argocdProject:
   enabled: true
+  namespace: "platform-solution-system"
   sourceRepos: []
   developerGroups: []   # defaults to rbac.groups if empty
   adminGroups: []       # defaults to rbac.groups if empty
