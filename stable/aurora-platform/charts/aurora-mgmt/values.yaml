@@ -256,7 +256,7 @@ components:
               resourceID: ""
 
       sourceNamespaces:
-        - '^(?!.*-system$).*'
+        - "/^((?!-system$).)*$/"
 
       oidcAuthSP:
         credentials: {}
