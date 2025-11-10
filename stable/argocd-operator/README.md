@@ -1,6 +1,6 @@
 # argocd-operator
 
-![Version: 0.0.11](https://img.shields.io/badge/Version-0.0.11-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.10.0](https://img.shields.io/badge/AppVersion-0.10.0-informational?style=flat-square)
+![Version: 0.0.11](https://img.shields.io/badge/Version-0.0.11-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.14.0](https://img.shields.io/badge/AppVersion-0.14.0-informational?style=flat-square)
 
 A Helm chart that deploys ArgoCD Operator.
 
@@ -15,16 +15,21 @@ A Helm chart that deploys ArgoCD Operator.
 |-----|------|---------|-------------|
 | operator.affinity | object | `{}` | A more expressive way to constrain ArgoCD controller Pods to specific nodes |
 | operator.extraEnv | list | `[]` | A list of environment objects used to inject additional environment variables into the controller pod |
-| operator.image | object | `{"pullPolicy":"IfNotPresent","repository":"quay.io/argoprojlabs/argocd-operator","tag":"v0.10.0"}` | Configures the image to use for the argocd-operator pod(s) |
+| operator.image | object | `{"pullPolicy":"IfNotPresent","repository":"quay.io/argoprojlabs/argocd-operator","tag":"v0.15.0"}` | Configures the image to use for the argocd-operator pod(s) |
 | operator.imagePullSecrets | list | `[]` | One or many secret(s), that store Docker credentials that are used for accessing a private image registry |
+| operator.livenessProbe | object | `{"httpGet":{"path":"/healthz","port":8081},"initialDelaySeconds":15,"periodSeconds":20}` | Liveness and Readiness Probes |
 | operator.nodeSelector | object | `{}` | Constrain ArgoCD controller Pods to be scheduled to nodes with specific labels |
 | operator.nsClusterConfig | string | `""` | List of namespaces of cluster-scoped Argo CD instances |
 | operator.nsToWatch | string | `"argo-cd-system"` | Defines which namespace for the operator to watch for deployment of related argocd components |
 | operator.podAnnotations | object | `{}` | Annotations to apply to the argocd controller pods that are deployed as part of this release |
 | operator.podLabels | object | `{}` | Labels to apply to the argocd controller pods that are deployed as part of this release |
+| operator.readinessProbe.httpGet.path | string | `"/readyz"` |  |
+| operator.readinessProbe.httpGet.port | int | `8081` |  |
+| operator.readinessProbe.initialDelaySeconds | int | `5` |  |
+| operator.readinessProbe.periodSeconds | int | `10` |  |
 | operator.replicaCount | int | `1` | The number of replicas of the ArgoCD controller |
 | operator.resources | object | `{"requests":{"cpu":"200m","ephemeral-storage":"500Mi","memory":"256Mi"}}` | Resource requests and limits to define the allowed compute and storage for each deployment |
-| operator.securityContext | object | `{"fsGroup":1000,"runAsGroup":1000,"runAsNonRoot":true,"runAsUser":1000}` | Defines privilege and access control settings for the ArgoCD controller Pod or Container |
+| operator.securityContext | object | `{"runAsNonRoot":true}` | Defines privilege and access control settings for the ArgoCD controller Pod or Container |
 | operator.tolerations | list | `[]` | A list of node taints that this deployment should tolerate |
 
 ----------------------------------------------

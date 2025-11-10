@@ -1,6 +1,6 @@
 # aurora-platform
 
-![Version: 0.0.80](https://img.shields.io/badge/Version-0.0.80-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.0.0](https://img.shields.io/badge/AppVersion-2.0.0-informational?style=flat-square)
+![Version: 0.0.112](https://img.shields.io/badge/Version-0.0.112-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.0.0](https://img.shields.io/badge/AppVersion-2.0.0-informational?style=flat-square)
 
 Aurora Platform
 
@@ -25,6 +25,7 @@ Aurora Platform
 | app.enabled | bool | `false` |  |
 | core.components | object | `{}` |  |
 | core.enabled | bool | `true` |  |
+| core.rbac | object | `{}` |  |
 | global.alertManagerCidrs[0] | string | `"192.0.2.10/32"` |  |
 | global.apiServerCidr | string | `"192.0.2.10/32"` |  |
 | global.azureMetadataApiCidr | string | `"169.254.169.254/32"` |  |

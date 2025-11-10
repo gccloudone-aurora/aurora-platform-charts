@@ -1,6 +1,6 @@
 # argocd-instance
 
-![Version: 0.5.0](https://img.shields.io/badge/Version-0.5.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.5.15](https://img.shields.io/badge/AppVersion-2.5.15-informational?style=flat-square)
+![Version: 0.8.2](https://img.shields.io/badge/Version-0.8.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v2.14.21](https://img.shields.io/badge/AppVersion-v2.14.21-informational?style=flat-square)
 
 A Helm chart that configures Argo CD.
 
@@ -20,6 +20,7 @@ A Helm chart that configures Argo CD.
 | argocdInstance.argocdVaultPlugin.azure.AADPodIdentity.managedIdentity.clientID | string | `""` |  |
 | argocdInstance.argocdVaultPlugin.azure.AADPodIdentity.managedIdentity.resourceID | string | `""` |  |
 | argocdInstance.argocdVaultPlugin.configMapName | string | `"cmp-plugin"` |  |
+| argocdInstance.argocdVaultPlugin.enabled | bool | `true` |  |
 | argocdInstance.argocdVaultPlugin.env.ARGOCD_ENV_AVP_TYPE | string | `""` |  |
 | argocdInstance.argocdVaultPlugin.image.name | string | `"argocd-repo-server"` |  |
 | argocdInstance.argocdVaultPlugin.image.version | string | `"main"` |  |
@@ -27,8 +28,9 @@ A Helm chart that configures Argo CD.
 | argocdInstance.argocdVaultPlugin.imageRegistry.repository | string | `"gccloudone-aurora"` |  |
 | argocdInstance.controller.resources | object | `{}` |  |
 | argocdInstance.disableAdmin | bool | `false` |  |
+| argocdInstance.globalProjects | list | `[]` |  |
 | argocdInstance.image.name | string | `"argoproj/argocd"` |  |
-| argocdInstance.image.version | string | `"v2.6.6"` |  |
+| argocdInstance.image.version | string | `"v2.14.21"` |  |
 | argocdInstance.imageRegistry.host | string | `"quay.io"` |  |
 | argocdInstance.imageRegistry.repository | string | `""` |  |
 | argocdInstance.ingressDomain | string | `""` |  |
@@ -40,13 +42,14 @@ A Helm chart that configures Argo CD.
 | argocdInstance.oidcAuthSP.tenantID | string | `""` |  |
 | argocdInstance.redis.image.name | string | `"redis"` |  |
 | argocdInstance.redis.image.version | string | `"6.2.6"` |  |
+| argocdInstance.redis.imageRegistry.host | string | `"docker.io"` |  |
+| argocdInstance.redis.imageRegistry.repository | string | `""` |  |
 | argocdInstance.redis.resources | object | `{}` |  |
-| argocdInstance.repo.image.name | string | `"argoproj/argocd"` |  |
-| argocdInstance.repo.image.version | string | `"v2.6.6"` |  |
 | argocdInstance.repo.resources | object | `{}` |  |
 | argocdInstance.server.autoscale.enabled | bool | `false` |  |
 | argocdInstance.server.resources | object | `{}` |  |
 | argocdInstance.server.service.type | string | `"NodePort"` |  |
+| argocdInstance.sourceNamespaces | list | `[]` |  |
 | argocdInstance.tolerations | list | `[]` |  |
 | netpol.enabled | bool | `false` |  |
 | register.clusters | object | `{}` |  |

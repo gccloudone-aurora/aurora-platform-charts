@@ -11,7 +11,10 @@ Aurora Platform - Application Components
 | components.argoController.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].podAffinityTerm.labelSelector.matchLabels."app.kubernetes.io/name" | string | `"aurora-controller"` |  |
 | components.argoController.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].podAffinityTerm.topologyKey | string | `"kubernetes.io/hostname"` |  |
 | components.argoController.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].weight | int | `1` |  |
-| components.argoController.componentsImagePullSecretName | string | `""` |  |
+| components.argoController.controllers.imagePullSecrets.componentsImagePullSecretName | string | `""` |  |
+| components.argoController.controllers.imagePullSecrets.enabled | bool | `false` |  |
+| components.argoController.controllers.syncAppProjects.enabled | bool | `false` |  |
+| components.argoController.controllers.workflows.emabled | bool | `false` |  |
 | components.argoController.enabled | bool | `true` |  |
 | components.argoController.helm | object | `{}` |  |
 | components.argoController.image.repository | string | `"gccloudone-aurora/argo-controller"` |  |
