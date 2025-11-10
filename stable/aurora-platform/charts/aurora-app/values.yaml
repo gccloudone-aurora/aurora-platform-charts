@@ -109,6 +109,11 @@ components:
               matchLabels:
                 app.kubernetes.io/name: aurora-controller
 
+    # The credentials used to access the storage account
+    # storageAccount:
+    #   name: ""
+    #   primaryAccessKey: ""
+
   argoWorkflow:
     enabled: true
 
