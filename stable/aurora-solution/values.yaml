@@ -94,11 +94,11 @@ aadPodIdentities: {}
   #   clientID: ""     # @schema type:[string]
   #   resourceID: ""   # @schema type:[string]
 
+# Utilized if namespace.type = argocd-control-plane 
 argocdProject:
   sourceRepos: []
   developerGroups: []   # defaults to rbac.groups if empty
   adminGroups: []       # defaults to rbac.groups if empty
-
 
 # Defines cluster specific resources to be created in the namespace
 # Can be one of [aadPodIdentities].
