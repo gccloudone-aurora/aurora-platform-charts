@@ -60,6 +60,12 @@ spec:
           # The upper limit of storage that can be requested across all persistent volumes.
           # Expects a string value of a number with or without units (uses SI units).
           storage: 0
+
+        argocdProject:
+          sourceRepos: []
+          developerGroups: []   # defaults to rbac.groups if empty
+          adminGroups: []       # defaults to rbac.groups if empty
+
   destination:
     name: in-cluster
     namespace: {{ $.Release.Name }}
