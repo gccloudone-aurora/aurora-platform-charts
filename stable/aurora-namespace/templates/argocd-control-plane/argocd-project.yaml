@@ -4,7 +4,7 @@ apiVersion: argoproj.io/v1alpha1
 kind: AppProject
 metadata:
   name: {{ $.Release.Name }}
-  namespace: {{ .Values.argocdProject.namespace }}
+  namespace: {{ required "argocdProject.namespace is required" .Values.argocdProject.namespace }}
   labels:
     argocd.argoproj.io/project-inherit: global
 spec:

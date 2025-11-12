@@ -1,3 +1,5 @@
+{{- if eq .Values.namespace.type "solution" }}
+
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
@@ -39,14 +41,14 @@ spec:
           # Refer to https://kubernetes.io/docs/concepts/security/pod-security-admission/
           podSecurityAdmission:
             enforce:
-              level: {{ $policies.podSecurityAdmission.enforce.level }}
-              version: {{ $policies.podSecurityAdmission.enforce.version }}
+              level: {{ .Values.policies.podSecurityAdmission.enforce.level }}
+              version: {{ .Values.policies.podSecurityAdmission.enforce.version }}
             audit:
-              level: {{ $policies.podSecurityAdmission.audit.level }}
-              version: {{ $policies.podSecurityAdmission.enforce.version }}
+              level: {{ .Values.policies.podSecurityAdmission.audit.level }}
+              version: {{ .Values.policies.podSecurityAdmission.enforce.version }}
             warn:
-              level: {{ $policies.podSecurityAdmission.warn.level }}
-              version: {{ $policies.podSecurityAdmission.enforce.version }}
+              level: {{ .Values.policies.podSecurityAdmission.warn.level }}
+              version: {{ .Values.policies.podSecurityAdmission.enforce.version }}
 
         rbac: {{ toYaml $.Values.rbac | nindent 10 }}
 
@@ -76,4 +78,5 @@ spec:
     automated:
       prune: true
       selfHeal: true
+
 {{- end }}
