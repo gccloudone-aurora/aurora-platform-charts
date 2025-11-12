@@ -18,11 +18,13 @@ spec:
     {{- end }}
     targetRevision: {{ default "0.0.1" $.Values.global.helm.targetRevision }}
     helm:
-      releaseName: argocd-{{ $.Release.Name }}
+      releaseName: "argocd-{{ $.Release.Name }}"
       values: |
         information: {{ toYaml $.Values.information | nindent 10 }}
 
-        namespace: {{ toYaml $.Values.namespace | nindent 10 }}
+        namespace:
+          labels: {{ toYaml $.Values.namespace.labels }}
+          type: argocd-control-plane
 
         netpol:
           allowSameNamespace: true
@@ -62,13 +64,14 @@ spec:
           storage: 0
 
         argocdProject:
-          sourceRepos: []
-          developerGroups: []   # defaults to rbac.groups if empty
-          adminGroups: []       # defaults to rbac.groups if empty
+          namespace: {{ .Values.argocdProject.namespace }}
+          sourceRepos: {{ .Values.argocdProject.sourceRepos }}
+          developerGroups: {{ .Values.argocdProject.developerGroups }}  # defaults to rbac.groups if empty
+          adminGroups: {{ .Values.argocdProject.adminGroups }}      # defaults to rbac.groups if empty
 
   destination:
     name: in-cluster
-    namespace: {{ $.Release.Name }}
+    namespace: "argocd-{{ $.Release.Name }}"
   syncPolicy:
     automated:
       prune: true
