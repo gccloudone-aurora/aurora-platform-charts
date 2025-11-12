@@ -1,0 +1,70 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "solution-{{ $.Release.Name }}-argocd-namespace"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+  labels:
+    app.kubernetes.io/name: namespace
+    app.kubernetes.io/instance: {{ $.Release.Name }}
+spec:
+  project: {{ $.Values.global.project }}
+  source:
+    chart: {{ default "aurora-namespace" $.Values.global.helm.chart }}
+    {{- if $.Values.global.helm.repository }}
+    repoURL: {{ default $.Values.global.helm.repository $.Values.global.helm.repository }}
+    {{- else }}
+    repoURL: {{ default "https://gccloudone-aurora.github.io/aurora-platform-charts" $.Values.global.helm.repository }}
+    {{- end }}
+    targetRevision: {{ default "0.0.1" $.Values.global.helm.targetRevision }}
+    helm:
+      releaseName: argocd-{{ $.Release.Name }}
+      values: |
+        information: {{ toYaml $.Values.information | nindent 10 }}
+
+        namespace: {{ toYaml $.Values.namespace | nindent 10 }}
+
+        netpol:
+          allowSameNamespace: true
+
+        policies:
+          # List of host/path that can be exposed from the namespace.
+          allowedHosts: []
+
+          # Boolean which defines if the namespace should have Istio injection.
+          istioInjection: false
+
+          # Refer to https://kubernetes.io/docs/concepts/security/pod-security-admission/
+          podSecurityAdmission:
+            enforce:
+              level: {{ $policies.podSecurityAdmission.enforce.level }}
+              version: {{ $policies.podSecurityAdmission.enforce.version }}
+            audit:
+              level: {{ $policies.podSecurityAdmission.audit.level }}
+              version: {{ $policies.podSecurityAdmission.enforce.version }}
+            warn:
+              level: {{ $policies.podSecurityAdmission.warn.level }}
+              version: {{ $policies.podSecurityAdmission.enforce.version }}
+
+        rbac: {{ toYaml $.Values.rbac | nindent 10 }}
+
+        resourceQuotas:
+          # The maximum number of pods that can be in the namespace.
+          pods: 0
+          # Quotas related to services and external traffic.
+          services:
+            # The maximum number of loadbalancers that can be configured.
+            loadbalancers: 0
+            # The maximum number of NodePorts that can be configured.
+            nodeports: 0
+          # The upper limit of storage that can be requested across all persistent volumes.
+          # Expects a string value of a number with or without units (uses SI units).
+          storage: 0
+  destination:
+    name: in-cluster
+    namespace: {{ $.Release.Name }}
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+{{- end }}

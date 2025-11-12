@@ -28,7 +28,7 @@ namespace:
   labels: {}
   # The type of namespace.
   # Can be one of [gateway, solution, system].
-  type:                  # @schema type:[string];enum:[gateway, solution, system];required:true
+  type:                  # @schema type:[string];enum:[gateway, solution, system, argocd-control-plane];required:true
 
 # Network policy configurations.
 netpol:
@@ -94,3 +94,9 @@ aadPodIdentities: {}
   # identityName:
   #   clientID: ""     # @schema type:[string]
   #   resourceID: ""   # @schema type:[string]
+
+# Utilized if namespace.type = argocd-control-plane 
+argocdProject:
+  sourceRepos: []
+  developerGroups: []   # defaults to rbac.groups if empty
+  adminGroups: []       # defaults to rbac.groups if empty
