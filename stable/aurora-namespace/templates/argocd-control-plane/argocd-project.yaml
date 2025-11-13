@@ -1,12 +1,12 @@
-{{- if .Values.argocdProject.enabled }}
+{{- if eq .Values.namespace.type "argocd-control-plane" }}
 
 apiVersion: argoproj.io/v1alpha1
 kind: AppProject
 metadata:
   name: {{ $.Release.Name }}
+  namespace: {{ required "argocdProject.namespace is required" .Values.argocdProject.namespace }}
   labels:
     argocd.argoproj.io/project-inherit: global
-    project.ssc-spc.gc.ca/sync: argo
 spec:
 
   # Which namespaces can use this AppProject 

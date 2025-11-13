@@ -100,7 +100,8 @@
                     "enum": [
                         "gateway",
                         "solution",
-                        "system"
+                        "system",
+                        "argocd-control-plane"
                     ],
                     "type": [
                         "string"
