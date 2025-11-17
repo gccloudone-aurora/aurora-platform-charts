@@ -430,6 +430,38 @@ entries:
   aurora-platform:
   - apiVersion: v2
     appVersion: 2.0.0
+    created: "2025-11-17T20:00:41.473963947Z"
+    dependencies:
+    - alias: core
+      condition: core.enabled
+      name: aurora-core
+      repository: ""
+      version: 0.0.1
+    - alias: app
+      condition: app.enabled
+      import-values:
+      - child: data
+        parent: global.imports
+      name: aurora-app
+      repository: ""
+      version: 0.0.1
+    - alias: mgmt
+      condition: mgmt.enabled
+      import-values:
+      - child: data
+        parent: global.imports
+      name: aurora-mgmt
+      repository: ""
+      version: 0.0.1
+    description: Aurora Platform
+    digest: 6a71dde380efec05f46861438e0b3cf9b87a4a06f87ebc924c5450eb021dab93
+    name: aurora-platform
+    type: application
+    urls:
+    - https://github.com/gccloudone-aurora/aurora-platform-charts/releases/download/aurora-platform-0.0.113/aurora-platform-0.0.113.tgz
+    version: 0.0.113
+  - apiVersion: v2
+    appVersion: 2.0.0
     created: "2025-11-10T03:23:39.160595199Z"
     dependencies:
     - alias: core
@@ -4015,6 +4047,16 @@ entries:
   aurora-solution:
   - apiVersion: v2
     appVersion: 2.0.0
+    created: "2025-11-17T20:00:41.679746775Z"
+    description: Aurora Solution
+    digest: 2b4a781f22da72cac56489acebfe739e5a979d618ab7aa35e8f832f032a41d9b
+    name: aurora-solution
+    type: application
+    urls:
+    - https://github.com/gccloudone-aurora/aurora-platform-charts/releases/download/aurora-solution-0.0.5/aurora-solution-0.0.5.tgz
+    version: 0.0.5
+  - apiVersion: v2
+    appVersion: 2.0.0
     created: "2025-11-10T03:14:26.732522461Z"
     description: Aurora Solution
     digest: 1ca075273844445f6cc8dc39d6569491ff7cfa3647290edc8475e295ef661087
@@ -4129,4 +4171,4 @@ entries:
     urls:
     - https://github.com/gccloudone-aurora/aurora-platform-charts/releases/download/raw-0.0.1/raw-0.0.1.tgz
     version: 0.0.1
-generated: "2025-11-10T03:23:39.160991989Z"
+generated: "2025-11-17T20:00:41.68016354Z"
