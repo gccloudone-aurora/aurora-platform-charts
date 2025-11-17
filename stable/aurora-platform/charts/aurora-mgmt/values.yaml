@@ -256,7 +256,7 @@ components:
               resourceID: ""
 
       sourceNamespaces:
-        - "/^(?!argocd-.*-system$).*^argocd-.*/"         # starts with "argocd-" & does not end with "-system" 
+        - "/^(?!gitops-.*-system$).*^argocd-.*/"         # starts with "gitops-" & does not end with "-system" 
 
       oidcAuthSP:
         credentials: {}

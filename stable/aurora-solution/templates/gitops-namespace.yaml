@@ -3,7 +3,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: "solution-{{ $.Release.Name }}-argocd-namespace"
+  name: "solution-{{ $.Release.Name }}-gitops-namespace"
   finalizers:
     - resources-finalizer.argocd.argoproj.io
   labels:
@@ -20,7 +20,7 @@ spec:
     {{- end }}
     targetRevision: {{ default "0.0.1" $.Values.global.helm.targetRevision }}
     helm:
-      releaseName: "argocd-{{ $.Release.Name }}"
+      releaseName: "gitops-{{ $.Release.Name }}"
       values: |
         information: {{ toYaml $.Values.information | nindent 10 }}
 
@@ -73,7 +73,7 @@ spec:
 
   destination:
     name: in-cluster
-    namespace: "argocd-{{ $.Release.Name }}"
+    namespace: "gitops-{{ $.Release.Name }}"
   syncPolicy:
     automated:
       prune: true
