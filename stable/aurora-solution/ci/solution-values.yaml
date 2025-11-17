@@ -29,6 +29,8 @@ namespace:
   # The type of namespace.
   # Can be one of [gateway, solution, system].
   type: "solution"
+  # Can be one of [argocd, none].
+  deploymentMethod: "argocd"
 
 # Policy configurations on the namespace.
 policies:

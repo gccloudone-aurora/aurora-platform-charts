@@ -1,4 +1,5 @@
 {{- if eq .Values.namespace.type "solution" }}
+{{- if eq .Values.namespace.deploymentMethod "argocd" }}
 
 apiVersion: argoproj.io/v1alpha1
 kind: Application
@@ -79,4 +80,5 @@ spec:
       prune: true
       selfHeal: true
 
+{{- end }}
 {{- end }}
