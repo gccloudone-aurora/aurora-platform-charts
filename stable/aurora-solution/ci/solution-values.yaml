@@ -59,8 +59,14 @@ resourceQuotas:
   # Expects a string value of a number with or without units (uses SI units).
   storage: '0'
 
-
 argocdProject:
   adminGroups:
     - "admin-1"
     - "admin-2"
+
+clusters:
+  gen-dev-cc-00: {}
+  gen-test-cc-00: {}
+  gen-uat-cc-00: {}
+  gen-qa-cc-00: {}
+  gen-prod-cc-00: {}
