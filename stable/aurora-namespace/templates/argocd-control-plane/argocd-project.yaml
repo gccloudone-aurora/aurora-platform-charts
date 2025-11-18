@@ -14,7 +14,7 @@ spec:
     - {{ $.Release.Name }}
 
   # Which repositories are allowed
-  sourceRepos: {{ toYaml .Values.argocdProject.sourceRepos }}
+  sourceRepos: {{ toYaml .Values.argocdProject.sourceRepos | nindent 4 }}
 
   # The clusters where the tenant's applications are hosted
   destinations:
