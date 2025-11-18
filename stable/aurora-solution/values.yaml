@@ -97,12 +97,9 @@ aadPodIdentities: {}
 # Utilized if namespace.type = solution
 argocdProject:
   namespace: "platform-solution-system"
-  sourceRepos: 
-  - []
-  developerGroups: 
-  - []   # defaults to rbac.groups if empty
-  adminGroups: 
-  - []   # defaults to rbac.groups if empty
+  sourceRepos: []
+  developerGroups: []   # defaults to rbac.groups if empty
+  adminGroups: []   # defaults to rbac.groups if empty
 
 # Defines cluster specific resources to be created in the namespace
 # Can be one of [aadPodIdentities].
