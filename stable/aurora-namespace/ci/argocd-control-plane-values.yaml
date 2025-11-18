@@ -67,6 +67,9 @@ resourceQuotas:
 
 argocdProject:
   namespace: "platform-solution-system"
-  sourceRepos: []
+  destination:
+    namespace: "test"
+
+  sourceRepos: ["*"]
   developerGroups: []            # defaults to rbac.groups if empty
   adminGroups: ["testers"]       # defaults to rbac.groups if empty

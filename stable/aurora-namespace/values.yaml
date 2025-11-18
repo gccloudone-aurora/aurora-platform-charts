@@ -97,7 +97,9 @@ aadPodIdentities: {}
 
 # Utilized if namespace.type = argocd-control-plane 
 argocdProject:
-#  namespace: ""        # @schema type:[string];required:true
+#  namespace: ""           # @schema type:[string];required:true
+  destination:
+    namespace: ""         # @schema type:[string];required:true
   sourceRepos: []
   developerGroups: []   # defaults to rbac.groups if empty
   adminGroups: []       # defaults to rbac.groups if empty
