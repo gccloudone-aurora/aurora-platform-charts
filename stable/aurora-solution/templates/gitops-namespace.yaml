@@ -67,6 +67,9 @@ spec:
 
         argocdProject:
           namespace: {{ .Values.argocdProject.namespace }}
+          destination:
+            namespace: {{ $.Release.Name }}
+
           sourceRepos: {{ toYaml .Values.argocdProject.sourceRepos | nindent 12 }}
           developerGroups: {{ toYaml .Values.argocdProject.developerGroups | nindent 12 }} # defaults to rbac.groups if empty
           adminGroups: {{ toYaml .Values.argocdProject.adminGroups | nindent 12 }} # defaults to rbac.groups if empty
