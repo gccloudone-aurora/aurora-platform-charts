@@ -9,7 +9,9 @@ metadata:
     project.ssc-spc.gc.ca/priority: {{ .Values.information.priority | quote }}
     project.ssc-spc.gc.ca/program-element: {{ .Values.information.PE | quote }}
     project.ssc-spc.gc.ca/product-id: {{ .Values.information.productID | int64 | quote }}
+    {{- if .Values.information.CBR }}
     finance.ssc-spc.gc.ca/CBR: {{ .Values.information.CBR | quote }}
+    {{- end }}
     {{- if .Values.namespace.labels }}
     {{- toYaml .Values.namespace.labels | nindent 4 }}
     {{- end }}
