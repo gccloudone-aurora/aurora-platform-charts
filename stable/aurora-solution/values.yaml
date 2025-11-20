@@ -37,7 +37,8 @@ namespace:
   labels: {}
   # The type of namespace.
   # Can be one of [gateway, solution, system].
-  type:                  # @schema type:[string];enum:[gateway, solution, system];required:true
+  type:                       # @schema type:[string];enum:[gateway, solution, system];required:true
+  deploymentMethod: "argocd"  # @schema type:[string];enum:[argocd, none];required:true    
 
 # Network policy configurations.
 netpol:
