@@ -29,6 +29,7 @@ information:
   PE:                    # @schema type:[integer];required:true
   workloadID:            # @schema type:[integer];required:true
   productID:             # @schema type:[integer];required:true
+  CBR:                   # @schema type:[string];required:false
 
 # Configurations about the namespace.
 namespace:

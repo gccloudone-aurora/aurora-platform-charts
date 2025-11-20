@@ -34,6 +34,7 @@ Aurora Solution
 | information.team | string | `nil` |  |
 | information.technicalLead | string | `nil` |  |
 | information.workloadID | string | `nil` |  |
+| information.CBR | string | `nil` | |
 | namespace.labels | object | `{}` |  |
 | namespace.type | string | `nil` |  |
 | netpol.allowSameNamespace | bool | `true` |  |
