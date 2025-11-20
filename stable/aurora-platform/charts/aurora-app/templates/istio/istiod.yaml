@@ -15,7 +15,7 @@ spec:
     {{- else }}
     repoURL: {{ default "https://istio-release.storage.googleapis.com/charts" .Values.global.helm.repository }}
     {{- end }}
-    targetRevision: {{ default "1.16.1" .Values.components.istio.istiod.helm.targetRevision }}
+    targetRevision: {{ default "1.18.4" .Values.components.istio.istiod.helm.targetRevision }}
     helm:
       releaseName: istiod
       values: |
