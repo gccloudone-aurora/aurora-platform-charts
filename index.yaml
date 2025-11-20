@@ -4145,6 +4145,16 @@ entries:
   aurora-solution:
   - apiVersion: v2
     appVersion: 2.0.0
+    created: "2025-11-20T01:05:34.494122808Z"
+    description: Aurora Solution
+    digest: e5c3d311ce34c93e6228fb03b4195b8a969deb8badc48d179759973909dd16a2
+    name: aurora-solution
+    type: application
+    urls:
+    - https://github.com/gccloudone-aurora/aurora-platform-charts/releases/download/aurora-solution-0.0.14/aurora-solution-0.0.14.tgz
+    version: 0.0.14
+  - apiVersion: v2
+    appVersion: 2.0.0
     created: "2025-11-20T01:03:24.166329946Z"
     description: Aurora Solution
     digest: 73594dc1205acba94786f0379b9d9290bd26d429b9f2439e1e80f951e9693dbd
@@ -4349,4 +4359,4 @@ entries:
     urls:
     - https://github.com/gccloudone-aurora/aurora-platform-charts/releases/download/raw-0.0.1/raw-0.0.1.tgz
     version: 0.0.1
-generated: "2025-11-20T01:03:24.166710959Z"
+generated: "2025-11-20T01:05:34.494515624Z"
