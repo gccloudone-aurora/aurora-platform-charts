@@ -4,7 +4,7 @@ global:
   helm: {}
     # repository: https://gccloudone-aurora.github.io/aurora-platform-charts
     # chart: aurora-namespace
-    # targetRevision: 0.0.2
+    # targetRevision: 0.0.4
 
 # Information about the namespace.
 information:
@@ -29,6 +29,7 @@ information:
   PE:                    # @schema type:[integer];required:true
   workloadID:            # @schema type:[integer];required:true
   productID:             # @schema type:[integer];required:true
+  CBR:                   # @schema type:[string];required:false
 
 # Configurations about the namespace.
 namespace:
@@ -100,7 +101,7 @@ argocdProject:
   namespace: "platform-solution-system"
   sourceRepos: []
   developerGroups: []   # defaults to rbac.groups if empty
-  adminGroups: []       # defaults to rbac.groups if empty
+  adminGroups: []   # defaults to rbac.groups if empty
 
 # Defines cluster specific resources to be created in the namespace
 # Can be one of [aadPodIdentities].

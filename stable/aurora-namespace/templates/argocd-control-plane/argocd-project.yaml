@@ -14,12 +14,12 @@ spec:
     - {{ $.Release.Name }}
 
   # Which repositories are allowed
-  sourceRepos: {{ toYaml .Values.argocdProject.sourceRepos }}
+  sourceRepos: {{ toYaml .Values.argocdProject.sourceRepos | nindent 4 }}
 
   # The clusters where the tenant's applications are hosted
   destinations:
     - server: "*"
-      namespace: {{ $.Release.Name }}
+      namespace: {{ required "argocdProject.destination.namespace is required" .Values.argocdProject.destination.namespace }}
 
   roles:
     # Role for "admins" - full control including delete/force-sync

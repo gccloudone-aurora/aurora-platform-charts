@@ -72,6 +72,11 @@
                     "type": [
                         "integer"
                     ]
+                },
+                "CBR": {
+                    "type": [
+                        "string"
+                    ]
                 }
             },
             "required": [

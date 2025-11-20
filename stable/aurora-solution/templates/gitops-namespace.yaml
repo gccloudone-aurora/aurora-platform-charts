@@ -19,7 +19,7 @@ spec:
     {{- else }}
     repoURL: {{ default "https://gccloudone-aurora.github.io/aurora-platform-charts" $.Values.global.helm.repository }}
     {{- end }}
-    targetRevision: {{ default "0.0.2" $.Values.global.helm.targetRevision }}
+    targetRevision: {{ default "0.0.4" $.Values.global.helm.targetRevision }}
     helm:
       releaseName: "gitops-{{ $.Release.Name }}"
       values: |
@@ -68,9 +68,12 @@ spec:
 
         argocdProject:
           namespace: {{ .Values.argocdProject.namespace }}
-          sourceRepos: {{ .Values.argocdProject.sourceRepos }}
-          developerGroups: {{ .Values.argocdProject.developerGroups }}  # defaults to rbac.groups if empty
-          adminGroups: {{ .Values.argocdProject.adminGroups }}      # defaults to rbac.groups if empty
+          destination:
+            namespace: {{ $.Release.Name }}
+
+          sourceRepos: {{ toYaml .Values.argocdProject.sourceRepos | nindent 12 }}
+          developerGroups: {{ toYaml .Values.argocdProject.developerGroups | nindent 12 }} # defaults to rbac.groups if empty
+          adminGroups: {{ toYaml .Values.argocdProject.adminGroups | nindent 12 }} # defaults to rbac.groups if empty
 
   destination:
     name: in-cluster
