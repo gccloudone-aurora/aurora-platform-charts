@@ -277,7 +277,7 @@ components:
       helm: {}
         # chart: istio-ingress-gateway
         # repository:  https://gccloudone-aurora.github.io/aurora-platform-charts
-        # targetRevision: 0.0.4
+        # targetRevision: 0.0.6
 
       replicas: 3
       resources: {}
