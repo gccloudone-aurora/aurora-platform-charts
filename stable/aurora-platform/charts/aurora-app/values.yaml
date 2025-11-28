@@ -308,6 +308,8 @@ components:
       # loadBalancerIP: XXX.XX.XX.XX
 
       additionalDnsNames: []
+      additionalLBPorts: []
+      additionalGatewayHosts: []
 
     ingressIstioController:
       helm: {}

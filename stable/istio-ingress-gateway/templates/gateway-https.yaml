@@ -32,4 +32,7 @@ spec:
       mode: SIMPLE
       privateKey: sds
       serverCertificate: sds
+  {{- if .Values.additionalGatewayHosts }}
+  {{ toYaml .Values.additionalGatewayHosts | nindent 4 }}
+  {{- end }}
 {{- end }}

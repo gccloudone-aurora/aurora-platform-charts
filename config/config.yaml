@@ -361,6 +361,17 @@ app:
         additionalDnsNames:
           - '*.<FILLIN_INGRESS_DOMAIN>'
           - '*.aurora.<FILLIN_INGRESS_DOMAIN>'
+        # additionalLBPorts:
+        #   - name: tcp-postgres
+        #     protocol: TCP
+        #     port: 5432         # LoadBalancer port
+        #     targetPort: 5432   # Envoy / pod port
+        # additionalGatewayHosts:
+        #   - hosts: ["*"]
+        #     port:
+        #       name: tcp-postgres
+        #       protocol: TCP
+        #       number: 5432
 
       ingressIstioController:
        image:
