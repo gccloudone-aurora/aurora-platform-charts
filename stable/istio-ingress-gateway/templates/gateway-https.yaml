@@ -33,6 +33,6 @@ spec:
       privateKey: sds
       serverCertificate: sds
   {{- if .Values.additionalGatewayHosts }}
-  {{ toYaml .Values.additionalGatewayHosts | nindent 4 }}
+  {{- toYaml .Values.additionalGatewayHosts | nindent 2 }}
   {{- end }}
 {{- end }}
