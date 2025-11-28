@@ -15,7 +15,7 @@ spec:
     {{- else }}
     repoURL: {{ default "https://gccloudone-aurora.github.io/aurora-platform-charts" .Values.global.helm.repository }}
     {{- end }}
-    targetRevision: {{ default "0.0.5" .Values.components.istio.gateway.helm.targetRevision }}
+    targetRevision: {{ default "0.0.6" .Values.components.istio.gateway.helm.targetRevision }}
     plugin:
       env:
         - name: HELM_RELEASE_NAME
@@ -74,6 +74,9 @@ spec:
                     port: 443
                     targetPort: 443
                     nodePort: 31607
+                  {{- if .Values.components.istio.gateway.additionalLBPorts }}
+                  {{- toYaml .Values.components.istio.gateway.additionalLBPorts | nindent 18 }}
+                  {{- end }}
 
             # Configures HTTPS on the ingress gateway.
             https:
@@ -109,6 +112,9 @@ spec:
                   kind: ClusterIssuer
                   # The name of the Issuer to use.
                   name: letsencrypt
+
+            additionalGatewayHosts: {{ toYaml .Values.components.istio.gateway.additionalGatewayHosts | nindent 14 }}
+
             # Configures Telemetry on the ingress gateway.
             telemetry:
               # Enable access logging
