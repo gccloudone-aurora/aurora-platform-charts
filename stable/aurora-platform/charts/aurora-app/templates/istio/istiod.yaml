@@ -45,6 +45,31 @@ spec:
             resources: {{ toYaml .Values.components.istio.istiod.proxy.resources | nindent 14 }}
             holdApplicationUntilProxyStarts: true
 
+        {{ if .Values.components.istio.istiod.oauth2.enabled -}}
+        meshConfig:
+          tcpKeepalive:
+            interval: 5s
+            probes: 3
+            time: 10s
+          extensionProviders:
+          - envoyExtAuthzHttp:
+              headersToDownstreamOnDeny:
+              - content-type
+              - set-cookie
+              headersToUpstreamOnAllow:
+              - authorization
+              - path
+              - x-auth-request-email
+              - x-auth-request-groups
+              - x-auth-request-user
+              includeRequestHeadersInCheck:
+              - authorization
+              - cookie
+              service: oauth2-proxy.oauth2-proxy.svc.cluster.local
+              port: 80
+            name: oauth2-proxy
+          {{- end }}
+
   destination:
     name: '{{ .Values.global.cluster }}'
     namespace: istio-system
