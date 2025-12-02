@@ -420,6 +420,9 @@ components:
 
       priorityClassName: platform-cluster-critical
 
+      oauth2:
+        enabled: false
+
   kiali:
     enabled: true
 
