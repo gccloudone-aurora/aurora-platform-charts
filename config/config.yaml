@@ -162,6 +162,7 @@ core:
             - docker.elastic.co/
             - mcr.microsoft.com/
             - quay.io/
+            - cgr.dev/
         restrictPodAnnotations:
           excludedNamespaces:
             - 'backstage'
@@ -172,6 +173,7 @@ core:
             - docker.elastic.co/
             - mcr.microsoft.com/
             - quay.io/
+            - cgr.dev/
         solutionContainerAllowedImages:
           allowedRepos:
             - ghcr.io/
@@ -179,6 +181,7 @@ core:
             - docker.elastic.co/
             - mcr.microsoft.com/
             - quay.io/
+            - cgr.dev/
 
     kubecost:
       enabled: false
