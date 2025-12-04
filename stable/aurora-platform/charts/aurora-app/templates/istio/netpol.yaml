@@ -161,6 +161,10 @@ spec:
                   protocol: TCP
                 - port: 80
                   protocol: TCP
+                {{- range .Values.components.istio.networkPolicy.ingressGeneral.extraIngressPorts }}
+                - port: {{ .port }}
+                  protocol: {{ .protocol | default "TCP" }}
+                {{- end }}
                 from:
                 - ipBlock:
                     cidr: 0.0.0.0/0
