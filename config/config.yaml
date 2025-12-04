@@ -382,6 +382,14 @@ app:
 
         proxy: {}
 
+      # networkPolicy:
+      #   ingressGeneral:
+      #     extraIngressPorts:
+      #       - port: 9090
+      #         protocol: TCP
+      #       - port: 53
+      #         protocol: UDP
+
     kiali:
       enabled: false
 
