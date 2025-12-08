@@ -45,6 +45,8 @@ policies:
 
   # Boolean which defines if the namespace should have Istio injection.
   istioInjection: false
+
+  # Boolean which defines if trust-manager should create certificate configMap in namespace
   trustManagerBundleInjection: true
 
   # Refer to https://kubernetes.io/docs/concepts/security/pod-security-admission/

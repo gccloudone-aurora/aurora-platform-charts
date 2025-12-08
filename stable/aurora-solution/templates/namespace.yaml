@@ -55,6 +55,7 @@ spec:
 
           # Boolean which defines if the namespace should have Istio injection.
           istioInjection: {{ $policies.istioInjection }}
+          # Boolean which defines if trust-manager should create certificate configMap in namespace
           trustManagerBundleInjection: {{ $policies.trustManagerBundleInjection }}
 
           # Refer to https://kubernetes.io/docs/concepts/security/pod-security-admission/
