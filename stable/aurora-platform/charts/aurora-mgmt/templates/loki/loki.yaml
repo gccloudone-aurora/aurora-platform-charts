@@ -148,7 +148,7 @@ spec:
                 storageClass: default
   destination:
     name: '{{ .Values.global.cluster }}'
-    namespace: platform-solution-system
+    namespace: platform-system
   syncPolicy:
     automated:
       prune: true
