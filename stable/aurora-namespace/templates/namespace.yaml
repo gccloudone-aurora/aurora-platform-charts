@@ -16,6 +16,9 @@ metadata:
     {{- toYaml .Values.namespace.labels | nindent 4 }}
     {{- end }}
     istio-injection: {{ ternary "enabled" "disabled" .Values.policies.istioInjection }}
+    {{- if .Values.policies.trustManagerBundleInjection }}
+    namespace.ssc-spc.gc.ca/trust-manager: active
+    {{- end }}
   annotations:
     project.ssc-spc.gc.ca/division: {{ .Values.information.division | quote }}
     {{- if .Values.information.gitGroupURL }}

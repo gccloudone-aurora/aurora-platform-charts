@@ -21,7 +21,7 @@ information:
   PE:                    # @schema type:[integer];required:true
   workloadID:            # @schema type:[integer];required:true
   productID:             # @schema type:[integer];required:true
-  CBR:                   # @schema type:[string];required:false
+  CBR: ""                # @schema type:[string];required:false
 
 # Configurations about the namespace.
 namespace:
@@ -45,6 +45,9 @@ policies:
 
   # Boolean which defines if the namespace should have Istio injection.
   istioInjection: false
+
+  # Boolean which defines if trust-manager should create certificate configMap in namespace
+  trustManagerBundleInjection: false
 
   # Refer to https://kubernetes.io/docs/concepts/security/pod-security-admission/
   podSecurityAdmission:
