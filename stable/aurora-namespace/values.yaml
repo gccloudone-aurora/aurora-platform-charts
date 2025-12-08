@@ -45,7 +45,7 @@ policies:
 
   # Boolean which defines if the namespace should have Istio injection.
   istioInjection: false
-  trustManagerInjection: true
+  trustManagerBundleInjection: true
 
   # Refer to https://kubernetes.io/docs/concepts/security/pod-security-admission/
   podSecurityAdmission:
