@@ -26,7 +26,8 @@ spec:
               image:
                 registry: null
 
-            # Need both of these: https://github.com/grafana/loki/issues/12632#issuecomment-2063170281
+            # Need both of these: 
+            # https://github.com/grafana/loki/issues/12632#issuecomment-2063170281
             image:
               pullSecrets:
               - aurora-image-pull-secret
@@ -37,6 +38,7 @@ spec:
             gateway:
               nodeSelector: {{ toYaml .Values.components.loki.nodeSelector | nindent 16 }}
               tolerations: {{ toYaml .Values.components.loki.tolerations | nindent 16 }}
+
               ingress:
                 enabled: true
                 hosts:
@@ -54,7 +56,7 @@ spec:
                 password: {{ required "loki.basicAuth.password is required" .Values.components.loki.basicAuth.password | quote }}
 
             loki:
-              image: {{ default "{}" (include "loki.image" .) | nindent 14 }}
+              image: {{ default "{}" (include "loki.image" .) | nindent 16ß }}
               analytics:
                 reporting_enabled: false
               # Authentication for multitenancy, which we are not presently using.
@@ -85,17 +87,17 @@ spec:
                       prefix: loki_
                       period: 24h
               storage:
-              type: azure
-              # admin and ruler are not presently in use. Pointing them to the same chunks bucket for now.
-              # Separate them out later if they will have contents that we do not want cleaned up by storage account retention policies.
-              # See https://github.com/grafana/loki/issues/8524
-              bucketNames:
-                admin: chunks
-                chunks: chunks
-                ruler: chunks
-              azure: {{ include "loki.logStorageLocation" . | nindent  18 }}
+                type: azure
+                # admin and ruler are not presently in use. Pointing them to the same chunks bucket for now.
+                # Separate them out later if they will have contents that we do not want cleaned up by storage account retention policies.
+                # See https://github.com/grafana/loki/issues/8524
+                bucketNames:
+                  admin: chunks
+                  chunks: chunks
+                  ruler: chunks
+              azure: {{ include "loki.logStorageLocation" . | nindent  16 }}
 
-            # Disable lokiCanary, which can only be deployed as a DaemonSet in this chart version
+            # Disable lokiCanary, which can only be deployed as a DaemonSet
             lokiCanary:
               enabled: false
             test:
@@ -115,7 +117,8 @@ spec:
               # Disable rules until we plan to configure rules and the ruler
               rules:
                 enabled: false
-            # Istio compatibility: https://grafana.com/docs/loki/latest/operations/troubleshooting/#running-loki-with-istio-sidecars
+            # Istio compatibility: 
+            # https://grafana.com/docs/loki/latest/operations/troubleshooting/#running-loki-with-istio-sidecars
             ingester:
               appProtocol:
                 grpc: tcp
@@ -131,7 +134,8 @@ spec:
             queryScheduler:
               appProtocol:
                 grpc: tcp
-            # Prevent the creation of a cluster role to check other namespaces for configmaps/secrets, which we do not require
+            # Prevent the creation of a cluster role to check other namespaces for 
+            # configmaps/secrets, which we do not require
             rbac:
               namespaced: true
             write:
