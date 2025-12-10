@@ -13,7 +13,7 @@ spec:
     repoURL: {{ default .Values.global.helm.repository .Values.global.namespace.helm.repository }}
     targetRevision: {{ .Values.global.namespace.helm.targetRevision }}
     helm:
-      releaseName: platform-solution-system
+      releaseName: loki-system
       values: |
         # Information about the namespace.
         information:
