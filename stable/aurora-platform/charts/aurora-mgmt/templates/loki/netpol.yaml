@@ -20,7 +20,7 @@ spec:
             kind: NetworkPolicy
             metadata:
               name: allow-egress-to-azure-storage-from-loki
-              namespace: loki
+              namespace: loki-system
             spec:
               podSelector:
                 matchLabels:
