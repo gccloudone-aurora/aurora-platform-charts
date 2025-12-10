@@ -89,7 +89,7 @@ spec:
                   admin: chunks
                   chunks: chunks
                   ruler: chunks
-              azure: {{ include "loki.logStorageLocation" . | nindent  16 }}
+                azure: {{ include "loki.logStorageLocation" . | nindent  18 }}
 
             # Disable lokiCanary, which can only be deployed as a DaemonSet
             lokiCanary:
