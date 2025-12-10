@@ -73,7 +73,7 @@ spec:
             nodeports: 0
           # The upper limit of storage that can be requested across all persistent volumes.
           # Expects a string value of a number with or without units (uses SI units).
-          storage: '0'
+          storage: '64Gi'
   destination:
     name: {{ .Values.global.cluster }}
     namespace: platform-system

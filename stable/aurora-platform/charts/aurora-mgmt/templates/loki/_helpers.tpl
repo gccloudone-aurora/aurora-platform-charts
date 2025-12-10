@@ -22,8 +22,8 @@ The logStorageLocation configuration.
 */}}
 {{- define "loki.logStorageLocation" -}}
 {{- if eq .Values.global.provider "azure" }}
-storageAccountName: {{ required "loki.logStorageLocation.storageAccountName is required" .Values.components.loki.logStorageLocation.storageAccountName | quote }}
-storageAccountKey: {{ required "loki.logStorageLocation.storageAccountKey is required" .Values.components.loki.logStorageLocation.storageAccountKey | quote }}
+accountName: {{ required "loki.logStorageLocation.storageAccountName is required" .Values.components.loki.logStorageLocation.storageAccountName | quote }}
+accountKey: {{ required "loki.logStorageLocation.storageAccountKey is required" .Values.components.loki.logStorageLocation.storageAccountKey | quote }}
 requestTimeout: 0
 {{- end }}
 {{- end }}

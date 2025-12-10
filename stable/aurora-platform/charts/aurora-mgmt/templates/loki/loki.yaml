@@ -26,8 +26,6 @@ spec:
               image:
                 registry: null
 
-            # Need both of these: 
-            # https://github.com/grafana/loki/issues/12632#issuecomment-2063170281
             image:
               pullSecrets:
               - aurora-image-pull-secret
@@ -38,7 +36,6 @@ spec:
             gateway:
               nodeSelector: {{ toYaml .Values.components.loki.nodeSelector | nindent 16 }}
               tolerations: {{ toYaml .Values.components.loki.tolerations | nindent 16 }}
-
               ingress:
                 enabled: true
                 hosts:
@@ -88,9 +85,6 @@ spec:
                       period: 24h
               storage:
                 type: azure
-                # admin and ruler are not presently in use. Pointing them to the same chunks bucket for now.
-                # Separate them out later if they will have contents that we do not want cleaned up by storage account retention policies.
-                # See https://github.com/grafana/loki/issues/8524
                 bucketNames:
                   admin: chunks
                   chunks: chunks
@@ -102,23 +96,17 @@ spec:
               enabled: false
             test:
               enabled: false
-            # Does not inherit global image registry
             memcached:
               image:
                 repository: docker.io/memcached
-            # Does not inherit global image registry
             memcachedExporter:
               image:
                 repository: docker.io/prom/memcached-exporter
-            # Does not inherit global image registry
             sidecar:
               image:
                 repository: docker.io/kiwigrid/k8s-sidecar
-              # Disable rules until we plan to configure rules and the ruler
               rules:
                 enabled: false
-            # Istio compatibility: 
-            # https://grafana.com/docs/loki/latest/operations/troubleshooting/#running-loki-with-istio-sidecars
             ingester:
               appProtocol:
                 grpc: tcp
@@ -134,8 +122,6 @@ spec:
             queryScheduler:
               appProtocol:
                 grpc: tcp
-            # Prevent the creation of a cluster role to check other namespaces for 
-            # configmaps/secrets, which we do not require
             rbac:
               namespaced: true
             write:
