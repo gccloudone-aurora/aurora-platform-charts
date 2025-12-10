@@ -70,7 +70,7 @@ spec:
               - Ingress
   destination:
     name: {{ .Values.global.cluster }}
-    namespace: platform-system
+    namespace: loki-system
   syncPolicy:
     automated:
       prune: true
