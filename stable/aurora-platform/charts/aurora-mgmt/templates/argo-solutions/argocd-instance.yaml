@@ -41,6 +41,14 @@ spec:
               argocdVaultPlugin:
                 enabled: false
 
+              AADPodIdentity:
+                enabled: {{ default "false" .Values.components.argoFoundation.argocdInstance.AADPodIdentity.enabled }}
+                {{- if .Values.components.argoFoundation.argocdInstance.AADPodIdentity.enabled }}
+                managedIdentity:
+                  clientID: {{ .Values.components.argoFoundation.argocdInstance.AADPodIdentity.managedIdentity.clientID }}
+                  resourceID: {{ .Values.components.argoFoundation.argocdInstance.AADPodIdentity.managedIdentity.resourceID }}
+                {{- end }}
+
               sourceNamespaces: {{ toYaml .Values.components.argoSolution.argocdInstance.sourceNamespaces | nindent 16 }}
 
               globalProjects:
