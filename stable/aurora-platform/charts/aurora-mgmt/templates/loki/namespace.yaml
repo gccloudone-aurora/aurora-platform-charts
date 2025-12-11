@@ -47,9 +47,6 @@ spec:
           # Can be one of [gateway, solution, system].
           type: "system"
 
-        netpol:
-          allowSameNamespace: true
-
         # Policy configurations on the namespace.
         policies:
           # List of host/path that can be exposed from the namespace.
