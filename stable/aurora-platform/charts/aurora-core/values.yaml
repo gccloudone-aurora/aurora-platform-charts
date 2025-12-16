@@ -1078,21 +1078,24 @@ components:
         excludedNamespaces: []
         enforcementAction: "deny"
         restrictedAnnotations:
-        - galley.istio.io/analyze-suppress
-        - inject.istio.io/templates
-        - istio.io/rev
-        - proxy.istio.io/config
-        - sidecar.istio.io/inject
-        - sidecar.istio.io/controlPlaneAuthPolicy
-        - sidecar.istio.io/discoveryAddress
-        - sidecar.istio.io/bootstrapOverride
-        - traffic.sidecar.istio.io/excludeInboundPorts
-        - traffic.istio.io/nodeSelector
-        - sidecar.istio.io/proxyImage
-        - sidecar.istio.io/proxyImageType
-        - sidecar.istio.io/userVolume
-        - sidecar.istio.io/userVolumeMount
-        - status.sidecar.istio.io/port
+          - key: galley.istio.io/analyze-suppress
+          - key: inject.istio.io/templates
+          - key: proxy.istio.io/config
+          - key: sidecar.istio.io/inject
+          - key: sidecar.istio.io/controlPlaneAuthPolicy
+          - key: sidecar.istio.io/discoveryAddress
+          - key: sidecar.istio.io/bootstrapOverride
+          - key: traffic.sidecar.istio.io/excludeInboundPorts
+          - key: traffic.istio.io/nodeSelector
+          - key: sidecar.istio.io/proxyImage
+          - key: sidecar.istio.io/proxyImageType
+          - key: sidecar.istio.io/userVolume
+          - key: sidecar.istio.io/userVolumeMount
+          - key: status.sidecar.istio.io/port
+          - key: istio.io/rev
+        exemptAnnotations:
+        - key: istio.io/rev
+          value: "default"
       restrictPodLabels :
         excludedNamespaces: []
         enforcementAction: "deny"
