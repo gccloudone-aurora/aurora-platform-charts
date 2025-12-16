@@ -1,0 +1,147 @@
+{{ if .Values.components.loki.enabled -}}
+
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-loki"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    chart: {{ default "loki" .Values.components.loki.helm.chart }}
+    {{- if .Values.components.loki.helm.repository }}
+    repoURL: {{ .Values.components.loki.helm.repository }}
+    {{- else }}
+    repoURL: {{ default "https://grafana.github.io/helm-charts" .Values.global.helm.repository }}
+    {{- end }}
+    targetRevision: {{ default "6.21.0" .Values.components.loki.helm.targetRevision }}
+    plugin:
+      env:
+        - name: HELM_RELEASE_NAME
+          value: "loki"
+        - name: HELM_VALUES
+          value: |
+            global:
+              image:
+                registry: null
+
+            image:
+              pullSecrets:
+              - aurora-image-pull-secret
+            imagePullSecrets:
+              - name: aurora-image-pull-secret
+            deploymentMode: SimpleScalable
+
+            gateway:
+              nodeSelector: {{ toYaml .Values.components.loki.nodeSelector | nindent 16 }}
+              tolerations: {{ toYaml .Values.components.loki.tolerations | nindent 16 }}
+              ingress:
+                enabled: true
+                hosts:
+                  - host: loki.{{ .Values.global.ingressDomain }}
+                    paths:
+                      - path: /.*
+                        pathType: ImplementationSpecific
+                tls:
+                  - secretName: loki-gateway-tls
+                    hosts:
+                      - loki.{{ .Values.global.ingressDomain }}
+              basicAuth:
+                enabled: true
+                username: {{ required "loki.basicAuth.username is required" .Values.components.loki.basicAuth.username | quote }}
+                password: {{ required "loki.basicAuth.password is required" .Values.components.loki.basicAuth.password | quote }}
+
+            loki:
+              image: {{ default "{}" (include "loki.image" .) | nindent 16 }}
+              analytics:
+                reporting_enabled: false
+              # Authentication for multitenancy, which we are not presently using.
+              auth_enabled: false
+              compactor:
+                working_directory: /var/loki/data/retention
+                compaction_interval: 10m
+                retention_enabled: true
+                retention_delete_delay: 10m # 2h in docs, putting a smaller value to test
+                retention_delete_worker_count: 150
+                delete_request_store: azure
+              limits_config:
+                ingestion_rate_mb: 10
+                ingestion_burst_size_mb: 20
+                reject_old_samples_max_age: 24h
+                retention_period: 2160h # 90d
+                retention_stream:
+                - selector: '{source="kubernetes-event-exporter"}'
+                  priority: 1
+                  period: 336h # 14d
+              schemaConfig:
+                configs:
+                  - from: 2024-05-01
+                    object_store: azure
+                    store: tsdb
+                    schema: v13
+                    index:
+                      prefix: loki_
+                      period: 24h
+              storage:
+                type: azure
+                bucketNames:
+                  admin: chunks
+                  chunks: chunks
+                  ruler: chunks
+                azure: {{ include "loki.logStorageLocation" . | nindent  18 }}
+
+            # Disable lokiCanary, which can only be deployed as a DaemonSet
+            lokiCanary:
+              enabled: false
+            test:
+              enabled: false
+            memcached:
+              image:
+                repository: docker.io/memcached
+            memcachedExporter:
+              image:
+                repository: docker.io/prom/memcached-exporter
+            sidecar:
+              image:
+                repository: docker.io/kiwigrid/k8s-sidecar
+              rules:
+                enabled: false
+            ingester:
+              appProtocol:
+                grpc: tcp
+            distributor:
+              appProtocol:
+                grpc: tcp
+            querier:
+              appProtocol:
+                grpc: tcp
+            queryFrontend:
+              appProtocol:
+                grpc: tcp
+            queryScheduler:
+              appProtocol:
+                grpc: tcp
+            rbac:
+              namespaced: true
+            write:
+              persistence:
+                size: 8Gi
+                storageClass: default
+            read:
+              persistence:
+                size: 8Gi
+                storageClass: default
+            backend:
+              persistence:
+                size: 8Gi
+                storageClass: default
+  destination:
+    name: '{{ .Values.global.cluster }}'
+    namespace: loki-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+
+{{- end }}
