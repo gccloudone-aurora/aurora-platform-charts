@@ -13,9 +13,9 @@ spec:
     {{- if .Values.global.helm.repository }}
     repoURL:  repoURL: {{ default "oci://ghcr.io/deliveryhero/helm-charts/kube-bench" .Values.global.helm.repository }}
     {{- else }}
-    repoURL: {{ default "https://kube-bench.github.io/cost-analyzer/" .Values.components.kubebench.helm.repository }}
+    repoURL: {{ .Values.components.kubebench.helm.repository }}
     {{- end }}
-    targetRevision: {{ default "1.106.0" .Values.components.kubebench.helm.targetRevision }}
+    targetRevision: {{ .Values.components.kubebench.helm.targetRevision }}
     plugin:
       env:
         - name: HELM_RELEASE_NAME

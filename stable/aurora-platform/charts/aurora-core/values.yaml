@@ -2249,3 +2249,8 @@ components:
         # tag: "1.16.15"
 
     priorityClassName: platform-cluster-medium
+
+  kubebench:
+    enabled: true
+
+    helm: {}
