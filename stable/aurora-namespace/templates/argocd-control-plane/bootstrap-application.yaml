@@ -6,10 +6,10 @@ metadata:
 spec:
   generators:
   - git:
-      repoURL: {{ required "argocd.deploymentRepoURL is required" .Values.argocd.deploymentRepoURL }}
+      repoURL: {{ required "argocd.deployment.repoURL is required" .Values.argocd.deployment.repoURL }}
       revision: HEAD
       directories:
-      - path: applications
+      - path: {{ required "argocd.deployment.path is required" .Values.argocd.deployment.path }}
   template:
     metadata:
       name: "bootstrap-{{ $.Release.Name }}"
@@ -17,9 +17,9 @@ spec:
     spec:
       project: "bootstrap-{{ $.Release.Name }}"
       source:
-        repoURL: {{ required "argocd.deploymentRepoURL is required" .Values.argocd.deploymentRepoURL }}
+        repoURL: {{ required "argocd.deployment.repoURL is required" .Values.argocd.deployment.repoURL }}
         targetRevision: HEAD
-        path: applications
+        path: {{ required "argocd.deployment.path is required" .Values.argocd.deployment.path }}
       destination:
         server: in-cluster
         namespace: {{ $.Release.Name }}
