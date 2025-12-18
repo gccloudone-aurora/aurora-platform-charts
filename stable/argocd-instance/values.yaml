@@ -32,7 +32,7 @@ argocdInstance:
 
   image:
     name: "argoproj/argocd"
-    version: "v3.0.20"
+    version: "v3.1.9"
 
   nodeSelector: {}
   tolerations: []
