@@ -2,6 +2,16 @@ apiVersion: v1
 entries:
   argocd-instance:
   - apiVersion: v2
+    appVersion: v3.0.20
+    created: "2025-12-18T14:08:12.283382061Z"
+    description: A Helm chart that configures Argo CD.
+    digest: 10e913be56060be2125207309809c0f440dee87c0dd68ccc8de3248d3f5ada5d
+    name: argocd-instance
+    type: application
+    urls:
+    - https://github.com/gccloudone-aurora/aurora-platform-charts/releases/download/argocd-instance-0.9.1/argocd-instance-0.9.1.tgz
+    version: 0.9.1
+  - apiVersion: v2
     appVersion: v2.14.21
     created: "2025-12-15T21:25:27.10024666Z"
     description: A Helm chart that configures Argo CD.
@@ -528,6 +538,38 @@ entries:
     - https://github.com/gccloudone-aurora/aurora-platform-charts/releases/download/aurora-namespace-0.0.1/aurora-namespace-0.0.1.tgz
     version: 0.0.1
   aurora-platform:
+  - apiVersion: v2
+    appVersion: 2.0.0
+    created: "2025-12-18T14:08:12.498890924Z"
+    dependencies:
+    - alias: core
+      condition: core.enabled
+      name: aurora-core
+      repository: ""
+      version: 0.0.1
+    - alias: app
+      condition: app.enabled
+      import-values:
+      - child: data
+        parent: global.imports
+      name: aurora-app
+      repository: ""
+      version: 0.0.1
+    - alias: mgmt
+      condition: mgmt.enabled
+      import-values:
+      - child: data
+        parent: global.imports
+      name: aurora-mgmt
+      repository: ""
+      version: 0.0.1
+    description: Aurora Platform
+    digest: c04332dee01e262e72d878a84dc040e74c028d915adf72716c52ffacc515367b
+    name: aurora-platform
+    type: application
+    urls:
+    - https://github.com/gccloudone-aurora/aurora-platform-charts/releases/download/aurora-platform-0.0.130/aurora-platform-0.0.130.tgz
+    version: 0.0.130
   - apiVersion: v2
     appVersion: 2.0.0
     created: "2025-12-18T14:00:54.422571601Z"
@@ -4911,4 +4953,4 @@ entries:
     urls:
     - https://github.com/gccloudone-aurora/aurora-platform-charts/releases/download/raw-0.0.1/raw-0.0.1.tgz
     version: 0.0.1
-generated: "2025-12-18T14:00:54.422972363Z"
+generated: "2025-12-18T14:08:12.499371958Z"
