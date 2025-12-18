@@ -40,7 +40,7 @@ Aurora Platform - Management Components
 | components.argoOperator.affinity | object | `{}` |  |
 | components.argoOperator.helm | object | `{}` |  |
 | components.argoOperator.image.repository | string | `"argoprojlabs/argocd-operator"` |  |
-| components.argoOperator.image.tag | string | `"v0.15.0"` |  |
+| components.argoOperator.image.tag | string | `"v0.16.0"` |  |
 | components.argoOperator.imagePullSecrets | list | `[]` |  |
 | components.argoOperator.nodeSelector."kubernetes.io/os" | string | `"linux"` |  |
 | components.argoOperator.nodeSelector."node.ssc-spc.gc.ca/purpose" | string | `"system"` |  |
