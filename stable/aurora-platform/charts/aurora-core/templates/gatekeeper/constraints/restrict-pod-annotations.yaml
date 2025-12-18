@@ -37,7 +37,8 @@ spec:
                 excludedNamespaces: {{ toYaml .Values.components.gatekeeper.constraints.restrictPodAnnotations.excludedNamespaces | nindent 18 }}
               enforcementAction: {{ .Values.components.gatekeeper.constraints.restrictPodAnnotations.enforcementAction }}
               parameters:
-                annotations: {{ .Values.components.gatekeeper.constraints.restrictPodAnnotations.restrictedAnnotations | toYaml | nindent 18 }}
+                bannedAnnotations: {{ .Values.components.gatekeeper.constraints.restrictPodAnnotations.restrictedAnnotations | toYaml | nindent 18 }}
+                exemptAnnotations: {{ .Values.components.gatekeeper.constraints.restrictPodAnnotations.exemptAnnotations | toYaml | nindent 18 }}
   destination:
     name: {{ .Values.global.cluster }}
     namespace: platform-system
