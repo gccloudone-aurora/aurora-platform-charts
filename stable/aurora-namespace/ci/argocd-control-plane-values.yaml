@@ -74,6 +74,6 @@ argocd:
     namespace: "platform-solution-system"
     destination:
       namespace: "test"
-    sourceRepos: ["*"]
+    sourceRepos: ['*']
     developerGroups: []            # defaults to rbac.groups if empty
     adminGroups: ["testers"]       # defaults to rbac.groups if empty

@@ -109,6 +109,6 @@ argocd:
     namespace: ""       # @schema type:[string];required:true
     destination:
       namespace: ""       # @schema type:[string];required:true
-    sourceRepos: []
+    sourceRepos: ['*']
     developerGroups: []   # defaults to rbac.groups if empty
     adminGroups: []       # defaults to rbac.groups if empty
