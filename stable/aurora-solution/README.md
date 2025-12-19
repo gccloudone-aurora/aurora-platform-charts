@@ -17,7 +17,7 @@ Aurora Solution
 | argocdProject.adminGroups | list | `[]` |  |
 | argocdProject.developerGroups | list | `[]` |  |
 | argocdProject.namespace | string | `"platform-solution-system"` |  |
-| argocdProject.sourceRepos | list | `[]` |  |
+| argocdProject.sourceRepos[0] | string | `"*"` |  |
 | clusters | object | `{}` |  |
 | global.helm | object | `{}` |  |
 | global.project | string | `"aurora-solution"` |  |

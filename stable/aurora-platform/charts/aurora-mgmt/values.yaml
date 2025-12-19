@@ -174,7 +174,7 @@ components:
         #       repoURL:
         #       helmValues:
         #         argocdProject:
-        #           sourceRepos: []
+        #           sourceRepos: ['*']
 
       syncWindows:
         - clusters:
@@ -256,7 +256,7 @@ components:
               resourceID: ""
 
       sourceNamespaces:
-        - "/^(?!gitops-.*-system$).*^argocd-.*/"         # starts with "gitops-" & does not end with "-system" 
+        - "/^(?!gitops-.*-system$).*^argocd-.*/"         # starts with "gitops-" & does not end with "-system"
 
       oidcAuthSP:
         credentials: {}

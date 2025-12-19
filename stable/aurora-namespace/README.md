@@ -23,7 +23,7 @@ Aurora Namespace
 | argocdProject.adminGroups | list | `[]` |  |
 | argocdProject.destination.namespace | string | `""` |  |
 | argocdProject.developerGroups | list | `[]` |  |
-| argocdProject.sourceRepos | list | `[]` |  |
+| argocdProject.sourceRepos[0] | string | `"*"` |  |
 | information.CBR | string | `""` |  |
 | information.FRC | string | `nil` |  |
 | information.PE | string | `nil` |  |
