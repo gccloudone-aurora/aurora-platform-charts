@@ -1,6 +1,6 @@
 # istio-ingress-gateway
 
-![Version: 0.0.4](https://img.shields.io/badge/Version-0.0.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)
+![Version: 0.0.6](https://img.shields.io/badge/Version-0.0.6-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)
 
 This chart deploys an opinionated Istio Ingress Gateway.
 
@@ -8,7 +8,7 @@ This chart deploys an opinionated Istio Ingress Gateway.
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://istio-release.storage.googleapis.com/charts | gateway | 1.14.3 |
+| https://istio-release.storage.googleapis.com/charts | gateway | 1.18.4 |
 
 ## Prerequisites
 
@@ -19,6 +19,7 @@ This chart deploys an opinionated Istio Ingress Gateway.
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
+| additionalGatewayHosts | list | `[]` |  |
 | gateway.autoscaling.enabled | bool | `true` |  |
 | gateway.autoscaling.maxReplicas | int | `5` |  |
 | gateway.autoscaling.minReplicas | int | `3` |  |
