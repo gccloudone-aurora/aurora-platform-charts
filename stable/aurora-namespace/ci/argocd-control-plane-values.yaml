@@ -66,14 +66,14 @@ resourceQuotas:
   storage: '0'
 
 argocd:
-  deployment:
+  bootstrap:
+    enabled: true
     repoURL: "https://github.com/my-org/workload-deploy.git"
     path: "applications"
   project:
     namespace: "platform-solution-system"
     destination:
       namespace: "test"
-
     sourceRepos: ["*"]
     developerGroups: []            # defaults to rbac.groups if empty
     adminGroups: ["testers"]       # defaults to rbac.groups if empty

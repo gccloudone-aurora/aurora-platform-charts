@@ -101,7 +101,8 @@ aadPodIdentities: {}
 
 # Utilized if namespace.type = solution & deploymentType = argocd
 argocd:
-  deployment:
+  bootstrap:
+    enabled: true
     repoURL: ""
     path: ""
   project:

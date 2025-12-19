@@ -1,10 +1,11 @@
+{{- if .Values.argocd.bootstrap.enabled }}
 {{- if eq .Values.namespace.type "argocd-control-plane" }}
 
 apiVersion: argoproj.io/v1alpha1
 kind: AppProject
 metadata:
   name: "bootstrap-{{ $.Release.Name }}"
-  namespace: {{ required "argocdProject.namespace is required" .Values.argocdProject.namespace }}
+  namespace: {{ required "argocd.project.namespace is required" .Values.argocd.project.namespace }}
 spec:
   description: "Global multi-tenant restrictions"
 
@@ -35,4 +36,5 @@ spec:
         - p, proj:{{ $.Release.Name }}:admin-role, applications, *, {{ $.Release.Name }}/*, allow
         - p, proj:{{ $.Release.Name }}:admin-role, applicationsets, get, {{ $.Release.Name }}/*, allow
 
+{{- end }}
 {{- end }}

@@ -15,9 +15,6 @@ information:
 
   # Information about tooling.
   gitGroupURL:        # @schema type:[string, null];required:true
-  deployment:
-    repoURL:  # @schema type:[string, null];required:true
-    path:  # @schema type:[string, null];required:true
 
   # Financial and organizational identifiers.
   FRC:                   # @schema type:[integer];required:true
@@ -104,11 +101,12 @@ aadPodIdentities: {}
 
 # Utilized if namespace.type = argocd-control-plane 
 argocd:
-  deployment:
-    repoURL: ""
-    path: ""
+  bootstrap:
+    enabled: true
+    repoURL:  "" # @schema type:[string];required:true
+    path:  ""    # @schema type:[string];required:true
   project:
-    # namespace: ""       # @schema type:[string];required:true
+    namespace: ""       # @schema type:[string];required:true
     destination:
       namespace: ""       # @schema type:[string];required:true
     sourceRepos: []

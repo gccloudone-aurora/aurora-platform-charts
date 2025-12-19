@@ -69,14 +69,14 @@ spec:
           storage: "0"
 
         argocd:
-          deployment:
-            repoURL: {{ .Values.argocd.deployment.depoURL }}
-            path: {{ .Values.argocd.deployment.path }}
+          bootstrap:
+            enabled: true
+            repoURL: {{ .Values.argocd.bootstrap.repoURL }}
+            path: {{ .Values.argocd.bootstrap.path }}
           project:
             namespace: {{ .Values.argocd.project.namespace }}
             destination:
               namespace: {{ $.Release.Name }}
-
             sourceRepos: {{ toYaml .Values.argocd.project.sourceRepos | nindent 12 }}
             developerGroups: {{ toYaml .Values.argocd.project.developerGroups | nindent 12 }} # defaults to rbac.groups if empty
             adminGroups: {{ toYaml .Values.argocd.project.adminGroups | nindent 12 }} # defaults to rbac.groups if empty
