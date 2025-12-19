@@ -2213,6 +2213,9 @@ components:
             labelSelector:
               matchLabels:
                 app.kubernetes.io/instance: velero
+    serviceAccount:
+      server:
+        annotations: {}
 
     backupStorage: {}
       # bucket:

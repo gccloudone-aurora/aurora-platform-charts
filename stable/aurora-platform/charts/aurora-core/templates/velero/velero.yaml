@@ -46,6 +46,11 @@ spec:
               aadpodidbinding: {{ required "velero.aadPodIdentity.name is required" .Values.components.velero.aadPodIdentity.name | quote }}
             {{- end }}
 
+          {{- if .Values.components.velero.labels }}
+            labels:
+          {{- toYaml .Values.components.velero.labels | nindent 14 }}
+          {{- end }}        
+
             metrics:
               serviceMonitor:
                 enabled: true
@@ -85,6 +90,13 @@ spec:
                   volumeSnapshotLocations:
                   - {{ .Values.global.cluster }}
                   ttl: 720h0m0s
+
+          {{- if .Values.components.velero.serviceAccount.server.annotations }}
+            serviceAccount:
+              server:
+                annotations:
+          {{- toYaml .Values.components.velero.serviceAccount.server.annotations | nindent 18 }}
+          {{- end }}
 
             priorityClassName: {{ .Values.components.velero.priorityClassName }}
   destination:
