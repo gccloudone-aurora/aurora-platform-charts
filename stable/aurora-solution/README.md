@@ -1,6 +1,6 @@
 # aurora-solution
 
-![Version: 0.0.4](https://img.shields.io/badge/Version-0.0.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.0.0](https://img.shields.io/badge/AppVersion-2.0.0-informational?style=flat-square)
+![Version: 0.0.15](https://img.shields.io/badge/Version-0.0.15-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.0.0](https://img.shields.io/badge/AppVersion-2.0.0-informational?style=flat-square)
 
 Aurora Solution
 
@@ -16,11 +16,12 @@ Aurora Solution
 | aadPodIdentities | object | `{}` |  |
 | argocdProject.adminGroups | list | `[]` |  |
 | argocdProject.developerGroups | list | `[]` |  |
-| argocdProject.enabled | bool | `true` |  |
+| argocdProject.namespace | string | `"platform-solution-system"` |  |
 | argocdProject.sourceRepos | list | `[]` |  |
 | clusters | object | `{}` |  |
 | global.helm | object | `{}` |  |
 | global.project | string | `"aurora-solution"` |  |
+| information.CBR | string | `""` |  |
 | information.FRC | string | `nil` |  |
 | information.PE | string | `nil` |  |
 | information.authorityToOperate | string | `nil` |  |
@@ -34,7 +35,7 @@ Aurora Solution
 | information.team | string | `nil` |  |
 | information.technicalLead | string | `nil` |  |
 | information.workloadID | string | `nil` |  |
-| information.CBR | string | `nil` | |
+| namespace.deploymentMethod | string | `"argocd"` |  |
 | namespace.labels | object | `{}` |  |
 | namespace.type | string | `nil` |  |
 | netpol.allowSameNamespace | bool | `true` |  |
@@ -46,6 +47,7 @@ Aurora Solution
 | policies.podSecurityAdmission.enforce.version | string | `"v1.27"` |  |
 | policies.podSecurityAdmission.warn.level | string | `"baseline"` |  |
 | policies.podSecurityAdmission.warn.version | string | `"v1.27"` |  |
+| policies.trustManagerBundleInjection | bool | `true` |  |
 | raw.resources | list | `[]` |  |
 | rbac.groups | list | `[]` |  |
 | resourceQuotas.pods | int | `60` |  |

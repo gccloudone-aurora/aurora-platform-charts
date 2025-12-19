@@ -1,6 +1,6 @@
 # argocd-instance
 
-![Version: 0.8.3](https://img.shields.io/badge/Version-0.8.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v2.14.21](https://img.shields.io/badge/AppVersion-v2.14.21-informational?style=flat-square)
+![Version: 0.10.0](https://img.shields.io/badge/Version-0.10.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v3.1.9](https://img.shields.io/badge/AppVersion-v3.1.9-informational?style=flat-square)
 
 A Helm chart that configures Argo CD.
 
@@ -30,7 +30,7 @@ A Helm chart that configures Argo CD.
 | argocdInstance.disableAdmin | bool | `false` |  |
 | argocdInstance.globalProjects | list | `[]` |  |
 | argocdInstance.image.name | string | `"argoproj/argocd"` |  |
-| argocdInstance.image.version | string | `"v2.14.21"` |  |
+| argocdInstance.image.version | string | `"v3.1.9"` |  |
 | argocdInstance.imageRegistry.host | string | `"quay.io"` |  |
 | argocdInstance.imageRegistry.repository | string | `""` |  |
 | argocdInstance.ingressDomain | string | `""` |  |
