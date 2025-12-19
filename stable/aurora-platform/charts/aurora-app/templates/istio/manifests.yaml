@@ -15,7 +15,14 @@ spec:
     helm:
       releaseName: istio-manifests
       values: |
-        resources: {}
+        resources:
+          - apiVersion: security.istio.io/v1beta1
+            kind: PeerAuthentication
+            metadata:
+              name: default
+            spec:
+              mtls:
+                mode: STRICT
   destination:
     name: {{ .Values.global.cluster }}
     namespace: platform-system
