@@ -40,9 +40,9 @@ core:
         tag: main
 
       prometheus:
-        enabled: false
+        enabled: true
         servicemonitor:
-          enabled: false
+          enabled: true
 
       aurora:
         secretDockerConfigJson: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-image-pull-secret>'
@@ -64,11 +64,11 @@ core:
           resourceId: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-certmanager-aadpodidentity-resource-id>'
 
       prometheus:
-        enabled: false
+        enabled: true
         servicemonitor:
-          enabled: false
+          enabled: true
 
-      dns01RecursiveNameservers: "<FILLIN_NAME_SERVERS>:<FILLIN_NAME_SERVERS>:53"
+      dns01RecursiveNameservers: "<FILLIN_NAME_SERVERS>:53,<FILLIN_NAME_SERVERS>:53"
       dns01RecursiveNameserversOnly: true
 
       podDnsConfig:
@@ -92,9 +92,9 @@ core:
         tag: main
 
       prometheus:
-        enabled: false
+        enabled: true
         servicemonitor:
-          enabled: false
+          enabled: true
 
       secretDockerConfigJson: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-image-pull-secret>'
 
@@ -118,6 +118,14 @@ core:
           neighbors:
           - peerASN: 64512
             peerAddress: <FILLIN_PEER_ADDRESS>/32
+
+    falco:
+      enabled: true
+
+      falcoctl:
+        artifact:
+          install:
+            enabled: true
 
     fluentOperator:
       enabled: false
@@ -157,30 +165,36 @@ core:
       constraints:
         gatewayContainerAllowedImages:
           allowedRepos:
+            - artifacts-artefacts.devops.cloud-nuage.canada.ca/
             - ghcr.io/
             - docker.io/
             - docker.elastic.co/
             - mcr.microsoft.com/
             - quay.io/
+            - registry.k8s.io/
             - cgr.dev/
         restrictPodAnnotations:
           excludedNamespaces:
             - 'backstage'
         systemContainerAllowedImages:
           allowedRepos:
+            - artifacts-artefacts.devops.cloud-nuage.canada.ca/
             - ghcr.io/
             - docker.io/
             - docker.elastic.co/
             - mcr.microsoft.com/
             - quay.io/
+            - registry.k8s.io/
             - cgr.dev/
         solutionContainerAllowedImages:
           allowedRepos:
+            - artifacts-artefacts.devops.cloud-nuage.canada.ca/
             - ghcr.io/
             - docker.io/
             - docker.elastic.co/
             - mcr.microsoft.com/
             - quay.io/
+            - registry.k8s.io/
             - cgr.dev/
 
     kubecost:
@@ -224,12 +238,12 @@ core:
         tag: main
 
       prometheus:
-        enabled: false
+        enabled: true
         servicemonitor:
-          enabled: false
+          enabled: true
 
     prometheus:
-      enabled: false
+      enabled: true
 
       azure:
         clientId: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-grafana-sp-client-id>'
@@ -298,6 +312,18 @@ core:
 
       priorityClassName: platform-cluster-critical
 
+    tetragon:
+      enabled: true
+
+    trustManager:
+      enabled: true
+
+      bundle:
+        customCA: |-
+          -----BEGIN CERTIFICATE-----
+
+          -----END CERTIFICATE-----
+
     vaultAgent:
       enabled: false
 
@@ -307,7 +333,7 @@ core:
         agentImage: {}
 
     velero:
-      enabled: false
+      enabled: true
 
       backupStorage:
         bucket: velero
@@ -323,12 +349,25 @@ core:
           clientId: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-velero-aadpodidentity-client-id>'
           resourceId: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-velero-aadpodidentity-resource-id>'
 
+  rbac:
+    platformOperator:
+      groups: ["<FILLIN_AZURE_AD_GROUP>"]
+    securityOperations:
+      groups: ["<FILLIN_AZURE_AD_GROUP>"]
+
 app:
   enabled: true
 
   components:
     argoController:
       enabled: false
+      controllers:
+        syncAppProjects:
+          enabled: false
+        imagePullSecrets:
+          enabled: false
+        workflows:
+          enabled: false
 
       storageAccount:
         name: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-argo-workflow-sa-name>'
@@ -377,8 +416,8 @@ app:
         #       number: 5432
 
       ingressIstioController:
-       image:
-         tag: main
+        image:
+          tag: main
 
       istiod:
         pilot: {}
@@ -408,7 +447,7 @@ app:
         tag: main
 
     solr:
-       enabled: false
+      enabled: false
 
 mgmt:
   enabled: true
@@ -420,6 +459,7 @@ mgmt:
         disableAdmin: false
         ingressDomain: aur.aurora.<FILLIN_INGRESS_DOMAIN>
         argocdVaultPlugin:
+          enabled: true
           env:
             ARGOCD_ENV_AVP_TYPE: "azurekeyvault"
             ARGOCD_ENV_AZURE_CLIENT_ID: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-argocd-kv-aadpodidentity-client-id>'
@@ -502,7 +542,15 @@ mgmt:
                 repoURL: https://gccloudone-aurora.github.io/aurora-platform-charts
                 helmValues:
                   argocdProject:
-                    sourceRepos: []
+                    sourceRepos: ['*']
+        syncWindows:
+          - clusters:
+              - '*'
+            duration: 3h
+            kind: allow
+            manualSync: true
+            schedule: '* 19 * * 2,4'
+            timeZone: America/Toronto
 
     argoSolution:
       enabled: true
@@ -548,8 +596,19 @@ mgmt:
               url: https://github.com/gccloudone-aurora/project-aurora-template.git
               username: "<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-github-username>"
               password: "<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-github-password>"
+        sourceNamespaces:
+          - "/^((?!-system$).)*$/"
 
     argoOperator: {}
 
     billOfLanding:
       enabled: false
+
+    loki:
+      enabled: true
+      basicAuth:
+        username: "<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-loki-username>"
+        password: "<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-loki-password>"
+      logStorageLocation:
+        storageAccountName: "<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-loki-storageaccountname>"
+        storageAccountKey: "<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-loki-storageaccountkey>"

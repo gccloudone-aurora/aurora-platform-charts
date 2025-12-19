@@ -73,6 +73,8 @@ Aurora Platform - Application Components
 | components.istio.base.helm | object | `{}` |  |
 | components.istio.enabled | bool | `true` |  |
 | components.istio.gateway.additionalDnsNames | list | `[]` |  |
+| components.istio.gateway.additionalGatewayHosts | list | `[]` |  |
+| components.istio.gateway.additionalLBPorts | list | `[]` |  |
 | components.istio.gateway.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].podAffinityTerm.labelSelector.matchLabels.istio | string | `"general"` |  |
 | components.istio.gateway.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].podAffinityTerm.topologyKey | string | `"kubernetes.io/hostname"` |  |
 | components.istio.gateway.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].weight | int | `1` |  |
@@ -101,6 +103,7 @@ Aurora Platform - Application Components
 | components.istio.istioCustomResponses.helm | object | `{}` |  |
 | components.istio.istiod.helm | object | `{}` |  |
 | components.istio.istiod.image.repository | string | `"istio"` |  |
+| components.istio.istiod.oauth2.enabled | bool | `false` |  |
 | components.istio.istiod.pilot.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].podAffinityTerm.labelSelector.matchLabels.istio | string | `"pilot"` |  |
 | components.istio.istiod.pilot.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].podAffinityTerm.topologyKey | string | `"kubernetes.io/hostname"` |  |
 | components.istio.istiod.pilot.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].weight | int | `1` |  |
@@ -115,6 +118,7 @@ Aurora Platform - Application Components
 | components.istio.istiod.proxy.image.repository | string | `"istio"` |  |
 | components.istio.istiod.proxy.resources | object | `{}` |  |
 | components.istio.istiod.resources | object | `{}` |  |
+| components.istio.networkPolicy.ingressGeneral.extraIngressPorts | list | `[]` |  |
 | components.kiali.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].podAffinityTerm.labelSelector.matchLabels."app.kubernetes.io/name" | string | `"kiali-operator"` |  |
 | components.kiali.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].podAffinityTerm.topologyKey | string | `"kubernetes.io/hostname"` |  |
 | components.kiali.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].weight | int | `1` |  |
