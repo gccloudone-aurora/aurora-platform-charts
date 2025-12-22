@@ -2215,7 +2215,7 @@ components:
                 app.kubernetes.io/instance: velero
     
     azureWorkloadIdentity:
-      enabled: false
+      enabled: true
       # clientId: ""
     
     serviceAccount:
@@ -2230,13 +2230,6 @@ components:
 
     volumeSnapshot: {}
       # resourceGroupName:
-
-    aadPodIdentity:
-      name: velero
-      enabled: true
-      azureManagedIdentity: {}
-        # clientId: ""
-        # resourceId: ""
 
     plugins:
       azure:
