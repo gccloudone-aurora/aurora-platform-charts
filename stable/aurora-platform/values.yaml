@@ -96,6 +96,7 @@ core:
     # falco: {}
     # fluentOperator: {}
     # gatekeeper: {}
+    # kubebench: {}
     # kubecost: {}
     # kubernetesEventExporter: {}
     # ntp: {}
@@ -106,7 +107,6 @@ core:
     # trustManager: {}
     # vaultAgent: {}
     # velero: {}
-    # kubebench: {}
 
 # Application Platform components are disabled by default
 # and enabled per-cluster which requires them.
