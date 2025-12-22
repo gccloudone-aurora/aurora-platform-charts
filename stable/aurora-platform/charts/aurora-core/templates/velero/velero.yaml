@@ -43,13 +43,10 @@ spec:
 
             {{- if eq .Values.global.provider "azure" }}
             podLabels:
-              aadpodidbinding: {{ required "velero.aadPodIdentity.name is required" .Values.components.velero.aadPodIdentity.name | quote }}
+              {{- if .Values.components.velero.azureWorkloadIdentity.enabled }}
+              azure.workload.identity/use: 'true'
+              {{- end }}
             {{- end }}
-
-          {{- if .Values.components.velero.labels }}
-            labels:
-          {{- toYaml .Values.components.velero.labels | nindent 14 }}
-          {{- end }}        
 
             metrics:
               serviceMonitor:
@@ -91,12 +88,10 @@ spec:
                   - {{ .Values.global.cluster }}
                   ttl: 720h0m0s
 
-          {{- if .Values.components.velero.serviceAccount.server.annotations }}
             serviceAccount:
               server:
                 annotations:
-          {{- toYaml .Values.components.velero.serviceAccount.server.annotations | nindent 18 }}
-          {{- end }}
+                  {{- include "velero.azureWorkloadIdentity.clientId" . | nindent 18 }}
 
             priorityClassName: {{ .Values.components.velero.priorityClassName }}
   destination:

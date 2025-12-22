@@ -2213,6 +2213,11 @@ components:
             labelSelector:
               matchLabels:
                 app.kubernetes.io/instance: velero
+    
+    azureWorkloadIdentity:
+      enabled: true
+      # clientId: ""
+    
     serviceAccount:
       server:
         annotations: {}
