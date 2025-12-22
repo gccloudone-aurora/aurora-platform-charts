@@ -344,10 +344,8 @@ core:
       volumeSnapshot:
         resourceGroupName: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-velero-sa-resource-group-name>'
 
-      aadPodIdentity:
-        azureManagedIdentity:
-          clientId: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-velero-aadpodidentity-client-id>'
-          resourceId: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-velero-aadpodidentity-resource-id>'
+      azureWorkloadIdentity:
+        clientId: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-velero-aadpodidentity-client-id>'
 
   rbac:
     platformOperator:
