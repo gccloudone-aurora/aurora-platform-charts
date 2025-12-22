@@ -2215,7 +2215,7 @@ components:
                 app.kubernetes.io/instance: velero
     
     azureWorkloadIdentity:
-      enabled: true
+      enabled: false
       # clientId: ""
     
     serviceAccount:
