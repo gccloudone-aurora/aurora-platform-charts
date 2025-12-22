@@ -3,7 +3,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: "{{ .Values.global.cluster }}-configure-kubebench"
+  name: "{{ .Values.global.cluster }}-kubebench"
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
@@ -13,7 +13,7 @@ spec:
     repoURL: {{ default .Values.global.helm.repository .Values.global.raw.helm.repository }}
     targetRevision: {{ .Values.global.raw.helm.targetRevision }}
     helm:
-      releaseName: configure-kube-bench
+      releaseName: kubebench
       values: |
         resources:
           - apiVersion: batch/v1
@@ -41,7 +41,7 @@ spec:
                       restartPolicy: Never
                       containers:
                         - name: {{ .Chart.Name }}
-                          image: "{{ .Values.components.kubebench.image.repository }}:{{ .Values.components.kubebench.image.tag }}"
+                          image: {{ include "kubebench.image" . | quote }}
                           imagePullPolicy: {{ .Values.components.kubebench.image.pullPolicy }}
                           command: {{ template "cronjob.command" . }}
                           resources: {{ toYaml .Values.components.kubebench.resources | nindent 28 }}
