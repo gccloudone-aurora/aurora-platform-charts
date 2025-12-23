@@ -83,9 +83,9 @@ spec:
     image: {{ regexReplaceAll "//+" (printf "%s/%s/%s" .Values.argocdInstance.imageRegistry.host .Values.argocdInstance.imageRegistry.repository .Values.argocdInstance.image.name) "/" }}
     version: {{ .Values.argocdInstance.image.version }}
     logLevel: {{ .Values.argocdInstance.logLevel }}
-    {{- if .Values.argocdInstance.argocdVaultPlugin.enabled }}
+    {{- if .Values.argocdInstance.AADPodIdentity.enabled }}
     labels:
-      aadpodidbinding: argocd-vault-plugin
+      aadpodidbinding: {{ .Values.argocdInstance.AADPodIdentity.identityName }}
     {{- end }}
     mountsatoken: true
     volumeMounts:
@@ -237,6 +237,7 @@ spec:
         customization:
           jqPathExpressions:
             - .spec.conversion?.webhook?.clientConfig.caBundle
+            - .spec.preserveUnknownFields
       - group: admissionregistration.k8s.io
         kind: MutatingWebhookConfiguration
         customization:

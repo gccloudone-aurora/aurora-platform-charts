@@ -117,13 +117,13 @@ argocdInstance:
       # # AWS
       # ARGOCD_ENV_AWS_REGION: ""
 
-    azure:
-      AADPodIdentity:
-        enabled: false
-        identityName: "argocd-vault-plugin"
-        managedIdentity:
-          clientID: ""
-          resourceID: ""
+  # General AzureIdentity definitions (can be used for any purpose, not just argocdVaultPlugin)
+  AADPodIdentity:
+    enabled: false
+    identityName: "argocd-vault-plugin"
+    managedIdentity:
+      clientID: ""
+      resourceID: ""
 
 
 register:
