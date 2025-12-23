@@ -96,6 +96,7 @@ core:
     # falco: {}
     # fluentOperator: {}
     # gatekeeper: {}
+    # kubebench: {}
     # kubecost: {}
     # kubernetesEventExporter: {}
     # ntp: {}
