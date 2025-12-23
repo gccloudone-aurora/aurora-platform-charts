@@ -173,7 +173,7 @@ components:
         #       repoURL:
         #       helmValues:
         #         argocdProject:
-        #           sourceRepos: []
+        #           sourceRepos: ['*']
 
       syncWindows:
         - clusters:
@@ -194,7 +194,7 @@ components:
     image:
       # registry: quay.io
       repository: argoprojlabs/argocd-operator
-      tag: "v0.15.0"
+      tag: "v0.16.0"
       # pullPolicy: IfNotPresent
 
     priorityClassName: platform-cluster-medium
@@ -254,7 +254,7 @@ components:
           resourceID: ""
 
       sourceNamespaces:
-        - "/^(?!gitops-.*-system$).*^argocd-.*/"         # starts with "gitops-" & does not end with "-system" 
+        - "/^(?!gitops-.*-system$).*^argocd-.*/"         # starts with "gitops-" & does not end with "-system"
 
       oidcAuthSP:
         credentials: {}

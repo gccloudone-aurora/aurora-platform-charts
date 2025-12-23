@@ -99,11 +99,11 @@ aadPodIdentities: {}
   #   clientID: ""     # @schema type:[string]
   #   resourceID: ""   # @schema type:[string]
 
-# Utilized if namespace.type = argocd-control-plane 
+# Utilized if namespace.type = argocd-control-plane
 argocdProject:
 #  namespace: ""           # @schema type:[string];required:true
   destination:
     namespace: ""         # @schema type:[string];required:true
-  sourceRepos: []
+  sourceRepos: ['*']
   developerGroups: []   # defaults to rbac.groups if empty
   adminGroups: []       # defaults to rbac.groups if empty

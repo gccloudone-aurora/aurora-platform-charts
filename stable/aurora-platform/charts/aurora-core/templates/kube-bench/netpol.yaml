@@ -1,9 +1,9 @@
-{{ if .Values.components.loki.enabled -}}
+{{ if .Values.components.kubebench.enabled -}}
 
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: "{{ .Values.global.cluster }}-loki-netpol"
+  name: "{{ .Values.global.cluster }}-kube-bench-netpol"
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
@@ -13,34 +13,18 @@ spec:
     repoURL: {{ default .Values.global.helm.repository .Values.global.raw.helm.repository }}
     targetRevision: {{ .Values.global.raw.helm.targetRevision }}
     helm:
-      releaseName: loki-netpol
+      releaseName: kube-bench-netpol
       values: |
         resources:
           - apiVersion: networking.k8s.io/v1
             kind: NetworkPolicy
             metadata:
-              name: allow-same-namespace
-              namespace: loki-system
-            spec:
-              podSelector: {}
-              policyTypes:
-                - Ingress
-                - Egress
-              ingress:
-                - from:
-                  - podSelector: {}
-              egress:
-                - to:
-                  - podSelector: {}
-          - apiVersion: networking.k8s.io/v1
-            kind: NetworkPolicy
-            metadata:
-              name: allow-egress-to-azure-storage-from-loki
-              namespace: loki-system
+              name: allow-egress-to-azure-storage-from-kube-bench
+              namespace: kube-bench-system
             spec:
               podSelector:
                 matchLabels:
-                  app.kubernetes.io/name: loki
+                  app.kubernetes.io/name: kube-bench
               egress:
                 - ports:
                     - protocol: TCP
@@ -53,8 +37,8 @@ spec:
           - apiVersion: networking.k8s.io/v1
             kind: NetworkPolicy
             metadata:
-              name: allow-ingress-from-platform-logging-to-loki
-              namespace: loki-system
+              name: allow-ingress-from-platform-logging-to-kube-bench
+              namespace: kube-bench-system
             spec:
               ingress:
               - ports:
@@ -86,7 +70,7 @@ spec:
               - Ingress
   destination:
     name: {{ .Values.global.cluster }}
-    namespace: loki-system
+    namespace: kube-bench-system
   syncPolicy:
     automated:
       prune: true

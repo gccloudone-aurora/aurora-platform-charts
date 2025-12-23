@@ -1,0 +1,83 @@
+{{ if .Values.components.kubebench.enabled -}}
+
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-kubebench"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    chart: {{ .Values.global.raw.helm.chart }}
+    repoURL: {{ default .Values.global.helm.repository .Values.global.raw.helm.repository }}
+    targetRevision: {{ .Values.global.raw.helm.targetRevision }}
+    helm:
+      releaseName: kubebench
+      values: |
+        resources:
+          - apiVersion: batch/v1
+            kind: CronJob
+            metadata:
+              name: kube-bench
+              namespace: kube-bench-system
+              labels: 
+                app.kubernetes.io/name: kube-bench
+            spec:
+              schedule: {{ quote .Values.components.kubebench.cronjob.schedule }}
+              concurrencyPolicy: "{{ .Values.components.kubebench.concurrencyPolicy }}"
+              jobTemplate:
+                spec:
+                  backoffLimit: 0
+                  template:
+                    {{- with .Values.components.kubebench.podLabels }}
+                    metadata:
+                      labels:
+                        {{- toYaml . | nindent 12 }}
+                    {{- end }}
+                    spec:
+                      serviceAccountName: kube-bench
+                      hostPID: true
+                      restartPolicy: Never
+                      containers:
+                        - name: {{ .Chart.Name }}
+                          image: {{ include "kubebench.image" . | quote }}
+                          imagePullPolicy: {{ .Values.components.kubebench.image.pullPolicy }}
+                          command: {{ template "cronjob.command" . }}
+                          resources: {{ toYaml .Values.components.kubebench.resources | nindent 28 }}
+                          {{- with .Values.components.kubebench.volumeMounts }}
+                          volumeMounts: {{ toYaml . | nindent 28 }}
+                          {{- end }}
+                          {{- with .Values.components.kubebench.securityContext }}
+                          securityContext: {{ toYaml . | nindent 16 }}
+                          {{- end }}
+                      {{- with .Values.components.kubebench.volumes }}
+                      volumes: {{ toYaml . | nindent 24 }}
+                      {{- end }}
+                      {{- with .Values.components.kubebench.nodeSelector }}
+                      nodeSelector: {{ toYaml . | nindent 24 }}
+                      {{- end }}
+                      {{- with .Values.components.kubebench.affinity }}
+                      affinity: {{ toYaml . | nindent 24 }}
+                      {{- end }}
+                      {{- with .Values.components.kubebench.tolerations }}
+                      tolerations: {{ toYaml . | nindent 24 }}
+                      {{- end }}
+          - apiVersion: v1
+            kind: ServiceAccount
+            metadata:
+              name: kube-bench
+              namespace: kube-bench-system
+              {{- with .Values.components.kubebench.serviceAccount.annotations }}
+                annotations:
+                {{- toYaml . | nindent 4 }}
+              {{- end }} 
+  destination:
+    name: {{ .Values.global.cluster }}
+    namespace: kube-bench-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+
+{{- end }}

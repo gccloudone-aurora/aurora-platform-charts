@@ -1,9 +1,9 @@
-{{ if .Values.components.loki.enabled -}}
+{{ if .Values.components.kubebench.enabled -}}
 
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: "{{ .Values.global.cluster }}-loki-namespace"
+  name: "{{ .Values.global.cluster }}-kube-bench-namespace"
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
@@ -13,7 +13,7 @@ spec:
     repoURL: {{ default .Values.global.helm.repository .Values.global.namespace.helm.repository }}
     targetRevision: {{ .Values.global.namespace.helm.targetRevision }}
     helm:
-      releaseName: loki-system
+      releaseName: kube-bench-system
       values: |
         # Information about the namespace.
         information:
@@ -26,7 +26,7 @@ spec:
           priority: "medium"
           technicalLead: "William Hearn"
           # The Jira ticket ID of the Epic used to onboard the project.
-          onboardingEpic: "CN-1"
+          onboardingEpic: "CSP-Azure"
           # The link to the authority to operate.
           authorityToOperate: "https://gcdocs.gc.ca/ssc-spc/example"
 
@@ -50,7 +50,8 @@ spec:
         # Policy configurations on the namespace.
         policies:
           # List of host/path that can be exposed from the namespace.
-          allowedHosts: []
+          allowedHosts:
+            - "kube-bench.{{ .Values.global.ingressDomain }}"
 
           # Boolean which defines if the namespace should have Istio injection.
           # TODO: Needs to be set to true
@@ -73,7 +74,7 @@ spec:
             nodeports: 0
           # The upper limit of storage that can be requested across all persistent volumes.
           # Expects a string value of a number with or without units (uses SI units).
-          storage: '64Gi'
+          storage: '32Gi'
   destination:
     name: {{ .Values.global.cluster }}
     namespace: platform-system

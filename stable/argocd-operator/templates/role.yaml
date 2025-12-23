@@ -59,12 +59,6 @@ rules:
   verbs:
   - update
 - apiGroups:
-  - apps.openshift.io
-  resources:
-  - deploymentconfigs
-  verbs:
-  - '*'
-- apiGroups:
   - argoproj.io
   resources:
   - applications
@@ -75,6 +69,9 @@ rules:
   - argocds
   - argocds/finalizers
   - argocds/status
+  - namespacemanagements
+  - namespacemanagements/finalizers
+  - namespacemanagements/status
   - notificationsconfigurations
   - notificationsconfigurations/finalizers
   verbs:

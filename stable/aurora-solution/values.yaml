@@ -38,7 +38,7 @@ namespace:
   # The type of namespace.
   # Can be one of [gateway, solution, system].
   type:                       # @schema type:[string];enum:[gateway, solution, system];required:true
-  deploymentMethod: "argocd"  # @schema type:[string];enum:[argocd, none];required:true    
+  deploymentMethod: "argocd"  # @schema type:[string];enum:[argocd, none];required:true
 
 # Network policy configurations.
 netpol:
@@ -102,7 +102,7 @@ aadPodIdentities: {}
 # Utilized if namespace.type = solution
 argocdProject:
   namespace: "platform-solution-system"
-  sourceRepos: []
+  sourceRepos: ['*']
   developerGroups: []   # defaults to rbac.groups if empty
   adminGroups: []   # defaults to rbac.groups if empty
 
