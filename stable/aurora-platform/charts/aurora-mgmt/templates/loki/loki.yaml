@@ -125,14 +125,20 @@ spec:
             rbac:
               namespaced: true
             write:
+              nodeSelector: {{ toYaml .Values.components.loki.nodeSelector | nindent 16 }}
+              tolerations: {{ toYaml .Values.components.loki.tolerations | nindent 16 }}
               persistence:
                 size: 8Gi
                 storageClass: default
             read:
+              nodeSelector: {{ toYaml .Values.components.loki.nodeSelector | nindent 16 }}
+              tolerations: {{ toYaml .Values.components.loki.tolerations | nindent 16 }}
               persistence:
                 size: 8Gi
                 storageClass: default
             backend:
+              nodeSelector: {{ toYaml .Values.components.loki.nodeSelector | nindent 16 }}
+              tolerations: {{ toYaml .Values.components.loki.tolerations | nindent 16 }}
               persistence:
                 size: 8Gi
                 storageClass: default
