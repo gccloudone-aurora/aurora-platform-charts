@@ -349,6 +349,11 @@ core:
           clientId: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-velero-aadpodidentity-client-id>'
           resourceId: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-velero-aadpodidentity-resource-id>'
 
+    kubebench:
+      enabled: false
+
+      cronjob:
+        schedule: "0 6 * * *"
   rbac:
     platformOperator:
       groups: ["<FILLIN_AZURE_AD_GROUP>"]
