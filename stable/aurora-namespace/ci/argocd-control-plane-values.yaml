@@ -65,10 +65,15 @@ resourceQuotas:
   # Expects a string value of a number with or without units (uses SI units).
   storage: '0'
 
-argocdProject:
-  namespace: "platform-solution-system"
-  destination:
-    namespace: "test"
-  sourceRepos: ['*']
-  developerGroups: []            # defaults to rbac.groups if empty
-  adminGroups: ["testers"]       # defaults to rbac.groups if empty
+argocd:
+  bootstrap:
+    enabled: true
+    repoURL: "https://github.com/my-org/workload-deploy.git"
+    path: "applications"
+  project:
+    namespace: "platform-solution-system"
+    destination:
+      namespace: "test"
+    sourceRepos: ['*']
+    developerGroups: []            # defaults to rbac.groups if empty
+    adminGroups: ["testers"]       # defaults to rbac.groups if empty
