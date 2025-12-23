@@ -91,7 +91,13 @@ spec:
                   ruler: chunks
                 azure: {{ include "loki.logStorageLocation" . | nindent  18 }}
 
-            # Disable lokiCanary, which can only be deployed as a DaemonSet
+            chunksCache:
+              nodeSelector: {{ toYaml .Values.components.loki.nodeSelector | nindent 16 }}
+              tolerations: {{ toYaml .Values.components.loki.tolerations | nindent 16 }}
+            resultsCache:
+              nodeSelector: {{ toYaml .Values.components.loki.nodeSelector | nindent 16 }}
+              tolerations: {{ toYaml .Values.components.loki.tolerations | nindent 16 }}
+
             lokiCanary:
               enabled: false
             test:
