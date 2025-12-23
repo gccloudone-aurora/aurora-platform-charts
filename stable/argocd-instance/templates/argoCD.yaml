@@ -237,6 +237,7 @@ spec:
         customization:
           jqPathExpressions:
             - .spec.conversion?.webhook?.clientConfig.caBundle
+            - .spec.preserveUnknownFields
       - group: admissionregistration.k8s.io
         kind: MutatingWebhookConfiguration
         customization:
