@@ -1,0 +1,31 @@
+{{- if .Values.argocd.bootstrap.enabled }}
+{{- if eq .Values.namespace.type "argocd-control-plane" }}
+
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: bootstrap-applications
+  namespace: {{ $.Release.Name }}
+spec:
+  generators:
+  - git:
+      repoURL: {{ required "argocd.bootstrap.repoURL is required" .Values.argocd.bootstrap.repoURL }}
+      revision: HEAD
+      directories:
+      - path: {{ required "argocd.bootstrap.path is required" .Values.argocd.bootstrap.path }}
+  template:
+    metadata:
+      name: "bootstrap-{{ $.Release.Name }}"
+      namespace: {{ $.Release.Name }}
+    spec:
+      project: "bootstrap-{{ $.Release.Name }}"
+      source:
+        repoURL: {{ required "argocd.bootstrap.repoURL is required" .Values.argocd.bootstrap.repoURL }}
+        targetRevision: HEAD
+        path: {{ required "argocd.bootstrap.path is required" .Values.argocd.bootstrap.path }}
+      destination:
+        server: in-cluster
+        namespace: {{ $.Release.Name }}
+
+{{- end }}
+{{- end }}
