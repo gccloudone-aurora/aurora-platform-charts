@@ -58,10 +58,8 @@ core:
 
       startupapicheck: {}
 
-      aadPodIdentity:
-        azureManagedIdentity:
-          clientId: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-certmanager-aadpodidentity-client-id>'
-          resourceId: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-certmanager-aadpodidentity-resource-id>'
+      azureWorkloadIdentity:
+        clientId: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-certmanager-aadpodidentity-client-id>'
 
       prometheus:
         enabled: true
