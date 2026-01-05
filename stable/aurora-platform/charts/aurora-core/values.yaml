@@ -502,12 +502,12 @@ components:
     podDnsConfig:
       nameservers: []
 
-    aadPodIdentity:
+    azureWorkloadIdentity:
       enabled: true
-      name: cert-manager
-      azureManagedIdentity: {}
-        # clientId: ""
-        # resourceId: ""
+      # clientId: ""
+
+    serviceAccount:
+      annotations: {}
 
     issuers:
       # email: ''
