@@ -58,9 +58,11 @@ spec:
           tolerations: {{ toYaml .Values.components.certManager.startupapicheck.tolerations | nindent 12 }}
           affinity: {{ toYaml .Values.components.certManager.startupapicheck.affinity | nindent 12 }}
 
-        {{- if and .Values.components.certManager.aadPodIdentity.enabled (eq .Values.global.provider "azure") }}
+        {{- if eq .Values.global.provider "azure" }}
         podLabels:
-          aadpodidbinding: {{ required "certManager.aadPodIdentity.name is required" .Values.components.certManager.aadPodIdentity.name | quote }}
+          {{- if .Values.components.certManager.azureWorkloadIdentity.enabled }}
+          azure.workload.identity/use: true
+          {{- end }}
         {{- end }}  
 
         dns01RecursiveNameservers: {{ .Values.components.certManager.dns01RecursiveNameservers }}
@@ -70,6 +72,10 @@ spec:
           nameservers: {{ toYaml .Values.components.certManager.podDnsConfig.nameservers | nindent 12 }}
 
         prometheus: {{ toYaml .Values.components.certManager.prometheus | nindent 10 }}
+
+        serviceAccount:
+          annotations:
+              {{- include "certManager.azureWorkloadIdentity.clientId" . | nindent 12 }}        
 
   destination:
     name: {{ .Values.global.cluster }}

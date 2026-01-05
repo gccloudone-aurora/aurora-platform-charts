@@ -92,25 +92,6 @@ spec:
           - apiVersion: networking.k8s.io/v1
             kind: NetworkPolicy
             metadata:
-              name: allow-egress-to-azureidentity-from-cert-manager
-              namespace: cert-manager-system
-            spec:
-              egress:
-              - ports:
-                - port: 80
-                  protocol: TCP
-                to:
-                - ipBlock:
-                    cidr: 169.254.169.254/32
-              podSelector:
-                matchLabels:
-                  app.kubernetes.io/name: cert-manager
-                  app.kubernetes.io/component: controller
-              policyTypes:
-              - Egress
-          - apiVersion: networking.k8s.io/v1
-            kind: NetworkPolicy
-            metadata:
               name: allow-ingress-from-apiserver-to-certmanagerwebhook
               namespace: cert-manager-system
             spec:
