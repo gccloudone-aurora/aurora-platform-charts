@@ -1999,6 +1999,57 @@ components:
     
     priorityClassName: platform-cluster-medium
 
+  trivy:
+    enabled: true
+    helm: {}
+      # chart: trivy-operator
+      # repository: https://aquasecurity.github.io/helm-charts
+      # targetRevision: 0.31.0
+
+    imagePullSecrets: []
+    image:
+      # registry: docker.io
+      repository: aquasec/trivy
+      tag: "0.29.0"
+      pullPolicy: IfNotPresent
+
+    priorityClassName: platform-cluster-medium
+    
+    operator:
+      # -- the flag to enable vulnerability scanner
+      vulnerabilityScannerEnabled: true
+      # -- configAuditScannerEnabled the flag to enable configuration audit scanner
+      configAuditScannerEnabled: false
+      # -- rbacAssessmentScannerEnabled the flag to enable rbac assessment scanner
+      rbacAssessmentScannerEnabled: false
+      # -- infraAssessmentScannerEnabled the flag to enable infra assessment scanner
+      infraAssessmentScannerEnabled: false
+      # -- exposedSecretScannerEnabled the flag to enable exposed secret scanner
+      exposedSecretScannerEnabled: false
+    resources:
+      requests:
+        cpu: '1'
+        memory: 512Mi
+      limits:
+        cpu: '1'
+        memory: 1Gi
+    nodeSelector:
+      kubernetes.io/os: linux
+      node.ssc-spc.gc.ca/purpose: system
+    tolerations:
+      - key: CriticalAddonsOnly
+        operator: Exists
+    affinity:
+      podAntiAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 1
+          podAffinityTerm:
+            topologyKey: kubernetes.io/hostname
+            labelSelector:
+              matchLabels:
+                app.kubernetes.io/instance: trivy-operator
+    targetWorkloads: "pod,replicaset,replicationcontroller,statefulset,daemonset,cronjob,job"
+
   tetragon:
     enabled: false
 
