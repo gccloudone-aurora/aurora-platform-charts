@@ -15,7 +15,7 @@ spec:
     {{- else }}
     repoURL: {{ default "https://vmware-tanzu.github.io/helm-charts" .Values.global.helm.repository }}
     {{- end }}
-    targetRevision: {{ default "4.0.3" .Values.components.velero.helm.targetRevision }}
+    targetRevision: {{ default "11.3.2" .Values.components.velero.helm.targetRevision }}
     plugin:
       env:
         - name: HELM_RELEASE_NAME
@@ -44,7 +44,7 @@ spec:
             {{- if eq .Values.global.provider "azure" }}
             podLabels:
               {{- if .Values.components.velero.azureWorkloadIdentity.enabled }}
-              azure.workload.identity/use: true
+              azure.workload.identity/use: "true"
               {{- end }}
             {{- end }}
 
