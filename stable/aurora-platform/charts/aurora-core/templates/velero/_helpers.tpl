@@ -77,7 +77,7 @@ The azureWorkloadIdentity configuration.
 */}}
 {{- define "velero.azureWorkloadIdentity.clientId" -}}
 {{- if .Values.components.velero.azureWorkloadIdentity.enabled -}}
-azure.workload.identity/client-id: {{- required "velero.azureWorkloadIdentity.clientId is required" .Values.components.velero.azureWorkloadIdentity.clientId | quote }}
+azure.workload.identity/client-id: {{ required "velero.azureWorkloadIdentity.clientId is required" .Values.components.velero.azureWorkloadIdentity.clientId | quote }}
 {{- end }}
 {{- end }}
 

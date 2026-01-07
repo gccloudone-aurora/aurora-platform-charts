@@ -2236,7 +2236,7 @@ components:
         image:
           # registry: docker.io
           repository: velero/velero-plugin-for-microsoft-azure
-          tag: "v1.7.1"
+          tag: "v1.13.1"
       aws:
         image:
           # registry: docker.io
