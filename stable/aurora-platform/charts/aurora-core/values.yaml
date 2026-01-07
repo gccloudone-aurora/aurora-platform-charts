@@ -2001,6 +2001,8 @@ components:
 
   trivy:
     enabled: true
+    mode: ClientServer
+    excludeNamespaces: "*system"
     helm: {}
       # chart: trivy-operator
       # repository: https://aquasecurity.github.io/helm-charts
@@ -2048,6 +2050,7 @@ components:
             labelSelector:
               matchLabels:
                 app.kubernetes.io/instance: trivy-operator
+    severity: "HIGH,CRITICAL"
     targetWorkloads: "pod,replicaset,replicationcontroller,statefulset,daemonset,cronjob,job"
 
   tetragon:

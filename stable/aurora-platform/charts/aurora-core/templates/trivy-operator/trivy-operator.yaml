@@ -28,8 +28,14 @@ spec:
             operator: {{ toYaml .Values.components.trivy.operator | nindent 14 }}
             priorityClassName: {{ .Values.components.trivy.priorityClassName }}
             resources: {{ toYaml .Values.components.trivy.resources | nindent 14 }}
+            serviceMonitor:
+                enabled: true
             targetWorkloads: {{ .Values.components.trivy.targetWorkloads }}
             tolerations: {{ toYaml .Values.components.trivy.tolerations | nindent 14 }}
+            trivy:
+              mode: {{ .Values.components.trivy.mode }}
+              severity: {{ .Values.components.trivy.severity }}
+            excludeNamespaces: {{ .Values.components.trivy.excludeNamespaces }}
   destination:
     name: {{ .Values.global.cluster }}
     namespace: platform-system
