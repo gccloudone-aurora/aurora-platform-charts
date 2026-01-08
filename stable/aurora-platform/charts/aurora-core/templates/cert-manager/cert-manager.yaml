@@ -61,7 +61,7 @@ spec:
         {{- if eq .Values.global.provider "azure" }}
         podLabels:
           {{- if .Values.components.certManager.azureWorkloadIdentity.enabled }}
-          azure.workload.identity/use: true
+          azure.workload.identity/use: "true"
           {{- end }}
         {{- end }}  
 
