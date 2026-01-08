@@ -38,7 +38,7 @@ spec:
             excludeNamespaces: {{ .Values.components.trivy.excludeNamespaces }}
   destination:
     name: {{ .Values.global.cluster }}
-    namespace: platform-system
+    namespace: trivy-system
   syncPolicy:
     automated:
       prune: true
