@@ -98,3 +98,12 @@ cnameStrategy: Follow
 route53: {}
 {{- end }}
 {{- end }}
+
+{{/*
+The azureWorkloadIdentity configuration.
+*/}}
+{{- define "certManager.azureWorkloadIdentity.clientId" -}}
+{{- if .Values.components.certManager.azureWorkloadIdentity.enabled -}}
+azure.workload.identity/client-id: {{ required "certManager.azureWorkloadIdentity.clientId is required" .Values.components.certManager.azureWorkloadIdentity.clientId | quote }}
+{{- end }}
+{{- end }}
