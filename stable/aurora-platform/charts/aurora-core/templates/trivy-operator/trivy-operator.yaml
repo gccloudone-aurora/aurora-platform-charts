@@ -35,7 +35,7 @@ spec:
             trivy:
               builtInTrivyServer: {{ .Values.components.trivy.builtInTrivyServer }}
               severity: {{ .Values.components.trivy.severity }}
-            excludeNamespaces: {{ .Values.components.trivy.excludeNamespaces }}
+            excludeNamespaces: {{ .Values.components.trivy.excludeNamespaces | quote }}
   destination:
     name: {{ .Values.global.cluster }}
     namespace: trivy-system
