@@ -2001,7 +2001,7 @@ components:
 
   trivy:
     enabled: true
-    mode: ClientServer
+    builtInTrivyServer: true
     excludeNamespaces: "*system"
     helm: {}
       # chart: trivy-operator
