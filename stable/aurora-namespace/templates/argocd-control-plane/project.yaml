@@ -4,7 +4,7 @@ apiVersion: argoproj.io/v1alpha1
 kind: AppProject
 metadata:
   name: {{ $.Release.Name }}
-  namespace: {{ required "argocdProject.namespace is required" .Values.argocdProject.namespace }}
+  namespace: {{ required "argocd.project.namespace is required" .Values.argocd.project.namespace }}
   labels:
     argocd.argoproj.io/project-inherit: global
 spec:
@@ -14,18 +14,18 @@ spec:
     - {{ $.Release.Name }}
 
   # Which repositories are allowed
-  sourceRepos: {{ toYaml .Values.argocdProject.sourceRepos | nindent 4 }}
+  sourceRepos: {{ toYaml .Values.argocd.project.sourceRepos | nindent 4 }}
 
   # The clusters where the tenant's applications are hosted
   destinations:
     - server: "*"
-      namespace: {{ required "argocdProject.destination.namespace is required" .Values.argocdProject.destination.namespace }}
+      namespace: {{ required "argocd.project.destination.namespace is required" .Values.argocd.project.destination.namespace }}
 
   roles:
     # Role for "admins" - full control including delete/force-sync
     - name: admin-role
       description: Admin access for applications
-      groups: {{ toYaml (default .Values.rbac.groups .Values.argocdProject.adminGroups) | nindent 6 }}
+      groups: {{ toYaml (default .Values.rbac.groups .Values.argocd.project.adminGroups) | nindent 6 }}
       policies:
         # Full control over applications in this project
         - p, proj:{{ $.Release.Name }}:admin-role, applications, *, {{ $.Release.Name }}/*, allow
@@ -33,11 +33,11 @@ spec:
         - p, proj:{{ $.Release.Name }}:admin-role, logs, *, {{ $.Release.Name }}/*, allow
         - p, proj:{{ $.Release.Name }}:admin-role, exec, *, {{ $.Release.Name }}/*, allow
 
-    {{- if .Values.argocdProject.developerGroups }}
+    {{- if .Values.argocd.project.developerGroups }}
     # Role for "developers" - can view and sync, but not delete Applications
     - name: developer-role
       description: Developer access applications
-      groups: {{ toYaml .Values.argocdProject.developerGroups | nindent 6 }}
+      groups: {{ toYaml .Values.argocd.project.developerGroups | nindent 6 }}
       policies:
         # Allow read-only access to all applications in this project
         - p, proj:{{ $.Release.Name }}:developer-role, applications, get, {{ $.Release.Name }}/*, allow

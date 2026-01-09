@@ -542,8 +542,10 @@ mgmt:
               source:
                 repoURL: https://gccloudone-aurora.github.io/aurora-platform-charts
                 helmValues:
-                  argocdProject:
-                    sourceRepos: ['*']
+                  argocd:
+                    project:
+                      sourceRepos: ['*']
+
         syncWindows:
           - clusters:
               - '*'
