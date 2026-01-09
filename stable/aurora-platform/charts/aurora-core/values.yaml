@@ -2001,7 +2001,6 @@ components:
 
   trivy:
     enabled: true
-    builtInTrivyServer: true
     excludeNamespaces: "*system"
     helm: {}
       # chart: trivy-operator
@@ -2011,13 +2010,15 @@ components:
     imagePullSecrets: []
     image:
       # registry: docker.io
-      repository: aquasec/trivy
+      repository: aquasec/trivy-operator
       tag: "0.29.0"
       pullPolicy: IfNotPresent
 
     priorityClassName: platform-cluster-medium
     
     operator:
+      # enable builtin server mode
+      builtInTrivyServer: true
       # -- the flag to enable vulnerability scanner
       vulnerabilityScannerEnabled: true
       # -- configAuditScannerEnabled the flag to enable configuration audit scanner

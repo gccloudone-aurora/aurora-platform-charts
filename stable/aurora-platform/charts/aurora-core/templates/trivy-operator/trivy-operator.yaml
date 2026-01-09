@@ -22,6 +22,9 @@ spec:
           value: "trivy-operator"
         - name: HELM_VALUES
           value: |
+            global:
+              image: 
+                registry: {{ default "docker.io" .Values.global.container.registry }}
             affinity: {{ toYaml .Values.components.trivy.affinity | nindent 14 }}
             image: {{ default "{}" (include "trivy.image" .) | nindent 14 }}
             nodeSelector: {{ toYaml .Values.components.trivy.nodeSelector | nindent 14 }}
@@ -35,6 +38,7 @@ spec:
             trivy:
               builtInTrivyServer: {{ .Values.components.trivy.builtInTrivyServer }}
               severity: {{ .Values.components.trivy.severity }}
+              storageClassName: default
             excludeNamespaces: {{ .Values.components.trivy.excludeNamespaces | quote }}
   destination:
     name: {{ .Values.global.cluster }}
