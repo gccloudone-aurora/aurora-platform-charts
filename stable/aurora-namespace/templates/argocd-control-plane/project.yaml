@@ -33,7 +33,7 @@ spec:
         - p, proj:{{ $.Release.Name }}:admin-role, logs, *, {{ $.Release.Name }}/*, allow
         - p, proj:{{ $.Release.Name }}:admin-role, exec, *, {{ $.Release.Name }}/*, allow
 
-    {{- if .Values.argocdProject.developerGroups }}
+    {{- if .Values.argocd.project.developerGroups }}
     # Role for "developers" - can view and sync, but not delete Applications
     - name: developer-role
       description: Developer access applications

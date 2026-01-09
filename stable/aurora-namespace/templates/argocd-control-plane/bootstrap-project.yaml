@@ -4,7 +4,7 @@ apiVersion: argoproj.io/v1alpha1
 kind: AppProject
 metadata:
   name: "bootstrap-{{ $.Release.Name }}"
-  namespace: {{ required "argocdProject.namespace is required" .Values.argocdProject.namespace }}
+  namespace: {{ required "argocdProject.namespace is required" .Values.argocd.project.namespace }}
 spec:
   description: "Global multi-tenant restrictions"
 
