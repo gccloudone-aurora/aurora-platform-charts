@@ -691,7 +691,7 @@ components:
 
     helm: {}
       # chart: fluent-operator
-      # repository:  https://fluent.github.io/fluent-operator
+      # repository:  https://fluent.github.io/helm-charts
       # targetRevision: 0.20.9
 
     containerRuntime: "containerd"
