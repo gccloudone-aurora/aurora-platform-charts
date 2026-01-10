@@ -36,7 +36,8 @@ spec:
             targetWorkloads: {{ .Values.components.trivy.targetWorkloads }}
             tolerations: {{ toYaml .Values.components.trivy.tolerations | nindent 14 }}
             trivy:
-              builtInTrivyServer: {{ .Values.components.trivy.builtInTrivyServer }}
+              dbRegistry: {{ default "docker.io" .Values.global.container.registry }}
+              javaDbRegistry: {{ default "docker.io" .Values.global.container.registry }}
               severity: {{ .Values.components.trivy.severity }}
               storageClassName: default
             excludeNamespaces: {{ .Values.components.trivy.excludeNamespaces | quote }}
