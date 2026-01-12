@@ -19,6 +19,22 @@ spec:
           - apiVersion: networking.k8s.io/v1
             kind: NetworkPolicy
             metadata:
+              name: allow-same-namespace
+              namespace: trivy-system
+            spec:
+              podSelector: {}
+              policyTypes:
+                - Ingress
+                - Egress
+              ingress:
+                - from:
+                  - podSelector: {}
+              egress:
+                - to:
+                  - podSelector: {}
+          - apiVersion: networking.k8s.io/v1
+            kind: NetworkPolicy
+            metadata:
               name: allow-egress-to-github-and-registries-from-trivy-operator
               namespace: trivy-system
             spec:
@@ -43,6 +59,24 @@ spec:
               podSelector:
                 matchLabels:
                   app.kubernetes.io/name: trivy-server
+              egress:
+                - ports:
+                    - protocol: TCP
+                      port: 443    
+                  to:
+                    - ipBlock:
+                        cidr: 0.0.0.0/0
+              policyTypes:
+                - Egress
+          - apiVersion: networking.k8s.io/v1
+            kind: NetworkPolicy
+            metadata:
+              name: allow-egress-to-github-and-registries-from-trivy-jobs
+              namespace: trivy-system
+            spec:
+              podSelector:
+                matchLabels:
+                  app.kubernetes.io/managed-by: trivy-operator
               egress:
                 - ports:
                     - protocol: TCP

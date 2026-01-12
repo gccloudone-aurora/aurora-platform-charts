@@ -43,7 +43,7 @@ spec:
         namespace:
         # Extra labels to add to the namespace.
           labels:
-          # The type of namespace.
+            namespace.ssc-spc.gc.ca/trust-manager: active
           # Can be one of [gateway, solution, system].
           type: "system"
 
