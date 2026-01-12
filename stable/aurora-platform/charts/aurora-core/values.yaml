@@ -1026,6 +1026,9 @@ components:
         # - registry.k8s.io/
         excludedNamespaces: []
         enforcementAction: "deny"
+      readOnlyRootFileSystem:
+        enforcementAction: "deny"
+        exemptImages: []
       systemContainerAllowedImages:
         allowedRepos: []
         # - ghcr.io/
