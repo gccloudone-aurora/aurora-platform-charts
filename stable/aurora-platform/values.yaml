@@ -104,6 +104,7 @@ core:
     # prometheus: {}
     # secretsStoreCSIDriver: {}
     # tetragon: {}
+    # trivy-operator: {}
     # trustManager: {}
     # vaultAgent: {}
     # velero: {}
