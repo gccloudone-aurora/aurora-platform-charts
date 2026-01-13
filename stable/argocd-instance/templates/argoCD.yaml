@@ -1,4 +1,4 @@
-apiVersion: argoproj.io/v1alpha1
+apiVersion: argoproj.io/v1beta1
 kind: ArgoCD
 metadata:
   name: argocd
@@ -51,8 +51,13 @@ spec:
     logLevel: {{ .Values.argocdInstance.logLevel }}
     resources:  {{ toYaml .Values.argocdInstance.applicationSet.resources | nindent 6 }}
 
+<<<<<<< HEAD
     sourceNamespaces: {{ toYaml .Values.argocdInstance.sourceNamespaces | nindent 4 }}
     scmProviders: {{ toYaml .Values.argocdInstance.scmProviders | nindent 4 }}
+=======
+    sourceNamespaces: {{ toYaml .Values.argocdInstance.applicationSet.sourceNamespaces | nindent 6 }}
+    scmProviders: {{ toYaml .Values.argocdInstance.applicationSet.scmProviders | nindent 6 }}
+>>>>>>> feat-bootstrap-argocd-application
 
   redis:
     image: {{ regexReplaceAll "//+" (printf "%s/%s/%s" .Values.argocdInstance.redis.imageRegistry.host .Values.argocdInstance.redis.imageRegistry.repository .Values.argocdInstance.redis.image.name) "/" }}
@@ -86,9 +91,9 @@ spec:
     image: {{ regexReplaceAll "//+" (printf "%s/%s/%s" .Values.argocdInstance.imageRegistry.host .Values.argocdInstance.imageRegistry.repository .Values.argocdInstance.image.name) "/" }}
     version: {{ .Values.argocdInstance.image.version }}
     logLevel: {{ .Values.argocdInstance.logLevel }}
-    {{- if .Values.argocdInstance.argocdVaultPlugin.enabled }}
+    {{- if .Values.argocdInstance.AADPodIdentity.enabled }}
     labels:
-      aadpodidbinding: argocd-vault-plugin
+      aadpodidbinding: {{ .Values.argocdInstance.AADPodIdentity.identityName }}
     {{- end }}
     mountsatoken: true
     volumeMounts:
@@ -189,8 +194,9 @@ spec:
   {{- end }}
 
   rbac:
-    defaultPolicy: ""
+    defaultPolicy: "role:none"
     policy: |
+      p, role:none, *, *, */*, deny 
       p, role:org-admin, applications, *, */*, allow
       p, role:org-admin, applicationsets, get, */*, allow
       p, role:org-admin, clusters, get, *, allow
@@ -239,6 +245,7 @@ spec:
         customization:
           jqPathExpressions:
             - .spec.conversion?.webhook?.clientConfig.caBundle
+            - .spec.preserveUnknownFields
       - group: admissionregistration.k8s.io
         kind: MutatingWebhookConfiguration
         customization:

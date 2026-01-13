@@ -70,3 +70,14 @@ incremental: true
 region: ca-central-1
 {{- end }}
 {{- end }}
+
+
+{{/*
+The azureWorkloadIdentity configuration.
+*/}}
+{{- define "velero.azureWorkloadIdentity.clientId" -}}
+{{- if .Values.components.velero.azureWorkloadIdentity.enabled -}}
+azure.workload.identity/client-id: {{ required "velero.azureWorkloadIdentity.clientId is required" .Values.components.velero.azureWorkloadIdentity.clientId | quote }}
+{{- end }}
+{{- end }}
+

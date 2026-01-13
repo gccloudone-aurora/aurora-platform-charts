@@ -34,7 +34,7 @@ argocdInstance:
 
   image:
     name: "argoproj/argocd"
-    version: "v2.14.21"
+    version: "v3.1.9"
 
   nodeSelector: {}
   tolerations: []
@@ -47,6 +47,9 @@ argocdInstance:
       # requests:
       #   cpu: ""
       #   memory: ""
+
+    sourceNamespaces: []
+    scmProviders: []
 
   controller:
     resources: {}
@@ -119,13 +122,13 @@ argocdInstance:
       # # AWS
       # ARGOCD_ENV_AWS_REGION: ""
 
-    azure:
-      AADPodIdentity:
-        enabled: false
-        identityName: "argocd-vault-plugin"
-        managedIdentity:
-          clientID: ""
-          resourceID: ""
+  # General AzureIdentity definitions (can be used for any purpose, not just argocdVaultPlugin)
+  AADPodIdentity:
+    enabled: false
+    identityName: "argocd-vault-plugin"
+    managedIdentity:
+      clientID: ""
+      resourceID: ""
 
 
 register:

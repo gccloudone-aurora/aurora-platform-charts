@@ -15,7 +15,7 @@ spec:
     {{- else }}
     repoURL: {{ default "https://gccloudone-aurora.github.io/aurora-platform-charts" .Values.global.helm.repository }}
     {{- end }}
-    targetRevision: {{ default "0.8.3" .Values.components.argoSolution.argocdInstance.helm.targetRevision }}
+    targetRevision: {{ default "0.12.0" .Values.components.argoSolution.argocdInstance.helm.targetRevision }}
     plugin:
       env:
         - name: HELM_RELEASE_NAME
@@ -23,11 +23,10 @@ spec:
         - name: HELM_VALUES
           value: |
             argocdInstance:
+              ingressDomain: "{{ .Values.components.argoSolution.argocdInstance.ingressDomain }}"
 
               nodeSelector: {{ toYaml .Values.components.argoSolution.argocdInstance.nodeSelector | nindent 16 }}
               tolerations: {{ toYaml .Values.components.argoSolution.argocdInstance.tolerations | nindent 16 }}
-
-              ingressDomain: "{{ .Values.components.argoSolution.argocdInstance.ingressDomain }}"
 
               adminSecurityGroup: {{ .Values.components.argoSolution.argocdInstance.adminSecurityGroup }}
               disableAdmin: "{{ .Values.components.argoSolution.argocdInstance.disableAdmin }}"
@@ -41,8 +40,20 @@ spec:
               argocdVaultPlugin:
                 enabled: false
 
+<<<<<<< HEAD
               sourceNamespaces: {{ toYaml .Values.components.argoSolution.argocdInstance.sourceNamespaces | nindent 16 }}
               scmProviders: {{ toYaml .Values.components.argoSolution.argocdInstance.sourceNamespaces | nindent 16 }}
+=======
+              AADPodIdentity:
+                enabled: {{ default "false" .Values.components.argoFoundation.argocdInstance.AADPodIdentity.enabled }}
+                {{- if .Values.components.argoFoundation.argocdInstance.AADPodIdentity.enabled }}
+                managedIdentity:
+                  clientID: {{ .Values.components.argoFoundation.argocdInstance.AADPodIdentity.managedIdentity.clientID }}
+                  resourceID: {{ .Values.components.argoFoundation.argocdInstance.AADPodIdentity.managedIdentity.resourceID }}
+                {{- end }}
+
+              sourceNamespaces: {{ toYaml .Values.components.argoSolution.argocdInstance.sourceNamespaces | nindent 16 }}
+>>>>>>> feat-bootstrap-argocd-application
 
               globalProjects:
                 - projectName: "global-multi-tenant"
@@ -66,6 +77,8 @@ spec:
 
               applicationSet:
                 resources: {{ toYaml .Values.components.argoSolution.argocdInstance.applicationSet.resources | nindent 18 }}
+                sourceNamespaces: {{ toYaml .Values.components.argoSolution.argocdInstance.applicationSet.sourceNamespaces | nindent 18 }}
+                scmProviders: {{ toYaml .Values.components.argoSolution.argocdInstance.applicationSet.sourceNamespaces | nindent 18 }}
 
               redis:
                 resources: {{ toYaml .Values.components.argoSolution.argocdInstance.redis.resources | nindent 18 }}
