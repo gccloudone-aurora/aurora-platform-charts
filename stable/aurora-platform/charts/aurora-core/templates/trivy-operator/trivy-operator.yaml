@@ -40,17 +40,7 @@ spec:
               javaDbRegistry: {{ default "docker.io" .Values.global.container.registry }}
               severity: {{ .Values.components.trivy.severity }}
               storageClassName: default
-              server:
-                extraServerVolumes:
-                  volumeMounts: 
-                   - name: trust-manager-propagated-custom-ca
-                     mountPath: /etc/ssl/certs/trust-manager-propagated-custom-ca.crt
-                     subPath: ca-certificates.crt
-                     readOnly: true
-                  volumes: 
-                   - name: trust-manager-propagated-custom-ca
-                     configMap:
-                       name: trust-manager-propagated-custom-ca
+              server: {{ toYaml .Values.components.trivy.server | nindent 16 }}
             excludeNamespaces: {{ .Values.components.trivy.excludeNamespaces | quote }}
   destination:
     name: {{ .Values.global.cluster }}

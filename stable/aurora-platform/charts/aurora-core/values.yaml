@@ -2029,13 +2029,31 @@ components:
       infraAssessmentScannerEnabled: false
       # -- exposedSecretScannerEnabled the flag to enable exposed secret scanner
       exposedSecretScannerEnabled: false
+    server:
+      resources:
+        requests:
+          cpu: 200m
+          memory: 512Mi
+        limits:
+          cpu: 1
+          memory: 1Gi
+      extraServerVolumes:
+        volumeMounts: 
+         - name: trust-manager-propagated-custom-ca
+           mountPath: /etc/ssl/certs/trust-manager-propagated-custom-ca.crt
+           subPath: ca-certificates.crt
+           readOnly: true
+        volumes: 
+         - name: trust-manager-propagated-custom-ca
+           configMap:
+             name: trust-manager-propagated-custom-ca
     resources:
       requests:
-        cpu: '1'
-        memory: 512Mi
+        cpu: 100m
+        memory: 100M
       limits:
-        cpu: '1'
-        memory: 1Gi
+        cpu: 500m
+        memory: 500M
     nodeSelector:
       kubernetes.io/os: linux
       node.ssc-spc.gc.ca/purpose: system
