@@ -15,7 +15,7 @@ spec:
     {{- else }}
     repoURL: {{ default "https://vmware-tanzu.github.io/helm-charts" .Values.global.helm.repository }}
     {{- end }}
-    targetRevision: {{ default "4.0.3" .Values.components.velero.helm.targetRevision }}
+    targetRevision: {{ default "11.3.2" .Values.components.velero.helm.targetRevision }}
     plugin:
       env:
         - name: HELM_RELEASE_NAME
@@ -43,7 +43,9 @@ spec:
 
             {{- if eq .Values.global.provider "azure" }}
             podLabels:
-              aadpodidbinding: {{ required "velero.aadPodIdentity.name is required" .Values.components.velero.aadPodIdentity.name | quote }}
+              {{- if .Values.components.velero.azureWorkloadIdentity.enabled }}
+              azure.workload.identity/use: "true"
+              {{- end }}
             {{- end }}
 
             metrics:
@@ -85,6 +87,11 @@ spec:
                   volumeSnapshotLocations:
                   - {{ .Values.global.cluster }}
                   ttl: 720h0m0s
+
+            serviceAccount:
+              server:
+                annotations:
+                  {{- include "velero.azureWorkloadIdentity.clientId" . | nindent 18 }}
 
             priorityClassName: {{ .Values.components.velero.priorityClassName }}
   destination:

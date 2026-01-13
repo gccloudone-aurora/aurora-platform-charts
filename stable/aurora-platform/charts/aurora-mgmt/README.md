@@ -40,7 +40,7 @@ Aurora Platform - Management Components
 | components.argoOperator.affinity | object | `{}` |  |
 | components.argoOperator.helm | object | `{}` |  |
 | components.argoOperator.image.repository | string | `"argoprojlabs/argocd-operator"` |  |
-| components.argoOperator.image.tag | string | `"v0.15.0"` |  |
+| components.argoOperator.image.tag | string | `"v0.16.0"` |  |
 | components.argoOperator.imagePullSecrets | list | `[]` |  |
 | components.argoOperator.nodeSelector."kubernetes.io/os" | string | `"linux"` |  |
 | components.argoOperator.nodeSelector."node.ssc-spc.gc.ca/purpose" | string | `"system"` |  |
@@ -68,7 +68,7 @@ Aurora Platform - Management Components
 | components.argoSolution.argocdInstance.register.repositoryCreds | object | `{}` |  |
 | components.argoSolution.argocdInstance.repo.resources | object | `{}` |  |
 | components.argoSolution.argocdInstance.server.service | object | `{}` |  |
-| components.argoSolution.argocdInstance.sourceNamespaces[0] | string | `"/^((?!-system$).)*$/"` |  |
+| components.argoSolution.argocdInstance.sourceNamespaces[0] | string | `"/^(?!gitops-.*-system$).*^argocd-.*/"` |  |
 | components.argoSolution.argocdInstance.tolerations[0].key | string | `"CriticalAddonsOnly"` |  |
 | components.argoSolution.argocdInstance.tolerations[0].operator | string | `"Exists"` |  |
 | components.argoSolution.enabled | bool | `true` |  |
@@ -82,6 +82,15 @@ Aurora Platform - Management Components
 | components.billOfLanding.nodeSelector."node.ssc-spc.gc.ca/purpose" | string | `"system"` |  |
 | components.billOfLanding.tolerations[0].key | string | `"CriticalAddonsOnly"` |  |
 | components.billOfLanding.tolerations[0].operator | string | `"Exists"` |  |
+| components.loki.basicAuth | object | `{}` |  |
+| components.loki.enabled | bool | `false` |  |
+| components.loki.helm | object | `{}` |  |
+| components.loki.image.repository | string | `"grafana/loki"` |  |
+| components.loki.logStorageLocation | object | `{}` |  |
+| components.loki.nodeSelector."kubernetes.io/os" | string | `"linux"` |  |
+| components.loki.nodeSelector."node.ssc-spc.gc.ca/purpose" | string | `"system"` |  |
+| components.loki.tolerations[0].key | string | `"CriticalAddonsOnly"` |  |
+| components.loki.tolerations[0].operator | string | `"Exists"` |  |
 | data.mgmt.enabled | bool | `true` |  |
 | global.cluster | string | `"in-cluster"` |  |
 | global.container | object | `{}` |  |

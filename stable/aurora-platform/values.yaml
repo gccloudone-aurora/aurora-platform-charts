@@ -96,6 +96,7 @@ core:
     # falco: {}
     # fluentOperator: {}
     # gatekeeper: {}
+    # kubebench: {}
     # kubecost: {}
     # kubernetesEventExporter: {}
     # ntp: {}
@@ -103,6 +104,7 @@ core:
     # prometheus: {}
     # secretsStoreCSIDriver: {}
     # tetragon: {}
+    # trivy-operator: {}
     # trustManager: {}
     # vaultAgent: {}
     # velero: {}
