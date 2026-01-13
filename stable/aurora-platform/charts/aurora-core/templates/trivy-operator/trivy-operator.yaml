@@ -25,23 +25,29 @@ spec:
             global:
               image: 
                 registry: {{ default "docker.io" .Values.global.container.registry }}
-            affinity: {{ toYaml .Values.components.trivy.affinity | nindent 14 }}
+
             image: {{ default "{}" (include "trivy.image" .) | nindent 14 }}
-            nodeSelector: {{ toYaml .Values.components.trivy.nodeSelector | nindent 14 }}
-            operator: {{ toYaml .Values.components.trivy.operator | nindent 14 }}
-            priorityClassName: {{ .Values.components.trivy.priorityClassName }}
             resources: {{ toYaml .Values.components.trivy.resources | nindent 14 }}
+            nodeSelector: {{ toYaml .Values.components.trivy.nodeSelector | nindent 14 }}
+            tolerations: {{ toYaml .Values.components.trivy.tolerations | nindent 14 }}
+            affinity: {{ toYaml .Values.components.trivy.affinity | nindent 14 }}
+            priorityClassName: {{ .Values.components.trivy.priorityClassName }}
+
+            targetWorkloads: {{ .Values.components.trivy.targetWorkloads }}
+            excludeNamespaces: {{ .Values.components.trivy.excludeNamespaces | quote }}
+            
+            operator: {{ toYaml .Values.components.trivy.operator | nindent 14 }}
+
             serviceMonitor:
               enabled: true
-            targetWorkloads: {{ .Values.components.trivy.targetWorkloads }}
-            tolerations: {{ toYaml .Values.components.trivy.tolerations | nindent 14 }}
+              
             trivy:
               dbRegistry: {{ default "docker.io" .Values.global.container.registry }}
               javaDbRegistry: {{ default "docker.io" .Values.global.container.registry }}
               severity: {{ .Values.components.trivy.severity }}
               storageClassName: default
               server: {{ toYaml .Values.components.trivy.server | nindent 16 }}
-            excludeNamespaces: {{ .Values.components.trivy.excludeNamespaces | quote }}
+
   destination:
     name: {{ .Values.global.cluster }}
     namespace: trivy-system
