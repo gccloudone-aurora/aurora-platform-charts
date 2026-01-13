@@ -5,19 +5,33 @@ metadata:
   namespace: {{ $.Release.Name }}
 spec:
   generators:
-  - git:
-      repoURL: {{ required "argocd.deploymentRepoURL is required" .Values.argocd.deploymentRepoURL }}
-      revision: HEAD
-      directories:
-      - path: applications
+    - matrix:
+        generators:
+          # 1. Filter repositories by topic & repository name
+          - scmProvider:
+              github:
+                organization: "{{ .Values.argocd.github.organization }}" 
+                tokenRef:
+                  secretName: github-creds
+                  key: token
+              filters:
+                - topicMatch: "deploy-repository"
+                - repositoryMatch: "^{{ .Values.argocd.github.repositoryName }}$"
+
+          # 2. Only create app if the 'applications' directory exists in that repo
+          - git:
+              repoURL: "{{ url }}"
+              revision: HEAD
+              directories:
+                - path: applications
   template:
     metadata:
-      name: "bootstrap-{{ $.Release.Name }}"
+      name: "bootstrap-{{ repository }}"
       namespace: {{ $.Release.Name }}
     spec:
       project: "bootstrap-{{ $.Release.Name }}"
       source:
-        repoURL: {{ required "argocd.deploymentRepoURL is required" .Values.argocd.deploymentRepoURL }}
+        repoURL: "{{ url }}"
         targetRevision: HEAD
         path: applications
       destination:

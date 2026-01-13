@@ -42,9 +42,7 @@ spec:
                 enabled: false
 
               sourceNamespaces: {{ toYaml .Values.components.argoSolution.argocdInstance.sourceNamespaces | nindent 16 }}
-
-              applicationSet:
-                sourceNamespaces: {{ toYaml .Values.components.argoSolution.argocdInstance.applicationSet.sourceNamespaces | nindent 18 }}
+              scmProviders: {{ toYaml .Values.components.argoSolution.argocdInstance.sourceNamespaces | nindent 16 }}
 
               globalProjects:
                 - projectName: "global-multi-tenant"

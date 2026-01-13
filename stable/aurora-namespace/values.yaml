@@ -102,7 +102,9 @@ aadPodIdentities: {}
 
 # Utilized if namespace.type = argocd-control-plane 
 argocd:
-  deploymentRepoURL: ""
+  github:
+    organization: 
+    deploymentRepoURL: ""
   project:
     # namespace: ""       # @schema type:[string];required:true
     destination:
