@@ -51,13 +51,8 @@ spec:
     logLevel: {{ .Values.argocdInstance.logLevel }}
     resources:  {{ toYaml .Values.argocdInstance.applicationSet.resources | nindent 6 }}
 
-<<<<<<< HEAD
-    sourceNamespaces: {{ toYaml .Values.argocdInstance.sourceNamespaces | nindent 4 }}
-    scmProviders: {{ toYaml .Values.argocdInstance.scmProviders | nindent 4 }}
-=======
     sourceNamespaces: {{ toYaml .Values.argocdInstance.applicationSet.sourceNamespaces | nindent 6 }}
     scmProviders: {{ toYaml .Values.argocdInstance.applicationSet.scmProviders | nindent 6 }}
->>>>>>> feat-bootstrap-argocd-application
 
   redis:
     image: {{ regexReplaceAll "//+" (printf "%s/%s/%s" .Values.argocdInstance.redis.imageRegistry.host .Values.argocdInstance.redis.imageRegistry.repository .Values.argocdInstance.redis.image.name) "/" }}

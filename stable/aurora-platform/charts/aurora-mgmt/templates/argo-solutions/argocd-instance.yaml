@@ -40,10 +40,6 @@ spec:
               argocdVaultPlugin:
                 enabled: false
 
-<<<<<<< HEAD
-              sourceNamespaces: {{ toYaml .Values.components.argoSolution.argocdInstance.sourceNamespaces | nindent 16 }}
-              scmProviders: {{ toYaml .Values.components.argoSolution.argocdInstance.sourceNamespaces | nindent 16 }}
-=======
               AADPodIdentity:
                 enabled: {{ default "false" .Values.components.argoFoundation.argocdInstance.AADPodIdentity.enabled }}
                 {{- if .Values.components.argoFoundation.argocdInstance.AADPodIdentity.enabled }}
@@ -53,7 +49,6 @@ spec:
                 {{- end }}
 
               sourceNamespaces: {{ toYaml .Values.components.argoSolution.argocdInstance.sourceNamespaces | nindent 16 }}
->>>>>>> feat-bootstrap-argocd-application
 
               globalProjects:
                 - projectName: "global-multi-tenant"
