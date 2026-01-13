@@ -15,7 +15,7 @@ spec:
     {{- else }}
     repoURL: {{ default "https://gccloudone-aurora.github.io/aurora-platform-charts" .Values.global.helm.repository }}
     {{- end }}
-    targetRevision: {{ default "0.11.0" .Values.components.argoSolution.argocdInstance.helm.targetRevision }}
+    targetRevision: {{ default "0.12.0" .Values.components.argoSolution.argocdInstance.helm.targetRevision }}
     plugin:
       env:
         - name: HELM_RELEASE_NAME
@@ -23,11 +23,10 @@ spec:
         - name: HELM_VALUES
           value: |
             argocdInstance:
+              ingressDomain: "{{ .Values.components.argoSolution.argocdInstance.ingressDomain }}"
 
               nodeSelector: {{ toYaml .Values.components.argoSolution.argocdInstance.nodeSelector | nindent 16 }}
               tolerations: {{ toYaml .Values.components.argoSolution.argocdInstance.tolerations | nindent 16 }}
-
-              ingressDomain: "{{ .Values.components.argoSolution.argocdInstance.ingressDomain }}"
 
               adminSecurityGroup: {{ .Values.components.argoSolution.argocdInstance.adminSecurityGroup }}
               disableAdmin: "{{ .Values.components.argoSolution.argocdInstance.disableAdmin }}"
@@ -51,9 +50,6 @@ spec:
 
               sourceNamespaces: {{ toYaml .Values.components.argoSolution.argocdInstance.sourceNamespaces | nindent 16 }}
 
-              applicationSet:
-                sourceNamespaces: {{ toYaml .Values.components.argoSolution.argocdInstance.applicationSet.sourceNamespaces | nindent 18 }}
-
               globalProjects:
                 - projectName: "global-multi-tenant"
                   labelSelector:
@@ -76,6 +72,8 @@ spec:
 
               applicationSet:
                 resources: {{ toYaml .Values.components.argoSolution.argocdInstance.applicationSet.resources | nindent 18 }}
+                sourceNamespaces: {{ toYaml .Values.components.argoSolution.argocdInstance.applicationSet.sourceNamespaces | nindent 18 }}
+                scmProviders: {{ toYaml .Values.components.argoSolution.argocdInstance.applicationSet.sourceNamespaces | nindent 18 }}
 
               redis:
                 resources: {{ toYaml .Values.components.argoSolution.argocdInstance.redis.resources | nindent 18 }}

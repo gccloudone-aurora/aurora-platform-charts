@@ -46,6 +46,9 @@ argocdInstance:
       #   cpu: ""
       #   memory: ""
 
+    sourceNamespaces: []
+    scmProviders: []
+
   controller:
     resources: {}
       # limits:

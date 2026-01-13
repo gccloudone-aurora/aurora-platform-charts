@@ -255,9 +255,6 @@ components:
 
       sourceNamespaces:
         - "/^(?!gitops-.*-system$).*^argocd-.*/"         # starts with "gitops-" & does not end with "-system"
-      applicationSet:
-        sourceNamespaces:
-          - "/^(?!gitops-.*-system$).*^argocd-.*/"       # starts with "gitops-" & does not end with "-system"
 
       oidcAuthSP:
         credentials: {}
@@ -300,6 +297,9 @@ components:
           # requests:
           #   cpu: ""
           #   memory: ""
+        sourceNamespaces:
+          - "/^(?!gitops-.*-system$).*^argocd-.*/"       # starts with "gitops-" & does not end with "-system"
+        scmProviders: []
 
       redis:
         resources: {}
