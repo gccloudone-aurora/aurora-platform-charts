@@ -15,8 +15,6 @@ argocdInstance:
 
   sourceNamespaces: []
 
-  scmProviders: []
-
   globalProjects: []
     # - projectName: "global"
     #   labelSelector:
