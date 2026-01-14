@@ -2040,7 +2040,7 @@ components:
     priorityClassName: platform-cluster-medium
     
     targetWorkloads: "pod,replicaset,replicationcontroller,statefulset,daemonset,cronjob,job"
-    excludeNamespaces: "*system"
+    excludeNamespaces: ""
 
     operator:
       # enable builtin server mode
