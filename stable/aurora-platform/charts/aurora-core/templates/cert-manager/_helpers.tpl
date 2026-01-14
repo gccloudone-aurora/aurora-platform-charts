@@ -91,6 +91,8 @@ The image section for Cert Manager Startup API Check.
 cnameStrategy: Follow
 azureDNS:
     hostedZoneName: {{ required "certManager.issuers.dns01.azure.zone is required" .Values.components.certManager.issuers.dns01.azure.zone }}
+    managedIdentity:
+        clientID: {{ required "certManager.azureWorkloadIdentity.clientId is required" .Values.components.certManager.azureWorkloadIdentity.clientId | quote }}
     resourceGroupName: {{ required "certManager.issuers.dns01.azure.resourceGroupName is required" .Values.components.certManager.issuers.dns01.azure.resourceGroupName }}
     subscriptionID: {{ required "certManager.issuers.dns01.azure.subscriptionId is required" .Values.components.certManager.issuers.dns01.azure.subscriptionId }}
 {{- else if eq .Values.global.provider "aws" }}

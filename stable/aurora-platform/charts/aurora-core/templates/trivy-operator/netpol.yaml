@@ -1,0 +1,97 @@
+{{ if .Values.components.trivy.enabled -}}
+
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-trivy-netpol"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    chart: {{ .Values.global.raw.helm.chart }}
+    repoURL: {{ default .Values.global.helm.repository .Values.global.raw.helm.repository }}
+    targetRevision: {{ .Values.global.raw.helm.targetRevision }}
+    helm:
+      releaseName: trivy-netpol
+      values: |
+        resources:
+          - apiVersion: networking.k8s.io/v1
+            kind: NetworkPolicy
+            metadata:
+              name: allow-same-namespace
+              namespace: trivy-system
+            spec:
+              podSelector: {}
+              policyTypes:
+                - Ingress
+                - Egress
+              ingress:
+                - from:
+                  - podSelector: {}
+              egress:
+                - to:
+                  - podSelector: {}
+          - apiVersion: networking.k8s.io/v1
+            kind: NetworkPolicy
+            metadata:
+              name: allow-egress-to-github-and-registries-from-trivy-operator
+              namespace: trivy-system
+            spec:
+              podSelector:
+                matchLabels:
+                  app.kubernetes.io/name: trivy-operator
+              egress:
+                - ports:
+                    - protocol: TCP
+                      port: 443    
+                  to:
+                    - ipBlock:
+                        cidr: 0.0.0.0/0
+              policyTypes:
+                - Egress
+          - apiVersion: networking.k8s.io/v1
+            kind: NetworkPolicy
+            metadata:
+              name: allow-egress-to-github-and-registries-from-trivy-server
+              namespace: trivy-system
+            spec:
+              podSelector:
+                matchLabels:
+                  app.kubernetes.io/name: trivy-server
+              egress:
+                - ports:
+                    - protocol: TCP
+                      port: 443    
+                  to:
+                    - ipBlock:
+                        cidr: 0.0.0.0/0
+              policyTypes:
+                - Egress
+          - apiVersion: networking.k8s.io/v1
+            kind: NetworkPolicy
+            metadata:
+              name: allow-egress-to-github-and-registries-from-trivy-jobs
+              namespace: trivy-system
+            spec:
+              podSelector:
+                matchLabels:
+                  app.kubernetes.io/managed-by: trivy-operator
+              egress:
+                - ports:
+                    - protocol: TCP
+                      port: 443    
+                  to:
+                    - ipBlock:
+                        cidr: 0.0.0.0/0
+              policyTypes:
+                - Egress
+  destination:
+    name: {{ .Values.global.cluster }}
+    namespace: platform-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+
+{{- end }}
