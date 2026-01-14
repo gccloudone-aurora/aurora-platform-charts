@@ -1,0 +1,40 @@
+{{ if .Values.components.loki.ruler.enabled -}}
+
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-loki-alerts-cm"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    chart: {{ .Values.global.raw.helm.chart }}
+    repoURL: {{ default .Values.global.helm.repository .Values.global.raw.helm.repository }}
+    targetRevision: {{ .Values.global.raw.helm.targetRevision }}
+    plugin:
+      env:
+        - name: HELM_RELEASE_NAME
+          value: "loki-alerts-cm"
+        - name: HELM_VALUES
+          value: |
+            resources:
+              - apiVersion: v1
+                kind: ConfigMap
+                metadata:
+                  name: loki-alerting-rules
+                  labels:
+                    app.kubernetes.io/part-of: loki-system
+                    app.kubernetes.io/managed-by: argo
+                    release: monitoring-metrics
+                data:
+                  rules.yaml: |
+  destination:
+    name: {{ .Values.global.cluster }}
+    namespace: platform-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+
+{{- end }}
