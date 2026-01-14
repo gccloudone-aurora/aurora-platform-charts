@@ -154,13 +154,15 @@ spec:
               persistence:
                 size: 8Gi
                 storageClass: default
+            {{- if .Values.components.loki.ruler.enabled }}
               extraVolumeMounts:
                 - name: rules
-                  mountPath: "/var/loki/rulestorage/fake"
+                  mountPath: "/var/loki/rulestorage/default"
               extraVolumes:
                 - name: rules
                   configMap:
                     name: loki-alerting-rules
+            {{- end }}
             backend:
               nodeSelector: {{ toYaml .Values.components.loki.nodeSelector | nindent 16 }}
               tolerations: {{ toYaml .Values.components.loki.tolerations | nindent 16 }}
