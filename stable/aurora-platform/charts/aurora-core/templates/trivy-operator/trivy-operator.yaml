@@ -1,0 +1,59 @@
+{{ if .Values.components.trivy.enabled -}}
+
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-trivy"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    chart: {{ default "trivy-operator" .Values.components.trivy.helm.chart }}
+    {{- if .Values.components.trivy.helm.repository}}
+    repoURL: {{ .Values.components.trivy.helm.repository }}
+    {{- else }}
+    repoURL: {{ default "https://aquasecurity.github.io/helm-charts" .Values.global.helm.repository }}
+    {{- end }}
+    targetRevision: {{ default "0.31.0" .Values.components.trivy.helm.targetRevision }}
+    plugin:
+      env:
+        - name: HELM_RELEASE_NAME
+          value: "trivy-operator"
+        - name: HELM_VALUES
+          value: |
+            global:
+              image: 
+                registry: {{ default "docker.io" .Values.global.container.registry }}
+
+            image: {{ default "{}" (include "trivy.image" .) | nindent 14 }}
+            resources: {{ toYaml .Values.components.trivy.resources | nindent 14 }}
+            nodeSelector: {{ toYaml .Values.components.trivy.nodeSelector | nindent 14 }}
+            tolerations: {{ toYaml .Values.components.trivy.tolerations | nindent 14 }}
+            affinity: {{ toYaml .Values.components.trivy.affinity | nindent 14 }}
+            priorityClassName: {{ .Values.components.trivy.priorityClassName }}
+
+            targetWorkloads: {{ .Values.components.trivy.targetWorkloads }}
+            excludeNamespaces: {{ .Values.components.trivy.excludeNamespaces | quote }}
+            
+            operator: {{ toYaml .Values.components.trivy.operator | nindent 14 }}
+
+            serviceMonitor:
+              enabled: true
+              
+            trivy:
+              dbRegistry: {{ default "docker.io" .Values.global.container.registry }}
+              javaDbRegistry: {{ default "docker.io" .Values.global.container.registry }}
+              severity: {{ .Values.components.trivy.severity }}
+              storageClassName: default
+              server: {{ toYaml .Values.components.trivy.server | nindent 16 }}
+
+  destination:
+    name: {{ .Values.global.cluster }}
+    namespace: trivy-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+
+{{- end }}
