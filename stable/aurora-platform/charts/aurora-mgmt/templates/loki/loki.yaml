@@ -91,6 +91,18 @@ spec:
                   ruler: chunks
                 azure: {{ include "loki.logStorageLocation" . | nindent  18 }}
 
+              rulerConfig:
+                storage:
+                  type: local
+                  local:
+                    directory: /var/loki/rulestorage
+                rule_path: "/var/loki/rules-temp"
+                ring:
+                  kvstore:
+                    store: inmemory
+                alertmanager_url: http://alertmanager.{{ .Values.global.ingressDomain }}:9003
+                enable_alertmanager_v2: true
+
             chunksCache:
               nodeSelector: {{ toYaml .Values.components.loki.nodeSelector | nindent 16 }}
               tolerations: {{ toYaml .Values.components.loki.tolerations | nindent 16 }}
@@ -142,12 +154,28 @@ spec:
               persistence:
                 size: 8Gi
                 storageClass: default
+              extraVolumeMounts:
+                - name: rules
+                  mountPath: "/var/loki/rulestorage/fake"
+              extraVolumes:
+                - name: rules
+                  configMap:
+                    name: loki-alerting-rules
             backend:
               nodeSelector: {{ toYaml .Values.components.loki.nodeSelector | nindent 16 }}
               tolerations: {{ toYaml .Values.components.loki.tolerations | nindent 16 }}
               persistence:
                 size: 8Gi
                 storageClass: default
+            
+            ruler:
+              enabled: {{ toyaml .Values.components.loki.ruler.enabled }}
+              replicas: 1
+              nodeSelector: {{ toYaml .Values.components.loki.nodeSelector | nindent 16 }}
+              tolerations: {{ toYaml .Values.components.loki.tolerations | nindent 16 }}
+              persistence:
+                enabled: true
+                size: 10Gi
   destination:
     name: '{{ .Values.global.cluster }}'
     namespace: loki-system
