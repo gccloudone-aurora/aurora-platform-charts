@@ -169,7 +169,7 @@ spec:
                 storageClass: default
             
             ruler:
-              enabled: {{ toyaml .Values.components.loki.ruler.enabled }}
+              enabled: {{ toYaml .Values.components.loki.ruler.enabled }}
               replicas: 1
               nodeSelector: {{ toYaml .Values.components.loki.nodeSelector | nindent 16 }}
               tolerations: {{ toYaml .Values.components.loki.tolerations | nindent 16 }}
