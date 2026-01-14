@@ -31,7 +31,7 @@ spec:
               - aurora-image-pull-secret
             imagePullSecrets:
               - name: aurora-image-pull-secret
-            deploymentMode: SimpleScalable
+            deploymentMode: {{ .Values.components.loki.deploymentMode }}
 
             gateway:
               nodeSelector: {{ toYaml .Values.components.loki.nodeSelector | nindent 16 }}
@@ -154,7 +154,7 @@ spec:
               persistence:
                 size: 8Gi
                 storageClass: default
-            {{- if .Values.components.loki.ruler.enabled }}
+              {{- if .Values.components.loki.ruler.enabled }}
               extraVolumeMounts:
                 - name: rules
                   mountPath: "/var/loki/rulestorage/default"
@@ -162,7 +162,7 @@ spec:
                 - name: rules
                   configMap:
                     name: loki-alerting-rules
-            {{- end }}
+              {{- end }}
             backend:
               nodeSelector: {{ toYaml .Values.components.loki.nodeSelector | nindent 16 }}
               tolerations: {{ toYaml .Values.components.loki.tolerations | nindent 16 }}
@@ -171,7 +171,7 @@ spec:
                 storageClass: default
             
             ruler:
-              enabled: {{ toYaml .Values.components.loki.ruler.enabled }}
+              enabled: {{ .Values.components.loki.ruler.enabled }}
               replicas: 1
               nodeSelector: {{ toYaml .Values.components.loki.nodeSelector | nindent 16 }}
               tolerations: {{ toYaml .Values.components.loki.tolerations | nindent 16 }}
