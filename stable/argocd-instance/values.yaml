@@ -46,6 +46,8 @@ argocdInstance:
       #   cpu: ""
       #   memory: ""
 
+    setTokenRefStrictMode: true
+
     sourceNamespaces: []
     scmProviders: []
 

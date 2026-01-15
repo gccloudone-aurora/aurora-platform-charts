@@ -48,8 +48,14 @@ spec:
   applicationSet:
     image: {{ regexReplaceAll "//+" (printf "%s/%s/%s" .Values.argocdInstance.imageRegistry.host .Values.argocdInstance.imageRegistry.repository .Values.argocdInstance.image.name) "/" }}
     version: {{ .Values.argocdInstance.image.version }}
-    logLevel: {{ .Values.argocdInstance.logLevel }}
     resources:  {{ toYaml .Values.argocdInstance.applicationSet.resources | nindent 6 }}
+    logLevel: {{ .Values.argocdInstance.logLevel }}
+
+    {{- if .Values.argocdInstance.applicationSet.setTokenRefStrictMode }}
+    env:
+      - name: ARGOCD_APPLICATIONSET_CONTROLLER_TOKENREF_STRICT_MODE
+        value: "true"
+    {{- end }}
 
     sourceNamespaces: {{ toYaml .Values.argocdInstance.applicationSet.sourceNamespaces | nindent 6 }}
     scmProviders: {{ toYaml .Values.argocdInstance.applicationSet.scmProviders | nindent 6 }}
