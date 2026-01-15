@@ -363,6 +363,7 @@ components:
 
   loki:
     enabled: false
+    deploymentMode: SimpleScalable
 
     helm: {}
       # chart: loki
