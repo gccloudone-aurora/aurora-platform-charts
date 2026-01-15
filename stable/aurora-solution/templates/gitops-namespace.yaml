@@ -69,7 +69,7 @@ spec:
           storage: "0"
 
         argocd:
-          deploymentRepoURL: {{ .Values.argocd.deploymentRepoURL }}
+          deploymentRepoURL: {{ required "argocd.deploymentRepoURL is required" .Values.argocd.deploymentRepoURL }}
           project:
             namespace: {{ .Values.argocd.project.namespace }}
             destination:
