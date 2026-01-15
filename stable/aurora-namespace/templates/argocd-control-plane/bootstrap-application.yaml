@@ -1,15 +1,15 @@
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
-  name: bootstrap-applications
+  name: bootstrap-application
   namespace: {{ $.Release.Name }}
 spec:
   generators:
-  - git:
-      repoURL: {{ required "argocd.deploymentRepoURL is required" .Values.argocd.deploymentRepoURL }}
-      revision: HEAD
-      directories:
-      - path: applications
+    - git:
+        repoURL: {{ required "argocd.deploymentRepoURL is required" .Values.argocd.deploymentRepoURL }}
+        revision: HEAD
+        directories:
+          - path: applications
   template:
     metadata:
       name: "bootstrap-{{ $.Release.Name }}"
