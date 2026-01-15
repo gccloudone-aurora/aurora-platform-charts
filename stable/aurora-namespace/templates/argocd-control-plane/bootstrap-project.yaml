@@ -1,4 +1,4 @@
-{{- if eq .Values.namespace.type "argocd-control-plane" }}
+{{- if and (eq .Values.namespace.type "argocd-control-plane") .Values.argocd.deploymentRepoURL }}
 
 apiVersion: argoproj.io/v1alpha1
 kind: AppProject
