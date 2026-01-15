@@ -55,6 +55,10 @@ spec:
                   labelSelector:
                     key: "argocd.argoproj.io/project-inherit"
                     value: "global-multi-tenant"
+                - projectName: "global-bootstrap"
+                  labelSelector:
+                    key: "argocd.argoproj.io/project-inherit"
+                    value: "bootstrap"
 
               server:
                 autoscale:

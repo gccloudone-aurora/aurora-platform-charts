@@ -3,7 +3,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: "{{ .Values.global.cluster }}-argo-solution-global-project"
+  name: "{{ .Values.global.cluster }}-argo-solution-bootstrap-global-project"
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
@@ -13,29 +13,25 @@ spec:
     repoURL: {{ default .Values.global.helm.repository .Values.global.raw.helm.repository }}
     targetRevision: {{ .Values.global.raw.helm.targetRevision }}
     helm:
-      releaseName: argo-solutions-global-project
+      releaseName: argo-solutions-global-bootstrap-project
       values: |
         resources:
           - apiVersion: argoproj.io/v1alpha1
             kind: AppProject
             metadata:
-              name: global-multi-tenant
+              name: global-bootstrap
             spec:
-              description: "Global multi-tenant restrictions"
+              description: "Global bootstrap restrictions"
               clusterResourceBlacklist:
                 - group: "*"
                   kind: "*"
-              namespaceResourceBlacklist:
-                - group: ""
-                  kind: Namespace
-                - group: ""
-                  kind: ResourceQuota
-                - group: ""
-                  kind: LimitRange
-                - group: "storage.k8s.io"
-                  kind: "*"
+              namespaceResourceWhitelist:
+                - group: "argoproj.io/v1alpha1"
+                  kind: "ApplicationSet"
+                - group: "argoproj.io/v1alpha1"
+                  kind: "Application"
               # Which repositories are allowed
-              sourceRepos: {{ toYaml .Values.argocd.project.sourceRepos | nindent 16 }}
+              sourceRepos: {{ toYaml .Values.components.argoSolution.project.global.sourceRepos | nindent 16 }}
   destination:
     name: {{ .Values.global.cluster }}
     namespace: platform-solution-system

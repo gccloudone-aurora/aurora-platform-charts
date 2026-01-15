@@ -218,6 +218,10 @@ components:
   argoSolution:
     enabled: true
 
+    project:
+      global:
+        sourceRepos: []
+
     argocdInstance:
       helm: {}
       # chart: argocd-instance

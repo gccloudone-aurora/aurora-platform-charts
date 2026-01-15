@@ -5,6 +5,8 @@ kind: AppProject
 metadata:
   name: "bootstrap-{{ $.Release.Name }}"
   namespace: {{ required "argocdProject.namespace is required" .Values.argocd.project.namespace }}
+  labels:
+    argocd.argoproj.io/project-inherit: bootstrap
 spec:
   description: "Global multi-tenant restrictions"
 
