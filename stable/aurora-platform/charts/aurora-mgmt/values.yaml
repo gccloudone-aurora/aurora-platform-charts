@@ -392,6 +392,9 @@ components:
       # storageAccountName: <storage-account-name>
       # storageAccountKey: <storage-account-key>
 
+    ruler: 
+      enabled: false
+
 rbac:
   # Groups and users that should be bound to the platform-admin role.
   # Note: if using AKS with AAD enabled, this is not necessary since admins
