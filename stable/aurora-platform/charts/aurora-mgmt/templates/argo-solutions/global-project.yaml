@@ -35,7 +35,7 @@ spec:
                 - group: "storage.k8s.io"
                   kind: "*"
               # Which repositories are allowed
-              sourceRepos: {{ toYaml .Values.argocd.project.sourceRepos | nindent 16 }}
+              sourceRepos: {{ toYaml .Values.components.argoSolution.project.global.sourceRepos  | nindent 16 }}
   destination:
     name: {{ .Values.global.cluster }}
     namespace: platform-solution-system
