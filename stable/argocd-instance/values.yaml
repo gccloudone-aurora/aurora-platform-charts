@@ -100,7 +100,8 @@ argocdInstance:
       # requests:
       #   cpu: ""
       #   memory: ""
-    extraLabels: {}
+    serviceAccount:
+      annotations: {}
 
   argocdVaultPlugin:
     enabled: true
