@@ -1067,6 +1067,7 @@ components:
         excludedNamespaces: []
         enforcementAction: "deny"
       restrictHostnames:
+        enabled: true
         excludedNamespaces: []
         exemptions: []
         enforcementAction: "deny"
