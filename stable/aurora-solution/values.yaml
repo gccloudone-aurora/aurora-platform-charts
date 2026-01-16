@@ -105,7 +105,7 @@ argocd:
   project:
     namespace: "platform-solution-system"
     sourceRepos: []
-    developerGroups: []   # defaults to rbac.groups if empty
+    developerGroups: []
     adminGroups: []       # defaults to rbac.groups if empty
 
 # Defines cluster specific resources to be created in the namespace
