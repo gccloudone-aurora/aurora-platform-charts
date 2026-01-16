@@ -14,3 +14,12 @@ tag: {{ .Values.components.argoFoundation.image.tag }}
 pullPolicy: {{ .Values.components.argoFoundation.image.pullPolicy }}
 {{- end }}
 {{- end }}
+
+{{/*
+The azureWorkloadIdentity configuration.
+*/}}
+{{- define "argoFoundation.argocdInstance.azureWorkloadIdentity.clientId" -}}
+{{- if .Values.components.argoFoundation.argocdInstance.azureWorkloadIdentity.enabled -}}
+azure.workload.identity/client-id: {{ required "argoFoundation.argocdInstance.azureWorkloadIdentity.clientId is required" .Values.components.argoFoundation.argocdInstance.azureWorkloadIdentity.clientId | quote }}
+{{- end }}
+{{- end }}

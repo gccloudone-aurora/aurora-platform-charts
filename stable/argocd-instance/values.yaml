@@ -87,6 +87,8 @@ argocdInstance:
       # requests:
       #   cpu: ""
       #   memory: ""
+    serviceAccount: ""
+    annotations: {}
 
   server:
     autoscale:
@@ -129,6 +131,12 @@ argocdInstance:
     managedIdentity:
       clientID: ""
       resourceID: ""
+
+  azureWorkloadIdentity:
+    enabled: false
+    clientID: ""
+
+
 
 
 register:

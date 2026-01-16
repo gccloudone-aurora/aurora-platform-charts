@@ -92,11 +92,11 @@ spec:
     image: {{ regexReplaceAll "//+" (printf "%s/%s/%s" .Values.argocdInstance.imageRegistry.host .Values.argocdInstance.imageRegistry.repository .Values.argocdInstance.image.name) "/" }}
     version: {{ .Values.argocdInstance.image.version }}
     logLevel: {{ .Values.argocdInstance.logLevel }}
-    {{- if .Values.argocdInstance.AADPodIdentity.enabled }}
-    labels:
-      aadpodidbinding: {{ .Values.argocdInstance.AADPodIdentity.identityName }}
-    {{- end }}
+    labels: {{ toYaml .Values.argocdInstance.repo.labels | nindent 6 }}
     mountsatoken: true
+    serviceAccount: {{ .Values.argocdInstance.repo.serviceAccount }}
+    annotations: 
+      {{ toYaml .Values.argocdInstance.repo.annotations }}
     volumeMounts:
       - mountPath: /etc/ssl/certs/custom.crt
         name: custom-certs
