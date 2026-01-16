@@ -76,6 +76,25 @@ spec:
               - apiVersion: networking.k8s.io/v1
                 kind: NetworkPolicy
                 metadata:
+                  name: allow-egress-to-trivy-from-prometheus
+                  namespace: prometheus-system
+                spec:
+                  egress:
+                  - to:
+                    - namespaceSelector:
+                        matchLabels:
+                          kubernetes.io/metadata.name: trivy-system
+                      podSelector:
+                        matchLabels:
+                          app.kubernetes.io/name: trivy-operator
+                  podSelector:
+                    matchLabels:
+                      app.kubernetes.io/name: prometheus
+                  policyTypes:
+                  - Egress
+              - apiVersion: networking.k8s.io/v1
+                kind: NetworkPolicy
+                metadata:
                   name: allow-egress-to-kubecost-from-prometheus
                   namespace: prometheus-system
                 spec:
