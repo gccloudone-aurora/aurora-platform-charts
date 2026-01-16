@@ -56,7 +56,7 @@ spec:
                 service: {{ toYaml .Values.components.argoFoundation.argocdInstance.server.service | nindent 18 }}
                 {{- end }}
                 resources: {{ toYaml .Values.components.argoFoundation.argocdInstance.server.resources | nindent 18 }}
-                podLabels: {{ toYaml .Values.components.argoFoundation.argocdInstance.server.podLabels }}
+                podLabels: {{ toYaml .Values.components.argoFoundation.argocdInstance.server.podLabels | nindent 18 }}
                 serviceAccount:
                   annotations: 
                     {{- include "argoFoundation.argocdInstance.azureWorkloadIdentity.clientId" . | nindent 20 }}

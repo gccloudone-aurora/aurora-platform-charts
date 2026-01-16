@@ -76,7 +76,7 @@ spec:
     resources:  {{ toYaml .Values.argocdInstance.server.resources | nindent 6 }}
     podLabels: {{ toYaml .Values.argocdInstance.server.podLabels | nindent 6 }}
     serviceAccount:
-      annotations: {{ toYaml .Values.argocdInstance.server.serviceAccount.annotations | nindent 6 }}
+      annotations: {{ toYaml .Values.argocdInstance.server.serviceAccount.annotations | nindent 8 }}
 
   notifications:
     enabled: {{ .Values.argocdInstance.notifications.enabled }}
