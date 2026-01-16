@@ -1,0 +1,40 @@
+{{- if and (eq .Values.namespace.type "argocd-control-plane") .Values.argocd.deploymentRepoURL }}
+
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: "bootstrap-{{ $.Release.Name }}"
+  namespace: {{ required "argocdProject.namespace is required" .Values.argocd.project.namespace }}
+  labels:
+    argocd.argoproj.io/project-inherit: bootstrap
+spec:
+  description: "Global multi-tenant restrictions"
+
+  clusterResourceBlacklist:
+    - group: "*"
+      kind: "*"
+  namespaceResourceWhitelist:
+    - group: "argoproj.io/v1alpha1"
+      kind: "ApplicationSet"
+
+  # Which namespaces can use this AppProject 
+  sourceNamespaces:
+    - {{ $.Release.Name }}
+
+  # Which repositories are allowed
+  sourceRepos: {{ toYaml .Values.argocd.project.sourceRepos | nindent 4 }}
+
+  # The clusters where the tenant's applications are hosted
+  destinations:
+    - server: "in-cluster"
+      namespace: {{ $.Release.Name }}
+
+  roles:
+    - name: admin-role
+      description: Admin access for applications
+      groups: {{ toYaml (default .Values.rbac.groups .Values.argocd.project.adminGroups) | nindent 6 }}
+      policies:
+        - p, proj:{{ $.Release.Name }}:admin-role, applications, *, {{ $.Release.Name }}/*, allow
+        - p, proj:{{ $.Release.Name }}:admin-role, applicationsets, get, {{ $.Release.Name }}/*, allow
+
+{{- end }}

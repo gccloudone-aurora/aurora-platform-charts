@@ -46,6 +46,11 @@ argocdInstance:
       #   cpu: ""
       #   memory: ""
 
+    setTokenRefStrictMode: true
+
+    sourceNamespaces: []
+    scmProviders: []
+
   controller:
     resources: {}
       # limits:

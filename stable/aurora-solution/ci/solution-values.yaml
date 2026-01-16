@@ -66,6 +66,13 @@ argocdProject:
     - "admin-1"
     - "admin-2"
 
+argocd:
+  deploymentRepoURL: "https://github.com/my-org/workload-deploy.git"
+  project:
+    sourceRepos: []
+    developerGroups: []   # defaults to rbac.groups if empty
+    adminGroups: []       # defaults to rbac.groups if empty
+
 clusters:
   gen-dev-cc-00: {}
   gen-test-cc-00: {}
