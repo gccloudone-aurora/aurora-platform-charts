@@ -19,7 +19,7 @@ spec:
     {{- else }}
     repoURL: {{ default "https://gccloudone-aurora.github.io/aurora-platform-charts" $.Values.global.helm.repository }}
     {{- end }}
-    targetRevision: {{ default "0.0.6" $.Values.global.helm.targetRevision }}
+    targetRevision: {{ default "0.0.7" $.Values.global.helm.targetRevision }}
     helm:
       releaseName: "gitops-{{ $.Release.Name }}"
       values: |
@@ -68,14 +68,16 @@ spec:
           # Expects a string value of a number with or without units (uses SI units).
           storage: "0"
 
-        argocdProject:
-          namespace: {{ .Values.argocdProject.namespace }}
-          destination:
-            namespace: {{ $.Release.Name }}
+        argocd:
+          deploymentRepoURL: {{ .Values.argocd.deploymentRepoURL }}
+          project:
+            namespace: {{ required "argocd.project.namespace is required" .Values.argocd.project.namespace }}
+            destination:
+              namespace: {{ $.Release.Name }}
 
-          sourceRepos: {{ toYaml .Values.argocdProject.sourceRepos | nindent 12 }}
-          developerGroups: {{ toYaml .Values.argocdProject.developerGroups | nindent 12 }} # defaults to rbac.groups if empty
-          adminGroups: {{ toYaml .Values.argocdProject.adminGroups | nindent 12 }} # defaults to rbac.groups if empty
+            sourceRepos: {{ toYaml .Values.argocd.project.sourceRepos | nindent 12 }}
+            developerGroups: {{ toYaml .Values.argocd.project.developerGroups | nindent 12 }} # defaults to rbac.groups if empty
+            adminGroups: {{ toYaml .Values.argocd.project.adminGroups | nindent 12 }} # defaults to rbac.groups if empty
 
   destination:
     name: in-cluster

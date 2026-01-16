@@ -218,6 +218,10 @@ components:
   argoSolution:
     enabled: true
 
+    project:
+      global:
+        sourceRepos: []
+
     argocdInstance:
       helm: {}
       # chart: argocd-instance
@@ -254,7 +258,7 @@ components:
           resourceID: ""
 
       sourceNamespaces:
-        - "/^(?!gitops-.*-system$).*^argocd-.*/"         # starts with "gitops-" & does not end with "-system"
+        - "/gitops-^((?!-system$).)*$/"        # starts with "gitops-" & does not end with "-system"
 
       oidcAuthSP:
         credentials: {}
@@ -297,6 +301,9 @@ components:
           # requests:
           #   cpu: ""
           #   memory: ""
+        sourceNamespaces:
+          - "/gitops-^((?!-system$).)*$/"       # starts with "gitops-" & does not end with "-system"
+        scmProviders: []
 
       redis:
         resources: {}
@@ -363,6 +370,7 @@ components:
 
   loki:
     enabled: false
+    deploymentMode: SimpleScalable
 
     helm: {}
       # chart: loki
@@ -388,6 +396,9 @@ components:
     logStorageLocation: {}
       # storageAccountName: <storage-account-name>
       # storageAccountKey: <storage-account-key>
+
+    ruler: 
+      enabled: false
 
 rbac:
   # Groups and users that should be bound to the platform-admin role.
