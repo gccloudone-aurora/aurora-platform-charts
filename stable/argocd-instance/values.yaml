@@ -95,6 +95,7 @@ argocdInstance:
       # requests:
       #   cpu: ""
       #   memory: ""
+    extraLabels: {}
 
   argocdVaultPlugin:
     enabled: true
@@ -124,6 +125,12 @@ argocdInstance:
     managedIdentity:
       clientID: ""
       resourceID: ""
+
+  azureWorkloadIdentity:
+    enabled: false
+    clientID: ""
+
+
 
 
 register:

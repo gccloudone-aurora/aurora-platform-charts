@@ -74,6 +74,9 @@ spec:
     service:
       type: {{ .Values.argocdInstance.server.service.type }}
     resources:  {{ toYaml .Values.argocdInstance.server.resources | nindent 6 }}
+    podLabels: {{ toYaml .Values.argocdInstance.server.podLabels | nindent 6 }}
+    serviceAccount:
+      annotations: {{ toYaml .Values.argocdInstance.server.serviceAccount.annotations | nindent 6 }}
 
   notifications:
     enabled: {{ .Values.argocdInstance.notifications.enabled }}
@@ -83,10 +86,7 @@ spec:
     image: {{ regexReplaceAll "//+" (printf "%s/%s/%s" .Values.argocdInstance.imageRegistry.host .Values.argocdInstance.imageRegistry.repository .Values.argocdInstance.image.name) "/" }}
     version: {{ .Values.argocdInstance.image.version }}
     logLevel: {{ .Values.argocdInstance.logLevel }}
-    {{- if .Values.argocdInstance.AADPodIdentity.enabled }}
-    labels:
-      aadpodidbinding: {{ .Values.argocdInstance.AADPodIdentity.identityName }}
-    {{- end }}
+    labels: {{ toYaml .Values.argocdInstance.repo.labels | nindent 6 }}
     mountsatoken: true
     volumeMounts:
       - mountPath: /etc/ssl/certs/custom.crt

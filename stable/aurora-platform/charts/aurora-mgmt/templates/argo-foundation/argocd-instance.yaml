@@ -56,9 +56,17 @@ spec:
                 service: {{ toYaml .Values.components.argoFoundation.argocdInstance.server.service | nindent 18 }}
                 {{- end }}
                 resources: {{ toYaml .Values.components.argoFoundation.argocdInstance.server.resources | nindent 18 }}
+                podLabels: {{ toYaml .Values.components.argoFoundation.argocdInstance.server.podLabels }}
+                serviceAccount:
+                  annotations: 
+                    {{- include "argoFoundation.argocdInstance.azureWorkloadIdentity.clientId" . | nindent 20 }}
 
               repo:
                 resources: {{ toYaml .Values.components.argoFoundation.argocdInstance.repo.resources | nindent 18 }}
+                {{- if .Values.components.argoFoundation.argocdInstance.azureWorkloadIdentity.enabled }}
+                labels:
+                  azure.workload.identity/use: "true"
+                {{- end }}
 
               controller:
                 resources: {{ toYaml .Values.components.argoFoundation.argocdInstance.controller.resources | nindent 18 }}
