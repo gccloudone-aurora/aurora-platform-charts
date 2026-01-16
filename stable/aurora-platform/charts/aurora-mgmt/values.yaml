@@ -86,12 +86,9 @@ components:
           # # AWS
           # ARGOCD_ENV_AWS_REGION: ""
 
-      AADPodIdentity:
+      azureWorkloadIdentity:
         enabled: false
-        identityName: "argocd-vault-plugin"
-        managedIdentity:
-          clientID: ""
-          resourceID: ""
+        #clientId: ""
 
       oidcAuthSP:
         credentials: {}
@@ -250,12 +247,9 @@ components:
           # # AWS
           # ARGOCD_ENV_AWS_REGION: ""
 
-      AADPodIdentity:
+      azureWorkloadIdentity:
         enabled: false
-        identityName: ""
-        managedIdentity:
-          clientID: ""
-          resourceID: ""
+        #clientId: ""
 
       sourceNamespaces:
         - "/gitops-^((?!-system$).)*$/"        # starts with "gitops-" & does not end with "-system"
