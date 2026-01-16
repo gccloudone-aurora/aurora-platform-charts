@@ -87,6 +87,8 @@ argocdInstance:
       # requests:
       #   cpu: ""
       #   memory: ""
+    serviceAccount: ""
+    annotations: {}
 
   server:
     autoscale:
@@ -100,8 +102,6 @@ argocdInstance:
       # requests:
       #   cpu: ""
       #   memory: ""
-    serviceAccount:
-      annotations: {}
 
   argocdVaultPlugin:
     enabled: true

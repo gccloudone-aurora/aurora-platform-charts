@@ -114,6 +114,8 @@ components:
           # requests:
           #   cpu: ""
           #   memory: ""
+        serviceAcccount: ""
+        annotations: {}
 
       controller:
         resources: {}
