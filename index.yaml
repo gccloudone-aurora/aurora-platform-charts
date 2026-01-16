@@ -3,6 +3,16 @@ entries:
   argocd-instance:
   - apiVersion: v2
     appVersion: v3.1.9
+    created: "2026-01-16T15:06:47.084561944Z"
+    description: A Helm chart that configures Argo CD.
+    digest: 8515c5ba22c7fcc1d150cf5586102e4f3b7085a5249531ad3ee2169fb0556ad4
+    name: argocd-instance
+    type: application
+    urls:
+    - https://github.com/gccloudone-aurora/aurora-platform-charts/releases/download/argocd-instance-0.12.0/argocd-instance-0.12.0.tgz
+    version: 0.12.0
+  - apiVersion: v2
+    appVersion: v3.1.9
     created: "2025-12-23T20:02:43.733021449Z"
     description: A Helm chart that configures Argo CD.
     digest: 39806dadf5f0d3254ca7670fc4421286ddb96d409334afea4ea53e2242cc1956
@@ -475,6 +485,20 @@ entries:
   aurora-namespace:
   - apiVersion: v2
     appVersion: 2.0.0
+    created: "2026-01-16T15:06:47.482427846Z"
+    dependencies:
+    - name: raw
+      repository: file://../raw
+      version: 0.0.1
+    description: Aurora Namespace
+    digest: 0a3fc6e6cbb907757f2b25195eedd60d81433c6637ae467ef204e48f097053d8
+    name: aurora-namespace
+    type: application
+    urls:
+    - https://github.com/gccloudone-aurora/aurora-platform-charts/releases/download/aurora-namespace-0.0.7/aurora-namespace-0.0.7.tgz
+    version: 0.0.7
+  - apiVersion: v2
+    appVersion: 2.0.0
     created: "2025-12-08T20:45:49.658130325Z"
     dependencies:
     - name: raw
@@ -558,6 +582,38 @@ entries:
     - https://github.com/gccloudone-aurora/aurora-platform-charts/releases/download/aurora-namespace-0.0.1/aurora-namespace-0.0.1.tgz
     version: 0.0.1
   aurora-platform:
+  - apiVersion: v2
+    appVersion: 2.0.0
+    created: "2026-01-16T15:06:47.766702844Z"
+    dependencies:
+    - alias: core
+      condition: core.enabled
+      name: aurora-core
+      repository: ""
+      version: 0.0.1
+    - alias: app
+      condition: app.enabled
+      import-values:
+      - child: data
+        parent: global.imports
+      name: aurora-app
+      repository: ""
+      version: 0.0.1
+    - alias: mgmt
+      condition: mgmt.enabled
+      import-values:
+      - child: data
+        parent: global.imports
+      name: aurora-mgmt
+      repository: ""
+      version: 0.0.1
+    description: Aurora Platform
+    digest: f6b0cb8dd4899ec4774b1f1128378d7fd49042a75e2b54e89516c990e5280e84
+    name: aurora-platform
+    type: application
+    urls:
+    - https://github.com/gccloudone-aurora/aurora-platform-charts/releases/download/aurora-platform-0.0.148/aurora-platform-0.0.148.tgz
+    version: 0.0.148
   - apiVersion: v2
     appVersion: 2.0.0
     created: "2026-01-16T14:54:27.695676472Z"
@@ -5265,6 +5321,16 @@ entries:
   aurora-solution:
   - apiVersion: v2
     appVersion: 2.0.0
+    created: "2026-01-16T15:06:47.987829567Z"
+    description: Aurora Solution
+    digest: c228a810a7def6744f553c133f49d288192c0a297053c3faa7149433f6d33c90
+    name: aurora-solution
+    type: application
+    urls:
+    - https://github.com/gccloudone-aurora/aurora-platform-charts/releases/download/aurora-solution-0.0.16/aurora-solution-0.0.16.tgz
+    version: 0.0.16
+  - apiVersion: v2
+    appVersion: 2.0.0
     created: "2025-12-08T20:45:49.835636086Z"
     description: Aurora Solution
     digest: 4dd13e949988685697bf0ef9d23c5a200f4cbc8589fd4bae0bcd0de447ed328e
@@ -5517,4 +5583,4 @@ entries:
     urls:
     - https://github.com/gccloudone-aurora/aurora-platform-charts/releases/download/raw-0.0.1/raw-0.0.1.tgz
     version: 0.0.1
-generated: "2026-01-16T14:54:27.69611515Z"
+generated: "2026-01-16T15:06:47.988614639Z"
