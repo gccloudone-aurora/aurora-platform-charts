@@ -63,8 +63,9 @@ spec:
               repo:
                 resources: {{ toYaml .Values.components.argoSolution.argocdInstance.repo.resources | nindent 18 }}
                 {{- if .Values.components.argoSolution.argocdInstance.azureWorkloadIdentity.enabled }}
-                serviceAccount: "argocd-repo-server"  
-                annotations:  
+                serviceAccount: "argocd-argocd-repo-server"  
+                # Custom attribute to set service account annotations. Not an operator supported attribute.
+                serviceAccountAnnotations:  
                   {{- include "argoSolution.argocdInstance.azureWorkloadIdentity.clientId" . | nindent 20 }}
                 labels:
                   azure.workload.identity/use: "true"
