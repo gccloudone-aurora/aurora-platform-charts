@@ -3,6 +3,16 @@ entries:
   argocd-instance:
   - apiVersion: v2
     appVersion: v3.1.9
+    created: "2026-01-19T20:48:18.244379886Z"
+    description: A Helm chart that configures Argo CD.
+    digest: 2f0ae21a1869675e3e38b4e13bc96cf8ebb2671524d06579ea4fb2ef681d580b
+    name: argocd-instance
+    type: application
+    urls:
+    - https://github.com/gccloudone-aurora/aurora-platform-charts/releases/download/argocd-instance-0.13.0/argocd-instance-0.13.0.tgz
+    version: 0.13.0
+  - apiVersion: v2
+    appVersion: v3.1.9
     created: "2026-01-16T15:06:47.084561944Z"
     description: A Helm chart that configures Argo CD.
     digest: 8515c5ba22c7fcc1d150cf5586102e4f3b7085a5249531ad3ee2169fb0556ad4
@@ -582,6 +592,38 @@ entries:
     - https://github.com/gccloudone-aurora/aurora-platform-charts/releases/download/aurora-namespace-0.0.1/aurora-namespace-0.0.1.tgz
     version: 0.0.1
   aurora-platform:
+  - apiVersion: v2
+    appVersion: 2.0.0
+    created: "2026-01-19T20:48:18.507924209Z"
+    dependencies:
+    - alias: core
+      condition: core.enabled
+      name: aurora-core
+      repository: ""
+      version: 0.0.1
+    - alias: app
+      condition: app.enabled
+      import-values:
+      - child: data
+        parent: global.imports
+      name: aurora-app
+      repository: ""
+      version: 0.0.1
+    - alias: mgmt
+      condition: mgmt.enabled
+      import-values:
+      - child: data
+        parent: global.imports
+      name: aurora-mgmt
+      repository: ""
+      version: 0.0.1
+    description: Aurora Platform
+    digest: 2ac567c906733bc7d5368faf600f4f647e02637b51f4742ac914bff90a201c55
+    name: aurora-platform
+    type: application
+    urls:
+    - https://github.com/gccloudone-aurora/aurora-platform-charts/releases/download/aurora-platform-0.0.151/aurora-platform-0.0.151.tgz
+    version: 0.0.151
   - apiVersion: v2
     appVersion: 2.0.0
     created: "2026-01-19T17:25:02.957799676Z"
@@ -5657,4 +5699,4 @@ entries:
     urls:
     - https://github.com/gccloudone-aurora/aurora-platform-charts/releases/download/raw-0.0.1/raw-0.0.1.tgz
     version: 0.0.1
-generated: "2026-01-19T17:25:02.958187517Z"
+generated: "2026-01-19T20:48:18.508460073Z"
