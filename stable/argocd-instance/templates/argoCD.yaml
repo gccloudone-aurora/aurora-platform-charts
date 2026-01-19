@@ -93,7 +93,9 @@ spec:
     version: {{ .Values.argocdInstance.image.version }}
     logLevel: {{ .Values.argocdInstance.logLevel }}
     labels: {{ toYaml .Values.argocdInstance.repo.labels | nindent 6 }}
-    serviceAccount: {{ .Values.argocdInstance.repo.serviceAccount }}
+    {{- if .Values.argocdInstance.repo.serviceAccountAnnotations }}
+    serviceAccount: "argocd-repo-server"
+    {{- end }}
     volumeMounts:
       - mountPath: /etc/ssl/certs/custom.crt
         name: custom-certs
