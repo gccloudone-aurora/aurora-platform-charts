@@ -87,6 +87,8 @@ argocdInstance:
       # requests:
       #   cpu: ""
       #   memory: ""
+    serviceAccountAnnotations: {}
+    labels: {}
 
   server:
     autoscale:
@@ -121,15 +123,6 @@ argocdInstance:
 
       # # AWS
       # ARGOCD_ENV_AWS_REGION: ""
-
-  # General AzureIdentity definitions (can be used for any purpose, not just argocdVaultPlugin)
-  AADPodIdentity:
-    enabled: false
-    identityName: "argocd-vault-plugin"
-    managedIdentity:
-      clientID: ""
-      resourceID: ""
-
 
 register:
   clusters: {}

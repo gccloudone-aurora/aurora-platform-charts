@@ -464,12 +464,11 @@ mgmt:
           env:
             ARGOCD_ENV_AVP_TYPE: "azurekeyvault"
             ARGOCD_ENV_AZURE_CLIENT_ID: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-argocd-kv-aadpodidentity-client-id>'
-          azure:
-            AADPodIdentity:
-              enabled: true
-              managedIdentity:
-                clientID: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-argocd-kv-aadpodidentity-client-id>'
-                resourceID: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-argocd-kv-aadpodidentity-resource-id>'
+
+        azureWorkloadIdentity:
+          enabled: true
+          clientId: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-argocd-kv-aadpodidentity-client-id>'
+
         oidcAuthSP:
           credentials:
             tenantID: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-tenant-id>'
