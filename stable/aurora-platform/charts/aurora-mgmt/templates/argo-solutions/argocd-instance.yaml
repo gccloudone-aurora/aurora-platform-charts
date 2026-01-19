@@ -77,7 +77,7 @@ spec:
               applicationSet:
                 resources: {{ toYaml .Values.components.argoSolution.argocdInstance.applicationSet.resources | nindent 18 }}
                 sourceNamespaces: {{ toYaml .Values.components.argoSolution.argocdInstance.applicationSet.sourceNamespaces | nindent 18 }}
-                scmProviders: {{ toYaml .Values.components.argoSolution.argocdInstance.applicationSet.sourceNamespaces | nindent 18 }}
+                scmProviders: {{ toYaml .Values.components.argoSolution.argocdInstance.applicationSet.scmProviders | nindent 18 }}
 
               redis:
                 resources: {{ toYaml .Values.components.argoSolution.argocdInstance.redis.resources | nindent 18 }}
