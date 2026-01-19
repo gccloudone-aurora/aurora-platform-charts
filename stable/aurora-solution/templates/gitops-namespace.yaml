@@ -75,9 +75,9 @@ spec:
             destination:
               namespace: {{ $.Release.Name }}
 
-            sourceRepos: {{ toYaml .Values.argocd.project.sourceRepos | nindent 12 }}
-            developerGroups: {{ toYaml .Values.argocd.project.developerGroups | nindent 12 }} # defaults to rbac.groups if empty
-            adminGroups: {{ toYaml .Values.argocd.project.adminGroups | nindent 12 }} # defaults to rbac.groups if empty
+            sourceRepos: {{ toYaml .Values.argocd.project.sourceRepos | nindent 14 }}
+            developerGroups: {{ toYaml .Values.argocd.project.developerGroups | nindent 14 }}
+            adminGroups: {{ toYaml .Values.argocd.project.adminGroups | nindent 14 }} # defaults to rbac.groups if empty
 
   destination:
     name: in-cluster
