@@ -62,7 +62,7 @@ components:
       helm: {}
       # chart: argocd-instance
       # repository: https://gccloudone-aurora.github.io/aurora-platform-charts
-      # targetRevision: 0.5.0
+      # targetRevision: 0.13.0
 
       # disableAdmin: true
       # ingressDomain: ""
@@ -88,7 +88,7 @@ components:
 
       azureWorkloadIdentity:
         enabled: false
-        #clientId: ""
+        # clientId: ""
 
       oidcAuthSP:
         credentials: {}
@@ -225,7 +225,7 @@ components:
       helm: {}
       # chart: argocd-instance
       # repository: https://gccloudone-aurora.github.io/aurora-platform-charts
-      # targetRevision: 0.5.0
+      # targetRevision: 0.13.0
 
       # disableAdmin: true
       # ingressDomain: ""
@@ -251,7 +251,7 @@ components:
 
       azureWorkloadIdentity:
         enabled: false
-        #clientId: ""
+        # clientId: ""
 
       sourceNamespaces:
         - "/gitops-^((?!-system$).)*$/"        # starts with "gitops-" & does not end with "-system"

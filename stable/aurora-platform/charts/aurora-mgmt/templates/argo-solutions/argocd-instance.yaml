@@ -15,7 +15,7 @@ spec:
     {{- else }}
     repoURL: {{ default "https://gccloudone-aurora.github.io/aurora-platform-charts" .Values.global.helm.repository }}
     {{- end }}
-    targetRevision: {{ default "0.12.0" .Values.components.argoSolution.argocdInstance.helm.targetRevision }}
+    targetRevision: {{ default "0.13.0" .Values.components.argoSolution.argocdInstance.helm.targetRevision }}
     plugin:
       env:
         - name: HELM_RELEASE_NAME
@@ -63,10 +63,7 @@ spec:
               repo:
                 resources: {{ toYaml .Values.components.argoSolution.argocdInstance.repo.resources | nindent 18 }}
                 {{- if .Values.components.argoSolution.argocdInstance.azureWorkloadIdentity.enabled }}
-                serviceAccount: "argocd-argocd-repo-server"  
-                # Custom attribute to set service account annotations. Not an operator supported attribute.
-                serviceAccountAnnotations:  
-                  {{- include "argoSolution.argocdInstance.azureWorkloadIdentity.clientId" . | nindent 20 }}
+                serviceAccountAnnotations: {{ include "argoSolution.argocdInstance.azureWorkloadIdentity.clientId" . | nindent 18 }}
                 labels:
                   azure.workload.identity/use: "true"
                 {{- end }}
