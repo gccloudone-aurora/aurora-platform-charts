@@ -1,5 +1,5 @@
 # This ClusterRole & ClusterRoleBinding seems to be required for appSet in any namespace feature
-{{- if .Values.argocdInstance.applicationSet.sourceNamespaces}}
+{{- if .Values.argocdInstance.applicationSet.sourceNamespaces }}
 
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
