@@ -14,16 +14,16 @@ spec:
           - path: applications
   template:
     metadata:
-      name: "bootstrap-{{ $.Release.Name }}"
+      name: "bootstrap-application"
       namespace: {{ $.Release.Name }}
     spec:
-      project: "bootstrap-{{ $.Release.Name }}"
+      project: "bootstrap-application"
       source:
         repoURL: {{ required "argocd.deploymentRepoURL is required" .Values.argocd.deploymentRepoURL }}
         targetRevision: HEAD
         path: applications
       destination:
-        server: in-cluster
+        name: in-cluster
         namespace: {{ $.Release.Name }}
 
 {{- end }}

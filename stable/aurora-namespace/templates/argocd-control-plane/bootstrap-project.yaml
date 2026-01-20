@@ -8,7 +8,7 @@ metadata:
   labels:
     argocd.argoproj.io/project-inherit: bootstrap
 spec:
-  description: "Global multi-tenant restrictions"
+  description: "Used for bootstraping the deployment process"
 
   clusterResourceBlacklist:
     - group: "*"
@@ -26,7 +26,7 @@ spec:
 
   # The clusters where the tenant's applications are hosted
   destinations:
-    - server: "in-cluster"
+    - name: "in-cluster"
       namespace: {{ $.Release.Name }}
 
   roles:
