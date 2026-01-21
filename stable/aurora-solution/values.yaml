@@ -104,7 +104,7 @@ argocd:
   deploymentRepoURL: ""
   project:
     namespace: "platform-solution-system"
-    sourceRepos: []
+    sourceRepos: []       # Merges with deploymentRepoURL to form the list of source repositories
     developerGroups: []
     adminGroups: []       # defaults to rbac.groups if empty
 

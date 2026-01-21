@@ -77,3 +77,11 @@ Defines the name of the namespace to adhere to required conventions.
 {{- .Release.Name }}
 {{- end }}
 {{- end }}
+
+{{/*
+Merges deploymentRepoURL into sourceRepos and removes duplicates.
+Returns a sorted, deduplicated list of repository URLs as YAML.
+*/}}
+{{- define "aurora-namespace.argocd.sourceRepos" -}}
+{{- toYaml (sortAlpha (concat .Values.argocd.project.sourceRepos (list .Values.argocd.deploymentRepoURL | compact)) | uniq) }}
+{{- end }}

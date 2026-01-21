@@ -22,7 +22,7 @@ spec:
     - {{ $.Release.Name }}
 
   # Which repositories are allowed
-  sourceRepos: {{ toYaml .Values.argocd.project.sourceRepos | nindent 4 }}
+  sourceRepos: {{ include "aurora-namespace.argocd.sourceRepos" . | nindent 4 }}
 
   # The clusters where the tenant's applications are hosted
   destinations:
