@@ -17,7 +17,7 @@ spec:
       name: "bootstrap-application"
       namespace: {{ $.Release.Name }}
     spec:
-      project: "bootstrap-application"
+      project: "bootstrap-{{ $.Release.Name }}"
       source:
         repoURL: {{ required "argocd.deploymentRepoURL is required" .Values.argocd.deploymentRepoURL }}
         targetRevision: HEAD
