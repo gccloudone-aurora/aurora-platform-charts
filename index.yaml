@@ -3,6 +3,16 @@ entries:
   argocd-instance:
   - apiVersion: v2
     appVersion: v3.1.9
+    created: "2026-01-22T15:17:04.69541216Z"
+    description: A Helm chart that configures Argo CD.
+    digest: 65c2ba453c4e7173f3c6733d6b549a134a560692fab0607fcebc5078e9dc21f3
+    name: argocd-instance
+    type: application
+    urls:
+    - https://github.com/gccloudone-aurora/aurora-platform-charts/releases/download/argocd-instance-0.15.0/argocd-instance-0.15.0.tgz
+    version: 0.15.0
+  - apiVersion: v2
+    appVersion: v3.1.9
     created: "2026-01-20T20:18:15.052017885Z"
     description: A Helm chart that configures Argo CD.
     digest: 5314a4a74a0208f82742ea9dd7cb34c1c0f9f33447786a0acfd53060fa61b41f
@@ -644,6 +654,38 @@ entries:
     - https://github.com/gccloudone-aurora/aurora-platform-charts/releases/download/aurora-namespace-0.0.1/aurora-namespace-0.0.1.tgz
     version: 0.0.1
   aurora-platform:
+  - apiVersion: v2
+    appVersion: 2.0.0
+    created: "2026-01-22T15:17:04.981372568Z"
+    dependencies:
+    - alias: core
+      condition: core.enabled
+      name: aurora-core
+      repository: ""
+      version: 0.0.1
+    - alias: app
+      condition: app.enabled
+      import-values:
+      - child: data
+        parent: global.imports
+      name: aurora-app
+      repository: ""
+      version: 0.0.1
+    - alias: mgmt
+      condition: mgmt.enabled
+      import-values:
+      - child: data
+        parent: global.imports
+      name: aurora-mgmt
+      repository: ""
+      version: 0.0.1
+    description: Aurora Platform
+    digest: 7857ab4cbe1b7fdc883efd7088a4b770c1ab0703547a2706454880dd70352bfb
+    name: aurora-platform
+    type: application
+    urls:
+    - https://github.com/gccloudone-aurora/aurora-platform-charts/releases/download/aurora-platform-0.0.154/aurora-platform-0.0.154.tgz
+    version: 0.0.154
   - apiVersion: v2
     appVersion: 2.0.0
     created: "2026-01-20T20:18:15.277642956Z"
@@ -5845,4 +5887,4 @@ entries:
     urls:
     - https://github.com/gccloudone-aurora/aurora-platform-charts/releases/download/raw-0.0.1/raw-0.0.1.tgz
     version: 0.0.1
-generated: "2026-01-21T17:22:04.092615795Z"
+generated: "2026-01-22T15:17:04.98260916Z"
