@@ -104,8 +104,9 @@ argocd:
   deploymentRepoURL: ""
   project:
     # namespace: ""       # @schema type:[string];required:true
-    destination:
-      namespace: ""       # @schema type:[string];required:true
+    destinations: []       # @schema type:[array];required:true
+      # - namespace: ""   # @schema type:[string];required:true
+      #   name: ""        # @schema type:[string];required:true
     sourceRepos: []       # Merges with deploymentRepoURL to form the list of source repositories
     developerGroups: []   # defaults to rbac.groups if empty
     adminGroups: []       # defaults to rbac.groups if empty

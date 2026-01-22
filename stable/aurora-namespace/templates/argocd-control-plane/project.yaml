@@ -18,8 +18,10 @@ spec:
 
   # The clusters where the tenant's applications are hosted
   destinations:
-    - server: "*"
-      namespace: {{ required "argocd.project.destination.namespace is required" .Values.argocd.project.destination.namespace }}
+  {{- range .Values.argocd.project.destinations }}
+    - name: {{ required "argocd.project.destinations.name is required" .name }}
+      namespace: {{ required "argocd.project.destinations.namespace is required" .namespace }}
+  {{- end }}
 
   roles:
     # Role for "admins" - full control including delete/force-sync
