@@ -68,10 +68,12 @@ resourceQuotas:
 argocd:
   deploymentRepoURL: "https://github.com/my-org/workload-deploy.git"
   project:
-    namespace: "platform-solution-system"
-    destination:
-      namespace: "test"
+    namespace: platform-solution-system
+    destinations:
+      - namespace: test
+        name: gen-dev-cc-00
+      - namespace: test
+        name: gen-test-cc-00
 
-    sourceRepos: ["*"]
     developerGroups: []            # defaults to rbac.groups if empty
     adminGroups: ["testers"]       # defaults to rbac.groups if empty

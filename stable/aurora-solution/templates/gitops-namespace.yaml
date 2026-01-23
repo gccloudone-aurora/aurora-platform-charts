@@ -19,7 +19,7 @@ spec:
     {{- else }}
     repoURL: {{ default "https://gccloudone-aurora.github.io/aurora-platform-charts" $.Values.global.helm.repository }}
     {{- end }}
-    targetRevision: {{ default "0.0.10" $.Values.global.helm.targetRevision }}
+    targetRevision: {{ default "0.0.11" $.Values.global.helm.targetRevision }}
     helm:
       releaseName: "gitops-{{ $.Release.Name }}"
       values: |
@@ -73,7 +73,10 @@ spec:
           project:
             namespace: {{ required "argocd.project.namespace is required" .Values.argocd.project.namespace }}
             destination:
-              namespace: {{ $.Release.Name }}
+              {{- range $clusterName, $cluster := .Values.clusters }}
+              - namespace: {{ $.Release.Name }}
+                name: {{ $clusterName }}
+              {{- end }}
 
             sourceRepos: {{ toYaml .Values.argocd.project.sourceRepos | nindent 14 }}
             developerGroups: {{ toYaml .Values.argocd.project.developerGroups | nindent 14 }}
