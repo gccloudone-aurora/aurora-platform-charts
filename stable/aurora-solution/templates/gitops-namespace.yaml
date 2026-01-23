@@ -72,7 +72,7 @@ spec:
           deploymentRepoURL: {{ .Values.argocd.deploymentRepoURL }}
           project:
             namespace: {{ required "argocd.project.namespace is required" .Values.argocd.project.namespace }}
-            destination:
+            destinations:
               {{- range $clusterName, $cluster := .Values.clusters }}
               - namespace: {{ $.Release.Name }}
                 name: {{ $clusterName }}
