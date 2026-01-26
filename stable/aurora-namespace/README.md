@@ -1,6 +1,6 @@
 # aurora-namespace
 
-![Version: 0.0.6](https://img.shields.io/badge/Version-0.0.6-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.0.0](https://img.shields.io/badge/AppVersion-2.0.0-informational?style=flat-square)
+![Version: 0.0.11](https://img.shields.io/badge/Version-0.0.11-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.0.0](https://img.shields.io/badge/AppVersion-2.0.0-informational?style=flat-square)
 
 Aurora Namespace
 
@@ -20,10 +20,11 @@ Aurora Namespace
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | aadPodIdentities | object | `{}` |  |
-| argocdProject.adminGroups | list | `[]` |  |
-| argocdProject.destination.namespace | string | `""` |  |
-| argocdProject.developerGroups | list | `[]` |  |
-| argocdProject.sourceRepos[0] | string | `"*"` |  |
+| argocd.deploymentRepoURL | string | `""` |  |
+| argocd.project.adminGroups | list | `[]` |  |
+| argocd.project.destinations | list | `[]` |  |
+| argocd.project.developerGroups | list | `[]` |  |
+| argocd.project.sourceRepos | list | `[]` |  |
 | information.CBR | string | `""` |  |
 | information.FRC | string | `nil` |  |
 | information.PE | string | `nil` |  |

@@ -1,6 +1,6 @@
 # aurora-solution
 
-![Version: 0.0.15](https://img.shields.io/badge/Version-0.0.15-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.0.0](https://img.shields.io/badge/AppVersion-2.0.0-informational?style=flat-square)
+![Version: 0.0.22](https://img.shields.io/badge/Version-0.0.22-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.0.0](https://img.shields.io/badge/AppVersion-2.0.0-informational?style=flat-square)
 
 Aurora Solution
 
@@ -14,10 +14,11 @@ Aurora Solution
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | aadPodIdentities | object | `{}` |  |
-| argocdProject.adminGroups | list | `[]` |  |
-| argocdProject.developerGroups | list | `[]` |  |
-| argocdProject.namespace | string | `"platform-solution-system"` |  |
-| argocdProject.sourceRepos[0] | string | `"*"` |  |
+| argocd.deploymentRepoURL | string | `""` |  |
+| argocd.project.adminGroups | list | `[]` |  |
+| argocd.project.developerGroups | list | `[]` |  |
+| argocd.project.namespace | string | `"platform-solution-system"` |  |
+| argocd.project.sourceRepos | list | `[]` |  |
 | clusters | object | `{}` |  |
 | global.helm | object | `{}` |  |
 | global.project | string | `"aurora-solution"` |  |

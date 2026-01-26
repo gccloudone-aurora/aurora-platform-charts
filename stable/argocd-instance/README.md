@@ -1,6 +1,6 @@
 # argocd-instance
 
-![Version: 0.10.0](https://img.shields.io/badge/Version-0.10.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v3.1.9](https://img.shields.io/badge/AppVersion-v3.1.9-informational?style=flat-square)
+![Version: 0.15.0](https://img.shields.io/badge/Version-0.15.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v3.1.9](https://img.shields.io/badge/AppVersion-v3.1.9-informational?style=flat-square)
 
 A Helm chart that configures Argo CD.
 
@@ -15,10 +15,9 @@ A Helm chart that configures Argo CD.
 |-----|------|---------|-------------|
 | argocdInstance.applicationInstanceLabelKey | string | `"platform.ssc-spc.gc.ca/application-name"` |  |
 | argocdInstance.applicationSet.resources | object | `{}` |  |
-| argocdInstance.argocdVaultPlugin.azure.AADPodIdentity.enabled | bool | `false` |  |
-| argocdInstance.argocdVaultPlugin.azure.AADPodIdentity.identityName | string | `"argocd-vault-plugin"` |  |
-| argocdInstance.argocdVaultPlugin.azure.AADPodIdentity.managedIdentity.clientID | string | `""` |  |
-| argocdInstance.argocdVaultPlugin.azure.AADPodIdentity.managedIdentity.resourceID | string | `""` |  |
+| argocdInstance.applicationSet.scmProviders | list | `[]` |  |
+| argocdInstance.applicationSet.setTokenRefStrictMode | bool | `true` |  |
+| argocdInstance.applicationSet.sourceNamespaces | list | `[]` |  |
 | argocdInstance.argocdVaultPlugin.configMapName | string | `"cmp-plugin"` |  |
 | argocdInstance.argocdVaultPlugin.enabled | bool | `true` |  |
 | argocdInstance.argocdVaultPlugin.env.ARGOCD_ENV_AVP_TYPE | string | `""` |  |
@@ -45,7 +44,9 @@ A Helm chart that configures Argo CD.
 | argocdInstance.redis.imageRegistry.host | string | `"docker.io"` |  |
 | argocdInstance.redis.imageRegistry.repository | string | `""` |  |
 | argocdInstance.redis.resources | object | `{}` |  |
+| argocdInstance.repo.labels | object | `{}` |  |
 | argocdInstance.repo.resources | object | `{}` |  |
+| argocdInstance.repo.serviceAccountAnnotations | object | `{}` |  |
 | argocdInstance.server.autoscale.enabled | bool | `false` |  |
 | argocdInstance.server.resources | object | `{}` |  |
 | argocdInstance.server.service.type | string | `"NodePort"` |  |

@@ -9,11 +9,8 @@ Aurora Platform - Management Components
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | components.argoFoundation.argocdInstance.applicationSet.resources | object | `{}` |  |
-| components.argoFoundation.argocdInstance.argocdVaultPlugin.azure.AADPodIdentity.enabled | bool | `false` |  |
-| components.argoFoundation.argocdInstance.argocdVaultPlugin.azure.AADPodIdentity.identityName | string | `"argocd-vault-plugin"` |  |
-| components.argoFoundation.argocdInstance.argocdVaultPlugin.azure.AADPodIdentity.managedIdentity.clientID | string | `""` |  |
-| components.argoFoundation.argocdInstance.argocdVaultPlugin.azure.AADPodIdentity.managedIdentity.resourceID | string | `""` |  |
 | components.argoFoundation.argocdInstance.argocdVaultPlugin.env | object | `{}` |  |
+| components.argoFoundation.argocdInstance.azureWorkloadIdentity.enabled | bool | `false` |  |
 | components.argoFoundation.argocdInstance.controller.resources | object | `{}` |  |
 | components.argoFoundation.argocdInstance.helm | object | `{}` |  |
 | components.argoFoundation.argocdInstance.netpol | object | `{}` |  |
@@ -25,7 +22,9 @@ Aurora Platform - Management Components
 | components.argoFoundation.argocdInstance.register.clusters | object | `{}` |  |
 | components.argoFoundation.argocdInstance.register.repositories | object | `{}` |  |
 | components.argoFoundation.argocdInstance.register.repositoryCreds | object | `{}` |  |
+| components.argoFoundation.argocdInstance.repo.annotations | object | `{}` |  |
 | components.argoFoundation.argocdInstance.repo.resources | object | `{}` |  |
+| components.argoFoundation.argocdInstance.repo.serviceAcccount | string | `""` |  |
 | components.argoFoundation.argocdInstance.server.service | object | `{}` |  |
 | components.argoFoundation.argocdInstance.tolerations[0].key | string | `"CriticalAddonsOnly"` |  |
 | components.argoFoundation.argocdInstance.tolerations[0].operator | string | `"Exists"` |  |
@@ -50,11 +49,10 @@ Aurora Platform - Management Components
 | components.argoOperator.tolerations[0].key | string | `"CriticalAddonsOnly"` |  |
 | components.argoOperator.tolerations[0].operator | string | `"Exists"` |  |
 | components.argoSolution.argocdInstance.applicationSet.resources | object | `{}` |  |
-| components.argoSolution.argocdInstance.argocdVaultPlugin.azure.AADPodIdentity.enabled | bool | `false` |  |
-| components.argoSolution.argocdInstance.argocdVaultPlugin.azure.AADPodIdentity.identityName | string | `"argocd-vault-plugin"` |  |
-| components.argoSolution.argocdInstance.argocdVaultPlugin.azure.AADPodIdentity.managedIdentity.clientID | string | `""` |  |
-| components.argoSolution.argocdInstance.argocdVaultPlugin.azure.AADPodIdentity.managedIdentity.resourceID | string | `""` |  |
+| components.argoSolution.argocdInstance.applicationSet.scmProviders | list | `[]` |  |
+| components.argoSolution.argocdInstance.applicationSet.sourceNamespaces[0] | string | `"/^gitops-((?!-system$).)*$/"` |  |
 | components.argoSolution.argocdInstance.argocdVaultPlugin.env | object | `{}` |  |
+| components.argoSolution.argocdInstance.azureWorkloadIdentity.enabled | bool | `false` |  |
 | components.argoSolution.argocdInstance.controller.resources | object | `{}` |  |
 | components.argoSolution.argocdInstance.helm | object | `{}` |  |
 | components.argoSolution.argocdInstance.netpol | object | `{}` |  |
@@ -68,10 +66,11 @@ Aurora Platform - Management Components
 | components.argoSolution.argocdInstance.register.repositoryCreds | object | `{}` |  |
 | components.argoSolution.argocdInstance.repo.resources | object | `{}` |  |
 | components.argoSolution.argocdInstance.server.service | object | `{}` |  |
-| components.argoSolution.argocdInstance.sourceNamespaces[0] | string | `"/^(?!gitops-.*-system$).*^argocd-.*/"` |  |
+| components.argoSolution.argocdInstance.sourceNamespaces[0] | string | `"/^gitops-((?!-system$).)*$/"` |  |
 | components.argoSolution.argocdInstance.tolerations[0].key | string | `"CriticalAddonsOnly"` |  |
 | components.argoSolution.argocdInstance.tolerations[0].operator | string | `"Exists"` |  |
 | components.argoSolution.enabled | bool | `true` |  |
+| components.argoSolution.project.global.sourceRepos | list | `[]` |  |
 | components.billOfLanding.AADPodIdentity.azureManagedIdentity | object | `{}` |  |
 | components.billOfLanding.config.artifactRepository | object | `{}` |  |
 | components.billOfLanding.config.clusters | list | `[]` |  |
@@ -83,12 +82,14 @@ Aurora Platform - Management Components
 | components.billOfLanding.tolerations[0].key | string | `"CriticalAddonsOnly"` |  |
 | components.billOfLanding.tolerations[0].operator | string | `"Exists"` |  |
 | components.loki.basicAuth | object | `{}` |  |
+| components.loki.deploymentMode | string | `"SimpleScalable"` |  |
 | components.loki.enabled | bool | `false` |  |
 | components.loki.helm | object | `{}` |  |
 | components.loki.image.repository | string | `"grafana/loki"` |  |
 | components.loki.logStorageLocation | object | `{}` |  |
 | components.loki.nodeSelector."kubernetes.io/os" | string | `"linux"` |  |
 | components.loki.nodeSelector."node.ssc-spc.gc.ca/purpose" | string | `"system"` |  |
+| components.loki.ruler.enabled | bool | `false` |  |
 | components.loki.tolerations[0].key | string | `"CriticalAddonsOnly"` |  |
 | components.loki.tolerations[0].operator | string | `"Exists"` |  |
 | data.mgmt.enabled | bool | `true` |  |
