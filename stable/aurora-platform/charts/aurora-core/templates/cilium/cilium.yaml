@@ -25,6 +25,11 @@ spec:
             aksbyocni:
               enabled: false
 
+            {{- if .Values.components.cilium.k8sServiceHost }}
+            k8sServiceHost: {{ .Values.components.cilium.k8sServiceHost }} 
+            k8sServicePort: 443
+            {{- end }}
+
             bgp:
               # Should only be enabled if bgpControlPlane = false
               enabled: false

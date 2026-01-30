@@ -592,6 +592,8 @@ components:
     bgpControlPlane:
       enabled: true
 
+    k8sServiceHost: ""
+
     image:
       # registry: docker.io
       repository: cilium/cilium
