@@ -15,7 +15,7 @@ spec:
     {{- else }}
     repoURL: {{ default "https://prometheus-community.github.io/helm-charts" .Values.global.helm.repository }}
     {{- end }}
-    targetRevision: {{ default "44.3.0" .Values.components.prometheus.helm.targetRevision }}
+    targetRevision: {{ default "81.3.1" .Values.components.prometheus.helm.targetRevision }}
     plugin:
       env:
         - name: HELM_RELEASE_NAME
