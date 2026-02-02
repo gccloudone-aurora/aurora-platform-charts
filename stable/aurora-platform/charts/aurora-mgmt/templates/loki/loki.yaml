@@ -100,7 +100,7 @@ spec:
                 ring:
                   kvstore:
                     store: inmemory
-                alertmanager_url: http://alertmanager.{{ .Values.global.ingressDomain }}:9093
+                alertmanager_url: http://alertmanager.{{ .Values.global.ingressDomain }}:443
                 enable_alertmanager_v2: true
 
             chunksCache:
