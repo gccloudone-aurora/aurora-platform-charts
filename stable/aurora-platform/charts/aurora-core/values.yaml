@@ -1474,7 +1474,7 @@ components:
       admissionWebhooks:
         image:
           # registry: k8s.gcr.io
-          repository: ingress-nginx/kube-webhook-certgen
+          repository: jkroepke/kube-webhook-certgen
           # tag: "v1.3.0"
           # pullPolicy: IfNotPresent
 

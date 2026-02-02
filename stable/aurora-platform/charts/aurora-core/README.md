@@ -677,7 +677,7 @@ Aurora Platform - Core Platform
 | components.prometheus.msteams.resources | object | `{}` |  |
 | components.prometheus.msteams.tolerations[0].key | string | `"CriticalAddonsOnly"` |  |
 | components.prometheus.msteams.tolerations[0].operator | string | `"Exists"` |  |
-| components.prometheus.operator.admissionWebhooks.image.repository | string | `"ingress-nginx/kube-webhook-certgen"` |  |
+| components.prometheus.operator.admissionWebhooks.image.repository | string | `"jkroepke/kube-webhook-certgen"` |  |
 | components.prometheus.operator.admissionWebhooks.resources | object | `{}` |  |
 | components.prometheus.operator.image.repository | string | `"prometheus-operator/prometheus-operator"` |  |
 | components.prometheus.operator.prometheusConfigReloader.image.repository | string | `"prometheus-operator/prometheus-config-reloader"` |  |
