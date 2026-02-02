@@ -1802,7 +1802,7 @@ components:
         # targetRevision: 7.0.0
       image:
         # registry: docker.io
-        repository: prom/blackbox-exporter
+        repository: prometheus/blackbox-exporter
         # tag: "v0.23.0"
         # pullPolicy: IfNotPresent
       imagePullSecrets: []
