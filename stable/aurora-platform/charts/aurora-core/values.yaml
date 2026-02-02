@@ -1476,7 +1476,7 @@ components:
       admissionWebhooks:
         image:
           # registry: k8s.gcr.io
-          repository: ingress-nginx/kube-webhook-certgen
+          repository: jkroepke/kube-webhook-certgen
           # tag: "v1.3.0"
           # pullPolicy: IfNotPresent
 
@@ -1803,8 +1803,8 @@ components:
         # repository: https://prometheus-community.github.io/helm-charts
         # targetRevision: 7.0.0
       image:
-        # registry: docker.io
-        repository: prom/blackbox-exporter
+        registry: quay.io
+        repository: prometheus/blackbox-exporter
         # tag: "v0.23.0"
         # pullPolicy: IfNotPresent
       imagePullSecrets: []
