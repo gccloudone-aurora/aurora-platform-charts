@@ -15,7 +15,7 @@ spec:
     {{- else }}
     repoURL: {{ default "https://prometheus-community.github.io/helm-charts" .Values.global.helm.repository }}
     {{- end }}
-    targetRevision: {{ default "7.1.1" .Values.components.prometheus.blackboxExporter.helm.targetRevision }}
+    targetRevision: {{ default "11.7.1" .Values.components.prometheus.blackboxExporter.helm.targetRevision }}
     helm:
       releaseName: prometheus-blackbox-exporter
       values: |
