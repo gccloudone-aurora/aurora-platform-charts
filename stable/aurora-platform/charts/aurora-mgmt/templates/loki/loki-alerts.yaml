@@ -29,6 +29,30 @@ spec:
                     release: monitoring-metrics
                 data:
                   rules.yaml: |
+                    groups:
+                    - name: watch-dog-alerts
+                      rules:
+                        - alert: WatchDogAlert
+                          expr: vector(1)
+                          for: 1m
+                          labels:
+                            severity: test
+                          annotations:
+                            message: "This alert always fires."
+                            runbook: ""
+                    - name: kube-bench-alerts
+                      rules:
+                      - alert: KubeBenchCheckDidNotPass
+                        expr: |
+                          count_over_time({namespace="kube-bench-system"} |~ "^\\[(FAIL|WARN)\\]"[5m]) > 0
+                        for: 1m
+                        labels:
+                          severity: P1-Critical
+                          scope: cluster
+                        annotations:
+                          message: "The kube-bench job reported that a check has not passed, it has either failed or displayed a warning."
+                          runbook: ""
+
   destination:
     name: {{ .Values.global.cluster }}
     namespace: platform-system
