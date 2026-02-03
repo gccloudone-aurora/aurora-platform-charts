@@ -34,10 +34,10 @@ spec:
           config:
             alertmanager:
               hostport: "http://alertmanager.{{ .Values.global.ingressDomain }}:443"
-              minimumpriority:
-              extraannotations:
-              extralabels:
-              customseveritymap:
+              minimumpriority: {{ .Values.components.falco.falcoSideKick.config.alertmanager.minimumpriority }}
+              extraannotations: {{ .Values.components.falco.falcoSideKick.config.alertmanager.extraannotations }}
+              extralabels: {{ .Values.components.falco.falcoSideKick.config.alertmanager.extralabels }}
+              customseveritymap: {{ .Values.components.falco.falcoSideKick.config.alertmanager.customseveritymap }}
 
         collectors:
           kubernetes:

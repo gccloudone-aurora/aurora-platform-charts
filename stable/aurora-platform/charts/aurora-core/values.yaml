@@ -1175,8 +1175,9 @@ components:
         config:
           alertmanager:
             minimumpriority: "warning"
-            extraannotations: "message:Falco has detected XYZ, runbook:"
+            extraannotations: "message:Falco is detecting abnormal behaviour,runbook:"
             extralabels: "scope:cluster"
+            # falco's default alert labels are: emergency, alert, critical, error, warning, notice, informational, debug
             customseveritymap: "emergency:P1-Critical,alert:P1-Critical,critical:P1-Critical,error:P2-Major,warning:P3-Minor"
  
       k8sMetacollector:
