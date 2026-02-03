@@ -31,6 +31,13 @@ spec:
           enabled: true
           # see https://github.com/falcosecurity/charts/blob/master/charts/falcosidekick/values.yaml
           image: {{ default "{}" (include "falcosidekick.image" .) | nindent 12 }}
+          config:
+            alertmanager:
+              hostport: "http://alertmanager.{{ .Values.global.ingressDomain }}:443"
+              minimumpriority:
+              extraannotations:
+              extralabels:
+              customseveritymap:
 
         collectors:
           kubernetes:

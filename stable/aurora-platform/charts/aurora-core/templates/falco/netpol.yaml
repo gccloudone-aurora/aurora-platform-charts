@@ -157,6 +157,27 @@ spec:
                         matchLabels:
                           app.kubernetes.io/instance: falco
                           app.kubernetes.io/name: falco
+              - apiVersion: networking.k8s.io/v1
+                kind: NetworkPolicy
+                metadata:
+                  name: allow-egress-to-alertmanager-from-falcosidekick
+                  namespace: falco-system
+                spec:
+                  egress:
+                  {{- range (required "global.alertManagerCidrs is required" .Values.global.alertManagerCidrs) }}
+                    - ports:
+                        - protocol: TCP
+                          port: 443
+                      to:
+                        - ipBlock:
+                            cidr: {{ . | quote }}
+                  {{- end }}
+                  podSelector:
+                    matchLabels:
+                      app.kubernetes.io/instance: falco
+                      app.kubernetes.io/name: falcosidekick
+                  policyTypes:
+                  - Egress
               {{- toYaml .Values.components.falco.resources | nindent 14 }}
   destination:
     name: {{ .Values.global.cluster }}

@@ -1172,6 +1172,12 @@ components:
           repository: falcosecurity/falcosidekick
           tag: "2.31.1"
           # pullPolicy: IfNotPresent
+        config:
+          alertmanager:
+            minimumpriority: "warning"
+            extraannotations: "message:Falco has detected XYZ, runbook:"
+            extralabels: "scope:cluster"
+            customseveritymap: "emergency:P1-Critical,alert:P1-Critical,critical:P1-Critical,error:P2-Major,warning:P3-Minor"
  
       k8sMetacollector:
         image:
