@@ -100,7 +100,7 @@ spec:
                 ring:
                   kvstore:
                     store: inmemory
-                alertmanager_url: http://alertmanager.{{ .Values.global.ingressDomain }}:443
+                alertmanager_url: https://alertmanager.{{ .Values.global.ingressDomain }}:443
                 enable_alertmanager_v2: true
 
             chunksCache:
@@ -178,6 +178,7 @@ spec:
               persistence:
                 enabled: true
                 size: 10Gi
+                storageClass: default
               extraVolumeMounts:
                 - name: rules
                   mountPath: "/var/loki/rulestorage/fake"
