@@ -23,7 +23,7 @@ spec:
         - name: HELM_VALUES
           value: |
             global:
-              imageRegistry: {{ toYaml .Values.components.prometheus.imageRegistry | nindent 16 }}
+              imageRegistry: {{ toYaml (default  .Values.global.container.registry .Values.components.prometheus.imageRegistry) | nindent 16 }}
               imagePullSecrets: {{ toYaml .Values.components.prometheus.imagePullSecrets | nindent 16 }}
 
             prometheusOperator:
