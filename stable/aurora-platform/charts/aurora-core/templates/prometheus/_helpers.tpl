@@ -145,7 +145,7 @@ The image section for Grafana.
 {{- if (and .Values.components.prometheus.grafana.image.registry .Values.components.prometheus.grafana.image.repository) }}
 repository: {{ printf "%s/%s" .Values.components.prometheus.grafana.image.registry .Values.components.prometheus.grafana.image.repository }}
 {{- else if .Values.components.prometheus.grafana.image.repository }}
-repository: {{ printf "%s/%s" (default "docker.io" .Values.global.container.registry) .Values.components.prometheus.grafana.image.repository }}
+repository: {{ printf "%s" .Values.components.prometheus.grafana.image.repository }}
 {{- end }}
 {{- if .Values.components.prometheus.grafana.image.tag }}
 tag: {{ .Values.components.prometheus.grafana.image.tag }}
@@ -162,7 +162,7 @@ The image section for Grafana Dashboards.
 {{- if (and .Values.components.prometheus.grafana.downloadDashboards.image.registry .Values.components.prometheus.grafana.downloadDashboards.image.repository) }}
 repository: {{ printf "%s/%s" .Values.components.prometheus.grafana.downloadDashboards.image.registry .Values.components.prometheus.grafana.downloadDashboards.image.repository }}
 {{- else if .Values.components.prometheus.grafana.downloadDashboards.image.repository }}
-repository: {{ printf "%s/%s" (default "docker.io" .Values.global.container.registry) .Values.components.prometheus.grafana.downloadDashboards.image.repository }}
+repository: {{ printf "%s" .Values.components.prometheus.grafana.downloadDashboards.image.repository }}
 {{- end }}
 {{- if .Values.components.prometheus.grafana.downloadDashboards.image.tag }}
 tag: {{ .Values.components.prometheus.grafana.downloadDashboards.image.tag }}
@@ -179,7 +179,7 @@ The image section for Grafana initChownData.
 {{- if (and .Values.components.prometheus.grafana.initChownData.image.registry .Values.components.prometheus.grafana.initChownData.image.repository) }}
 repository: {{ printf "%s/%s" .Values.components.prometheus.grafana.initChownData.image.registry .Values.components.prometheus.grafana.initChownData.image.repository }}
 {{- else if .Values.components.prometheus.grafana.initChownData.image.repository }}
-repository: {{ printf "%s/%s" (default "docker.io" .Values.global.container.registry) .Values.components.prometheus.grafana.initChownData.image.repository }}
+repository: {{ printf "%s" .Values.components.prometheus.grafana.initChownData.image.repository }}
 {{- end }}
 {{- if .Values.components.prometheus.grafana.initChownData.image.tag }}
 tag: {{ .Values.components.prometheus.grafana.initChownData.image.tag }}
@@ -196,7 +196,7 @@ The image section for Grafana Sidecar.
 {{- if (and .Values.components.prometheus.grafana.sidecar.image.registry .Values.components.prometheus.grafana.sidecar.image.repository) }}
 repository: {{ printf "%s/%s" .Values.components.prometheus.grafana.sidecar.image.registry .Values.components.prometheus.grafana.sidecar.image.repository }}
 {{- else if .Values.components.prometheus.grafana.sidecar.image.repository }}
-repository: {{ printf "%s/%s" (default "quay.io" .Values.global.container.registry) .Values.components.prometheus.grafana.sidecar.image.repository }}
+repository: {{ printf "%s" .Values.components.prometheus.grafana.sidecar.image.repository }}
 {{- end }}
 {{- if .Values.components.prometheus.grafana.sidecar.image.tag }}
 tag: {{ .Values.components.prometheus.grafana.sidecar.image.tag }}
@@ -213,7 +213,7 @@ The image section for Kube State Metrics.
 {{- if (and .Values.components.prometheus.kubeStateMetrics.image.registry .Values.components.prometheus.kubeStateMetrics.image.repository) }}
 repository: {{ printf "%s/%s" .Values.components.prometheus.kubeStateMetrics.image.registry .Values.components.prometheus.kubeStateMetrics.image.repository }}
 {{- else if .Values.components.prometheus.kubeStateMetrics.image.repository }}
-repository: {{ printf "%s/%s" (default "registry.k8s.io" .Values.global.container.registry) .Values.components.prometheus.kubeStateMetrics.image.repository }}
+repository: {{ printf "%s" .Values.components.prometheus.kubeStateMetrics.image.repository }}
 {{- end }}
 {{- if .Values.components.prometheus.kubeStateMetrics.image.tag }}
 tag: {{ .Values.components.prometheus.kubeStateMetrics.image.tag }}
@@ -230,7 +230,7 @@ The image section for Prometheus Node Exporter.
 {{- if (and .Values.components.prometheus.prometheusNodeExporter.image.registry .Values.components.prometheus.prometheusNodeExporter.image.repository) }}
 repository: {{ printf "%s/%s" .Values.components.prometheus.prometheusNodeExporter.image.registry .Values.components.prometheus.prometheusNodeExporter.image.repository }}
 {{- else if .Values.components.prometheus.prometheusNodeExporter.image.repository }}
-repository: {{ printf "%s/%s" (default "quay.io" .Values.global.container.registry) .Values.components.prometheus.prometheusNodeExporter.image.repository }}
+repository: {{ printf "%s" .Values.components.prometheus.prometheusNodeExporter.image.repository }}
 {{- end }}
 {{- if .Values.components.prometheus.prometheusNodeExporter.image.tag }}
 tag: {{ .Values.components.prometheus.prometheusNodeExporter.image.tag }}
@@ -241,13 +241,13 @@ pullPolicy: {{ .Values.components.prometheus.prometheusNodeExporter.image.pullPo
 {{- end }}
 
 {{/*
-The image section for Prometheus Blockbox Exporter.
+The image section for Prometheus Blackbox Exporter.
 */}}
 {{- define "prometheus.blackboxExporter.image" -}}
 {{- if (and .Values.components.prometheus.blackboxExporter.image.registry .Values.components.prometheus.blackboxExporter.image.repository) }}
 repository: {{ printf "%s/%s" .Values.components.prometheus.blackboxExporter.image.registry .Values.components.prometheus.blackboxExporter.image.repository }}
 {{- else if .Values.components.prometheus.blackboxExporter.image.repository }}
-repository: {{ printf "%s/%s" (default "quay.io" .Values.global.container.registry) .Values.components.prometheus.blackboxExporter.image.repository }}
+repository: {{ printf "%s" .Values.components.prometheus.blackboxExporter.image.repository }}
 {{- end }}
 {{- if .Values.components.prometheus.blackboxExporter.image.tag }}
 tag: {{ .Values.components.prometheus.blackboxExporter.image.tag }}
@@ -268,7 +268,7 @@ The image section for Prometheus MSTeams.
 {{- if (and .Values.components.prometheus.msteams.image.registry .Values.components.prometheus.msteams.image.repository) }}
 repository: {{ printf "%s/%s" .Values.components.prometheus.msteams.image.registry .Values.components.prometheus.msteams.image.repository }}
 {{- else if .Values.components.prometheus.msteams.image.repository }}
-repository: {{ printf "%s/%s" (default "quay.io" .Values.global.container.registry) .Values.components.prometheus.msteams.image.repository }}
+repository: {{ printf "%s" .Values.components.prometheus.msteams.image.repository }}
 {{- end }}
 {{- if .Values.components.prometheus.msteams.image.tag }}
 tag: {{ .Values.components.prometheus.msteams.image.tag }}
@@ -285,7 +285,7 @@ The image section for Jira Alert.
 {{- if (and .Values.components.prometheus.jiralert.image.registry .Values.components.prometheus.jiralert.image.repository) }}
 repository: {{ printf "%s/%s" .Values.components.prometheus.jiralert.image.registry .Values.components.prometheus.jiralert.image.repository }}
 {{- else if .Values.components.prometheus.jiralert.image.repository }}
-repository: {{ printf "%s/%s" (default "quay.io" .Values.global.container.registry) .Values.components.prometheus.jiralert.image.repository }}
+repository: {{ printf "%s" .Values.components.prometheus.jiralert.image.repository }}
 {{- end }}
 {{- if .Values.components.prometheus.jiralert.image.tag }}
 tag: {{ .Values.components.prometheus.jiralert.image.tag }}

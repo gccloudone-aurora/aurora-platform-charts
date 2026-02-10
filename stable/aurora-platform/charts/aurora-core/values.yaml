@@ -1811,7 +1811,7 @@ components:
         # repository: https://prometheus-community.github.io/helm-charts
         # targetRevision: 7.0.0
       image:
-        registry: quay.io
+        #registry: ""
         repository: prometheus/blackbox-exporter
         # tag: "v0.23.0"
         # pullPolicy: IfNotPresent
