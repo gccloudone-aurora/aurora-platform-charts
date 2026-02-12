@@ -1447,8 +1447,6 @@ components:
 
   loki:
     enabled: false
-    deploymentMode: SimpleScalable
-
     helm: {}
       # chart: loki
       # repository: https://grafana.github.io/helm-charts
@@ -1473,6 +1471,9 @@ components:
     logStorageLocation: {}
       # storageAccountName: <storage-account-name>
       # storageAccountKey: <storage-account-key>
+
+    # https://alertmanager.domain.ca:443
+    alertmanagerUrl: ""
 
   prometheus:
     enabled: true
