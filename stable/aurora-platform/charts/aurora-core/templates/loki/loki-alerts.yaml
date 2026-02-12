@@ -23,7 +23,6 @@ spec:
                 kind: ConfigMap
                 metadata:
                   name: loki-alerting-rules
-                  namespace: loki-system
                   labels:
                     app.kubernetes.io/part-of: loki-system
                     app.kubernetes.io/managed-by: argo
@@ -56,7 +55,7 @@ spec:
 
   destination:
     name: {{ .Values.global.cluster }}
-    namespace: loki-system
+    namespace: platform-system
   syncPolicy:
     automated:
       prune: true

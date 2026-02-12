@@ -364,7 +364,7 @@ components:
       servicemonitor:
         enabled: true
         prometheusInstance: default
-        targetPort: 9003
+        targetPort: 9402
         path: /metrics
         interval: 60s
         scrapeTimeout: 30s
@@ -1444,6 +1444,35 @@ components:
             labelSelector:
               matchLabels:
                 app.kubernetes.io/instance: podtracker
+
+  loki:
+    enabled: false
+    deploymentMode: SimpleScalable
+
+    helm: {}
+      # chart: loki
+      # repository: https://grafana.github.io/helm-charts
+      # targetRevision: 6.21.0
+
+    image:
+      # registry: docker.io
+      repository: grafana/loki
+      # tag: v3.3.0
+
+    nodeSelector:
+      kubernetes.io/os: linux
+      node.ssc-spc.gc.ca/purpose: system
+    tolerations:
+      - key: CriticalAddonsOnly
+        operator: Exists
+
+    basicAuth: {}
+      # username:
+      # password:
+
+    logStorageLocation: {}
+      # storageAccountName: <storage-account-name>
+      # storageAccountKey: <storage-account-key>
 
   prometheus:
     enabled: true
