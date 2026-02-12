@@ -1209,7 +1209,7 @@ components:
             topologyKey: kubernetes.io/hostname
             labelSelector:
               matchLabels:
-                app.kubernetes.io/name: cost-analyzer
+                app.kubernetes.io/instance: kubecost
 
     priorityClassName: platform-cluster-medium
 

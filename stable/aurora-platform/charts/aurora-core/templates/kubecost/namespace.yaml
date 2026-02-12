@@ -57,11 +57,6 @@ spec:
           # TODO: Needs to be set to true
           istioInjection: false
 
-        # Defines the access control on the namespace.
-        # Roles will be assigned based on the namespace type.
-        rbac:
-          groups: {{ toYaml .Values.rbac.platformOperator.groups | nindent 12 }}
-
         # Defines resource quotas on the namespace.
         resourceQuotas:
           # The maximum number of pods that can be in the namespace.
@@ -74,7 +69,7 @@ spec:
             nodeports: 0
           # The upper limit of storage that can be requested across all persistent volumes.
           # Expects a string value of a number with or without units (uses SI units).
-          storage: '32Gi'
+          storage: '170Gi'
   destination:
     name: {{ .Values.global.cluster }}
     namespace: platform-system
