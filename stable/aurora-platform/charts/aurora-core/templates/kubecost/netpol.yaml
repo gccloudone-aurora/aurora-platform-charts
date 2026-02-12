@@ -33,73 +33,6 @@ spec:
                 ports:
                 - protocol: TCP
                   port: 443
-          - apiVersion: networking.k8s.io/v1
-            kind: NetworkPolicy
-            metadata:
-              name: allow-egress-to-api-server-from-aggregator
-            spec:
-              podSelector:
-                matchLabels: 
-                  app.kubernetes.io/name: aggregator
-              policyTypes:
-              - Egress
-              egress:
-              - to:
-                - ipBlock:
-                    cidr: 10.150.186.196/32
-                ports:
-                - protocol: TCP
-                  port: 443
-          - apiVersion: networking.k8s.io/v1
-            kind: NetworkPolicy
-            metadata:
-              name: allow-egress-to-fetch-pricing
-            spec:
-              egress:
-              - ports:
-                - port: 443
-                  protocol: TCP
-                to:
-                - ipBlock:
-                    cidr: 0.0.0.0/0
-              podSelector:
-                matchLabels:
-                  app.kubernetes.io/part-of: finops-agent
-              policyTypes:
-              - Egress
-          - apiVersion: networking.k8s.io/v1
-            kind: NetworkPolicy
-            metadata:
-              name: allow-egress-to-azuremetadataapi-from-kubecost
-            spec:
-              egress:
-              - ports:
-                - port: 80
-                  protocol: TCP
-                to:
-                - ipBlock:
-                    cidr: 169.254.169.254/32
-              podSelector:
-                matchLabels:
-                  app.kubernetes.io/part-of: finops-agent
-              policyTypes:
-              - Egress
-          - apiVersion: networking.k8s.io/v1
-            kind: NetworkPolicy
-            metadata:
-              name:  allow-same-namespace
-            spec:
-              egress:
-              - to:
-                - podSelector: {}
-              ingress:
-              - from:
-                - podSelector: {}
-              podSelector: {}
-              policyTypes:
-              - Ingress
-              - Egress
-          {{- end }}
   destination:
     name: {{ .Values.global.cluster }}
     namespace: kubecost-system
@@ -107,3 +40,4 @@ spec:
     automated:
       prune: true
       selfHeal: true
+{{- end }}
