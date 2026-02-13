@@ -1211,7 +1211,7 @@ components:
 
     finopsagent:
       image:
-        registry: icr.io
+        registry: ""  # Default is "icr.io"
         repository: ibm-finops/agent
         tag: v1.0.10
         digest: ""
