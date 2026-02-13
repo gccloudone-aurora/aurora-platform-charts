@@ -25,6 +25,93 @@ spec:
             global:
               defaultStorageClass: default
               clusterId: {{ .Values.global.cluster }}
+
+            kubecostProductConfigs:
+              clusterProfile: {{ .Values.components.kubecost.kubecostProductConfigs.clusterProfile | default "production" | quote }}
+              currencyCode: "CAD"
+              ## Apply Enterprise product license
+              productKey: {{ toYaml .Values.components.kubecost.kubecostProductConfigs.productKey | nindent 16 }}
+              labelMappingConfigs:
+                owner_label: "project.ssc-spc.gc.ca/lead"
+                team_label: "project.ssc-spc.gc.ca/team"
+                department_label: "project.ssc-spc.gc.ca/division"
+                product_label: "finance.ssc-spc.gc.ca/workload-id"
+                environment_label: "project.ssc-spc.gc.ca/environment"
+
+            finopsagent:
+              agent:
+                kubecost:
+                  gpuLabel: "node.ssc-spc.gc.ca/use"
+                  gpuLabelValue: "gpu"
+
+
+              image: {{ toYaml .Values.components.kubecost.finopsagent.image | nindent 16 }}
+              resources: {{ toYaml .Values.components.kubecost.finopsagent.resources | nindent 16 }}
+              nodeSelector: {{ toYaml .Values.components.kubecost.finopsagent.nodeSelector | nindent 16 }}
+              tolerations: {{ toYaml .Values.components.kubecost.finopsagent.tolerations | nindent 16 }}
+              affinity: {{ toYaml .Values.components.kubecost.finopsagent.affinity | nindent 16 }}
+              priorityClassName: {{ .Values.components.kubecost.finopsagent.priorityClassName | nindent 16 }}
+
+            aggregator:
+              fullImageName: {{ toYaml .Values.components.kubecost.aggregator.fullImageName | nindent 16 }}
+              image: {{ toYaml .Values.components.kubecost.aggregator.image | nindent 16 }}
+              resources: {{ toYaml .Values.components.kubecost.aggregator.resources | nindent 16 }}
+              nodeSelector: {{ toYaml .Values.components.kubecost.aggregator.nodeSelector | nindent 16 }}
+              tolerations: {{ toYaml .Values.components.kubecost.aggregator.tolerations | nindent 16 }}
+              affinity: {{ toYaml .Values.components.kubecost.aggregator.affinity | nindent 16 }}
+              priority: {{ toYaml .Values.components.kubecost.aggregator.priority | nindent 16 }}
+
+            cloudCost:
+              fullImageName: {{ toYaml .Values.components.kubecost.cloudCost.fullImageName | nindent 16 }}
+              image: {{ toYaml .Values.components.kubecost.cloudCost.image | nindent 16 }}
+              resources: {{ toYaml .Values.components.kubecost.cloudCost.resources | nindent 16 }}
+              nodeSelector: {{ toYaml .Values.components.kubecost.cloudCost.nodeSelector | nindent 16 }}
+              tolerations: {{ toYaml .Values.components.kubecost.cloudCost.tolerations | nindent 16 }}
+              affinity: {{ toYaml .Values.components.kubecost.cloudCost.affinity | nindent 16 }}
+
+            localStore:
+              fullImageName: {{ toYaml .Values.components.kubecost.localStore.fullImageName | nindent 16 }}
+              image: {{ toYaml .Values.components.kubecost.localStore.image | nindent 16 }}
+              resources: {{ toYaml .Values.components.kubecost.localStore.resources | nindent 16 }}
+              nodeSelector: {{ toYaml .Values.components.kubecost.localStore.nodeSelector | nindent 16 }}
+              tolerations: {{ toYaml .Values.components.kubecost.localStore.tolerations | nindent 16 }}
+              affinity: {{ toYaml .Values.components.kubecost.localStore.affinity | nindent 16 }}
+
+            clusterController:
+              fullImageName: {{ toYaml .Values.components.kubecost.clusterController.fullImageName | nindent 16 }}
+              image: {{ toYaml .Values.components.kubecost.clusterController.image | nindent 16 }}
+              resources: {{ toYaml .Values.components.kubecost.clusterController.resources | nindent 16 }}
+              nodeSelector: {{ toYaml .Values.components.kubecost.clusterController.nodeSelector | nindent 16 }}
+              tolerations: {{ toYaml .Values.components.kubecost.clusterController.tolerations | nindent 16 }}
+              affinity: {{ toYaml .Values.components.kubecost.clusterController.affinity | nindent 16 }}
+              priorityClassName: {{ .Values.components.kubecost.clusterController.priorityClassName | nindent 16 }}
+
+            frontend:
+              fullImageName: {{ toYaml .Values.components.kubecost.frontend.fullImageName | nindent 16 }}
+              image: {{ toYaml .Values.components.kubecost.frontend.image | nindent 16 }}
+              resources: {{ toYaml .Values.components.kubecost.frontend.resources | nindent 16 }}
+              nodeSelector: {{ toYaml .Values.components.kubecost.frontend.nodeSelector | nindent 16 }}
+              tolerations: {{ toYaml .Values.components.kubecost.frontend.tolerations | nindent 16 }}
+              affinity: {{ toYaml .Values.components.kubecost.frontend.affinity | nindent 16 }}
+              priority: {{ toYaml .Values.components.kubecost.frontend.priority | nindent 16 }}
+
+            forecasting:
+              fullImageName: {{ toYaml .Values.components.kubecost.forecasting.fullImageName | nindent 16 }}
+              image: {{ toYaml .Values.components.kubecost.forecasting.image | nindent 16 }}
+              resources: {{ toYaml .Values.components.kubecost.forecasting.resources | nindent 16 }}
+              nodeSelector: {{ toYaml .Values.components.kubecost.forecasting.nodeSelector | nindent 16 }}
+              tolerations: {{ toYaml .Values.components.kubecost.forecasting.tolerations | nindent 16 }}
+              affinity: {{ toYaml .Values.components.kubecost.forecasting.affinity | nindent 16 }}
+              priority: {{ toYaml .Values.components.kubecost.forecasting.priority | nindent 16 }}
+
+            networkCosts:
+              fullImageName: {{ toYaml .Values.components.kubecost.networkCosts.fullImageName | nindent 16 }}
+              image: {{ toYaml .Values.components.kubecost.networkCosts.image | nindent 16 }}
+              resources: {{ toYaml .Values.components.kubecost.networkCosts.resources | nindent 16 }}
+              nodeSelector: {{ toYaml .Values.components.kubecost.networkCosts.nodeSelector | nindent 16 }}
+              tolerations: {{ toYaml .Values.components.kubecost.networkCosts.tolerations | nindent 16 }}
+              affinity: {{ toYaml .Values.components.kubecost.networkCosts.affinity | nindent 16 }}
+              priorityClassName: {{ .Values.components.kubecost.networkCosts.priorityClassName | nindent 16 }}
   destination:
     name: {{ .Values.global.cluster }}
     namespace: kubecost-system
