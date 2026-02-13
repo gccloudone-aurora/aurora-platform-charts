@@ -135,7 +135,6 @@ core:
         output:
           loki:
             enable: true
-            url: "https://loki.<FILLIN_INGRESS_DOMAIN>"
             username: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-loki-user>'
             password: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-loki-password>'
 
