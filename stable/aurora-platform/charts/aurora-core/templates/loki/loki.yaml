@@ -100,7 +100,7 @@ spec:
                 ring:
                   kvstore:
                     store: inmemory
-                alertmanager_url: https://alertmanager.{{ .Values.global.ingressDomain }}:443
+                alertmanager_url: {{ .Values.components.loki.alertmanagerUrl | nindent 17 }}
                 enable_alertmanager_v2: true
 
             chunksCache:
