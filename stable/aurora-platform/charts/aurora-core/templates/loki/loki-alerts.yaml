@@ -1,5 +1,3 @@
-{{ if .Values.components.loki.ruler.enabled -}}
-
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
@@ -52,10 +50,9 @@ spec:
                         annotations:
                           message: "The kube-bench job reported that a check has not passed, it has either failed or displayed a warning."
                           runbook: ""
-
   destination:
     name: {{ .Values.global.cluster }}
-    namespace: platform-system
+    namespace: loki-system
   syncPolicy:
     automated:
       prune: true
