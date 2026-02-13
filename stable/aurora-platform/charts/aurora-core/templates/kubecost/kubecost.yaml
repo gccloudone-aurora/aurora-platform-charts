@@ -45,7 +45,7 @@ spec:
                   gpuLabelValue: "gpu"
 
 
-              image: {{ toYaml .Values.components.kubecost.finopsagent.image | nindent 16 }}
+              image: {{ include "kubecost.finopsagent.image" . | nindent 16 }}
               resources: {{ toYaml .Values.components.kubecost.finopsagent.resources | nindent 16 }}
               nodeSelector: {{ toYaml .Values.components.kubecost.finopsagent.nodeSelector | nindent 16 }}
               tolerations: {{ toYaml .Values.components.kubecost.finopsagent.tolerations | nindent 16 }}
@@ -54,7 +54,7 @@ spec:
 
             aggregator:
               fullImageName: {{ toYaml .Values.components.kubecost.aggregator.fullImageName | nindent 16 }}
-              image: {{ toYaml .Values.components.kubecost.aggregator.image | nindent 16 }}
+              image: {{ include "kubecost.aggregator.image" . | nindent 16 }}
               resources: {{ toYaml .Values.components.kubecost.aggregator.resources | nindent 16 }}
               nodeSelector: {{ toYaml .Values.components.kubecost.aggregator.nodeSelector | nindent 16 }}
               tolerations: {{ toYaml .Values.components.kubecost.aggregator.tolerations | nindent 16 }}
@@ -63,7 +63,7 @@ spec:
 
             cloudCost:
               fullImageName: {{ toYaml .Values.components.kubecost.cloudCost.fullImageName | nindent 16 }}
-              image: {{ toYaml .Values.components.kubecost.cloudCost.image | nindent 16 }}
+              image: {{ include "kubecost.cloudCost.image" . | nindent 16 }}
               resources: {{ toYaml .Values.components.kubecost.cloudCost.resources | nindent 16 }}
               nodeSelector: {{ toYaml .Values.components.kubecost.cloudCost.nodeSelector | nindent 16 }}
               tolerations: {{ toYaml .Values.components.kubecost.cloudCost.tolerations | nindent 16 }}
@@ -71,7 +71,7 @@ spec:
 
             localStore:
               fullImageName: {{ toYaml .Values.components.kubecost.localStore.fullImageName | nindent 16 }}
-              image: {{ toYaml .Values.components.kubecost.localStore.image | nindent 16 }}
+              image: {{ include "kubecost.localStore.image" . | nindent 16 }}
               resources: {{ toYaml .Values.components.kubecost.localStore.resources | nindent 16 }}
               nodeSelector: {{ toYaml .Values.components.kubecost.localStore.nodeSelector | nindent 16 }}
               tolerations: {{ toYaml .Values.components.kubecost.localStore.tolerations | nindent 16 }}
@@ -79,7 +79,7 @@ spec:
 
             clusterController:
               fullImageName: {{ toYaml .Values.components.kubecost.clusterController.fullImageName | nindent 16 }}
-              image: {{ toYaml .Values.components.kubecost.clusterController.image | nindent 16 }}
+              image: {{ include "kubecost.clusterController.image" . | nindent 16 }}
               resources: {{ toYaml .Values.components.kubecost.clusterController.resources | nindent 16 }}
               nodeSelector: {{ toYaml .Values.components.kubecost.clusterController.nodeSelector | nindent 16 }}
               tolerations: {{ toYaml .Values.components.kubecost.clusterController.tolerations | nindent 16 }}
@@ -88,7 +88,7 @@ spec:
 
             frontend:
               fullImageName: {{ toYaml .Values.components.kubecost.frontend.fullImageName | nindent 16 }}
-              image: {{ toYaml .Values.components.kubecost.frontend.image | nindent 16 }}
+              image: {{ include "kubecost.frontend.image" . | nindent 16 }}
               resources: {{ toYaml .Values.components.kubecost.frontend.resources | nindent 16 }}
               nodeSelector: {{ toYaml .Values.components.kubecost.frontend.nodeSelector | nindent 16 }}
               tolerations: {{ toYaml .Values.components.kubecost.frontend.tolerations | nindent 16 }}
@@ -97,7 +97,7 @@ spec:
 
             forecasting:
               fullImageName: {{ toYaml .Values.components.kubecost.forecasting.fullImageName | nindent 16 }}
-              image: {{ toYaml .Values.components.kubecost.forecasting.image | nindent 16 }}
+              image: {{ include "kubecost.forecasting.image" . | nindent 16 }}
               resources: {{ toYaml .Values.components.kubecost.forecasting.resources | nindent 16 }}
               nodeSelector: {{ toYaml .Values.components.kubecost.forecasting.nodeSelector | nindent 16 }}
               tolerations: {{ toYaml .Values.components.kubecost.forecasting.tolerations | nindent 16 }}
@@ -106,7 +106,7 @@ spec:
 
             networkCosts:
               fullImageName: {{ toYaml .Values.components.kubecost.networkCosts.fullImageName | nindent 16 }}
-              image: {{ toYaml .Values.components.kubecost.networkCosts.image | nindent 16 }}
+              image: {{ include "kubecost.networkCosts.image" . | nindent 16 }}
               resources: {{ toYaml .Values.components.kubecost.networkCosts.resources | nindent 16 }}
               nodeSelector: {{ toYaml .Values.components.kubecost.networkCosts.nodeSelector | nindent 16 }}
               tolerations: {{ toYaml .Values.components.kubecost.networkCosts.tolerations | nindent 16 }}
