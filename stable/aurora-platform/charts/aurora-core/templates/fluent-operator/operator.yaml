@@ -19,6 +19,8 @@ spec:
     helm:
       releaseName: fluent-operator
       values: |
+        containerRuntime: {{ .Values.components.fluentOperator.containerRuntime | default "containerd" }}
+
         Kubernetes: true
 
         operator:
