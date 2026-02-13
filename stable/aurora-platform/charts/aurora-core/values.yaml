@@ -829,7 +829,6 @@ components:
       output:
         loki:
           enable: true
-          # url: ""
           # username: ""
           # password: ""
           buffer:
