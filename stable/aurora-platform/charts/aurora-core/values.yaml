@@ -1194,100 +1194,191 @@ components:
       # repository: https://kubecost.github.io/cost-analyzer/
       # targetRevision:
 
-    imagePullSecrets: []
-    nodeSelector:
-      kubernetes.io/os: linux
-      node.ssc-spc.gc.ca/purpose: system
-    tolerations:
-      - key: CriticalAddonsOnly
-        operator: Exists
-    affinity:
-      podAntiAffinity:
-        preferredDuringSchedulingIgnoredDuringExecution:
-        - weight: 1
-          podAffinityTerm:
-            topologyKey: kubernetes.io/hostname
-            labelSelector:
-              matchLabels:
-                app.kubernetes.io/name: cost-analyzer
+    kubecostProductConfigs:
+      clusterProfile: production
+      ## Apply Enterprise product license
+      productKey:
+        enabled: false
+        key: ""
+        secretname: ""  # Reference an existing k8s secret created from a file named productkey.json of format { "key": "enterprise-key-here" }. If the secretname is specified, a configmap with the key will not be created.
+        mountPath: ""  # (use instead of secretname) Declare the path at which the product key file is mounted (eg. "/some/custom/path/productkey.json" by a secrets provisioner). The file must be of format { "key": "enterprise-key-here" }.
+      labelMappingConfigs:
+        owner_label: "project.ssc-spc.gc.ca/lead"
+        team_label: "project.ssc-spc.gc.ca/team"
+        department_label: "project.ssc-spc.gc.ca/division"
+        product_label: "finance.ssc-spc.gc.ca/workload-id"
+        environment_label: "project.ssc-spc.gc.ca/environment"   
 
-    priorityClassName: platform-cluster-medium
-
-    frontend:
+    finopsagent:
       image:
-        # registry: gcr.io
-        repository: kubecost1/frontend
-        # pullPolicy: Always
-
+        registry: ""  # Default is "icr.io"
+        repository: ibm-finops/agent
+        tag: v1.0.10
+        digest: ""
+        pullPolicy: IfNotPresent
       resources: {}
-        # limits:
-        #   cpu: ""
-        #   memory: ""
-        # requests:
-        #   cpu: ""
-        #   memory: ""
-
-    costModel:
-      image:
-        # registry: gcr.io
-        repository: kubecost1/cost-model
-        # pullPolicy: Always
-
-      resources: {}
-        # limits:
-        #   cpu: ""
-        #   memory: ""
-        # requests:
-        #   cpu: ""
-        #   memory: ""
-
-    networkCosts:
-      image:
-        # registry: gcr.io
-        repository: kubecost1/kubecost-network-costs:v16.3
-        # pullPolicy: Always
-
-      resources: {}
-        # limits:
-        #   cpu: ""
-        #   memory: ""
-        # requests:
-        #   cpu: ""
-        #   memory: ""
-
       nodeSelector:
         kubernetes.io/os: linux
         node.ssc-spc.gc.ca/purpose: system
       tolerations:
         - key: CriticalAddonsOnly
           operator: Exists
-      affinity:
-        podAntiAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-          - weight: 1
-            podAffinityTerm:
-              topologyKey: kubernetes.io/hostname
-              labelSelector:
-                matchLabels:
-                  app.kubernetes.io/name: network-costs
-
-    clusterController:
+      affinity: {}
+      priorityClassName: system-cluster-critical
+    
+    aggregator:
+      fullImageName: ""  # Overrides the default image construction logic.
       image:
-        # registry: gcr.io
-        repository: kubecost1/cluster-controller:v0.6.0
-        # pullPolicy: Always
-
-    # token: abcde12345
-
-    # azure:
-    #   subscriptionId: abcde12345
-    #   clientId: abcde12345
-    #   clientPassword: abcde12345
-    #   tenantId: abcde12345
-
-    # cloudServiceKey: abcde12345
-    # productKey: abcde12345
-    # clusterProfile: # "development", "production" or "high-availability"
+        registry: ""  # Default is "icr.io"
+        repository: kubecost/cost-model
+        tag: ""  # Default is to match the Chart.AppVersion
+      resources:
+        ## Consider setting a limit after a baseline has been established
+        limits: {}
+        requests:
+          memory: 3Gi
+          cpu: 100m
+      nodeSelector:
+        kubernetes.io/os: linux
+        node.ssc-spc.gc.ca/purpose: system
+      tolerations:
+        - key: CriticalAddonsOnly
+          operator: Exists
+      affinity: {}
+      priority:
+        enabled: true
+        name: system-cluster-critical
+    
+    ## uses priority from aggregator
+    cloudCost:
+      image:
+        registry: ""  # Default is "icr.io"
+        repository: kubecost/cost-model
+        tag: ""  # Default is to match the Chart.AppVersion
+      fullImageName: ""  # Overrides the default image construction logic.
+      resources: {}
+      nodeSelector:
+        kubernetes.io/os: linux
+        node.ssc-spc.gc.ca/purpose: system
+      tolerations:
+        - key: CriticalAddonsOnly
+          operator: Exists
+      affinity: {}
+      ## uses priority from aggregator
+    
+    ## no support for priorityClassName 
+    localStore:
+      fullImageName: ""  # Overrides the default image construction logic.
+      image:
+        registry: ""  # Default is "icr.io"
+        repository: kubecost/cost-model
+        tag: ""  # Default is to match the Chart.AppVersion
+      resources: {}
+      nodeSelector:
+        kubernetes.io/os: linux
+        node.ssc-spc.gc.ca/purpose: system
+      tolerations:
+        - key: CriticalAddonsOnly
+          operator: Exists
+      affinity: {}
+      ## no support for priorityClassName
+    
+    
+    clusterController:
+      fullImageName: ""
+      image:
+        registry: ""  # Default is "icr.io"
+        repository: kubecost/cluster-controller
+        tag: v0.16.32
+      imagePullPolicy: IfNotPresent
+      resources: {}
+      nodeSelector:
+        kubernetes.io/os: linux
+        node.ssc-spc.gc.ca/purpose: system
+      tolerations:
+        - key: CriticalAddonsOnly
+          operator: Exists
+      affinity: {}
+      priorityClassName: system-cluster-critical
+    
+    frontend:
+      fullImageName: ""
+      image:
+        registry: ""  # Default is "icr.io"
+        repository: kubecost/frontend
+        tag: ""  # Default is to match the Chart.AppVersion
+      resources:
+        requests:
+          cpu: "10m"
+          memory: "55Mi"
+      nodeSelector:
+        kubernetes.io/os: linux
+        node.ssc-spc.gc.ca/purpose: system
+      tolerations:
+        - key: CriticalAddonsOnly
+          operator: Exists
+      affinity: {}
+      priority:
+        enabled: true
+        name: system-cluster-critical
+    
+    forecasting:
+      fullImageName: ""
+      image:
+        registry: ""  # Default is "icr.io"
+        repository: kubecost/modeling
+        tag: v0.1.34
+      resources:
+        requests:
+          cpu: 200m
+          memory: 300Mi
+        limits:
+          cpu: 1500m
+          memory: 1Gi
+      nodeSelector:
+        kubernetes.io/os: linux
+        node.ssc-spc.gc.ca/purpose: system
+      tolerations:
+        - key: CriticalAddonsOnly
+          operator: Exists
+      affinity: {}
+      priority:
+        enabled: true
+        name: system-cluster-critical
+    
+    
+    networkCosts:
+      fullImageName: ""
+      image:
+        registry: ""  # Default is "icr.io"
+        repository: kubecost/network-costs
+        tag: v0.18.2
+      resources:
+        limits:  # remove the limits by setting cpu: null
+          cpu: 500m  # can be less, will depend on cluster size
+          # memory: it is not recommended to set a memory limit
+        requests:
+          cpu: 50m
+          memory: 20Mi
+      nodeSelector:
+        kubernetes.io/os: linux
+        node.ssc-spc.gc.ca/purpose: system
+      tolerations:
+        - key: CriticalAddonsOnly
+          operator: Exists
+      ## networkCosts requires that the node has topology.kubernetes.io/region and topology.kubernetes.io/zone labels.
+      ## The below nodeAffinity policy will prevent the pods from running on any node that does not have both labels.
+      ## to override this, set affinity: ""
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: topology.kubernetes.io/region
+                operator: Exists
+              - key: topology.kubernetes.io/zone
+                operator: Exists
+      priorityClassName: system-cluster-critical
 
   kubernetesEventExporter:
     enabled: true
