@@ -132,15 +132,12 @@ spec:
               appProtocol:
                 grpc: tcp
             querier:
-              replicas: 1
               appProtocol:
                 grpc: tcp
             queryFrontend:
-              replicas: 1
               appProtocol:
                 grpc: tcp
             queryScheduler:
-              replicas: 1
               appProtocol:
                 grpc: tcp
             rbac:
