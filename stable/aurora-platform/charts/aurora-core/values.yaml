@@ -1445,36 +1445,6 @@ components:
               matchLabels:
                 app.kubernetes.io/instance: podtracker
 
-  loki:
-    enabled: false
-    helm: {}
-      # chart: loki
-      # repository: https://grafana.github.io/helm-charts
-      # targetRevision: 6.21.0
-
-    image:
-      # registry: docker.io
-      repository: grafana/loki
-      # tag: v3.3.0
-
-    nodeSelector:
-      kubernetes.io/os: linux
-      node.ssc-spc.gc.ca/purpose: system
-    tolerations:
-      - key: CriticalAddonsOnly
-        operator: Exists
-
-    basicAuth: {}
-      # username:
-      # password:
-
-    logStorageLocation: {}
-      # storageAccountName: <storage-account-name>
-      # storageAccountKey: <storage-account-key>
-
-    # https://alertmanager.domain.ca:443
-    alertmanagerUrl: ""
-
   prometheus:
     enabled: true
 
