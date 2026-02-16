@@ -100,7 +100,7 @@ spec:
                 ring:
                   kvstore:
                     store: inmemory
-                alertmanager_url: {{ .Values.components.loki.alertmanagerUrl | nindent 18 }}
+                alertmanager_url: https://alertmanager.{{ .Values.global.ingressDomain }}:443
                 enable_alertmanager_v2: true
 
             chunksCache:
@@ -132,12 +132,15 @@ spec:
               appProtocol:
                 grpc: tcp
             querier:
+              replicas: 1
               appProtocol:
                 grpc: tcp
             queryFrontend:
+              replicas: 1
               appProtocol:
                 grpc: tcp
             queryScheduler:
+              replicas: 1
               appProtocol:
                 grpc: tcp
             rbac:
@@ -154,7 +157,6 @@ spec:
               persistence:
                 size: 8Gi
                 storageClass: default
-            backend:
               nodeSelector: {{ toYaml .Values.components.loki.nodeSelector | nindent 16 }}
               tolerations: {{ toYaml .Values.components.loki.tolerations | nindent 16 }}
               persistence:

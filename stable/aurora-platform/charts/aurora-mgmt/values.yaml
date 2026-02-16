@@ -364,6 +364,34 @@ components:
         # clientId:
         # resourceId:
 
+  loki:
+    enabled: false
+
+    helm: {}
+      # chart: loki
+      # repository: https://grafana.github.io/helm-charts
+      # targetRevision: 6.21.0
+
+    image:
+      # registry: docker.io
+      repository: grafana/loki
+      # tag: v3.3.0
+
+    nodeSelector:
+      kubernetes.io/os: linux
+      node.ssc-spc.gc.ca/purpose: system
+    tolerations:
+      - key: CriticalAddonsOnly
+        operator: Exists
+
+    basicAuth: {}
+      # username:
+      # password:
+
+    logStorageLocation: {}
+      # storageAccountName: <storage-account-name>
+      # storageAccountKey: <storage-account-key>
+
 rbac:
   # Groups and users that should be bound to the platform-admin role.
   # Note: if using AKS with AAD enabled, this is not necessary since admins

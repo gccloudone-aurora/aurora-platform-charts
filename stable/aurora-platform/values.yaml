@@ -101,7 +101,6 @@ core:
     # kubernetesEventExporter: {}
     # ntp: {}
     # podtracker: {}
-    # loki: {}
     # prometheus: {}
     # secretsStoreCSIDriver: {}
     # tetragon: {}
@@ -132,4 +131,5 @@ mgmt:
     # argoOperator: {}
     # argoSolution: {}
     # billOfLanding: {}
+    # loki: {}
 

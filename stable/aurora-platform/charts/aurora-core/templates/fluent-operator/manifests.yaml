@@ -73,7 +73,7 @@ spec:
                         config: |
                           <match **>
                             @type loki
-                            url https://loki.{{ .Values.global.ingressDomain }}
+                            url {{ required "fluentOperator.fluentd.output.loki.url is required" .Values.components.fluentOperator.fluentd.output.loki.url }}
                             username {{ required "fluentOperator.fluentd.output.loki.username is required" .Values.components.fluentOperator.fluentd.output.loki.username }}
                             password {{ required "fluentOperator.fluentd.output.loki.password is required" .Values.components.fluentOperator.fluentd.output.loki.password }}
 
