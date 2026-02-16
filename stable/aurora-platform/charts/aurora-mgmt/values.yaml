@@ -366,7 +366,6 @@ components:
 
   loki:
     enabled: false
-    deploymentMode: SimpleScalable
 
     helm: {}
       # chart: loki
@@ -392,9 +391,6 @@ components:
     logStorageLocation: {}
       # storageAccountName: <storage-account-name>
       # storageAccountKey: <storage-account-key>
-
-    ruler: 
-      enabled: false
 
 rbac:
   # Groups and users that should be bound to the platform-admin role.
