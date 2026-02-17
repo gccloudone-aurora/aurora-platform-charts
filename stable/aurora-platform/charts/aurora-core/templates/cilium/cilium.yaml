@@ -94,6 +94,8 @@ spec:
               image: {{ default "{}" (include "cilium.operator.image" .) | nindent 16 }}
               nodeSelector: {{ toYaml .Values.components.cilium.nodeSelector | nindent 16 }}
               tolerations: {{ toYaml .Values.components.cilium.tolerations | nindent 16 }}
+              prometheus:
+                enabled: false  
 
             # etcd mode for the agent
             etcd:
