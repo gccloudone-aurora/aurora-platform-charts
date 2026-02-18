@@ -56,7 +56,11 @@ spec:
           # Boolean which defines if the namespace should have Istio injection.
           # TODO: Needs to be set to true
           istioInjection: false
-
+        
+        # Defines the access control on the namespace.
+        # Roles will be assigned based on the namespace type.
+        rbac:
+          groups: {{ toYaml .Values.rbac.platformOperator.groups | nindent 12 }}
         # Defines resource quotas on the namespace.
         resourceQuotas:
           # The maximum number of pods that can be in the namespace.

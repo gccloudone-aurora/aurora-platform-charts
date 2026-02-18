@@ -20,6 +20,7 @@ spec:
             kind: NetworkPolicy
             metadata:
               name: allow-egress-to-api-server
+              namespace: kubecost-system
             spec:
               podSelector:
                 matchLabels: 
@@ -37,6 +38,7 @@ spec:
             kind: NetworkPolicy
             metadata:
               name: allow-egress-to-api-server-from-aggregator
+              namespace: kubecost-system
             spec:
               podSelector:
                 matchLabels: 
@@ -54,6 +56,7 @@ spec:
             kind: NetworkPolicy
             metadata:
               name: allow-egress-to-fetch-pricing
+              namespace: kubecost-system
             spec:
               egress:
               - ports:
@@ -71,6 +74,7 @@ spec:
             kind: NetworkPolicy
             metadata:
               name: allow-egress-to-azuremetadataapi-from-kubecost
+              namespace: kubecost-system
             spec:
               egress:
               - ports:
@@ -88,6 +92,7 @@ spec:
             kind: NetworkPolicy
             metadata:
               name:  allow-same-namespace
+              namespace: kubecost-system
             spec:
               egress:
               - to:
@@ -99,9 +104,34 @@ spec:
               policyTypes:
               - Ingress
               - Egress
+          {{- if .Values.global.imports.mgmt.enabled }}
+          - apiVersion: networking.k8s.io/v1
+            kind: NetworkPolicy
+            metadata:
+              name: allow-ingress-from-bill-of-landing-to-kubecost
+              namespace: kubecost-system
+            spec:
+              ingress:
+                - ports:
+                    - port: 9090
+                      protocol: TCP
+                  from:
+                    - namespaceSelector:
+                        matchLabels:
+                          kubernetes.io/metadata.name: bill-of-landing-system
+                      podSelector:
+                        matchLabels:
+                          app.kubernetes.io/instance: bill-of-landing
+                          app.kubernetes.io/name: bol
+              podSelector:
+                matchLabels:
+                  app.kubernetes.io/part-of: finops-agent
+              policyTypes:
+                - Ingress
+          {{- end }}
   destination:
     name: {{ .Values.global.cluster }}
-    namespace: kubecost-system
+    namespace: platform-system
   syncPolicy:
     automated:
       prune: true
