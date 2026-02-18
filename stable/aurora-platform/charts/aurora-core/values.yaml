@@ -595,62 +595,67 @@ components:
     k8sServiceHost: ""
 
     image:
-      # registry: docker.io
+      # registry: quay.io
       repository: cilium/cilium
       tag: "v1.14.19"
       pullPolicy: IfNotPresent
 
     apiserver:
       image:
-        # registry: docker.io
+        # registry: quay.io
         repository: cilium/clustermesh-apiserver
 
       etcd:
         image:
-          # registry: docker.io
+          # registry: quay.io
           repository: coreos/etcd
 
     certgen:
       image:
-        # registry: docker.io
+        # registry: quay.io
         repository: cilium/certgen
 
     etcd:
       image:
-        # registry: docker.io
+        # registry: quay.io
         repository: cilium/cilium-etcd-operator
 
     hubble:
       relay:
         image:
-          # registry: docker.io
+          # registry: quay.io
           repository: cilium/hubble-relay
 
       ui:
         backend:
           image:
-            # registry: docker.io
+            # registry: quay.io
             repository: cilium/hubble-ui-backend
 
         frontend:
           image:
-            # registry: docker.io
+            # registry: quay.io
             repository: cilium/hubble-ui
 
     nodeinit:
       image:
-        # registry: docker.io
+        # registry: quay.io
         repository: cilium/startup-script
 
     operator:
       image:
-        # registry: docker.io
+        # registry: quay.io
         repository: cilium/operator
 
     preflight:
       image:
-        # registry: docker.io
+        # registry: quay.io
         repository: cilium/cilium
+    
+    envoy:
+      image:
+       # registry: quay.io
+       repository: cilium/cilium-envoy
 
     priorityClassName: system-cluster-critical
 
