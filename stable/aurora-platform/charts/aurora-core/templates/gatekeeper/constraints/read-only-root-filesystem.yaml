@@ -1,0 +1,42 @@
+{{ if .Values.components.gatekeeper.enabled -}}
+
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-gatekeeper-read-only-root-filesystem"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+  annotations:
+    kubernetes.io/description: |
+      Ensures that solution builders can only run workloads in read-only-root-filesystem.
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    chart: {{ .Values.global.raw.helm.chart }}
+    repoURL: {{ default .Values.global.helm.repository .Values.global.raw.helm.repository }}
+    targetRevision: {{ .Values.global.raw.helm.targetRevision }}
+    helm:
+      releaseName: gatekeeper-restrict-read-only-root-filesystem
+      values: |
+        resources:
+          - apiVersion: constraints.gatekeeper.sh/v1beta1
+            kind: K8sPSPReadOnlyRootFilesystem
+            metadata:
+              name: psp-readonlyrootfilesystem
+            spec:
+              enforcementAction: {{ .Values.components.gatekeeper.constraints.readOnlyRootFileSystem.enforcementAction }}
+              match:
+                kinds:
+                  - apiGroups: [""]
+                    kinds: ["Pod"]
+              parameters:
+                exemptImages: {{ toYaml .Values.components.gatekeeper.constraints.readOnlyRootFileSystem.exemptImages | nindent 18 }}  # Image Exemptions
+  destination:
+    name: {{ .Values.global.cluster }}
+    namespace: platform-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+
+{{- end }}
