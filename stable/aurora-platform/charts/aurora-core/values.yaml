@@ -2154,8 +2154,8 @@ components:
       # -- excludeImages is comma separated glob patterns for excluding images from scanning.
       # Example: pattern: `k8s.gcr.io/*/*` will exclude image: `k8s.gcr.io/coredns/coredns:v1.8.0`.
       excludeImages: ""
-      
-    severity: "HIGH,CRITICAL"
+
+    severity: "UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL"
     server:
       resources:
         requests:
