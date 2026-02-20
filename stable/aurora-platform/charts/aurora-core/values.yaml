@@ -682,11 +682,11 @@ components:
 
     # secretDockerConfigJson: ""
 
-    ciliumBGPPeeringPolicy:
+    ciliumBGPClusterConfig:
       nodeSelector:
         matchLabels:
           kubernetes.io/os: linux
-      virtualRouters: []
+      bgpInstances: []
 
   fluentOperator:
     enabled: true
