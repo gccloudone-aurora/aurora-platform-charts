@@ -20,20 +20,35 @@ spec:
         - name: HELM_VALUES
           value: |
             resources:
-              - apiVersion: cilium.io/v2alpha1
-                kind: CiliumBGPPeeringPolicy
+              - apiVersion: cilium.io/v2
+                kind: CiliumBGPClusterConfig
                 metadata:
-                  name: bgp-peering-policy-0
+                  name: bgp-cluster-config-0
                   labels:
-                    app.kubernetes.io/name: "cilium-bgp-peering-policy"
+                    app.kubernetes.io/name: "cilium-bgp-cluster-config"
                     app.kubernetes.io/instance: "{{ .Values.global.cluster }}"
                     app.kubernetes.io/component: config
                     app.kubernetes.io/part-of: cilium-system
                     app.kubernetes.io/managed-by: argo
                     helm.sh/chart: {{ printf "%s-%s" .Chart.Name .Chart.Version }}
                 spec:
-                  nodeSelector: {{ toYaml .Values.components.cilium.ciliumBGPPeeringPolicy.nodeSelector | nindent 20 }}
-                  virtualRouters: {{ toYaml (required "A valid .Values.components.cilium.ciliumBGPPeeringPolicy.virtualRouters entry required!" .Values.components.cilium.ciliumBGPPeeringPolicy.virtualRouters) | nindent 20 }}
+                  nodeSelector: {{ toYaml .Values.components.cilium.ciliumBGPClusterConfig.nodeSelector | nindent 20 }}
+                  bgpInstances: {{ toYaml (required "A valid .Values.components.cilium.ciliumBGPClusterConfig.bgpInstances entry required!" .Values.components.cilium.ciliumBGPClusterConfig.bgpInstances) | nindent 20 }}
+              - apiVersion: cilium.io/v2
+                kind: CiliumBGPAdvertisement
+                metadata:
+                  name: bgp-advertisement-0
+                  labels:
+                    app.kubernetes.io/name: "cilium-bgp-advertise-pod-cidrs"
+                    app.kubernetes.io/instance: "{{ .Values.global.cluster }}"
+                    app.kubernetes.io/component: config
+                    app.kubernetes.io/part-of: cilium-system
+                    app.kubernetes.io/managed-by: argo
+                    helm.sh/chart: {{ printf "%s-%s" .Chart.Name .Chart.Version }}
+                    advertise: bgp
+                spec:
+                  advertisements:
+                  - advertisementType: "PodCIDR"
   destination:
     name: {{ .Values.global.cluster }}
     namespace: cilium-system
