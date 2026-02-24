@@ -1367,9 +1367,13 @@ components:
           memory: 20Mi
       nodeSelector:
         kubernetes.io/os: linux
-        node.ssc-spc.gc.ca/purpose: system
+        ## Commenting node.ssc-spc.gc.ca/purpose: system , networkCosts pods needs to run on all nodes in a cluster to collect network costs
+        #node.ssc-spc.gc.ca/purpose: system
       tolerations:
         - key: CriticalAddonsOnly
+          operator: Exists
+        # Added below toleration to make sure its allowed on gateway nodes too
+        - key: node.ssc-spc.gc.ca/purpose
           operator: Exists
       ## networkCosts requires that the node has topology.kubernetes.io/region and topology.kubernetes.io/zone labels.
       ## The below nodeAffinity policy will prevent the pods from running on any node that does not have both labels.
