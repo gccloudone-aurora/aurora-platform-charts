@@ -579,7 +579,7 @@ components:
     helm: {}
       # chart: cilium
       # repository: https://helm.cilium.io
-      # targetRevision: 1.16.19
+      # targetRevision: 1.17.13
 
     imagePullSecrets:
       - name: cilium-image-pull-secret
@@ -597,7 +597,7 @@ components:
     image:
       # registry: quay.io
       repository: cilium/cilium
-      # tag: "v1.16.19" # Default is to match the Chart.AppVersion
+      # tag: "v1.17.13" # Default is to match the Chart.AppVersion
       pullPolicy: IfNotPresent
 
     apiserver:
