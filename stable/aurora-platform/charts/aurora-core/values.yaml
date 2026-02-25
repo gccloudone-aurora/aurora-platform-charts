@@ -364,7 +364,7 @@ components:
       servicemonitor:
         enabled: true
         prometheusInstance: default
-        targetPort: 9003
+        targetPort: 9402
         path: /metrics
         interval: 60s
         scrapeTimeout: 30s
@@ -579,7 +579,7 @@ components:
     helm: {}
       # chart: cilium
       # repository: https://helm.cilium.io
-      # targetRevision: 1.14.19
+      # targetRevision: 1.17.13
 
     imagePullSecrets:
       - name: cilium-image-pull-secret
@@ -597,7 +597,7 @@ components:
     image:
       # registry: quay.io
       repository: cilium/cilium
-      tag: "v1.14.19"
+      # tag: "v1.17.13" # Default is to match the Chart.AppVersion
       pullPolicy: IfNotPresent
 
     apiserver:
@@ -1367,9 +1367,13 @@ components:
           memory: 20Mi
       nodeSelector:
         kubernetes.io/os: linux
-        node.ssc-spc.gc.ca/purpose: system
+        ## Commenting node.ssc-spc.gc.ca/purpose: system , networkCosts pods needs to run on all nodes in a cluster to collect network costs
+        #node.ssc-spc.gc.ca/purpose: system
       tolerations:
         - key: CriticalAddonsOnly
+          operator: Exists
+        # Added below toleration to make sure its allowed on gateway nodes too
+        - key: node.ssc-spc.gc.ca/purpose
           operator: Exists
       ## networkCosts requires that the node has topology.kubernetes.io/region and topology.kubernetes.io/zone labels.
       ## The below nodeAffinity policy will prevent the pods from running on any node that does not have both labels.
