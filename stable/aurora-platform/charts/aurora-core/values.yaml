@@ -1256,6 +1256,7 @@ components:
     
     ## uses priority from aggregator
     cloudCost:
+      enabled: false
       image:
         registry: ""  # Default is "icr.io"
         repository: kubecost/cost-model
@@ -1290,6 +1291,7 @@ components:
     
     
     clusterController:
+      enabled: false
       fullImageName: ""
       image:
         registry: ""  # Default is "icr.io"
@@ -1328,6 +1330,7 @@ components:
         name: system-cluster-critical
     
     forecasting:
+      enabled: false
       fullImageName: ""
       image:
         registry: ""  # Default is "icr.io"
