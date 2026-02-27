@@ -109,13 +109,14 @@ core:
       bgpControlPlane:
         enabled: false
 
-      ciliumBGPPeeringPolicy:
-        virtualRouters:
-        - exportPodCIDR: true
-          localASN: 64512
-          neighbors:
+      ciliumBGPClusterConfig:
+        bgpInstances:
+        - localASN: 64512
+          name: instance-64512
+          peers:
           - peerASN: 64512
-            peerAddress: <FILLIN_PEER_ADDRESS>/32
+            peerAddress: <FILL_IN_PEER_ADDRESS>/32
+            name: peer-<FILL_IN_PEER_ADDRESS>
 
     falco:
       enabled: true
