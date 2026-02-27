@@ -39,6 +39,7 @@ spec:
                 environment_label: "project.ssc-spc.gc.ca/environment"
 
             finopsagent:
+              enabled: {{ .Values.components.kubecost.finopsagent.enabled | default true | toYaml | nindent 16 }}
               agent:
                 kubecost:
                   gpuLabel: "node.ssc-spc.gc.ca/use"
@@ -53,6 +54,7 @@ spec:
               priorityClassName: {{ .Values.components.kubecost.finopsagent.priorityClassName | nindent 16 }}
 
             aggregator:
+              enabled: {{ .Values.components.kubecost.aggregator.enabled | default true | toYaml | nindent 16 }}
               fullImageName: {{ toYaml .Values.components.kubecost.aggregator.fullImageName | nindent 16 }}
               image: {{ include "kubecost.aggregator.image" . | nindent 16 }}
               resources: {{ toYaml .Values.components.kubecost.aggregator.resources | nindent 16 }}
@@ -62,6 +64,7 @@ spec:
               priority: {{ toYaml .Values.components.kubecost.aggregator.priority | nindent 16 }}
 
             cloudCost:
+              enabled: {{ .Values.components.kubecost.cloudCost.enabled | default true | toYaml | nindent 16 }}
               fullImageName: {{ toYaml .Values.components.kubecost.cloudCost.fullImageName | nindent 16 }}
               image: {{ include "kubecost.cloudCost.image" . | nindent 16 }}
               resources: {{ toYaml .Values.components.kubecost.cloudCost.resources | nindent 16 }}
@@ -70,6 +73,7 @@ spec:
               affinity: {{ toYaml .Values.components.kubecost.cloudCost.affinity | nindent 16 }}
 
             localStore:
+              enabled: {{ .Values.components.kubecost.localStore.enabled | default true | toYaml | nindent 16 }}
               fullImageName: {{ toYaml .Values.components.kubecost.localStore.fullImageName | nindent 16 }}
               image: {{ include "kubecost.localStore.image" . | nindent 16 }}
               resources: {{ toYaml .Values.components.kubecost.localStore.resources | nindent 16 }}
@@ -78,6 +82,7 @@ spec:
               affinity: {{ toYaml .Values.components.kubecost.localStore.affinity | nindent 16 }}
 
             clusterController:
+              enabled: {{ .Values.components.kubecost.clusterController.enabled | default true | toYaml | nindent 16 }}
               fullImageName: {{ toYaml .Values.components.kubecost.clusterController.fullImageName | nindent 16 }}
               image: {{ include "kubecost.clusterController.image" . | nindent 16 }}
               resources: {{ toYaml .Values.components.kubecost.clusterController.resources | nindent 16 }}
@@ -87,6 +92,7 @@ spec:
               priorityClassName: {{ .Values.components.kubecost.clusterController.priorityClassName | nindent 16 }}
 
             frontend:
+              enabled: {{ .Values.components.kubecost.frontend.enabled | default true | toYaml | nindent 16 }}
               fullImageName: {{ toYaml .Values.components.kubecost.frontend.fullImageName | nindent 16 }}
               image: {{ include "kubecost.frontend.image" . | nindent 16 }}
               resources: {{ toYaml .Values.components.kubecost.frontend.resources | nindent 16 }}
@@ -96,6 +102,7 @@ spec:
               priority: {{ toYaml .Values.components.kubecost.frontend.priority | nindent 16 }}
 
             forecasting:
+              enabled: {{ .Values.components.kubecost.forecasting.enabled | default true | toYaml | nindent 16 }}
               fullImageName: {{ toYaml .Values.components.kubecost.forecasting.fullImageName | nindent 16 }}
               image: {{ include "kubecost.forecasting.image" . | nindent 16 }}
               resources: {{ toYaml .Values.components.kubecost.forecasting.resources | nindent 16 }}
@@ -105,6 +112,7 @@ spec:
               priority: {{ toYaml .Values.components.kubecost.forecasting.priority | nindent 16 }}
 
             networkCosts:
+              enabled: {{ .Values.components.kubecost.networkCosts.enabled | default true | toYaml | nindent 16 }}
               fullImageName: {{ toYaml .Values.components.kubecost.networkCosts.fullImageName | nindent 16 }}
               image: {{ include "kubecost.networkCosts.image" . | nindent 16 }}
               resources: {{ toYaml .Values.components.kubecost.networkCosts.resources | nindent 16 }}
