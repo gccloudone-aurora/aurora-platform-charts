@@ -104,7 +104,6 @@ spec:
               policyTypes:
               - Ingress
               - Egress
-          {{- if .Values.global.imports.mgmt.enabled }}
           - apiVersion: networking.k8s.io/v1
             kind: NetworkPolicy
             metadata:
@@ -128,7 +127,24 @@ spec:
                   app.kubernetes.io/part-of: finops-agent
               policyTypes:
                 - Ingress
-          {{- end }}
+          - apiVersion: cilium.io/v2
+            kind: CiliumNetworkPolicy
+            metadata:
+              name: allow-finops-agent-to-node-3001
+              namespace: kubecost-system
+            spec:
+              # This targets only the specific pod
+              endpointSelector:
+                matchLabels:
+                  app.kubernetes.io/part-of: finops-agent
+              egress:
+              - toEntities:
+                - host
+                - remote-node
+                toPorts:
+                - ports:
+                  - port: "3001"
+                    protocol: TCP
   destination:
     name: {{ .Values.global.cluster }}
     namespace: platform-system
