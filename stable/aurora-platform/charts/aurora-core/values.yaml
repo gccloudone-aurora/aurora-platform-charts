@@ -579,7 +579,7 @@ components:
     helm: {}
       # chart: cilium
       # repository: https://helm.cilium.io
-      # targetRevision: 1.17.13
+      # targetRevision: 1.18.7
 
     imagePullSecrets:
       - name: cilium-image-pull-secret
@@ -597,7 +597,7 @@ components:
     image:
       # registry: quay.io
       repository: cilium/cilium
-      # tag: "v1.17.13" # Default is to match the Chart.AppVersion
+      # tag: # Default is to match the Chart.AppVersion
       pullPolicy: IfNotPresent
 
     apiserver:
@@ -687,11 +687,11 @@ components:
 
     # secretDockerConfigJson: ""
 
-    ciliumBGPPeeringPolicy:
+    ciliumBGPClusterConfig:
       nodeSelector:
         matchLabels:
           kubernetes.io/os: linux
-      virtualRouters: []
+      bgpInstances: []
 
   fluentOperator:
     enabled: true
