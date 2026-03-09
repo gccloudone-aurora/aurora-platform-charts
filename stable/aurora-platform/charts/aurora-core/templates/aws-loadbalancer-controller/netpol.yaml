@@ -1,0 +1,47 @@
+{{ if eq .Values.global.provider "aws" -}}
+{{ if .Values.components.awsLoadbalancerController.enabled -}}
+
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-aws-loadbalancer-controller-netpol"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    chart: {{ .Values.global.raw.helm.chart }}
+    repoURL: {{ default .Values.global.helm.repository .Values.global.raw.helm.repository }}
+    targetRevision: {{ .Values.global.raw.helm.targetRevision }}
+    helm:
+      releaseName: aws-loadbalancer-controller-netpol
+      values: |
+        resources:
+          - apiVersion: networking.k8s.io/v1
+            kind: NetworkPolicy
+            metadata:
+              name: allow-all
+              namespace: aws-loadbalancer-controller-system
+            spec:
+              podSelector: {}
+              policyTypes:
+                - Ingress
+                - Egress
+              ingress:
+                - from:
+                    - ipBlock:
+                        cidr: 0.0.0.0/0
+              egress:
+                - to:
+                    - ipBlock:
+                        cidr: 0.0.0.0/0
+  destination:
+    name: {{ .Values.global.cluster }}
+    namespace: platform-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+
+{{- end }}
+{{- end }}
