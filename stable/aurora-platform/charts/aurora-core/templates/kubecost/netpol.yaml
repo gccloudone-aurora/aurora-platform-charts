@@ -19,64 +19,43 @@ spec:
           - apiVersion: networking.k8s.io/v1
             kind: NetworkPolicy
             metadata:
-              name: allow-same-namespace
+              name: allow-egress-to-api-server
               namespace: kubecost-system
             spec:
-              podSelector: {}
+              podSelector:
+                matchLabels: 
+                  app.kubernetes.io/part-of: finops-agent
               policyTypes:
-                - Ingress
-                - Egress
-              ingress:
-                - from:
-                  - podSelector: {}
+              - Egress
               egress:
-                - to:
-                  - podSelector: {}
+              - to:
+                - ipBlock:
+                    cidr: {{ .Values.global.apiServerCidr }}
+                ports:
+                - protocol: TCP
+                  port: 443
           - apiVersion: networking.k8s.io/v1
             kind: NetworkPolicy
             metadata:
-              name: allow-ingress-from-prometheus-to-kubecost
+              name: allow-egress-to-api-server-from-aggregator
               namespace: kubecost-system
             spec:
-              ingress:
-              - from:
-                - namespaceSelector:
-                    matchLabels:
-                      namespace.ssc-spc.gc.ca/purpose: system
-                      kubernetes.io/metadata.name: prometheus-system
-                  podSelector:
-                    matchLabels:
-                      app.kubernetes.io/name: prometheus
-                      app.kubernetes.io/instance: kube-prometheus-stack-prometheus
               podSelector:
-                matchLabels:
-                  app.kubernetes.io/name: cost-analyzer
+                matchLabels: 
+                  app.kubernetes.io/name: aggregator
               policyTypes:
-              - Ingress
+              - Egress
+              egress:
+              - to:
+                - ipBlock:
+                    cidr: {{ .Values.global.apiServerCidr }}
+                ports:
+                - protocol: TCP
+                  port: 443
           - apiVersion: networking.k8s.io/v1
             kind: NetworkPolicy
             metadata:
-              name: allow-ingress-from-grafana-to-kubecost
-              namespace: kubecost-system
-            spec:
-              ingress:
-              - from:
-                - namespaceSelector:
-                    matchLabels:
-                      namespace.ssc-spc.gc.ca/purpose: system
-                      kubernetes.io/metadata.name: prometheus-system
-                  podSelector:
-                    matchLabels:
-                      app.kubernetes.io/name: grafana
-              podSelector:
-                matchLabels:
-                  app.kubernetes.io/name: cost-analyzer
-              policyTypes:
-              - Ingress
-          - apiVersion: networking.k8s.io/v1
-            kind: NetworkPolicy
-            metadata:
-              name: allow-egress-to-azureapi-from-kubecost
+              name: allow-egress-to-fetch-pricing
               namespace: kubecost-system
             spec:
               egress:
@@ -88,51 +67,43 @@ spec:
                     cidr: 0.0.0.0/0
               podSelector:
                 matchLabels:
-                  app.kubernetes.io/name: cost-analyzer
+                  app.kubernetes.io/part-of: finops-agent
               policyTypes:
               - Egress
           - apiVersion: networking.k8s.io/v1
             kind: NetworkPolicy
             metadata:
-              name: allow-egress-to-prometheus-from-kubecost
+              name: allow-egress-to-azuremetadataapi-from-kubecost
               namespace: kubecost-system
             spec:
               egress:
-                - to:
-                  - namespaceSelector:
-                      matchLabels:
-                        namespace.ssc-spc.gc.ca/purpose: system
-                        kubernetes.io/metadata.name: prometheus-system
-                    podSelector:
-                      matchLabels:
-                        app.kubernetes.io/name: prometheus
-                        app.kubernetes.io/instance: kube-prometheus-stack-prometheus
+              - ports:
+                - port: 80
+                  protocol: TCP
+                to:
+                - ipBlock:
+                    cidr: {{ .Values.global.azureMetadataApiCidr }}
               podSelector:
                 matchLabels:
-                  app.kubernetes.io/name: cost-analyzer
+                  app.kubernetes.io/part-of: finops-agent
               policyTypes:
               - Egress
           - apiVersion: networking.k8s.io/v1
             kind: NetworkPolicy
             metadata:
-              name: allow-egress-to-grafana-from-kubecost
+              name:  allow-same-namespace
               namespace: kubecost-system
             spec:
               egress:
-                - to:
-                  - namespaceSelector:
-                      matchLabels:
-                        namespace.ssc-spc.gc.ca/purpose: system
-                        kubernetes.io/metadata.name: prometheus-system
-                    podSelector:
-                      matchLabels:
-                        app.kubernetes.io/name: grafana
-              podSelector:
-                matchLabels:
-                  app.kubernetes.io/name: cost-analyzer
+              - to:
+                - podSelector: {}
+              ingress:
+              - from:
+                - podSelector: {}
+              podSelector: {}
               policyTypes:
+              - Ingress
               - Egress
-          {{- if .Values.global.imports.mgmt.enabled }}
           - apiVersion: networking.k8s.io/v1
             kind: NetworkPolicy
             metadata:
@@ -153,10 +124,27 @@ spec:
                           app.kubernetes.io/name: bol
               podSelector:
                 matchLabels:
-                  app.kubernetes.io/name: cost-analyzer
+                  app.kubernetes.io/part-of: finops-agent
               policyTypes:
                 - Ingress
-          {{- end }}
+          - apiVersion: cilium.io/v2
+            kind: CiliumNetworkPolicy
+            metadata:
+              name: allow-finops-agent-to-node-3001
+              namespace: kubecost-system
+            spec:
+              # This targets only the specific pod
+              endpointSelector:
+                matchLabels:
+                  app.kubernetes.io/part-of: finops-agent
+              egress:
+              - toEntities:
+                - host
+                - remote-node
+                toPorts:
+                - ports:
+                  - port: "3001"
+                    protocol: TCP
   destination:
     name: {{ .Values.global.cluster }}
     namespace: platform-system
@@ -164,5 +152,4 @@ spec:
     automated:
       prune: true
       selfHeal: true
-
 {{- end }}

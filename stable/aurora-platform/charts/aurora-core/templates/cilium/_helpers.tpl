@@ -126,6 +126,17 @@ repository: {{ printf "%s/%s" (default "quay.io" .Values.global.container.regist
 {{- end }}
 
 {{/*
+The image section for Cilium Envoy.
+*/}}
+{{- define "cilium.envoy.image" -}}
+{{- if (and .Values.components.cilium.envoy.image.registry .Values.components.cilium.envoy.image.repository) }}
+repository: {{ printf "%s/%s" .Values.components.cilium.envoy.image.registry .Values.components.cilium.envoy.image.repository }}
+{{- else if .Values.components.cilium.envoy.image.repository }}
+repository: {{ printf "%s/%s" (default "quay.io" .Values.global.container.registry) .Values.components.cilium.envoy.image.repository }}
+{{- end }}
+{{- end }}
+
+{{/*
 The image section for Cilium IPAM.
 */}}
 {{- define "cilium.ipam" -}}
