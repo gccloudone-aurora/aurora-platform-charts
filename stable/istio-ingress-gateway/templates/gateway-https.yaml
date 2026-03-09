@@ -1,5 +1,5 @@
 {{- if .Values.https.enabled }}
-apiVersion: networking.istio.io/v1beta1
+apiVersion: networking.istio.io/v1
 kind: Gateway
 metadata:
   name: {{ include "istio-ingress-gateway.fullname" . }}-https
@@ -30,8 +30,6 @@ spec:
       maxProtocolVersion: TLSV1_2
       minProtocolVersion: TLSV1_2
       mode: SIMPLE
-      privateKey: sds
-      serverCertificate: sds
   {{- if .Values.additionalGatewayHosts }}
   {{- toYaml .Values.additionalGatewayHosts | nindent 2 }}
   {{- end }}
