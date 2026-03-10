@@ -42,7 +42,7 @@ repository: {{ printf "%s/%s" .Values.components.tetragon.export.image.registry 
 repository: {{ printf "%s/%s" (default "quay.io" .Values.global.container.registry) .Values.components.tetragon.export.image.repository }}
 {{- end }}
 {{- if .Values.components.tetragon.export.image.tag }}
-tag: {{ .Values.components.tetragon.image.tag }}
+tag: {{ .Values.components.tetragon.export.image.tag }}
 {{- end }}
 {{- if .Values.components.tetragon.export.image.pullPolicy }}
 pullPolicy: {{ .Values.components.tetragon.image.pullPolicy }}
