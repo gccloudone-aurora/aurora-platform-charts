@@ -2195,14 +2195,14 @@ components:
     image:
       # registry: quay.io
       repository: cilium/tetragon
-      tag: "v1.4.0"
+      tag: "v1.6.0"
       pullPolicy: IfNotPresent
 
     operator:
       image:
         # registry: quay.io
         repository: cilium/tetragon-operator
-        tag: "v1.4.0"
+        tag: "v1.6.0"
         pullPolicy: IfNotPresent
 
       replicas: 2
