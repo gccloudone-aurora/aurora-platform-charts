@@ -1651,11 +1651,10 @@ components:
             matchers: []
 
         smtp:
-          smarthost:
-          from:
-          auth_username:
-          auth_password:
-
+          smarthost: 'localhost:25'
+          from: 'alertmanager@example.com'
+          auth_username: 'none'
+          auth_password: 'none'
           sendAddresses:
             email:
               to:
