@@ -166,6 +166,13 @@ spec:
                 - name: rules
                   configMap:
                     name: loki-alerting-rules
+            backend:
+              nodeSelector: {{ toYaml .Values.components.loki.nodeSelector | nindent 16 }}
+              tolerations: {{ toYaml .Values.components.loki.tolerations | nindent 16 }}
+              persistence:
+                size: 8Gi
+                storageClass: default
+
   destination:
     name: '{{ .Values.global.cluster }}'
     namespace: loki-system
