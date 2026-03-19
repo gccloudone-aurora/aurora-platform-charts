@@ -15,7 +15,7 @@ spec:
     {{- else }}
     repoURL: {{ default "registry-1.docker.io/bitnamicharts" .Values.global.helm.repository }}
     {{- end }}
-    targetRevision: {{ default "3.2.12" .Values.components.kubernetesEventExporter.helm.targetRevision }}
+    targetRevision: {{ default "3.6.3" .Values.components.kubernetesEventExporter.helm.targetRevision }}
     plugin:
       env:
         - name: HELM_RELEASE_NAME
@@ -38,6 +38,7 @@ spec:
             priorityClassName: {{ .Values.components.kubernetesEventExporter.priorityClassName }}
 
             config:
+              clusterName: "{{ .Values.global.cluster }}"
               logLevel: info
               logFormat: pretty
               maxEventAgeSeconds: 180

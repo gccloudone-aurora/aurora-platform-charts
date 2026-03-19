@@ -15,7 +15,7 @@ spec:
     {{- else }}
     repoURL: {{ default "https://kubecost.github.io/kubecost/" .Values.components.kubecost.helm.repository }}
     {{- end }}
-    targetRevision: {{ default "3.1.3" .Values.components.kubecost.helm.targetRevision }}
+    targetRevision: {{ default "3.1.5" .Values.components.kubecost.helm.targetRevision }}
     plugin:
       env:
         - name: HELM_RELEASE_NAME
