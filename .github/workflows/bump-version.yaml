@@ -1,0 +1,79 @@
+name: Bump Helm Chart Versions
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  bump-helm-versions:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install yq
+        run: |
+          sudo wget https://github.com/mikefarah/yq/releases/download/v4.43.1/yq_linux_amd64 -O /usr/bin/yq
+          sudo chmod +x /usr/bin/yq
+
+      - name: Bump Helm chart versions
+        id: bump
+        run: |
+          set -e
+          
+          WATCHED_DIRS=(
+            "stable/argocd-instance"
+            "stable/argocd-operator"
+            "stable/aurora-namespace"
+            "stable/aurora-platform"
+            "stable/aurora-solution"
+            "stable/istio-custom-responses"
+            "stable/istio-ingress-gateway"
+          )
+
+          CHANGED=false
+
+          for DIR in "${WATCHED_DIRS[@]}"; do
+            if git diff --name-only origin/main HEAD | grep -q "^${DIR}/"; then
+              CHART_FILE="${DIR}/Chart.yaml"
+              
+              CURRENT_VERSION=$(yq e '.version' "$CHART_FILE")
+              IFS='.' read -r MAJOR MINOR PATCH <<< "$CURRENT_VERSION"
+              
+              case "$DIR" in
+                stable/argocd-instance)
+                  MINOR=$((MINOR+1))
+                  PATCH=0
+                  ;;
+                stable/aurora-platform|stable/aurora-solution)
+                  PATCH=$((PATCH+1))
+                  ;;
+                *)
+                  PATCH=$((PATCH+1))
+                  ;;
+              esac
+
+              NEW_VERSION="$MAJOR.$MINOR.$PATCH"
+              
+              # Update Chart.yaml
+              yq e -i ".version = \"$NEW_VERSION\"" "$CHART_FILE"
+              echo "Updated $CHART_FILE: $CURRENT_VERSION -> $NEW_VERSION"
+              
+              CHANGED=true
+            fi
+          done
+
+          echo "changed=$CHANGED" >> $GITHUB_OUTPUT
+
+      - name: Commit version bumps
+        if: steps.bump.outputs.changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add stable/*/Chart.yaml
+          git commit -m "ci: Auto bump Helm chart versions"
+          git push origin HEAD
