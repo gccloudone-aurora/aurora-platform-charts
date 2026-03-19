@@ -577,7 +577,7 @@ spec:
                   - toEndpoints:
                     - matchLabels:
                         k8s:io.kubernetes.pod.namespace: prometheus-system
-                        prometheus: kube-prometheus-stack-prometheus
+                        k8s:prometheus: kube-prometheus-stack-prometheus
                     toPorts:
                     - ports:
                       - port: "9090"
@@ -599,7 +599,7 @@ spec:
                       - port: "443"
                   endpointSelector:
                     matchLabels:
-                      app.kubernetes.io/name: prometheus
+                      k8s:app.kubernetes.io/name: prometheus
               - apiVersion: cilium.io/v2
                 kind: CiliumClusterwideNetworkPolicy
                 metadata:
@@ -615,7 +615,7 @@ spec:
                       - port: "25"
                   endpointSelector:
                     matchLabels:
-                      app.kubernetes.io/name: alertmanager
+                      k8s:app.kubernetes.io/name: alertmanager
               - apiVersion: cilium.io/v2
                 kind: CiliumClusterwideNetworkPolicy
                 metadata:
@@ -631,7 +631,7 @@ spec:
                       - port: "443"
                   endpointSelector:
                     matchLabels:
-                      app: prometheus-msteams
+                      k8s:app: prometheus-msteams
               {{- end }}
               {{ if .Values.global.clusterHasLoki }}
               - apiVersion: networking.k8s.io/v1

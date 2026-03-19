@@ -23,12 +23,12 @@ spec:
             spec:
               endpointSelector:
                 matchExpressions:
-                  - key: solr-cloud
+                  - key: k8s:solr-cloud
                     operator: Exists
               ingress:
                 - fromEndpoints:
                     - matchLabels:
-                        io.kubernetes.pod.namespace: solr-system
+                        k8s:io.kubernetes.pod.namespace: solr-system
           - apiVersion: networking.k8s.io/v1
             kind: NetworkPolicy
             metadata:
@@ -56,7 +56,7 @@ spec:
                   - namespaceSelector: {}
                     podSelector:
                       matchExpressions:
-                        - key: solr-cloud
+                        - key: k8s:solr-cloud
                           operator: Exists
               podSelector:
                 matchLabels: {}

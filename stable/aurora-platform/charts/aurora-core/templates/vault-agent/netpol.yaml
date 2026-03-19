@@ -26,7 +26,7 @@ spec:
                 spec:
                   endpointSelector:
                     matchLabels:
-                      secrets.ssc-spc.gc.ca/vault: "yes"
+                      k8s:secrets.ssc-spc.gc.ca/vault: "yes"
                   egress:
                   {{- range (required "global.vaultCidrs is required" .Values.global.vaultCidrs) }}
                     - toCIDRSet:

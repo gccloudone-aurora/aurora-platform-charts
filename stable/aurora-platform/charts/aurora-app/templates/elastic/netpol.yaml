@@ -23,12 +23,12 @@ spec:
             spec:
               endpointSelector:
                 matchExpressions:
-                  - key: common.k8s.elastic.co/type
+                  - key: k8s:common.k8s.elastic.co/type
                     operator: Exists
               ingress:
                 - fromEndpoints:
                     - matchLabels:
-                        io.kubernetes.pod.namespace: elastic-system
+                        k8s:io.kubernetes.pod.namespace: elastic-system
           - apiVersion: networking.k8s.io/v1
             kind: NetworkPolicy
             metadata:
@@ -57,7 +57,7 @@ spec:
                     matchLabels: {}
                   podSelector:
                     matchExpressions:
-                      - key: common.k8s.elastic.co/type
+                      - key: k8s:common.k8s.elastic.co/type
                         operator: Exists
               podSelector:
                 matchLabels: {}
