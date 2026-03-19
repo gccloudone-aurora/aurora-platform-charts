@@ -670,6 +670,38 @@ entries:
   aurora-platform:
   - apiVersion: v2
     appVersion: 2.0.0
+    created: "2026-03-19T19:30:18.173558215Z"
+    dependencies:
+    - alias: core
+      condition: core.enabled
+      name: aurora-core
+      repository: ""
+      version: 0.0.1
+    - alias: app
+      condition: app.enabled
+      import-values:
+      - child: data
+        parent: global.imports
+      name: aurora-app
+      repository: ""
+      version: 0.0.1
+    - alias: mgmt
+      condition: mgmt.enabled
+      import-values:
+      - child: data
+        parent: global.imports
+      name: aurora-mgmt
+      repository: ""
+      version: 0.0.1
+    description: Aurora Platform
+    digest: f8b0f568eb9454015d923d85ba16c961044304dc99b02bedd4385ed187129416
+    name: aurora-platform
+    type: application
+    urls:
+    - https://github.com/gccloudone-aurora/aurora-platform-charts/releases/download/aurora-platform-0.0.182/aurora-platform-0.0.182.tgz
+    version: 0.0.182
+  - apiVersion: v2
+    appVersion: 2.0.0
     created: "2026-03-19T17:29:54.832460519Z"
     dependencies:
     - alias: core
@@ -6694,6 +6726,20 @@ entries:
     version: 0.0.1
   istio-ingress-gateway:
   - apiVersion: v2
+    created: "2026-03-19T19:30:18.337997462Z"
+    dependencies:
+    - condition: gateway.enabled
+      name: gateway
+      repository: https://istio-release.storage.googleapis.com/charts
+      version: 1.29.1
+    description: This chart deploys an opinionated Istio Ingress Gateway.
+    digest: 45d91c00b633eb1026abbede0a387bfb04d949e5853a6e7ce532a2f11e4ef0de
+    name: istio-ingress-gateway
+    type: application
+    urls:
+    - https://github.com/gccloudone-aurora/aurora-platform-charts/releases/download/istio-ingress-gateway-0.0.9/istio-ingress-gateway-0.0.9.tgz
+    version: 0.0.9
+  - apiVersion: v2
     created: "2026-03-09T19:09:03.709611438Z"
     dependencies:
     - condition: gateway.enabled
@@ -6813,4 +6859,4 @@ entries:
     urls:
     - https://github.com/gccloudone-aurora/aurora-platform-charts/releases/download/raw-0.0.1/raw-0.0.1.tgz
     version: 0.0.1
-generated: "2026-03-19T17:29:54.833059148Z"
+generated: "2026-03-19T19:30:18.33861986Z"
