@@ -23,15 +23,15 @@ spec:
             spec:
               endpointSelector:
                 matchExpressions:
-                  - key: io.kubernetes.pod.namespace
+                  - key: k8s:io.kubernetes.pod.namespace
                     operator: NotIn
                     values:
                       - kube-system
               ingress:
                 - fromEndpoints:
                     - matchLabels:
-                        io.kubernetes.pod.namespace: ingress-general-system
-                        app: general
+                        k8s:io.kubernetes.pod.namespace: ingress-general-system
+                        k8s:app: general
           - apiVersion: cilium.io/v2
             kind: CiliumClusterwideNetworkPolicy
             metadata:
@@ -39,15 +39,15 @@ spec:
             spec:
               endpointSelector:
                 matchExpressions:
-                  - key: io.kubernetes.pod.namespace
+                  - key: k8s:io.kubernetes.pod.namespace
                     operator: NotIn
                     values:
                       - kube-system
               ingress:
                 - fromEndpoints:
                     - matchLabels:
-                        io.kubernetes.pod.namespace: istio-system
-                        app: istiod
+                        k8s:io.kubernetes.pod.namespace: istio-system
+                        k8s:app: istiod
           - apiVersion: cilium.io/v2
             kind: CiliumClusterwideNetworkPolicy
             metadata:
@@ -55,15 +55,15 @@ spec:
             spec:
               endpointSelector:
                 matchExpressions:
-                  - key: io.kubernetes.pod.namespace
+                  - key: k8s:io.kubernetes.pod.namespace
                     operator: NotIn
                     values:
                       - kube-system
               egress:
                 - toEndpoints:
                     - matchLabels:
-                        io.kubernetes.pod.namespace: istio-system
-                        app: istiod
+                        k8s:io.kubernetes.pod.namespace: istio-system
+                        k8s:app: istiod
           - apiVersion: networking.k8s.io/v1
             kind: NetworkPolicy
             metadata:

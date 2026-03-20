@@ -21,10 +21,10 @@ spec:
             spec:
               endpointSelector:
                 matchExpressions:
-                  - {key: io.cilium.k8s.namespace.labels.namespace.ssc-spc.gc.ca/purpose, operator: In, values: [platform, system]}
+                  - {key: k8s:io.cilium.k8s.namespace.labels.namespace.ssc-spc.gc.ca/purpose, operator: In, values: [platform, system]}
               egress:
-                - toCIDRSet:
-                    - cidr: {{ required "global.apiServerCidr is required" .Values.global.apiServerCidr | quote }}
+                - toEntities:
+                    - kube-apiserver
                   toPorts:
                     - ports:
                         - port: "443"
@@ -35,14 +35,14 @@ spec:
             spec:
               endpointSelector:
                 matchExpressions:
-                  - key: io.kubernetes.pod.namespace
+                  - key: k8s:io.kubernetes.pod.namespace
                     operator: NotIn
                     values:
                       - kube-system
               egress:
                 - toEndpoints:
                     - matchLabels:
-                        k8s-app: kube-dns
+                        k8s:k8s-app: kube-dns
                   toPorts:
                     - ports:
                         - port: "53"
@@ -62,7 +62,7 @@ spec:
                 - host
               endpointSelector:
                 matchExpressions:
-                - key: io.kubernetes.pod.namespace
+                - key: k8s:io.kubernetes.pod.namespace
                   operator: In
                   values:
                   - prometheus-system
@@ -73,7 +73,7 @@ spec:
             spec:
               endpointSelector:
                 matchExpressions:
-                  - key: io.kubernetes.pod.namespace
+                  - key: k8s:io.kubernetes.pod.namespace
                     operator: NotIn
                     values:
                       - kube-system
