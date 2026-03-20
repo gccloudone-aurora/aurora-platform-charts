@@ -13,8 +13,7 @@ spec:
     {{- if .Values.components.loki.helm.repository }}
     repoURL: {{ .Values.components.loki.helm.repository }}
     {{- else }}
-    # UPDATED: Changed to the new official community repo for 2026/v6.x
-    repoURL: {{ default "https://grafana-community.github.io" .Values.global.helm.repository }}
+    repoURL: {{ default "https://grafana.github.io/helm-charts" .Values.global.helm.repository }}
     {{- end }}
     # UPDATED: Target latest stable
     targetRevision: {{ default "6.55.0" .Values.components.loki.helm.targetRevision }}
