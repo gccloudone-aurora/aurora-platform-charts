@@ -15,7 +15,7 @@ spec:
     {{- else }}
     repoURL: {{ default "https://aquasecurity.github.io/helm-charts" .Values.global.helm.repository }}
     {{- end }}
-    targetRevision: {{ default "0.31.0" .Values.components.trivy.helm.targetRevision }}
+    targetRevision: {{ default "0.32.1" .Values.components.trivy.helm.targetRevision }}
     plugin:
       env:
         - name: HELM_RELEASE_NAME

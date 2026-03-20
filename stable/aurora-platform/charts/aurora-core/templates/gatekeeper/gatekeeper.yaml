@@ -15,7 +15,7 @@ spec:
     {{- else }}
     repoURL: {{ default "https://open-policy-agent.github.io/gatekeeper/charts" .Values.global.helm.repository }}
     {{- end }}
-    targetRevision: {{ default "3.12.0" .Values.components.gatekeeper.helm.targetRevision }}
+    targetRevision: {{ default "3.22.0" .Values.components.gatekeeper.helm.targetRevision }}
     helm:
       releaseName: gatekeeper
       values: |
