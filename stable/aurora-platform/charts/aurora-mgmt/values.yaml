@@ -369,7 +369,7 @@ components:
 
     helm: {}
       # chart: loki
-      # repository: https://grafana.github.io/helm-charts
+      # repository: https://grafana-community.github.io
       # targetRevision: 6.21.0
 
     image:

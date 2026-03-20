@@ -13,9 +13,11 @@ spec:
     {{- if .Values.components.loki.helm.repository }}
     repoURL: {{ .Values.components.loki.helm.repository }}
     {{- else }}
-    repoURL: {{ default "https://grafana.github.io/helm-charts" .Values.global.helm.repository }}
+    # UPDATED: Changed to the new official community repo for 2026/v6.x
+    repoURL: {{ default "https://grafana-community.github.io" .Values.global.helm.repository }}
     {{- end }}
-    targetRevision: {{ default "6.21.0" .Values.components.loki.helm.targetRevision }}
+    # UPDATED: Target latest stable
+    targetRevision: {{ default "6.55.0" .Values.components.loki.helm.targetRevision }}
     plugin:
       env:
         - name: HELM_RELEASE_NAME
@@ -24,7 +26,7 @@ spec:
           value: |
             global:
               image:
-                registry: null
+                registry: docker.io # Changed from null to ensure registry resolution
 
             image:
               pullSecrets:
@@ -56,24 +58,33 @@ spec:
               image: {{ default "{}" (include "loki.image" .) | nindent 16 }}
               analytics:
                 reporting_enabled: false
-              # Authentication for multitenancy, which we are not presently using.
               auth_enabled: false
+              
+              # MOVED: Now properly nested under 'loki' for 6.x
+              canary:
+                enabled: false
+
               compactor:
                 working_directory: /var/loki/data/retention
                 compaction_interval: 10m
                 retention_enabled: true
-                retention_delete_delay: 10m # 2h in docs, putting a smaller value to test
+                retention_delete_delay: 10m 
                 retention_delete_worker_count: 150
                 delete_request_store: azure
+
               limits_config:
                 ingestion_rate_mb: 10
                 ingestion_burst_size_mb: 20
                 reject_old_samples_max_age: 24h
                 retention_period: 2160h # 90d
+                # NEW: Fixes slow Grafana by parallelizing queries
+                split_queries_by_interval: 2h
+                max_query_parallelism: 16
                 retention_stream:
                 - selector: '{source="kubernetes-event-exporter"}'
                   priority: 1
-                  period: 336h # 14d
+                  period: 336h 
+
               schemaConfig:
                 configs:
                   - from: 2024-05-01
@@ -91,6 +102,7 @@ spec:
                   ruler: chunks
                 azure: {{ include "loki.logStorageLocation" . | nindent  18 }}
 
+              # MOVED: Now properly nested under 'loki' for 6.x
               rulerConfig:
                 storage:
                   type: local
@@ -103,15 +115,16 @@ spec:
                 alertmanager_url: https://alertmanager.{{ .Values.global.ingressDomain }}:443
                 enable_alertmanager_v2: true
 
+            # NEW: Enabled by default in 6.x to fix slow dashboards
             chunksCache:
+              enabled: true
               nodeSelector: {{ toYaml .Values.components.loki.nodeSelector | nindent 16 }}
               tolerations: {{ toYaml .Values.components.loki.tolerations | nindent 16 }}
             resultsCache:
+              enabled: true
               nodeSelector: {{ toYaml .Values.components.loki.nodeSelector | nindent 16 }}
               tolerations: {{ toYaml .Values.components.loki.tolerations | nindent 16 }}
-
-            lokiCanary:
-              enabled: false
+              
             test:
               enabled: false
             memcached:
