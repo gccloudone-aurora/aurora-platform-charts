@@ -191,6 +191,28 @@ spec:
                       app.kubernetes.io/component: fluentd
                   policyTypes:
                   - Ingress
+              - apiVersion: networking.k8s.io/v1
+                kind: NetworkPolicy
+                metadata:
+                  name: allow-egress-to-istio-ingress
+                  namespace: fluent-operator-system
+                spec:
+                  egress:
+                  - ports:
+                    - port: 443
+                      protocol: TCP
+                    to:
+                    - namespaceSelector:
+                        matchLabels:
+                          kubernetes.io/metadata.name: ingress-general-system
+                      podSelector:
+                        matchLabels:
+                          app: general
+                  podSelector:
+                    matchLabels:
+                      app.kubernetes.io/name: fluentd
+                  policyTypes:
+                  - Egress
   destination:
     name: {{ .Values.global.cluster }}
     namespace: platform-system
