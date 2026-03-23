@@ -78,8 +78,6 @@ spec:
       prune: true
       selfHeal: true
   ignoreDifferences:
-  # The webhook's failurePolicy changes from Ignore to Fail
-  # afer the deployment has completed.
   - group: admissionregistration.k8s.io
     kind: MutatingWebhookConfiguration
     name: istio-sidecar-injector
@@ -88,5 +86,12 @@ spec:
     - /webhooks/1/clientConfig/caBundle
     - /webhooks/2/clientConfig/caBundle
     - /webhooks/3/clientConfig/caBundle
+  # The webhook's failurePolicy changes from Ignore to Fail
+  # afer the deployment has completed.
+  - group: admissionregistration.k8s.io
+    kind: ValidatingWebhookConfiguration
+    name: istio-validator-istio-system
+    jsonPointers:
+    - /webhooks/0/failurePolicy
 
 {{- end }}
