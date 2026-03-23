@@ -31,12 +31,14 @@ spec:
             affinity: {{ toYaml .Values.components.velero.affinity | nindent 14 }}
 
             initContainers:
+            {{- if ne .Values.global.provider "local" }}
               - name: velero-plugin-for-{{ .Values.global.provider }}
                 image: {{ include "velero.plugin.image" . }}
                 imagePullPolicy: IfNotPresent
                 volumeMounts:
                   - mountPath: /target
                     name: plugins
+            {{- end }}
 
             kubectl:
               image: {{ default "{}" (include "velero.kubectl.image" .) | nindent 16 }}

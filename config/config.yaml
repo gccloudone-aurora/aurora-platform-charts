@@ -6,6 +6,8 @@ global:
   # loggingCidrs: ["172.26.26.132/32"]
   # vaultCidrs: ["172.23.211.18/32"]
 
+  provider: local
+
   clusterHasLoki: false
 
   cluster: aur-dev-cc-00-aks
@@ -25,13 +27,6 @@ global:
 
 core:
   components:
-    aadPodIdentity:
-      enabled: true
-
-      mic: {}
-
-      nmi: {}
-
     auroraController:
       enabled: true
 
