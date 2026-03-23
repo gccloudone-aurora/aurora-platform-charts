@@ -30,7 +30,7 @@ spec:
   # afer the deployment has completed.
   - group: admissionregistration.k8s.io
     kind: ValidatingWebhookConfiguration
-    name: istiod-default-validator
+    name: istio-validator-istio-system
     jsonPointers:
     - /webhooks/0/failurePolicy
 
