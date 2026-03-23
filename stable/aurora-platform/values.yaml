@@ -44,9 +44,6 @@ global:
   # The Kubernetes API Server
   apiServerCidr: "192.0.2.10/32"
 
-  # The Azure Metadata API
-  azureMetadataApiCidr: "169.254.169.254/32"
-
   # Alert Manager
   alertManagerCidrs: ["192.0.2.10/32"]
 
