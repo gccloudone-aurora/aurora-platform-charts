@@ -91,7 +91,9 @@ spec:
             serviceAccount:
               server:
                 annotations:
+                  {{- if eq .Values.global.provider "azure" }}
                   {{- include "velero.azureWorkloadIdentity.clientId" . | nindent 18 }}
+                  {{- end }}
 
             priorityClassName: {{ .Values.components.velero.priorityClassName }}
   destination:
