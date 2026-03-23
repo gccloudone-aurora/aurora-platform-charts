@@ -13,7 +13,7 @@ spec:
     {{- if .Values.components.fluentOperator.helm.repository }}
     repoURL: {{ .Values.components.fluentOperator.helm.repository }}
     {{- else }}
-    repoURL: {{ default "https://fluent.github.io/fluent-operator" .Values.global.helm.repository }}
+    repoURL: {{ default "https://fluent.github.io/helm-charts" .Values.global.helm.repository }}
     {{- end }}
     targetRevision: {{ default "2.5.0" .Values.components.fluentOperator.helm.targetRevision }}
     helm:
