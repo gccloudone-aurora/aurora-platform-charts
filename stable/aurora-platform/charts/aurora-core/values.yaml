@@ -2144,6 +2144,9 @@ components:
     targetWorkloads: "pod,replicaset,replicationcontroller,statefulset,daemonset,cronjob,job"
     excludeNamespaces: ""
 
+    servicemonitor:
+      enabled: true
+
     operator:
       # enable builtin server mode
       builtInTrivyServer: true

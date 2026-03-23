@@ -39,8 +39,8 @@ spec:
             operator: {{ toYaml .Values.components.trivy.operator | nindent 14 }}
 
             serviceMonitor:
-              enabled: true
-              
+              enabled: {{ .Values.components.trivy.servicemonitor.enabled }} 
+
             trivy:
               dbRegistry: {{ default "docker.io" .Values.global.container.registry }}
               javaDbRegistry: {{ default "docker.io" .Values.global.container.registry }}
