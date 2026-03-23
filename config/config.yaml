@@ -1,7 +1,6 @@
 # This file is directly grabbed from: https://github.com/gccloudone-aurora/project-aurora-template
 global:
   apiServerCidr: "<FILLIN_API_SERVER_ADDRESS>/27"
-  azureMetadataApiCidr: "169.254.169.254/32"
 
   # alertManagerCidrs: ["172.26.26.132/32"]
   # loggingCidrs: ["172.26.26.132/32"]
@@ -57,9 +56,6 @@ core:
       acmesolver: {}
 
       startupapicheck: {}
-
-      azureWorkloadIdentity:
-        clientId: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-certmanager-aadpodidentity-client-id>'
 
       prometheus:
         enabled: true
@@ -209,11 +205,6 @@ core:
 
       token: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-kubecost-token>'
 
-      azure:
-        subscriptionId: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-subscription-id>'
-        clientId: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-kubecost-sp-client-id>'
-        clientPassword: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-kubecost-sp-client-secret>'
-        tenantId: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-tenant-id>'
 
       cloudServiceKey: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-kubecost-cloud-service-key>'
       productKey: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-kubecost-product-key>'
@@ -243,10 +234,6 @@ core:
 
     prometheus:
       enabled: true
-
-      azure:
-        clientId: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-grafana-sp-client-id>'
-        clientPassword: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-grafana-sp-client-secret>'
 
       operator:
         admissionWebhooks: {}
@@ -342,9 +329,6 @@ core:
 
       volumeSnapshot:
         resourceGroupName: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-velero-sa-resource-group-name>'
-
-      azureWorkloadIdentity:
-        clientId: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-velero-aadpodidentity-client-id>'
 
     kubebench:
       enabled: false
@@ -462,13 +446,6 @@ mgmt:
         ingressDomain: aur.aurora.<FILLIN_INGRESS_DOMAIN>
         argocdVaultPlugin:
           enabled: true
-          env:
-            ARGOCD_ENV_AVP_TYPE: "azurekeyvault"
-            ARGOCD_ENV_AZURE_CLIENT_ID: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-argocd-kv-aadpodidentity-client-id>'
-
-        azureWorkloadIdentity:
-          enabled: true
-          clientId: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-argocd-kv-aadpodidentity-client-id>'
 
         oidcAuthSP:
           credentials:
