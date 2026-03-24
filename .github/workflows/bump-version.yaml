@@ -15,10 +15,11 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Install yq
+      - name: Install Dependencies
         run: |
-          sudo wget https://github.com/mikefarah/yq/releases/download/v4.43.1/yq_linux_amd64 -O /usr/bin/yq
-          sudo chmod +x /usr/bin/yq
+          echo "Installing yq..."
+          curl -fsSL https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -o /usr/local/bin/yq
+          chmod +x /usr/local/bin/yq
 
       - name: Bump Helm chart versions
         id: bump
@@ -59,7 +60,6 @@ jobs:
 
               NEW_VERSION="$MAJOR.$MINOR.$PATCH"
               
-              # Update Chart.yaml
               yq e -i ".version = \"$NEW_VERSION\"" "$CHART_FILE"
               echo "Updated $CHART_FILE: $CURRENT_VERSION -> $NEW_VERSION"
               
@@ -75,5 +75,5 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add stable/*/Chart.yaml
-          git commit -m "ci: Auto bump Helm chart versions"
+          git commit -m "ci: Auto bump Chart.yaml"
           git push origin HEAD
