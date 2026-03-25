@@ -23,6 +23,7 @@ spec:
                 kind: NetworkPolicy
                 metadata:
                   name: allow-falco-access-to-artifacts
+                  namespace: falco-system
                   labels:
                     app.kubernetes.io/name: "falco-netpol"
                     app.kubernetes.io/instance: "{{ .Values.global.cluster }}"
@@ -60,6 +61,7 @@ spec:
                 kind: NetworkPolicy
                 metadata:
                   name: allow-falco-to-use-kube-dns
+                  namespace: falco-system
                   labels:
                     app.kubernetes.io/name: "falco-netpol"
                     app.kubernetes.io/instance: "{{ .Values.global.cluster }}"
@@ -160,7 +162,7 @@ spec:
               {{- toYaml .Values.components.falco.resources | nindent 14 }}
   destination:
     name: {{ .Values.global.cluster }}
-    namespace: falco-system
+    namespace: platform-system
   syncPolicy:
     automated:
       prune: true
