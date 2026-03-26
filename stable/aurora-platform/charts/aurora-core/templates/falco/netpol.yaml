@@ -159,7 +159,6 @@ spec:
                         matchLabels:
                           app.kubernetes.io/instance: falco
                           app.kubernetes.io/name: falco
-              {{- toYaml .Values.components.falco.resources | nindent 14 }}
   destination:
     name: {{ .Values.global.cluster }}
     namespace: platform-system
