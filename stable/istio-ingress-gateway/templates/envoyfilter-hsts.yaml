@@ -5,7 +5,7 @@ metadata:
   name: {{ include "istio-ingress-gateway.fullname" . }}-hsts
   namespace: {{ .Release.Namespace }}
   labels:
-    {{- include "istio-ingress-gateway.labels" . | nindent 5 }}
+    {{- include "istio-ingress-gateway.labels" . | nindent 4 }}
 spec:
   configPatches:
   - applyTo: HTTP_FILTER
