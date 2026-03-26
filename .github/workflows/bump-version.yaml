@@ -7,8 +7,7 @@ on:
     branches: [main]
 
 jobs:
-  preview-bump:
-    if: github.event_name == 'pull_request'
+  helm-versioning:
     runs-on: ubuntu-latest
 
     steps:
@@ -16,17 +15,29 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Fetch base branch
-        run: git fetch origin ${{ github.base_ref }}
-
       - name: Install yq
         run: |
           curl -fsSL https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -o /usr/local/bin/yq
           chmod +x /usr/local/bin/yq
 
-      - name: Compute version bumps
-        id: preview
+      - name: Determine mode + diff range
+        id: context
         run: |
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            echo "mode=preview" >> $GITHUB_OUTPUT
+            git fetch origin ${{ github.base_ref }}
+            echo "diff=origin/${{ github.base_ref }} HEAD" >> $GITHUB_OUTPUT
+          else
+            echo "mode=apply" >> $GITHUB_OUTPUT
+            echo "diff=${{ github.event.before }} ${{ github.sha }}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Run Helm version logic
+        id: bump
+        run: |
+          MODE="${{ steps.context.outputs.mode }}"
+          DIFF_RANGE="${{ steps.context.outputs.diff }}"
+
           WATCHED_DIRS=(
             "stable/argocd-instance"
             "stable/argocd-operator"
@@ -38,9 +49,10 @@ jobs:
           )
 
           OUTPUT="### 🚀 Helm Chart Version Preview\n"
+          CHANGED=false
 
           for DIR in "${WATCHED_DIRS[@]}"; do
-            if git diff --name-only origin/${{ github.base_ref }} HEAD | grep -q "^${DIR}/"; then
+            if git diff --name-only $DIFF_RANGE | grep -q "^${DIR}/"; then
               CHART_FILE="${DIR}/Chart.yaml"
 
               CURRENT_VERSION=$(yq e '.version' "$CHART_FILE")
@@ -51,9 +63,6 @@ jobs:
                   MINOR=$((MINOR+1))
                   PATCH=0
                   ;;
-                stable/aurora-platform|stable/aurora-solution)
-                  PATCH=$((PATCH+1))
-                  ;;
                 *)
                   PATCH=$((PATCH+1))
                   ;;
@@ -62,6 +71,12 @@ jobs:
               NEW_VERSION="$MAJOR.$MINOR.$PATCH"
 
               OUTPUT="$OUTPUT\n- \`$DIR\`: $CURRENT_VERSION → **$NEW_VERSION**"
+
+              if [[ "$MODE" == "apply" ]]; then
+                yq e -i ".version = \"$NEW_VERSION\"" "$CHART_FILE"
+                echo "Updated $CHART_FILE: $CURRENT_VERSION -> $NEW_VERSION"
+                CHANGED=true
+              fi
             fi
           done
 
@@ -73,10 +88,13 @@ jobs:
           echo -e "$OUTPUT" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
 
+          echo "changed=$CHANGED" >> $GITHUB_OUTPUT
+
       - name: Comment on PR
+        if: github.event_name == 'pull_request'
         uses: actions/github-script@v7
         env:
-          BODY: ${{ steps.preview.outputs.body }}
+          BODY: ${{ steps.bump.outputs.body }}
         with:
           script: |
             const body = process.env.BODY;
@@ -108,71 +126,8 @@ jobs:
               });
             }
 
-  bump-helm-versions:
-    if: github.event_name == 'push'
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-
-      - name: Install yq
-        run: |
-          curl -fsSL https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -o /usr/local/bin/yq
-          chmod +x /usr/local/bin/yq
-
-      - name: Bump Helm chart versions
-        id: bump
-        run: |
-          set -e
-
-          WATCHED_DIRS=(
-            "stable/argocd-instance"
-            "stable/argocd-operator"
-            "stable/aurora-namespace"
-            "stable/aurora-platform"
-            "stable/aurora-solution"
-            "stable/istio-custom-responses"
-            "stable/istio-ingress-gateway"
-          )
-
-          CHANGED=false
-
-          for DIR in "${WATCHED_DIRS[@]}"; do
-            if git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep -q "^${DIR}/"; then
-              CHART_FILE="${DIR}/Chart.yaml"
-
-              CURRENT_VERSION=$(yq e '.version' "$CHART_FILE")
-              IFS='.' read -r MAJOR MINOR PATCH <<< "$CURRENT_VERSION"
-
-              case "$DIR" in
-                stable/argocd-instance)
-                  MINOR=$((MINOR+1))
-                  PATCH=0
-                  ;;
-                stable/aurora-platform|stable/aurora-solution)
-                  PATCH=$((PATCH+1))
-                  ;;
-                *)
-                  PATCH=$((PATCH+1))
-                  ;;
-              esac
-
-              NEW_VERSION="$MAJOR.$MINOR.$PATCH"
-
-              yq e -i ".version = \"$NEW_VERSION\"" "$CHART_FILE"
-
-              echo "Updated $CHART_FILE: $CURRENT_VERSION -> $NEW_VERSION"
-
-              CHANGED=true
-            fi
-          done
-
-          echo "changed=$CHANGED" >> $GITHUB_OUTPUT
-
       - name: Commit and push
-        if: steps.bump.outputs.changed == 'true'
+        if: github.event_name == 'push' && steps.bump.outputs.changed == 'true'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
