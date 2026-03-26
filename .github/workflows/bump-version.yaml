@@ -1,4 +1,3 @@
-```yaml
 name: Bump Helm Chart Versions
 
 on:
@@ -178,4 +177,3 @@ jobs:
           git add stable/*/Chart.yaml
           git commit -m "ci: Auto bump Chart.yaml"
           git push origin HEAD:main
-```
