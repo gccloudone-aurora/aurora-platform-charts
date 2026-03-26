@@ -38,57 +38,57 @@ jobs:
           MODE="${{ steps.context.outputs.mode }}"
           DIFF_RANGE="${{ steps.context.outputs.diff }}"
 
-          WATCHED_DIRS=(
-            "stable/argocd-instance"
-            "stable/argocd-operator"
-            "stable/aurora-namespace"
-            "stable/aurora-platform"
-            "stable/aurora-solution"
-            "stable/istio-custom-responses"
-            "stable/istio-ingress-gateway"
-          )
+            WATCHED_DIRS=(
+              "stable/argocd-instance"
+              "stable/argocd-operator"
+              "stable/aurora-namespace"
+              "stable/aurora-platform"
+              "stable/aurora-solution"
+              "stable/istio-custom-responses"
+              "stable/istio-ingress-gateway"
+            )
 
-          OUTPUT="### 🚀 Helm Chart Version Preview\n"
-          CHANGED=false
+            OUTPUT="### 🚀 Helm Chart Version Preview\n"
+            CHANGED=false
 
-          CHANGED_FILES=$(git diff --name-only $DIFF_RANGE)
+            CHANGED_FILES=$(git diff --name-only $DIFF_RANGE)
 
-          for DIR in "${WATCHED_DIRS[@]}"; do
-            if echo "$CHANGED_FILES" | grep -q "^${DIR}/"; then
+            for DIR in "${WATCHED_DIRS[@]}"; do
+              if echo "$CHANGED_FILES" | grep -q "^${DIR}/"; then
 
-              # 🚫 Skip if Chart.yaml manually edited
-              if echo "$CHANGED_FILES" | grep -q "^${DIR}/Chart.yaml$"; then
-                echo "Skipping $DIR (Chart.yaml manually modified)"
-                OUTPUT="$OUTPUT\n- \`$DIR\`: ⏭️ skipped (manual version change)"
-                continue
+                # 🚫 Skip if Chart.yaml manually edited
+                if echo "$CHANGED_FILES" | grep -q "^${DIR}/Chart.yaml$"; then
+                  echo "Skipping $DIR (Chart.yaml manually modified)"
+                  OUTPUT="$OUTPUT\n- \`$DIR\`: ⏭️ skipped (manual version change)"
+                  continue
+                fi
+
+                CHART_FILE="${DIR}/Chart.yaml"
+
+                CURRENT_VERSION=$(yq e '.version' "$CHART_FILE")
+                IFS='.' read -r MAJOR MINOR PATCH <<< "$CURRENT_VERSION"
+
+                case "$DIR" in
+                  stable/argocd-instance)
+                    MINOR=$((MINOR+1))
+                    PATCH=0
+                    ;;
+                  *)
+                    PATCH=$((PATCH+1))
+                    ;;
+                esac
+
+                NEW_VERSION="$MAJOR.$MINOR.$PATCH"
+
+                OUTPUT="$OUTPUT\n- \`$DIR\`: $CURRENT_VERSION → **$NEW_VERSION**"
+
+                if [[ "$MODE" == "apply" ]]; then
+                  yq e -i ".version = \"$NEW_VERSION\"" "$CHART_FILE"
+                  echo "Updated $CHART_FILE: $CURRENT_VERSION -> $NEW_VERSION"
+                  CHANGED=true
+                fi
               fi
-
-              CHART_FILE="${DIR}/Chart.yaml"
-
-              CURRENT_VERSION=$(yq e '.version' "$CHART_FILE")
-              IFS='.' read -r MAJOR MINOR PATCH <<< "$CURRENT_VERSION"
-
-              case "$DIR" in
-                stable/argocd-instance)
-                  MINOR=$((MINOR+1))
-                  PATCH=0
-                  ;;
-                *)
-                  PATCH=$((PATCH+1))
-                  ;;
-              esac
-
-              NEW_VERSION="$MAJOR.$MINOR.$PATCH"
-
-              OUTPUT="$OUTPUT\n- \`$DIR\`: $CURRENT_VERSION → **$NEW_VERSION**"
-
-              if [[ "$MODE" == "apply" ]]; then
-                yq e -i ".version = \"$NEW_VERSION\"" "$CHART_FILE"
-                echo "Updated $CHART_FILE: $CURRENT_VERSION -> $NEW_VERSION"
-                CHANGED=true
-              fi
-            fi
-          done
+            done
 
               OUTPUT="$OUTPUT\n- \`$DIR\`: $CURRENT_VERSION → **$NEW_VERSION**"
 
