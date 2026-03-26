@@ -19,7 +19,7 @@ spec:
     enabled: false
 
   grafana:
-    enabled: false
+    enabled: true
     ingress:
       enabled: false
     route:
