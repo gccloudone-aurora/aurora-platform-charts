@@ -56,14 +56,14 @@ spec:
                             set -o errexit
                             set -o xtrace
 
-                            # Detect Package Manager (Support both Ubuntu and Azure Linux)
+                            # Package Installation with Cleanup to save memory
                             if command -v apt-get &> /dev/null; then
-                                apt-get update && apt-get install -y chrony
+                                apt-get update
+                                apt-get install -y chrony
+                                apt-get clean # Frees up local repository cache
                             elif command -v tdnf &> /dev/null; then
                                 tdnf install -y chrony
-                            else
-                                echo "No supported package manager found (apt or tdnf)"
-                                exit 1
+                                tdnf clean all
                             fi
 
                             # Disable other NTP daemons
