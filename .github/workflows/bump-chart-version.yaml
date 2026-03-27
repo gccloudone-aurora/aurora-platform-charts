@@ -84,7 +84,7 @@ jobs:
               OUTPUT="$OUTPUT\n- \`$DIR\`: $CURRENT_VERSION → **$NEW_VERSION**"
 
               if [[ "$MODE" == "apply" ]]; then
-                yq e -i ".version = \"$NEW_VERSION\"" "$CHART_FILE"
+                sed -i "s/^version: .*/version: $NEW_VERSION/" "$CHART_FILE"
                 CHANGED=true
               fi
             fi
