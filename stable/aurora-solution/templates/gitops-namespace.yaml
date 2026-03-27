@@ -8,7 +8,7 @@ metadata:
   finalizers:
     - resources-finalizer.argocd.argoproj.io
   labels:
-    app.kubernetes.io/names: namespace
+    app.kubernetes.io/name: namespace
     app.kubernetes.io/instance: {{ $.Release.Name }}
 spec:
   project: {{ $.Values.global.project }}

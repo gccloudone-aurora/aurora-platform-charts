@@ -10,7 +10,7 @@ metadata:
 spec:
   clientID: {{ $identity.clientID }}
   resourceID: {{ $identity.resourceID }}
-  type: 1
+  type: 0
 ---
 apiVersion: aadpodidentity.k8s.io/v1
 kind: AzureIdentityBinding

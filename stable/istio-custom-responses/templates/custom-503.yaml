@@ -11,7 +11,7 @@ spec:
       listener:
         filterChain:
           filter:
-            names: envoy.filters.network.http_connection_manager
+            name: envoy.filters.network.http_connection_manager
     patch:
       operation: MERGE
       value:

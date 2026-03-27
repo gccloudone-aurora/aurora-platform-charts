@@ -12,7 +12,6 @@ rules:
   - get
   - list
   - watch
-  - get
 - apiGroups:
   - argoproj.io
   resources:
