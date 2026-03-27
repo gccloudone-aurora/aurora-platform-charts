@@ -1,0 +1,142 @@
+name: Bump Helm Chart Versions
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  helm-versioning:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install yq
+        run: |
+          curl -fsSL https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -o /usr/local/bin/yq
+          chmod +x /usr/local/bin/yq
+
+      - name: Determine mode + diff range
+        id: context
+        run: |
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            echo "mode=preview" >> $GITHUB_OUTPUT
+            git fetch origin ${{ github.base_ref }}
+            echo "diff=origin/${{ github.base_ref }} HEAD" >> $GITHUB_OUTPUT
+          else
+            echo "mode=apply" >> $GITHUB_OUTPUT
+            echo "diff=${{ github.event.before }} ${{ github.sha }}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Run Helm version logic
+        id: bump
+        run: |
+          MODE="${{ steps.context.outputs.mode }}"
+          DIFF_RANGE="${{ steps.context.outputs.diff }}"
+
+          WATCHED_DIRS=(
+            "stable/argocd-instance"
+            "stable/argocd-operator"
+            "stable/aurora-namespace"
+            "stable/aurora-platform"
+            "stable/aurora-solution"
+            "stable/istio-custom-responses"
+            "stable/istio-ingress-gateway"
+          )
+
+          OUTPUT="### 🚀 Helm Chart Version Preview\n"
+          CHANGED=false
+
+          CHANGED_FILES=$(git diff --name-only $DIFF_RANGE)
+
+          for DIR in "${WATCHED_DIRS[@]}"; do
+            if echo "$CHANGED_FILES" | grep -q "^${DIR}/"; then
+              # Skip if Chart.yaml manually edited
+              if echo "$CHANGED_FILES" | grep -q "^${DIR}/Chart.yaml$"; then
+                echo "Skipping $DIR (Chart.yaml manually modified)"
+                OUTPUT="$OUTPUT\n- \`$DIR\`: ⏭️ skipped (manual version change)"
+                continue
+              fi
+
+              CHART_FILE="${DIR}/Chart.yaml"
+              CURRENT_VERSION=$(yq e '.version' "$CHART_FILE")
+              IFS='.' read -r MAJOR MINOR PATCH <<< "$CURRENT_VERSION"
+
+              case "$DIR" in
+                stable/argocd-instance)
+                  MINOR=$((MINOR+1))
+                  PATCH=0
+                  ;;
+                *)
+                  PATCH=$((PATCH+1))
+                  ;;
+              esac
+
+              NEW_VERSION="$MAJOR.$MINOR.$PATCH"
+              OUTPUT="$OUTPUT\n- \`$DIR\`: $CURRENT_VERSION → **$NEW_VERSION**"
+
+              if [[ "$MODE" == "apply" ]]; then
+                yq e -i ".version = \"$NEW_VERSION\"" "$CHART_FILE"
+                CHANGED=true
+              fi
+            fi
+          done
+
+          if [ "$OUTPUT" = "### 🚀 Helm Chart Version Preview\n" ]; then
+            OUTPUT="$OUTPUT\n_No chart version changes detected._"
+          fi
+
+          echo "body<<EOF" >> $GITHUB_OUTPUT
+          echo -e "$OUTPUT" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+          echo "changed=$CHANGED" >> $GITHUB_OUTPUT
+
+      - name: Comment on PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        env:
+          BODY: ${{ steps.bump.outputs.body }}
+        with:
+          script: |
+            const body = process.env.BODY;
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+
+            const botComment = comments.find(comment =>
+              comment.user.type === 'Bot' &&
+              comment.body.includes('Helm Chart Version Preview')
+            );
+
+            if (botComment) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: botComment.id,
+                body: body
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: body
+              });
+            }
+
+      - name: Create auto-bump PR
+        if: github.event_name == 'push' && steps.bump.outputs.changed == 'true'
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "ci: Auto bump Chart.yaml versions"
+          branch: "auto-bump-${{ github.run_id }}"
+          title: "Auto bump Helm Chart versions"
+          body: "This PR bumps Chart.yaml versions for changed charts."
+          base: main
+          paths: |
+            stable/*/Chart.yaml
