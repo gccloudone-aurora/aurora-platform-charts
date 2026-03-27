@@ -1,5 +1,6 @@
 {{/*
 Expand the name of the chart.
+# SOME CHANGE
 */}}
 {{- define "istio-custom-responses.name" -}}
 {{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" }}
