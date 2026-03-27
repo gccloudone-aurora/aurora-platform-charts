@@ -1448,19 +1448,19 @@ components:
     enabled: true
 
     image:
-      repository: busybox
-      tag: latest
+      repository: ubuntu
+      tag: '22.04'
 
     imagePullSecrets:
       - name: aurora-image-pull-secret
 
     resources:
       limits:
-        cpu: 10m
-        memory: 40Mi
+        cpu: 50m       # BUMPED: To handle package extraction
+        memory: 512Mi  # BUMPED: Critical fix for OOMKilled/Exit Code 137
       requests:
         cpu: 10m
-        memory: 40Mi
+        memory: 64Mi
 
     pools:
       - server: time.nrc.ca

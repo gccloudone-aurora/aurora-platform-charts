@@ -41,18 +41,36 @@ spec:
                     - name: configure-ntp
                       image: {{ include "ntp.image" . | quote }}
                       imagePullPolicy: IfNotPresent
+                      # Security context must be inside the container block
+                      securityContext:
+                        privileged: true
                       command:
-                        - /bin/chroot
+                        - chroot
                         - /mnt
                         - /bin/bash
                         - -c
                         - |
+                            # FIX 1: Hardcode the PATH. Do NOT use $PATH here.
+                            export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+                            
                             set -o errexit
                             set -o xtrace
 
-                            # Disable other NTP daemons if they are enabled
-                            systemctl is-active systemd-timesyncd && systemctl stop systemd-timesyncd
-                            systemctl is-enabled systemd-timesyncd && systemctl disable systemd-timesyncd
+                            # Package Installation with Cleanup to save memory
+                            if command -v apt-get &> /dev/null; then
+                                apt-get update && apt-get install -y chrony
+                                apt-get clean
+                            elif command -v tdnf &> /dev/null; then
+                                tdnf install -y chrony
+                                tdnf clean all
+                            fi
+
+                            # Disable other NTP daemons
+                            systemctl is-active systemd-timesyncd && systemctl stop systemd-timesyncd || true
+                            systemctl is-enabled systemd-timesyncd && systemctl disable systemd-timesyncd || true
+
+                            # FIX: Create the directory before writing the config file
+                            mkdir -p /etc/chrony
 
                             # Configure and enable chrony
                             cat >/etc/chrony/chrony.conf <<EOF
@@ -60,42 +78,25 @@ spec:
                             pool {{ .server }} {{ .options | default "" }}
                             {{- end }}
 
-                            # Once we have a newer chrony version, we can enable the hardware clock
-                            # as a last resort synchronization.
-                            #
-                            # https://learn.microsoft.com/en-us/azure/virtual-machines/linux/time-sync#chrony
-                            # refclock PHC /dev/ptp_hyperv poll 3 dpoll -2 offset 0 stratum 10
-
-                            # This directive specify the location of the file containing ID/key pairs for
-                            # NTP authentication.
                             keyfile /etc/chrony/chrony.keys
-
-                            # This directive specifies the file into which chronyd will store the rate
-                            # information.
                             driftfile /var/lib/chrony/chrony.drift
-
-                            # Uncomment the following line to turn logging on.
-                            #log tracking measurements statistics
-
-                            # Log files location.
                             logdir /var/log/chrony
-
-                            # Stop bad estimates upsetting machine clock.
                             maxupdateskew 100.0
-
-                            # This directive enables kernel synchronisation (every 11 minutes) of the
-                            # real-time clock. Note that it can't be used along with the 'rtcfile' directive.
                             rtcsync
-
-                            # Step the system clock instead of slewing it if the adjustment is larger than
-                            # one second, but only in the first three clock updates.
                             makestep 1.0 -1
                             EOF
 
-                            systemctl restart chrony
-                            systemctl enable chrony
+                            # Compatibility link for Azure Linux/RHEL style config paths
+                            ln -sf /etc/chrony/chrony.conf /etc/chrony.conf
 
-                            cat
+                            # Start the correct service (chrony vs chronyd)
+                            if systemctl list-unit-files | grep -q chronyd.service; then
+                                systemctl restart chronyd && systemctl enable chronyd
+                            else
+                                systemctl restart chrony && systemctl enable chrony
+                            fi
+
+                            sleep infinity
                       tty: true
                       volumeMounts:
                         - name: root
