@@ -12,8 +12,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
 
       - name: Install yq
         run: |
@@ -55,7 +53,6 @@ jobs:
 
           for DIR in "${WATCHED_DIRS[@]}"; do
             if echo "$CHANGED_FILES" | grep -q "^${DIR}/"; then
-
               # Skip if Chart.yaml manually edited
               if echo "$CHANGED_FILES" | grep -q "^${DIR}/Chart.yaml$"; then
                 echo "Skipping $DIR (Chart.yaml manually modified)"
@@ -64,7 +61,6 @@ jobs:
               fi
 
               CHART_FILE="${DIR}/Chart.yaml"
-
               CURRENT_VERSION=$(yq e '.version' "$CHART_FILE")
               IFS='.' read -r MAJOR MINOR PATCH <<< "$CURRENT_VERSION"
 
@@ -79,12 +75,10 @@ jobs:
               esac
 
               NEW_VERSION="$MAJOR.$MINOR.$PATCH"
-
               OUTPUT="$OUTPUT\n- \`$DIR\`: $CURRENT_VERSION → **$NEW_VERSION**"
 
               if [[ "$MODE" == "apply" ]]; then
                 yq e -i ".version = \"$NEW_VERSION\"" "$CHART_FILE"
-                echo "Updated $CHART_FILE: $CURRENT_VERSION -> $NEW_VERSION"
                 CHANGED=true
               fi
             fi
@@ -97,7 +91,6 @@ jobs:
           echo "body<<EOF" >> $GITHUB_OUTPUT
           echo -e "$OUTPUT" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
-
           echo "changed=$CHANGED" >> $GITHUB_OUTPUT
 
       - name: Comment on PR
@@ -108,7 +101,6 @@ jobs:
         with:
           script: |
             const body = process.env.BODY;
-
             const { data: comments } = await github.rest.issues.listComments({
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -136,11 +128,15 @@ jobs:
               });
             }
 
-      - name: Commit and push
+      - name: Create auto-bump PR
         if: github.event_name == 'push' && steps.bump.outputs.changed == 'true'
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add stable/*/Chart.yaml
-          git commit -m "ci: Auto bump Chart.yaml"
-          git push origin HEAD:main
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "ci: Auto bump Chart.yaml versions"
+          branch: "auto-bump-${{ github.run_id }}"
+          title: "Auto bump Helm Chart versions"
+          body: "This PR bumps Chart.yaml versions for changed charts."
+          base: main
+          paths: |
+            stable/*/Chart.yaml
