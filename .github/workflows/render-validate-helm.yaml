@@ -1,4 +1,4 @@
-name: Render and Validate Helm Template
+name: Render and Validate Aurora Platform Helm Chart
 
 on:
   pull_request:
@@ -29,7 +29,7 @@ jobs:
           tar -xzf kubeconform-linux-amd64.tar.gz kubeconform
           sudo mv kubeconform /usr/local/bin/
 
-      - name: Render Helm template
+      - name: Render Helm Chart
         run: |
           helm template aurora stable/aurora-platform \
             --namespace platform-management-system \

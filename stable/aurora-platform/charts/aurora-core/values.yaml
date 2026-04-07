@@ -30,7 +30,7 @@ global:
       repository:
 
   # azure or aws
-  provider: azure
+  provider: local
 
   # Cluster name for the Application targets.
   cluster: in-cluster
@@ -103,85 +103,6 @@ rbac:
 
 # Components
 components:
-  aadPodIdentity:
-    enabled: true
-
-    helm: {}
-      # chart: aad-pod-identity
-      # repository: https://raw.githubusercontent.com/Azure/aad-pod-identity/master/charts
-      # targetRevision: 4.1.18
-
-    imagePullSecrets: []
-    image:
-      # registry: mcr.microsoft.com/
-      repository: oss/azure/aad-pod-identity
-      # pullPolicy: IfNotPresent
-
-    mic:
-      image: mic
-      # tag: v1.8.17
-
-      replicas: 2
-      resources: {}
-        # limits:
-        #   cpu: ""
-        #   memory: ""
-        # requests:
-        #   cpu: ""
-        #   memory: ""
-      nodeSelector:
-        kubernetes.io/os: linux
-        "node.ssc-spc.gc.ca/use": "general"
-        "node.ssc-spc.gc.ca/purpose": "system"
-      tolerations:
-        - key: CriticalAddonsOnly
-          operator: Exists
-      affinity:
-        podAntiAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-          - weight: 1
-            podAffinityTerm:
-              topologyKey: kubernetes.io/hostname
-              labelSelector:
-                matchLabels:
-                  app.kubernetes.io/component: mic
-
-      podDisruptionBudget:
-        minAvailable: 1
-
-      priorityClassName: platform-cluster-medium
-
-      logging: {}
-        ## log level. Uses V logs (klog)
-        # verbosity:
-        # format:
-
-    nmi:
-      image: nmi
-      # tag: v1.8.17
-
-      resources: {}
-        # limits:
-        #   cpu: ""
-        #   memory: ""
-        # requests:
-        #   cpu: ""
-        #   memory: ""
-      nodeSelector:
-        kubernetes.io/os: linux
-
-      tolerations:
-        # NMI is a daemonset.
-        # An empty key with operator Exists matches all keys, values and effects which means this will tolerate everything.
-        - operator: Exists
-      affinity: {}
-      priorityClassName: platform-cluster-critical
-
-      logging: {}
-        ## log level. Uses V logs (klog)
-        # verbosity:
-        # format:
-
   auroraController:
     enabled: true
 
