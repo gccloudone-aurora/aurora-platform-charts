@@ -35,10 +35,8 @@ spec:
             spec:
               endpointSelector:
                 matchExpressions:
-                  - key: k8s:io.kubernetes.pod.namespace
-                    operator: NotIn
-                    values:
-                      - kube-system
+                  - key: k8s:io.cilium.k8s.namespace.labels.namespace.ssc-spc.gc.ca/purpose
+                    operator: DoesNotExist
               egress:
                 - toEndpoints:
                     - matchLabels:
@@ -73,10 +71,8 @@ spec:
             spec:
               endpointSelector:
                 matchExpressions:
-                  - key: k8s:io.kubernetes.pod.namespace
-                    operator: NotIn
-                    values:
-                      - kube-system
+                  - key: k8s:io.cilium.k8s.namespace.labels.namespace.ssc-spc.gc.ca/purpose
+                    operator: DoesNotExist
               ingress:
                 - fromEntities:
                   - remote-node
