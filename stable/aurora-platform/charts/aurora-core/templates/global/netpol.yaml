@@ -35,10 +35,12 @@ spec:
             spec:
               endpointSelector:
                 matchExpressions:
-                  - key: k8s:io.kubernetes.pod.namespace
-                    operator: NotIn
-                    values:
-                      - kube-system
+                - key: k8s:io.kubernetes.pod.namespace
+                  operator: NotIn
+                  values:
+                  - kube-system
+                - key: k8s:kubernetes.azure.com/managedby
+                  operator: DoesNotExist
               egress:
                 - toEndpoints:
                     - matchLabels:
@@ -76,7 +78,9 @@ spec:
                   - key: k8s:io.kubernetes.pod.namespace
                     operator: NotIn
                     values:
-                      - kube-system
+                    - kube-system
+                  - key: k8s:kubernetes.azure.com/managedby
+                    operator: DoesNotExist
               ingress:
                 - fromEntities:
                   - remote-node
