@@ -1,4 +1,5 @@
 {{ if .Values.components.istio.enabled -}}
+{{ if .Values.components.istio.ztunnel.enabled -}}
 
 apiVersion: argoproj.io/v1alpha1
 kind: Application
@@ -15,10 +16,12 @@ spec:
     helm:
       releaseName: ztunnel
       values: |
+
         enabled: true
-        resources: {{ toYaml .Values.components.istio.istiod.pilot.resources | nindent 12 }}
-        nodeSelector: {{ toYaml .Values.components.istio.istiod.pilot.nodeSelector | nindent 12 }}
-        tolerations: {{ toYaml .Values.components.istio.istiod.pilot.tolerations | nindent 12 }}
+        {{- default "{}" (include "ztunnel.image" .) | nindent 12 }}
+        resources: {{ toYaml .Values.components.istio.ztunnel.resources | nindent 12 }}
+        nodeSelector: {{ toYaml .Values.components.istio.ztunnel.nodeSelector | nindent 12 }}
+        tolerations: {{ toYaml .Values.components.istio.ztunnel.tolerations | nindent 12 }}
         
         global:
           priorityClassName: {{ .Values.components.istio.istiod.priorityClassName }}
@@ -31,4 +34,5 @@ spec:
       prune: true
       selfHeal: true
 
+{{- end }}
 {{- end }}

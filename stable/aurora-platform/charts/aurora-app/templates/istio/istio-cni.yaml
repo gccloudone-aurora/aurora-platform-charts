@@ -21,12 +21,13 @@ spec:
       values: |
         profile: ambient
         cni:
+          {{- default "{}" (include "istio-cni.image" .) | nindent 12 }}
           chained: true
           cniConfDir: /etc/cni/net.d
           cniBinDir: /opt/cni/bin
-          resources: {{ toYaml .Values.components.istio.istiod.pilot.resources | nindent 12 }}
-          nodeSelector: {{ toYaml .Values.components.istio.istiod.pilot.nodeSelector | nindent 12 }}
-          tolerations: {{ toYaml .Values.components.istio.istiod.pilot.tolerations | nindent 12 }}
+          resources: {{ toYaml .Values.components.istio.cni.resources | nindent 12 }}
+          nodeSelector: {{ toYaml .Values.components.istio.cni.nodeSelector | nindent 12 }}
+          tolerations: {{ toYaml .Values.components.istio.cni.tolerations | nindent 12 }}
           
         global:
           priorityClassName: {{ .Values.components.istio.istiod.priorityClassName }}
