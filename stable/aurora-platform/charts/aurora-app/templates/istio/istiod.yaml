@@ -19,6 +19,7 @@ spec:
     helm:
       releaseName: istiod
       values: |
+        profile: ambient
         pilot:
           {{- default "{}" (include "istiod.pilot.image" .) | nindent 10 }}
           replicaCount: {{ .Values.components.istio.istiod.pilot.replicas }}
