@@ -42,6 +42,11 @@ spec:
 
             cni:
               uninstall: false
+              exclusive: false        # Allows Istio-CNI to write its config
+
+            socketLB:
+              enabled: true
+              hostNamespaceOnly: true  # Prevents Cilium from bypassing Istio proxies
 
             {{ include "cilium.ipam" . | nindent 12 }}
 
