@@ -260,7 +260,42 @@ components:
     enabled: true
 
     imagePullSecrets: []
+    cni:
+      resources: {}
+        # limits:
+        #  cpu: ""
+        #  memory: ""
+        # requests:
+        #  cpu: ""
+        #  memory: ""
+      nodeSelector:
+        kubernetes.io/os: linux
+      tolerations:
+        - key: CriticalAddonsOnly
+          operator: Exists
+        # This tolerates the 'purpose' key regardless of what the value is (gateway, general, etc.)
+        - key: node.ssc-spc.gc.ca/purpose
+          operator: Exists
+          effect: NoSchedule
 
+    ztunnel:
+      enabled: true
+      resources: {}
+        # limits:
+        #  cpu: ""
+        #  memory: ""
+        # requests:
+        #  cpu: ""
+        #  memory: ""
+      nodeSelector:
+        kubernetes.io/os: linux
+      tolerations:
+        - key: CriticalAddonsOnly
+          operator: Exists
+        # This tolerates the 'purpose' key regardless of what the value is (gateway, general, etc.)
+        - key: node.ssc-spc.gc.ca/purpose
+          operator: Exists
+          effect: NoSchedule
     base:
       helm: {}
         # chart: base
@@ -289,12 +324,13 @@ components:
         #  memory: ""
       nodeSelector:
         kubernetes.io/os: linux
-        node.ssc-spc.gc.ca/purpose: gateway
       tolerations:
-        - key: "node.ssc-spc.gc.ca/purpose"
-          operator: "Equal"
-          value: "gateway"
-          effect: "NoSchedule"
+        - key: CriticalAddonsOnly
+          operator: Exists
+        # This tolerates the 'purpose' key regardless of what the value is (gateway, general, etc.)
+        - key: node.ssc-spc.gc.ca/purpose
+          operator: Exists
+          effect: NoSchedule
       affinity:
         podAntiAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
@@ -388,7 +424,6 @@ components:
           #   memory: ""
         nodeSelector:
           kubernetes.io/os: linux
-          node.ssc-spc.gc.ca/purpose: system
         tolerations:
           - key: CriticalAddonsOnly
             operator: Exists

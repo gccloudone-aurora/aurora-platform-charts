@@ -1,0 +1,43 @@
+{{ if .Values.components.istio.enabled -}}
+
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-istio-cni"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    chart: cni
+    {{- if .Values.components.istio.istiod.helm.repository }}
+    repoURL: {{ .Values.components.istio.istiod.helm.repository }}
+    {{- else }}
+    repoURL: {{ default "https://istio-release.storage.googleapis.com/charts" .Values.global.helm.repository }}
+    {{- end }}
+    targetRevision: {{ default "1.29.1" .Values.components.istio.istiod.helm.targetRevision }}
+    helm:
+      releaseName: istio-cni
+      values: |
+        profile: ambient
+        cni:
+          {{- default "{}" (include "istio-cni.image" .) | nindent 12 }}
+          chained: true
+          cniConfDir: /etc/cni/net.d
+          cniBinDir: /opt/cni/bin
+          resources: {{ toYaml .Values.components.istio.cni.resources | nindent 12 }}
+          nodeSelector: {{ toYaml .Values.components.istio.cni.nodeSelector | nindent 12 }}
+          tolerations: {{ toYaml .Values.components.istio.cni.tolerations | nindent 12 }}
+          
+        global:
+          priorityClassName: {{ .Values.components.istio.istiod.priorityClassName }}
+
+  destination:
+    name: '{{ .Values.global.cluster }}'
+    namespace: istio-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+
+{{- end }}
