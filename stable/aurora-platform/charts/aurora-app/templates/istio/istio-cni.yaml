@@ -19,12 +19,13 @@ spec:
     helm:
       releaseName: istio-cni
       values: |
-        profile: ambient
-        cni:
-          {{- default "{}" (include "istio-cni.image" .) | nindent 12 }}
+          ambient:
+            enabled: true
+            dnsCapture: true
+
           chained: true
-          cniConfDir: /etc/cni/net.d
           cniBinDir: /opt/cni/bin
+          cniConfDir: /etc/cni/net.d
           resources: {{ toYaml .Values.components.istio.cni.resources | nindent 12 }}
           nodeSelector: {{ toYaml .Values.components.istio.cni.nodeSelector | nindent 12 }}
           tolerations: {{ toYaml .Values.components.istio.cni.tolerations | nindent 12 }}
