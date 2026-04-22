@@ -26,13 +26,6 @@ global:
 
 core:
   components:
-    aadPodIdentity:
-      enabled: true
-
-      mic: {}
-
-      nmi: {}
-
     auroraController:
       enabled: true
 
