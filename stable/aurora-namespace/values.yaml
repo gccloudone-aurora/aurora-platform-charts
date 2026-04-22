@@ -51,9 +51,11 @@ policies:
 
   # Refer to https://kubernetes.io/docs/concepts/security/pod-security-admission/
   podSecurityAdmission:
-    enforce:
-      level: baseline    # @schema enum:[privileged, baseline, restricted]
-      version: v1.27
+    # TODO: Enable once moved to Istio Ambient Mesh
+    #       https://github.com/gccloudone-aurora/aurora-platform-charts/issues/33
+    # enforce:
+    #   level: baseline    # @schema enum:[privileged, baseline, restricted]
+    #   version: v1.27
     audit:
       level: baseline    # @schema enum:[privileged, baseline, restricted]
       version: v1.27
@@ -99,7 +101,7 @@ aadPodIdentities: {}
   #   clientID: ""     # @schema type:[string]
   #   resourceID: ""   # @schema type:[string]
 
-# Utilized if namespace.type = argocd-control-plane 
+# Utilized if namespace.type = argocd-control-plane
 argocd:
   deploymentRepoURL: ""
   project:
