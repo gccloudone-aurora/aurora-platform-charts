@@ -18,6 +18,8 @@ spec:
       values: |
 
         enabled: true
+        env:
+          ENABLE_ORIG_SRC: "false"
         {{- default "{}" (include "ztunnel.image" .) | nindent 12 }}
         resources: {{ toYaml .Values.components.istio.ztunnel.resources | nindent 12 }}
         nodeSelector: {{ toYaml .Values.components.istio.ztunnel.nodeSelector | nindent 12 }}
