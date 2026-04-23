@@ -26,7 +26,7 @@ spec:
               enabled: false
 
             {{- if .Values.components.cilium.k8sServiceHost }}
-            k8sServiceHost: {{ .Values.components.cilium.k8sServiceHost }} 
+            k8sServiceHost: {{ .Values.components.cilium.k8sServiceHost }}
             k8sServicePort: 443
             {{- end }}
 
@@ -42,11 +42,13 @@ spec:
 
             cni:
               uninstall: false
-              exclusive: false        # Allows Istio-CNI to write its config
+              # Allows Istio-CNI to write configuration to same directory as Cilium
+              exclusive: false
 
             socketLB:
               enabled: true
-              hostNamespaceOnly: true  # Prevents Cilium from bypassing Istio proxies
+              # Prevents Cilium from bypassing Istio proxies
+              hostNamespaceOnly: true
 
             {{ include "cilium.ipam" . | nindent 12 }}
 
@@ -100,7 +102,7 @@ spec:
               nodeSelector: {{ toYaml .Values.components.cilium.nodeSelector | nindent 16 }}
               tolerations: {{ toYaml .Values.components.cilium.tolerations | nindent 16 }}
               prometheus:
-                enabled: false  
+                enabled: false
 
             # etcd mode for the agent
             etcd:
@@ -108,7 +110,7 @@ spec:
               image: {{ default "{}" (include "cilium.etcd.image" .) | nindent 16 }}
               tolerations:
                 - operator: Exists
-            
+
             envoy:
               enabled: false
               image: {{ default "{}" (include "cilium.envoy.image" .) | nindent 16 }}

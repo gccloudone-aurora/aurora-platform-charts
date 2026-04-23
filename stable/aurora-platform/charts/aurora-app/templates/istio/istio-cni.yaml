@@ -9,24 +9,27 @@ metadata:
 spec:
   project: {{ .Values.global.project }}
   source:
-    chart: cni
-    {{- if .Values.components.istio.istiod.helm.repository }}
-    repoURL: {{ .Values.components.istio.istiod.helm.repository }}
+    chart: {{ default "cni" .Values.components.istio.cni.helm.chart }}
+    {{- if .Values.components.istio.cni.helm.repository }}
+    repoURL: {{ .Values.components.istio.cni.helm.repository }}
     {{- else }}
     repoURL: {{ default "https://istio-release.storage.googleapis.com/charts" .Values.global.helm.repository }}
     {{- end }}
-    targetRevision: {{ default "1.29.1" .Values.components.istio.istiod.helm.targetRevision }}
+    targetRevision: {{ default "1.29.1" .Values.components.istio.cni.helm.targetRevision }}
     helm:
       releaseName: istio-cni
       values: |
-          ambient:
-            enabled: true
-          resources: {{ toYaml .Values.components.istio.cni.resources | nindent 12 }}
-          nodeSelector: {{ toYaml .Values.components.istio.cni.nodeSelector | nindent 12 }}
-          tolerations: {{ toYaml .Values.components.istio.cni.tolerations | nindent 12 }}
-          
+        ambient:
+          enabled: true
+
+        {{- default "{}" (include "istio-cni.image" .) | nindent 10 }}
+
+        resources: {{ toYaml .Values.components.istio.cni.resources | nindent 10 }}
+        nodeSelector: {{ toYaml .Values.components.istio.cni.nodeSelector | nindent 10 }}
+        tolerations: {{ toYaml .Values.components.istio.cni.tolerations | nindent 10 }}
+
         global:
-          priorityClassName: {{ .Values.components.istio.istiod.priorityClassName }}
+          priorityClassName: {{ .Values.components.istio.cni.priorityClassName }}
 
   destination:
     name: '{{ .Values.global.cluster }}'
