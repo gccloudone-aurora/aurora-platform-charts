@@ -61,7 +61,7 @@ policies:
       version: v1.35
     warn:
       level: baseline    # @schema enum:[privileged, baseline, restricted];
-      version: v1.27
+      version: v1.35
 
 # Defines the access control on the namespace.
 # Roles will be assigned based on the namespace type.
