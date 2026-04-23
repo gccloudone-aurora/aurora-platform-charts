@@ -273,6 +273,13 @@ components:
         # repository: https://istio-release.storage.googleapis.com/charts
         # targetRevision: 1.29.1
 
+      image:
+        # registry: docker.io
+        repository: install-cni
+        # tag: "1.29.1"
+        # pullPolicy: IfNotPresent
+        # variant: distroless
+
       resources: {}
         # limits:
         #  cpu: ""
@@ -453,6 +460,13 @@ components:
         # chart: ztunnel
         # repository: https://istio-release.storage.googleapis.com/charts
         # targetRevision: 1.29.1
+
+      image:
+        # registry: docker.io
+        repository: ztunnel
+        # tag: "1.29.1"
+        # pullPolicy: IfNotPresent
+        # variant: distroless
 
       resources: {}
         # limits:
