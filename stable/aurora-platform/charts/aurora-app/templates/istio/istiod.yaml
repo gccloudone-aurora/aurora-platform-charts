@@ -19,6 +19,8 @@ spec:
     helm:
       releaseName: istiod
       values: |
+
+        profile: ambient
         pilot:
           {{- default "{}" (include "istiod.pilot.image" .) | nindent 10 }}
           replicaCount: {{ .Values.components.istio.istiod.pilot.replicas }}
@@ -34,6 +36,7 @@ spec:
           env:
             PILOT_HTTP10: 'true'
             PILOT_JWT_ENABLE_REMOTE_JWKS: 'envoy'
+            PILOT_ENABLE_AMBIENT: 'true'
 
         global:
           {{- default "{}" (include "istiod.image" .) | nindent 10 }}

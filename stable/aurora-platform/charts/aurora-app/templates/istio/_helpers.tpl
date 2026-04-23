@@ -83,3 +83,51 @@ imagePullSecrets: {{ .Values.components.istio.imagePullSecrets }}
 variant: {{ .Values.components.istio.istiod.proxy.image.variant }}
 {{- end }}
 {{- end }}
+
+
+{{/*
+The image section for istio-cni.
+*/}}
+{{- define "istio-cni.image" -}}
+{{- if (and .Values.components.istio.cni.image.registry .Values.components.istio.cni.image.repository) }}
+hub: {{ printf "%s/%s" .Values.components.istio.cni.image.registry .Values.components.istio.cni.image.repository }}
+{{- else if .Values.components.istio.cni.image.repository }}
+hub: {{ printf "%s/%s" (default "docker.io" .Values.global.container.registry) .Values.components.istio.cni.image.repository }}
+{{- end }}
+{{- if .Values.components.istio.cni.image.tag }}
+tag: {{ .Values.components.istio.cni.image.tag }}
+{{- end }}
+{{- if .Values.components.istio.cni.image.pullPolicy }}
+imagePullPolicy: {{ .Values.components.istio.cni.image.pullPolicy }}
+{{- end }}
+{{- if .Values.components.istio.imagePullSecrets }}
+imagePullSecrets: {{ .Values.components.istio.imagePullSecrets }}
+{{- end }}
+{{- if .Values.components.istio.cni.image.variant }}
+variant: {{ .Values.components.istio.cni.image.variant }}
+{{- end }}
+{{- end }}
+
+
+{{/*
+The image section for ztunnel.
+*/}}
+{{- define "ztunnel.image" -}}
+{{- if (and .Values.components.istio.ztunnel.image.registry .Values.components.istio.ztunnel.image.repository) }}
+hub: {{ printf "%s/%s" .Values.components.istio.ztunnel.image.registry .Values.components.istio.ztunnel.image.repository }}
+{{- else if .Values.components.istio.ztunnel.image.repository }}
+hub: {{ printf "%s/%s" (default "docker.io" .Values.global.container.registry) .Values.components.istio.ztunnel.image.repository }}
+{{- end }}
+{{- if .Values.components.istio.ztunnel.image.tag }}
+tag: {{ .Values.components.istio.ztunnel.image.tag }}
+{{- end }}
+{{- if .Values.components.istio.ztunnel.image.pullPolicy }}
+imagePullPolicy: {{ .Values.components.istio.ztunnel.image.pullPolicy }}
+{{- end }}
+{{- if .Values.components.istio.imagePullSecrets }}
+imagePullSecrets: {{ .Values.components.istio.imagePullSecrets }}
+{{- end }}
+{{- if .Values.components.istio.ztunnel.image.variant }}
+variant: {{ .Values.components.istio.ztunnel.image.variant }}
+{{- end }}
+{{- end }}

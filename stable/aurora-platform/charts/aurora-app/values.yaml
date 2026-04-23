@@ -265,7 +265,39 @@ components:
       helm: {}
         # chart: base
         # repository: https://istio-release.storage.googleapis.com/charts
-        # targetRevision: 1.16.1
+        # targetRevision: 1.29.1
+
+    cni:
+      helm: {}
+        # chart: cni
+        # repository: https://istio-release.storage.googleapis.com/charts
+        # targetRevision: 1.29.1
+
+      image:
+        # registry: docker.io
+        repository: install-cni
+        # tag: "1.29.1"
+        # pullPolicy: IfNotPresent
+        # variant: distroless
+
+      resources: {}
+        # limits:
+        #  cpu: ""
+        #  memory: ""
+        # requests:
+        #  cpu: ""
+        #  memory: ""
+      nodeSelector:
+        kubernetes.io/os: linux
+      tolerations:
+        - key: CriticalAddonsOnly
+          operator: Exists
+        # This tolerates the 'purpose' key regardless of what the value is (gateway, general, etc.)
+        - key: node.ssc-spc.gc.ca/purpose
+          operator: Exists
+          effect: NoSchedule
+
+      priorityClassName: platform-cluster-critical
 
     istioCustomResponses:
       helm: {}
@@ -353,12 +385,12 @@ components:
       helm: {}
         # chart: istiod
         # repository: https://istio-release.storage.googleapis.com/charts
-        # targetRevision: 1.16.1
+        # targetRevision: 1.29.1
 
       image:
         # registry: docker.io
         repository: istio
-        # tag: "1.16.1"
+        # tag: "1.29.1"
         # pullPolicy: IfNotPresent
         # variant: distroless
 
@@ -374,7 +406,7 @@ components:
         image:
           # registry: docker.io
           repository: istio
-          # tag: "1.16.1"
+          # tag: "1.29.1"
           # pullPolicy: IfNotPresent
           # variant: distroless
 
@@ -406,7 +438,7 @@ components:
         image:
           # registry: docker.io
           repository: istio
-          # tag: "1.16.1"
+          # tag: "1.29.1"
           # pullPolicy: IfNotPresent
           # variant: distroless
 
@@ -422,6 +454,38 @@ components:
 
       oauth2:
         enabled: false
+
+    ztunnel:
+      helm: {}
+        # chart: ztunnel
+        # repository: https://istio-release.storage.googleapis.com/charts
+        # targetRevision: 1.29.1
+
+      image:
+        # registry: docker.io
+        repository: ztunnel
+        # tag: "1.29.1"
+        # pullPolicy: IfNotPresent
+        # variant: distroless
+
+      resources: {}
+        # limits:
+        #  cpu: ""
+        #  memory: ""
+        # requests:
+        #  cpu: ""
+        #  memory: ""
+      nodeSelector:
+        kubernetes.io/os: linux
+      tolerations:
+        - key: CriticalAddonsOnly
+          operator: Exists
+        # This tolerates the 'purpose' key regardless of what the value is (gateway, general, etc.)
+        - key: node.ssc-spc.gc.ca/purpose
+          operator: Exists
+          effect: NoSchedule
+
+      priorityClassName: platform-cluster-critical
 
     networkPolicy:
       ingressGeneral:

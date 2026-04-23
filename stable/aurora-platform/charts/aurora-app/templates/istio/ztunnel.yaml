@@ -1,0 +1,44 @@
+{{ if .Values.components.istio.enabled -}}
+{{ if .Values.components.istio.ztunnel.enabled -}}
+
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-istio-ztunnel"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    chart: {{ default "ztunnel" .Values.components.istio.ztunnel.helm.chart }}
+    {{- if .Values.components.istio.ztunnel.helm.repository }}
+    repoURL: {{ .Values.components.istio.ztunnel.helm.repository }}
+    {{- else }}
+    repoURL: {{ default "https://istio-release.storage.googleapis.com/charts" .Values.global.helm.repository }}
+    {{- end }}
+    targetRevision: {{ default "1.29.1" .Values.components.istio.ztunnel.helm.targetRevision }}
+    helm:
+      releaseName: ztunnel
+      values: |
+        env:
+          ENABLE_ORIG_SRC: "false"
+
+        {{- default "{}" (include "ztunnel.image" .) | nindent 10 }}
+
+        resources: {{ toYaml .Values.components.istio.ztunnel.resources | nindent 10 }}
+        nodeSelector: {{ toYaml .Values.components.istio.ztunnel.nodeSelector | nindent 10 }}
+        tolerations: {{ toYaml .Values.components.istio.ztunnel.tolerations | nindent 10 }}
+
+        global:
+          priorityClassName: {{ .Values.components.istio.ztunnel.priorityClassName }}
+
+  destination:
+    name: '{{ .Values.global.cluster }}'
+    namespace: istio-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+
+{{- end }}
+{{- end }}
