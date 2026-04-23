@@ -53,6 +53,7 @@ spec:
             # - www.example.ca/
             # - www.example.ca
 
+<<<<<<< HEAD
           # Configure the data plane mode for Istio.
           # "sidecar" Enables sidecar injection (istio-injection=enabled).
           # "ambient" Enables Ambient Mesh (istio.io/dataplane-mode=ambient).
@@ -60,6 +61,16 @@ spec:
           istioMode: {{ $policies.istioMode }}
           {{- end }}
 
+||||||| parent of e27e3c1 (feat(istio): Switch namespace logic handling for ambient / sidecar)
+          # Boolean which defines if the namespace should have Istio injection.
+          istioInjection: {{ $policies.istioInjection }}
+=======
+          # Configure the data plane mode for Istio.
+          # "sidecar" Enables sidecar injection (istio-injection=enabled).
+          # "ambient" Enables Ambient Mesh (istio.io/dataplane-mode=ambient).
+          istioMode: {{ $policies.istioMode }}
+
+>>>>>>> e27e3c1 (feat(istio): Switch namespace logic handling for ambient / sidecar)
           # Boolean which defines if trust-manager should create certificate configMap in namespace
           trustManagerBundleInjection: {{ $policies.trustManagerBundleInjection }}
 
