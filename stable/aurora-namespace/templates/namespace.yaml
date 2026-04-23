@@ -15,7 +15,11 @@ metadata:
     {{- if .Values.namespace.labels }}
     {{- toYaml .Values.namespace.labels | nindent 4 }}
     {{- end }}
-    istio-injection: {{ ternary "enabled" "disabled" .Values.policies.istioInjection }}
+    {{- if eq .Values.policies.istioMode "sidecar" }}
+    istio-injection: enabled
+    {{- else if eq .Values.policies.istioMode "ambient" }}
+    istio.io/dataplane-mode: ambient
+    {{- end }}
     {{- if .Values.policies.trustManagerBundleInjection }}
     namespace.ssc-spc.gc.ca/trust-manager: active
     {{- end }}

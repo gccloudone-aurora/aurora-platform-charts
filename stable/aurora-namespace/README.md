@@ -43,7 +43,6 @@ Aurora Namespace
 | namespace.type | string | `nil` |  |
 | netpol.allowSameNamespace | bool | `true` |  |
 | policies.allowedHosts | list | `[]` |  |
-| policies.istioInjection | bool | `false` |  |
 | policies.podSecurityAdmission.audit.level | string | `"baseline"` |  |
 | policies.podSecurityAdmission.audit.version | string | `"v1.27"` |  |
 | policies.podSecurityAdmission.enforce.level | string | `"baseline"` |  |

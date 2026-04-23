@@ -37,8 +37,10 @@ policies:
     - www.example.ca/service
     - www.example.ca/
     - www.example.ca
-  # Boolean which defines if the namespace should have Istio injection.
-  istioInjection: true
+  # Configure the data plane mode for Istio.
+  # "sidecar" Enables sidecar injection (istio-injection=enabled).
+  # "ambient" Enables Ambient Mesh (istio.io/dataplane-mode=ambient).
+  istioMode: "ambient"
 
 # Define AAD Pod Identity information.
 aadPodIdentities:
