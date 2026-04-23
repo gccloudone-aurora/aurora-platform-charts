@@ -58,7 +58,7 @@ policies:
     #   version: v1.27
     audit:
       level: baseline    # @schema enum:[privileged, baseline, restricted]
-      version: v1.27
+      version: v1.35
     warn:
       level: baseline    # @schema enum:[privileged, baseline, restricted];
       version: v1.27
