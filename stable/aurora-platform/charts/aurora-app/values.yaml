@@ -275,7 +275,7 @@ components:
 
       image:
         # registry: docker.io
-        repository: install-cni
+        repository: istio
         # tag: "1.29.1"
         # pullPolicy: IfNotPresent
         # variant: distroless
@@ -456,6 +456,8 @@ components:
         enabled: false
 
     ztunnel:
+      enabled: true
+
       helm: {}
         # chart: ztunnel
         # repository: https://istio-release.storage.googleapis.com/charts
@@ -463,7 +465,7 @@ components:
 
       image:
         # registry: docker.io
-        repository: ztunnel
+        repository: istio
         # tag: "1.29.1"
         # pullPolicy: IfNotPresent
         # variant: distroless
