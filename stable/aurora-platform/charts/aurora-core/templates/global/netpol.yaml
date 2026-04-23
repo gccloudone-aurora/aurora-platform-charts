@@ -92,7 +92,7 @@ spec:
               description: "Generic symmetrical allow for all Ambient mesh namespaces"
               endpointSelector:
                 matchExpressions:
-                  - key: "k8s.io.cilium.k8s.namespace.labels.istio.io/dataplane-mode"
+                  - key: "k8s:io.cilium.k8s.namespace.labels.istio.io/dataplane-mode"
                     operator: In
                     values: ["ambient"]
               ingress:
