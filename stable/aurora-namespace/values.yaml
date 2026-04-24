@@ -53,11 +53,9 @@ policies:
 
   # Refer to https://kubernetes.io/docs/concepts/security/pod-security-admission/
   podSecurityAdmission:
-    # TODO: Enable once moved to Istio Ambient Mesh
-    #       https://github.com/gccloudone-aurora/aurora-platform-charts/issues/33
-    # enforce:
-    #   level: baseline    # @schema enum:[privileged, baseline, restricted]
-    #   version: v1.27
+    enforce:
+      level: privileged    # @schema enum:[privileged, baseline, restricted]
+      version: v1.35
     audit:
       level: baseline    # @schema enum:[privileged, baseline, restricted]
       version: v1.35
