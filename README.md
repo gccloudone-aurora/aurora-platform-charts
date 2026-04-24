@@ -22,7 +22,7 @@ Please consult the [Project Aurora Template](https://github.com/gccloudone-auror
 - **Documentation:** [README](./stable/argocd-operator/README.md)
 
 ## aurora-namespace
-- **Version:** 0.0.11
+- **Version:** 0.0.12
 - **Description:** Aurora Namespace
 - **Documentation:** [README](./stable/aurora-namespace/README.md)
 - **Dependencies:**
@@ -93,7 +93,7 @@ Please consult the [Project Aurora Template](https://github.com/gccloudone-auror
 - **Documentation:** [README](./stable/aurora-platform/charts/aurora-mgmt/README.md)
 
 ## aurora-solution
-- **Version:** 0.0.22
+- **Version:** 0.0.23
 - **Description:** Aurora Solution
 - **Documentation:** [README](./stable/aurora-solution/README.md)
 
