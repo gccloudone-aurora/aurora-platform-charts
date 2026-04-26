@@ -1,6 +1,6 @@
 # aurora-namespace
 
-![Version: 0.0.13](https://img.shields.io/badge/Version-0.0.13-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.0.0](https://img.shields.io/badge/AppVersion-2.0.0-informational?style=flat-square)
+![Version: 0.0.14](https://img.shields.io/badge/Version-0.0.14-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.0.0](https://img.shields.io/badge/AppVersion-2.0.0-informational?style=flat-square)
 
 Aurora Namespace
 
@@ -43,13 +43,12 @@ Aurora Namespace
 | namespace.type | string | `nil` |  |
 | netpol.allowSameNamespace | bool | `true` |  |
 | policies.allowedHosts | list | `[]` |  |
-| policies.istioInjection | bool | `false` |  |
 | policies.podSecurityAdmission.audit.level | string | `"baseline"` |  |
-| policies.podSecurityAdmission.audit.version | string | `"v1.27"` |  |
-| policies.podSecurityAdmission.enforce.level | string | `"baseline"` |  |
-| policies.podSecurityAdmission.enforce.version | string | `"v1.27"` |  |
+| policies.podSecurityAdmission.audit.version | string | `"v1.35"` |  |
+| policies.podSecurityAdmission.enforce.level | string | `"privileged"` |  |
+| policies.podSecurityAdmission.enforce.version | string | `"v1.35"` |  |
 | policies.podSecurityAdmission.warn.level | string | `"baseline"` |  |
-| policies.podSecurityAdmission.warn.version | string | `"v1.27"` |  |
+| policies.podSecurityAdmission.warn.version | string | `"v1.35"` |  |
 | policies.trustManagerBundleInjection | bool | `false` |  |
 | raw.resources | list | `[]` |  |
 | rbac.groups | list | `[]` |  |

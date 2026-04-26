@@ -1,6 +1,6 @@
 # aurora-platform
 
-![Version: 0.0.203](https://img.shields.io/badge/Version-0.0.203-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.0.0](https://img.shields.io/badge/AppVersion-2.0.0-informational?style=flat-square)
+![Version: 0.0.206](https://img.shields.io/badge/Version-0.0.206-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.0.0](https://img.shields.io/badge/AppVersion-2.0.0-informational?style=flat-square)
 
 Aurora Platform
 
@@ -36,7 +36,7 @@ Aurora Platform
 | global.loggingCidrs[0] | string | `"192.0.2.10/32"` |  |
 | global.namespace.helm.chart | string | `"aurora-namespace"` |  |
 | global.namespace.helm.repository | string | `"https://gccloudone-aurora.github.io/aurora-platform-charts"` |  |
-| global.namespace.helm.targetRevision | string | `"0.0.1"` |  |
+| global.namespace.helm.targetRevision | string | `"0.0.14"` |  |
 | global.provider | string | `"azure"` |  |
 | global.raw.helm.chart | string | `"raw"` |  |
 | global.raw.helm.repository | string | `"https://gccloudone-aurora.github.io/aurora-platform-charts"` |  |

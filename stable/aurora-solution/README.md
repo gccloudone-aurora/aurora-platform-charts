@@ -1,6 +1,6 @@
 # aurora-solution
 
-![Version: 0.0.24](https://img.shields.io/badge/Version-0.0.24-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.0.0](https://img.shields.io/badge/AppVersion-2.0.0-informational?style=flat-square)
+![Version: 0.0.25](https://img.shields.io/badge/Version-0.0.25-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.0.0](https://img.shields.io/badge/AppVersion-2.0.0-informational?style=flat-square)
 
 Aurora Solution
 
@@ -41,7 +41,6 @@ Aurora Solution
 | namespace.type | string | `nil` |  |
 | netpol.allowSameNamespace | bool | `true` |  |
 | policies.allowedHosts | list | `[]` |  |
-| policies.istioInjection | bool | `false` |  |
 | policies.podSecurityAdmission.audit.level | string | `"baseline"` |  |
 | policies.podSecurityAdmission.audit.version | string | `"v1.27"` |  |
 | policies.podSecurityAdmission.enforce.level | string | `"baseline"` |  |

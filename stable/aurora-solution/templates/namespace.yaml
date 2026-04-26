@@ -35,7 +35,7 @@ spec:
     {{- else }}
     repoURL: {{ default "https://gccloudone-aurora.github.io/aurora-platform-charts" $.Values.global.helm.repository }}
     {{- end }}
-    targetRevision: {{ default "0.0.13" $.Values.global.helm.targetRevision }}
+    targetRevision: {{ default "0.0.14" $.Values.global.helm.targetRevision }}
     helm:
       releaseName: {{ $.Release.Name }}
       values: |
@@ -52,6 +52,13 @@ spec:
             # - www.example.ca/service
             # - www.example.ca/
             # - www.example.ca
+
+          # Configure the data plane mode for Istio.
+          # "sidecar" Enables sidecar injection (istio-injection=enabled).
+          # "ambient" Enables Ambient Mesh (istio.io/dataplane-mode=ambient).
+          {{- if $policies.istioMode }}
+          istioMode: {{ $policies.istioMode }}
+          {{- end }}
 
           # Boolean which defines if the namespace should have Istio injection.
           istioInjection: {{ $policies.istioInjection }}

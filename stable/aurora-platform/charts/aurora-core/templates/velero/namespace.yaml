@@ -52,9 +52,10 @@ spec:
           # List of host/path that can be exposed from the namespace.
           allowedHosts: []
 
-          # Boolean which defines if the namespace should have Istio injection.
-          # TODO: Needs to be set to true
-          istioInjection: false
+          # Configure the data plane mode for Istio.
+          # "sidecar" Enables sidecar injection (istio-injection=enabled).
+          # "ambient" Enables Ambient Mesh (istio.io/dataplane-mode=ambient).
+          # istioMode: "ambient"
 
         # Defines the access control on the namespace.
         # Roles will be assigned based on the namespace type.

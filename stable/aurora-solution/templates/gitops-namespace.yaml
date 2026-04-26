@@ -19,7 +19,7 @@ spec:
     {{- else }}
     repoURL: {{ default "https://gccloudone-aurora.github.io/aurora-platform-charts" $.Values.global.helm.repository }}
     {{- end }}
-    targetRevision: {{ default "0.0.13" $.Values.global.helm.targetRevision }}
+    targetRevision: {{ default "0.0.14" $.Values.global.helm.targetRevision }}
     helm:
       releaseName: "gitops-{{ $.Release.Name }}"
       values: |
@@ -36,8 +36,11 @@ spec:
           # List of host/path that can be exposed from the namespace.
           allowedHosts: []
 
-          # Boolean which defines if the namespace should have Istio injection.
-          istioInjection: false
+          # Configure the data plane mode for Istio.
+          # "sidecar" Enables sidecar injection (istio-injection=enabled).
+          # "ambient" Enables Ambient Mesh (istio.io/dataplane-mode=ambient).
+          # istioMode: "ambient"
+
           # Boolean which defines if trust-manager should create certificate configMap in namespace
           trustManagerBundleInjection: false
 

@@ -20,7 +20,7 @@ global:
   namespace:
     helm:
       chart: "aurora-namespace"
-      targetRevision: "0.0.13"
+      targetRevision: "0.0.14"
       repository: "https://gccloudone-aurora.github.io/aurora-platform-charts"
 
   raw:

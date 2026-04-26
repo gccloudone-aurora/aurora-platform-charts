@@ -136,8 +136,12 @@
                         "array"
                     ]
                 },
-                "istioInjection": {
-                    "type": "boolean"
+                "istioMode": {
+                    "enum": [
+                        "sidecar",
+                        "ambient"
+                    ],
+                    "type": "string"
                 },
                 "podSecurityAdmission": {
                     "properties": {
