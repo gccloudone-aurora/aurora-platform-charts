@@ -1,3 +1,7 @@
+# Aurora platform Helm chart configuration for Kubernetes deployments.
+# Replace all <FILLIN_...> placeholders with environment-specific values before deployment.
+# Some sections (for example under core.components) are enabled only when set to enabled: true.
+
 global:
   helm: {}
     # Override all Helm applications to pull
@@ -32,41 +36,33 @@ global:
   # azure or aws
   provider: azure
 
-  # Cluster name for the Application targets.
+  # Name of the Kubernetes cluster.
   cluster: in-cluster
 
-  # Which project to place applications in.
-  # project: aurora
-
-  # Ingress Domain
+  # Domain for ingress.
   ingressDomain: example.ca
 
-  # The Kubernetes API Server
+  # Ingress Class Name
+  # ingressClassName: ingress-istio-controller
+
+  # CIDR for the Kubernetes API server.
   apiServerCidr: "192.0.2.10/32"
 
   # The Azure Metadata API
   azureMetadataApiCidr: "169.254.169.254/32"
 
-  # Alert Manager
-  alertManagerCidrs: ["192.0.2.10/32"]
+  # Optional: Uncomment and configure CIDRs for alert manager, logging, and vault if needed for security policies.
+  alertManagerCidrs: ["172.26.26.132/32"]
+  loggingCidrs: ["172.26.26.132/32"]
+  # vaultCidrs: ["172.23.211.18/32"]
 
-  # Logging
-  loggingCidrs: ["192.0.2.10/32"]
+  # Indicates if Loki logging is enabled cluster-wide.
+  # clusterHasLoki: false
 
-  # Vault
-  # vaultCidrs: ["192.0.2.10/32"]
-
-  # Ingress Class Name
-  # ingressClassName: ingress-istio-controller
-
-  # The Azure subscription ID used for the cluster
-  # subscriptionId: ""
-
-  # The Azure tenant ID used for the cluster
-  # tenantId: ""
-
-  # Load Balancer Subnet Name for all Load Balancers
-  # load_balancer_subnet_name: ""
+  # Azure-specific settings.
+  # load_balancer_subnet_name:
+  # subscriptionId:
+  # tenantId:
 
   # child values import via dependencies
   # imports:
@@ -77,9 +73,12 @@ global:
       # Used in cases where a subchart's component depends on the aurora-mgmt subchart being enabled
       # enabled: false
 
-# Core Platform components
+#############
+### CORE ###
+############
 core:
   enabled: true
+
   rbac: {}
     # platformAdmin: {}
     # platformOperator: {}
@@ -109,10 +108,14 @@ core:
     # vaultAgent: {}
     # velero: {}
 
-# Application Platform components are disabled by default
-# and enabled per-cluster which requires them.
+###########
+### APP ###
+###########
 app:
+  # Application Platform components are disabled by default
+  # and enabled per-cluster which requires them.
   enabled: false
+
   components: {}
     # argoController: {}
     # argoWorkflow: {}
@@ -122,14 +125,17 @@ app:
     # sidecarTerminator: {}
     # solr: {}
 
-# Management Platform components are disabled by default
-# and enabled per-cluster which requires them.
+############
+### MGMT ###
+############
 mgmt:
+  # Management Platform components are disabled by default
+  # and enabled per-cluster which requires them.
   enabled: false
+
   components: {}
-    # argoFoundation: {}
     # argoOperator: {}
+    # argoFoundation: {}
     # argoSolution: {}
     # billOfLanding: {}
     # loki: {}
-
