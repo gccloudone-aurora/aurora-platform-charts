@@ -19,7 +19,6 @@ Aurora Namespace
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| aadPodIdentities | object | `{}` |  |
 | argocd.deploymentRepoURL | string | `""` |  |
 | argocd.project.adminGroups | list | `[]` |  |
 | argocd.project.destinations | list | `[]` |  |
