@@ -58,6 +58,14 @@ spec:
           # "ambient" Enables Ambient Mesh (istio.io/dataplane-mode=ambient).
           # istioMode: "ambient"
 
+
+          # Refer to https://kubernetes.io/docs/concepts/security/pod-security-admission/
+          podSecurityAdmission:
+            enforce:
+              level: privileged
+              version: v1.35
+
+              
         # Defines the access control on the namespace.
         # Roles will be assigned based on the namespace type.
         rbac:
