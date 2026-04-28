@@ -54,7 +54,7 @@ policies:
   # Refer to https://kubernetes.io/docs/concepts/security/pod-security-admission/
   podSecurityAdmission:
     enforce:
-      level: privileged    # @schema enum:[privileged, baseline, restricted]
+      level: baseline    # @schema enum:[privileged, baseline, restricted]
       version: v1.35
     audit:
       level: baseline    # @schema enum:[privileged, baseline, restricted]

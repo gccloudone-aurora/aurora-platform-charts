@@ -64,6 +64,7 @@ spec:
           podSecurityAdmission:
             enforce:
               level: privileged
+              version: v1.35
 
         # Defines the access control on the namespace.
         # Roles will be assigned based on the namespace type.
