@@ -360,11 +360,6 @@ components:
       # fileNameSuffix: ""
       # maximumReportingWindowInDays: 30
 
-    AADPodIdentity:
-      azureManagedIdentity: {}
-        # clientId:
-        # resourceId:
-
   loki:
     enabled: false
 

@@ -35,7 +35,6 @@ Please consult the [Project Aurora Template](https://github.com/gccloudone-auror
 - **Dependencies:**
   - [aurora-core](./stable/aurora-platform/charts/aurora-core/README.md) (local, version: 0.0.1)
     - _(Template-based ArgoCD Applications):_
-      - [aad-pod-identity](./stable/aurora-platform/charts/aurora-core/templates/aad-pod-identity)
       - [aurora-controller](./stable/aurora-platform/charts/aurora-core/templates/aurora-controller)
       - [aws-ebs-csi-driver](./stable/aurora-platform/charts/aurora-core/templates/aws-ebs-csi-driver)
       - [aws-loadbalancer-controller](./stable/aurora-platform/charts/aurora-core/templates/aws-loadbalancer-controller)

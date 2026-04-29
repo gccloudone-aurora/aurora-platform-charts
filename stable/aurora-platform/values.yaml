@@ -85,7 +85,6 @@ core:
     # securityOperations: {}
 
   components: {}
-    # aadPodIdentity: {}
     # auroraController: {}
     # awsEbsCsiDriver: {}
     # awsLoadbalancerController: {}

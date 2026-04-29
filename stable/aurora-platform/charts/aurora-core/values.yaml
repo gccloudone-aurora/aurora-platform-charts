@@ -103,85 +103,6 @@ rbac:
 
 # Components
 components:
-  aadPodIdentity:
-    enabled: true
-
-    helm: {}
-      # chart: aad-pod-identity
-      # repository: https://raw.githubusercontent.com/Azure/aad-pod-identity/master/charts
-      # targetRevision: 4.1.18
-
-    imagePullSecrets: []
-    image:
-      # registry: mcr.microsoft.com/
-      repository: oss/azure/aad-pod-identity
-      # pullPolicy: IfNotPresent
-
-    mic:
-      image: mic
-      # tag: v1.8.17
-
-      replicas: 2
-      resources: {}
-        # limits:
-        #   cpu: ""
-        #   memory: ""
-        # requests:
-        #   cpu: ""
-        #   memory: ""
-      nodeSelector:
-        kubernetes.io/os: linux
-        "node.ssc-spc.gc.ca/use": "general"
-        "node.ssc-spc.gc.ca/purpose": "system"
-      tolerations:
-        - key: CriticalAddonsOnly
-          operator: Exists
-      affinity:
-        podAntiAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-          - weight: 1
-            podAffinityTerm:
-              topologyKey: kubernetes.io/hostname
-              labelSelector:
-                matchLabels:
-                  app.kubernetes.io/component: mic
-
-      podDisruptionBudget:
-        minAvailable: 1
-
-      priorityClassName: platform-cluster-medium
-
-      logging: {}
-        ## log level. Uses V logs (klog)
-        # verbosity:
-        # format:
-
-    nmi:
-      image: nmi
-      # tag: v1.8.17
-
-      resources: {}
-        # limits:
-        #   cpu: ""
-        #   memory: ""
-        # requests:
-        #   cpu: ""
-        #   memory: ""
-      nodeSelector:
-        kubernetes.io/os: linux
-
-      tolerations:
-        # NMI is a daemonset.
-        # An empty key with operator Exists matches all keys, values and effects which means this will tolerate everything.
-        - operator: Exists
-      affinity: {}
-      priorityClassName: platform-cluster-critical
-
-      logging: {}
-        ## log level. Uses V logs (klog)
-        # verbosity:
-        # format:
-
   auroraController:
     enabled: true
 
@@ -238,7 +159,7 @@ components:
       # targetRevision: 2.47.0
 
     image:
-      # registry: public.ecr.aws  
+      # registry: public.ecr.aws
       repository: ebs-csi-driver/aws-ebs-csi-driver
       # tag: ""
       # pullPolicy: IfNotPresent
@@ -251,10 +172,10 @@ components:
           memory: 40Mi
         limits:
           memory: 256Mi
-      nodeSelector: {}    
+      nodeSelector: {}
 
     node:
-      resources:      
+      resources:
         requests:
           cpu: 10m
           memory: 40Mi
@@ -265,7 +186,7 @@ components:
     # sidecars
     provisioner:
       image:
-        # registry: public.ecr.aws  
+        # registry: public.ecr.aws
         repository: csi-components/csi-provisioner
         # tag: "v5.3.0-eksbuild.3"
         # pullPolicy: IfNotPresent
@@ -273,35 +194,35 @@ components:
 
     attacher:
       image:
-        # registry: public.ecr.aws  
+        # registry: public.ecr.aws
         repository: csi-components/csi-attacher
         # tag: "v4.9.0-eksbuild.3"
         # pullPolicy: IfNotPresent
       resources: {}
     snapshotter:
       image:
-        # registry: public.ecr.aws  
+        # registry: public.ecr.aws
         repository: csi-components/csi-snapshotter
         # tag: "v8.3.0-eksbuild.1"
         # pullPolicy: IfNotPresent
       resources: {}
     resizer:
       image:
-        # registry: public.ecr.aws  
+        # registry: public.ecr.aws
         repository: csi-components/csi-resizer
         # tag: "v1.14.0-eksbuild.3"
         # pullPolicy: IfNotPresent
       resources: {}
     nodeDriverRegistrar:
       image:
-        # registry: public.ecr.aws  
+        # registry: public.ecr.aws
         repository: csi-components/csi-node-driver-registrar
         # tag: "v2.14.0-eksbuild.4"
         # pullPolicy: IfNotPresent
       resources: {}
     volumemodifier:
       image:
-        # registry: public.ecr.aws  
+        # registry: public.ecr.aws
         repository: ebs-csi-driver/volume-modifier-for-k8s
         # tag:  "v0.7.0"
         # pullPolicy: IfNotPresent
@@ -584,7 +505,7 @@ components:
     imagePullSecrets:
       - name: cilium-image-pull-secret
 
-    ipamMode: "kubernetes"  
+    ipamMode: "kubernetes"
 
     enableIPv4Masquerade: false
     enableIPv6Masquerade: false
@@ -651,7 +572,7 @@ components:
       image:
         # registry: quay.io
         repository: cilium/cilium
-    
+
     envoy:
       image:
        # registry: quay.io
@@ -1148,7 +1069,7 @@ components:
           mounts:
             # volumeMounts specifically for the falcoctl containers
             volumeMounts: []
- 
+
     images:
       falco:
         image:
@@ -1177,7 +1098,7 @@ components:
           repository: falcosecurity/falcosidekick
           tag: "2.31.1"
           # pullPolicy: IfNotPresent
- 
+
       k8sMetacollector:
         image:
           # registry: docker.io
@@ -1212,7 +1133,7 @@ components:
         team_label: "project.ssc-spc.gc.ca/team"
         department_label: "project.ssc-spc.gc.ca/division"
         product_label: "finance.ssc-spc.gc.ca/workload-id"
-        environment_label: "project.ssc-spc.gc.ca/environment"   
+        environment_label: "project.ssc-spc.gc.ca/environment"
 
     finopsagent:
       image:
@@ -1230,7 +1151,7 @@ components:
           operator: Exists
       affinity: {}
       priorityClassName: system-cluster-critical
-    
+
     aggregator:
       fullImageName: ""  # Overrides the default image construction logic.
       image:
@@ -1253,7 +1174,7 @@ components:
       priority:
         enabled: true
         name: system-cluster-critical
-    
+
     ## uses priority from aggregator
     cloudCost:
       enabled: false
@@ -1271,8 +1192,8 @@ components:
           operator: Exists
       affinity: {}
       ## uses priority from aggregator
-    
-    ## no support for priorityClassName 
+
+    ## no support for priorityClassName
     localStore:
       fullImageName: ""  # Overrides the default image construction logic.
       image:
@@ -1288,8 +1209,8 @@ components:
           operator: Exists
       affinity: {}
       ## no support for priorityClassName
-    
-    
+
+
     clusterController:
       enabled: false
       fullImageName: ""
@@ -1307,7 +1228,7 @@ components:
           operator: Exists
       affinity: {}
       priorityClassName: system-cluster-critical
-    
+
     frontend:
       fullImageName: ""
       image:
@@ -1328,7 +1249,7 @@ components:
       priority:
         enabled: true
         name: system-cluster-critical
-    
+
     forecasting:
       enabled: false
       fullImageName: ""
@@ -1353,8 +1274,8 @@ components:
       priority:
         enabled: true
         name: system-cluster-critical
-    
-    
+
+
     networkCosts:
       fullImageName: ""
       image:
@@ -2064,7 +1985,7 @@ components:
       # chart: secrets-store-csi-driver
       # repository: https://kubernetes-sigs.github.io/secrets-store-csi-driver/charts
       # targetRevision: 1.5.4
-  
+
     images:
       driver:
         image:
@@ -2101,7 +2022,7 @@ components:
       # requests:
       #   cpu: ""
       #   memory: ""
-    
+
     priorityClassName: platform-cluster-medium
 
   trivy:
@@ -2140,7 +2061,7 @@ components:
               matchLabels:
                 app.kubernetes.io/instance: trivy-operator
     priorityClassName: platform-cluster-medium
-    
+
     targetWorkloads: "pod,replicaset,replicationcontroller,statefulset,daemonset,cronjob,job"
     excludeNamespaces: ""
 
@@ -2174,12 +2095,12 @@ components:
           cpu: 1
           memory: 1Gi
       extraServerVolumes:
-        volumeMounts: 
+        volumeMounts:
          - name: trust-manager-propagated-custom-ca
            mountPath: /etc/ssl/certs/trust-manager-propagated-custom-ca.crt
            subPath: ca-certificates.crt
            readOnly: true
-        volumes: 
+        volumes:
          - name: trust-manager-propagated-custom-ca
            configMap:
              name: trust-manager-propagated-custom-ca
@@ -2398,11 +2319,11 @@ components:
             labelSelector:
               matchLabels:
                 app.kubernetes.io/instance: velero
-    
+
     azureWorkloadIdentity:
       enabled: true
       # clientId: ""
-    
+
     serviceAccount:
       server:
         annotations: {}
@@ -2426,7 +2347,7 @@ components:
         image:
           # registry: docker.io
           repository: velero/velero-plugin-for-aws
-          tag: "v1.12.1"      
+          tag: "v1.12.1"
 
     kubectl:
       image:
@@ -2469,7 +2390,7 @@ components:
     extraLabels: {}
     podLabels: {}
     concurrencyPolicy: Forbid
-    
+
     volumes:
       - name: var-lib-kubelet
         hostPath:

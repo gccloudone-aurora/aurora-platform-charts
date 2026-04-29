@@ -69,17 +69,6 @@ core:
       groups: ["<FILLIN_AZURE_AD_GROUP>"]
 
   components:
-
-    ########################
-    ### AAD Pod Identity ###
-    ########################
-    aadPodIdentity:
-      enabled: true
-
-      mic: {}
-
-      nmi: {}
-
     #########################
     ### Aurora Controller ###
     #########################

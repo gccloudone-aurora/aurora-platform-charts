@@ -95,12 +95,6 @@ raw:
   #    description: "This priority class should only be used for critical priority common pods."
   #
 
-# Define AAD Pod Identity information.
-aadPodIdentities: {}
-  # identityName:
-  #   clientID: ""     # @schema type:[string]
-  #   resourceID: ""   # @schema type:[string]
-
 # Utilized if namespace.type = argocd-control-plane
 argocd:
   deploymentRepoURL: ""
