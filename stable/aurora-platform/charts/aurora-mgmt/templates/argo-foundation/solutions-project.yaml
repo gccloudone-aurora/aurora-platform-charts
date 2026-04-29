@@ -58,8 +58,9 @@ spec:
                         {{ "{{" }} settings }}
 
                         {{- if .Values.components.argoSolution.enabled }}
-                        argocdProject:
-                          sourceRepos: {{ toYaml .Values.components.argoFoundation.argocdProjects.solutions.applicationSet.template.source.helmValues.argocdProject.sourceRepos | nindent 28 }}
+                        argocd:
+                          project:
+                            sourceRepos: {{ toYaml .Values.components.argoFoundation.argocdProjects.solutions.applicationSet.template.source.helmValues.argocd.project.sourceRepos | nindent 30 }}
                         {{- end }}
                     repoURL: {{ .Values.components.argoFoundation.argocdProjects.solutions.applicationSet.template.source.repoURL }}
                     targetRevision: '{{ "{{" }} version }}'
