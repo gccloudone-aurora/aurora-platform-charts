@@ -23,7 +23,7 @@ spec:
             spec:
               endpointSelector:
                 matchExpressions:
-                  - key: k8s:common.k8s.elastic.co/type
+                  - key: common.k8s.elastic.co/type
                     operator: Exists
               ingress:
                 - fromEndpoints:
