@@ -54,7 +54,7 @@ global:
   subscriptionId: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-subscription-id>'
   tenantId: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-tenant-id>'
 
-#############
+############
 ### CORE ###
 ############
 core:
@@ -69,7 +69,6 @@ core:
       groups: ["<FILLIN_AZURE_AD_GROUP>"]
 
   components:
-
     ########################
     ### AAD Pod Identity ###
     ########################
@@ -188,7 +187,7 @@ core:
           install:
             enabled: true
 
-    ########################
+    #######################
     ### Fluent Operator ###
     #######################
     fluentOperator:
@@ -264,6 +263,15 @@ core:
             - registry.k8s.io/
             - cgr.dev/
 
+    #################
+    ### KubeBench ###
+    #################
+    kubebench:
+      enabled: false
+
+      cronjob:
+        schedule: "0 6 * * *"
+
     ################
     ### KubeCost ###
     ################
@@ -289,9 +297,9 @@ core:
       cloudServiceKey: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-kubecost-cloud-service-key>'
       productKey: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-kubecost-product-key>'
 
-    ##################################
+    #################################
     ### Kubernetes Event Exporter ###
-    ##################################
+    #################################
     kubernetesEventExporter:
       enabled: false
 
@@ -301,15 +309,15 @@ core:
             url: "https://loki.<FILLIN_INGRESS_DOMAIN>/loki/api/v1/push"
             authorization: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-loki-authorization>'
 
-    ############
+    ###########
     ### NTP ###
     ###########
     ntp:
       enabled: true
 
-    ####################
+    ###################
     ### Pod Tracker ###
-    ####################
+    ###################
     podtracker:
       enabled: true
 
@@ -394,13 +402,19 @@ core:
 
       priorityClassName: platform-cluster-critical
 
+    #############
+    ### Trivy ###
+    #############
+    trivy:
+      enabled: true
+
     ################
     ### Tetragon ###
     ################
     tetragon:
       enabled: true
 
-    ######################
+    #####################
     ### Trust Manager ###
     #####################
     trustManager:
@@ -412,7 +426,7 @@ core:
 
           -----END CERTIFICATE-----
 
-    ####################
+    ###################
     ### Vault Agent ###
     ###################
     vaultAgent:
@@ -423,7 +437,7 @@ core:
 
         agentImage: {}
 
-    ###############
+    ##############
     ### Velero ###
     ##############
     velero:
@@ -441,15 +455,6 @@ core:
       azureWorkloadIdentity:
         clientId: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-velero-aadpodidentity-client-id>'
 
-    #################
-    ### KubeBench ###
-    #################
-    kubebench:
-      enabled: false
-
-      cronjob:
-        schedule: "0 6 * * *"
-
 ###########
 ### APP ###
 ###########
@@ -457,7 +462,6 @@ app:
   enabled: true
 
   components:
-
     #######################
     ### Argo Controller ###
     #######################
@@ -504,7 +508,7 @@ app:
     elastic:
       enabled: true
 
-    ##############
+    #############
     ### Istio ###
     #############
     istio:
@@ -514,6 +518,7 @@ app:
         additionalDnsNames:
           - '*.<FILLIN_INGRESS_DOMAIN>'
           - '*.aurora.<FILLIN_INGRESS_DOMAIN>'
+
         # additionalLBPorts:
         #   - name: tcp-postgres
         #     protocol: TCP
@@ -543,7 +548,7 @@ app:
       #       - port: 53
       #         protocol: UDP
 
-    ##############
+    #############
     ### Kiali ###
     #############
     kiali:
@@ -576,7 +581,7 @@ mgmt:
   enabled: true
 
   components:
-    ######################
+    #####################
     ### Argo Operator ###
     #####################
     argoOperator: {}
@@ -681,7 +686,7 @@ mgmt:
             schedule: '* 19 * * 2,4'
             timeZone: America/Toronto
 
-    ######################
+    #####################
     ### Argo Solution ###
     #####################
     argoSolution:
