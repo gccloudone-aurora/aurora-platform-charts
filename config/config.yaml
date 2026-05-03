@@ -27,7 +27,7 @@ global:
   provider: azure
 
   # Name of the Kubernetes cluster.
-  cluster: aur-dev-cc-00-aks
+  cluster: aur-prod-cc-00-aks
 
   # Domain for ingress.
   ingressDomain: <FILLIN_INGRESS_DOMAIN>
@@ -111,6 +111,7 @@ core:
       startupapicheck: {}
 
       azureWorkloadIdentity:
+        enabled: true
         clientId: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-certmanager-aadpodidentity-client-id>'
 
       prometheus:
@@ -186,6 +187,18 @@ core:
         artifact:
           install:
             enabled: true
+            # mounts:
+            #   volumeMounts:
+            #   - name: ca-certificates
+            #     readOnly: true
+            #     mountPath: "/etc/ssl/certs/ca-certificates.pem"
+            #     subPath: "ca-certificates.crt"
+
+      # mounts:
+      #   volumes:
+      #   - name: ca-certificates
+      #     configMap:
+      #       name: trust-manager-propagated-custom-ca
 
     #######################
     ### Fluent Operator ###
@@ -422,9 +435,7 @@ core:
 
       bundle:
         customCA: |-
-          -----BEGIN CERTIFICATE-----
-
-          -----END CERTIFICATE-----
+          <FILLIN_BASE64_CUSTOM_CA>
 
     ###################
     ### Vault Agent ###
@@ -453,6 +464,7 @@ core:
         resourceGroupName: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-velero-sa-resource-group-name>'
 
       azureWorkloadIdentity:
+        enabled: true
         clientId: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-velero-aadpodidentity-client-id>'
 
 ###########
@@ -466,7 +478,8 @@ app:
     ### Argo Controller ###
     #######################
     argoController:
-      enabled: false
+      enabled: true
+
       controllers:
         syncAppProjects:
           enabled: false
@@ -623,7 +636,7 @@ mgmt:
               memory: 500Mi
         register:
           clusters:
-            aur-dev-cc-00-aks:
+            aur-prod-cc-00-aks:
               server: "<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-server>"
               token: "<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-argocd-sa-bearer-token>"
               caData: "<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-argocd-sa-cacert | base64encode>"
@@ -631,13 +644,21 @@ mgmt:
             aurora-helm:
               type: helm
               url: https://gccloudone-aurora.github.io/aurora-platform-charts
-            project-aurora-template:
+            project-aurora-mgmt:
               type: git
-              url: https://github.com/gccloudone-aurora/project-aurora-template.git
+              url: https://github.com/gccloudone-aurora/project-aurora-mgmt.git
+            project-aurora-sdlc:
+              type: git
+              url: https://github.com/gccloudone-aurora/project-aurora-sdlc.git
           repositoryCreds:
-            private-repo-creds:
+            private-repo-cred:
               type: git
-              url: https://github.com/gccloudone-aurora/project-aurora-template.git
+              url: https://github.com/gccloudone-aurora/project-aurora-mgmt.git
+              username: "<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-github-username>"
+              password: "<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-github-password>"
+            private-repo-creds-sdlc:
+              type: git
+              url: https://github.com/gccloudone-aurora/project-aurora-sdlc.git
               username: "<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-github-username>"
               password: "<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-github-password>"
       argocdProjects:
@@ -677,6 +698,7 @@ mgmt:
                   argocd:
                     project:
                       sourceRepos: ['*']
+
         syncWindows:
           - clusters:
               - '*'
@@ -698,8 +720,11 @@ mgmt:
         oidcAuthSP:
           credentials:
             tenantID: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-tenant-id>'
-            clientID: '<path:<FILLIN_ARGO_KV>#gcdc-auroramgmt-platform-kvs-argocd-oidc-sp-client-id>'
-            clientSecret: '<path:<FILLIN_ARGO_KV>#gcdc-auroramgmt-platform-kvs-argocd-oidc-sp-client-secret>'
+            clientID: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-argocd-oidc-sp-client-id>'
+            clientSecret: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-argocd-oidc-sp-client-secret>'
+        azureWorkloadIdentity:
+          enabled: true
+          clientId: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-argocd-kv-sol-workload-identity-client-id>'
         notifications:
           enabled: true
         netpol:
@@ -716,7 +741,7 @@ mgmt:
               memory: 500Mi
         register:
           clusters:
-            aur-dev-cc-00-aks:
+            aur-prod-cc-00-aks:
               server: "<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-server>"
               token: "<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-argocd-sa-bearer-token>"
               caData: "<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-argocd-sa-cacert | base64encode>"
@@ -724,15 +749,7 @@ mgmt:
             aurora-helm:
               type: helm
               url: https://gccloudone-aurora.github.io/aurora-platform-charts
-            project-aurora-template:
-              type: git
-              url: https://github.com/gccloudone-aurora/project-aurora-template.git
-          repositoryCreds:
-            private-repo-creds:
-              type: git
-              url: https://github.com/gccloudone-aurora/project-aurora-template.git
-              username: "<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-github-username>"
-              password: "<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-github-password>"
+          repositoryCreds: {}
         sourceNamespaces:
           - "/^((?!-system$).)*$/"
 
