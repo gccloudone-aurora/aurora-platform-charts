@@ -678,7 +678,7 @@ mgmt:
             template:
               source:
                 repoURL: https://gccloudone-aurora.github.io/aurora-platform-charts
-        solutions:
+        namespaces:
           applicationSet:
             generators:
               - git:
@@ -691,6 +691,16 @@ mgmt:
                   revision: main
                   files:
                     - path: platform/namespaces/non-prod/**/config.yaml
+            template:
+              source:
+                repoURL: https://gccloudone-aurora.github.io/aurora-platform-charts
+                helmValues:
+                  argocd:
+                    project:
+                      sourceRepos: ['*']
+        solutions:
+          applicationSet:
+            generators: []
             template:
               source:
                 repoURL: https://gccloudone-aurora.github.io/aurora-platform-charts

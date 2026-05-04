@@ -20,7 +20,7 @@ spec:
               name: aurora
               namespace: platform-management-system
             spec:
-              description: "App Project for Aurora"
+              description: "App Project for Aurora Platform"
               sourceRepos:
                 - '*'
               destinations:
