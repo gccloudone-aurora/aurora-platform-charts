@@ -63,6 +63,12 @@ spec:
               level: privileged
               version: v1.35
 
+          # Refer to https://kubernetes.io/docs/concepts/security/pod-security-admission/
+          podSecurityAdmission:
+            enforce:
+              level: privileged
+              version: v1.35
+
         # Defines the access control on the namespace.
         # Roles will be assigned based on the namespace type.
         rbac:
