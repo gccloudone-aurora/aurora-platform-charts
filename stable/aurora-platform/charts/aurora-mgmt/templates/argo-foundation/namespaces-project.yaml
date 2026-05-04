@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: "{{ .Values.global.cluster }}-argo-foundation-solutions-project"
+  name: "{{ .Values.global.cluster }}-argo-foundation-namespaces-project"
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
@@ -11,16 +11,16 @@ spec:
     repoURL: {{ default .Values.global.helm.repository .Values.global.raw.helm.repository }}
     targetRevision: {{ .Values.global.raw.helm.targetRevision }}
     helm:
-      releaseName: argocd-foundation-solutions-projects
+      releaseName: argocd-foundation-namespaces-projects
       values: |
         resources:
           - apiVersion: argoproj.io/v1alpha1
             kind: AppProject
             metadata:
-              name: aurora-solution
+              name: aurora-namespace
               namespace: platform-management-system
             spec:
-              description: "App Project for Aurora Solution"
+              description: "App Project for Aurora Namespace"
               sourceRepos:
                 - '*'
               destinations:
@@ -35,11 +35,11 @@ spec:
           - apiVersion: argoproj.io/v1alpha1
             kind: ApplicationSet
             metadata:
-              name: aurora-solutions
+              name: aurora-namespaces
               namespace: platform-management-system
             spec:
               generators:
-                {{- toYaml .Values.components.argoFoundation.argocdProjects.solutions.applicationSet.generators | nindent 16 }}
+                {{- toYaml .Values.components.argoFoundation.argocdProjects.namespaces.applicationSet.generators | nindent 16 }}
               syncPolicy:
                 preserveResourcesOnDeletion: true
               template:
@@ -60,9 +60,9 @@ spec:
                         {{- if .Values.components.argoSolution.enabled }}
                         argocd:
                           project:
-                            sourceRepos: {{ toYaml .Values.components.argoFoundation.argocdProjects.solutions.applicationSet.template.source.helmValues.argocd.project.sourceRepos | nindent 30 }}
+                            sourceRepos: {{ toYaml .Values.components.argoFoundation.argocdProjects.namespaces.applicationSet.template.source.helmValues.argocd.project.sourceRepos | nindent 30 }}
                         {{- end }}
-                    repoURL: {{ .Values.components.argoFoundation.argocdProjects.solutions.applicationSet.template.source.repoURL }}
+                    repoURL: {{ .Values.components.argoFoundation.argocdProjects.namespaces.applicationSet.template.source.repoURL }}
                     targetRevision: '{{ "{{" }} version }}'
                   syncPolicy:
                     automated:
