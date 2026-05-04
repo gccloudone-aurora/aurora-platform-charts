@@ -43,11 +43,11 @@ Aurora Namespace
 | namespace.type | string | `nil` |  |
 | netpol.allowSameNamespace | bool | `true` |  |
 | policies.allowedHosts | list | `[]` |  |
-| policies.podSecurityAdmission.audit.level | string | `"baseline"` |  |
+| policies.podSecurityAdmission.audit.level | string | `"restricted"` |  |
 | policies.podSecurityAdmission.audit.version | string | `"v1.35"` |  |
-| policies.podSecurityAdmission.enforce.level | string | `"privileged"` |  |
+| policies.podSecurityAdmission.enforce.level | string | `"restricted"` |  |
 | policies.podSecurityAdmission.enforce.version | string | `"v1.35"` |  |
-| policies.podSecurityAdmission.warn.level | string | `"baseline"` |  |
+| policies.podSecurityAdmission.warn.level | string | `"restricted"` |  |
 | policies.podSecurityAdmission.warn.version | string | `"v1.35"` |  |
 | policies.trustManagerBundleInjection | bool | `false` |  |
 | raw.resources | list | `[]` |  |

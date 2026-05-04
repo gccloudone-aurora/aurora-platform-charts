@@ -1,6 +1,6 @@
 # aurora-platform
 
-![Version: 0.0.206](https://img.shields.io/badge/Version-0.0.206-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.0.0](https://img.shields.io/badge/AppVersion-2.0.0-informational?style=flat-square)
+![Version: 0.0.212](https://img.shields.io/badge/Version-0.0.212-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.0.0](https://img.shields.io/badge/AppVersion-2.0.0-informational?style=flat-square)
 
 Aurora Platform
 
@@ -26,14 +26,14 @@ Aurora Platform
 | core.components | object | `{}` |  |
 | core.enabled | bool | `true` |  |
 | core.rbac | object | `{}` |  |
-| global.alertManagerCidrs[0] | string | `"192.0.2.10/32"` |  |
+| global.alertManagerCidrs[0] | string | `"172.26.26.132/32"` |  |
 | global.apiServerCidr | string | `"192.0.2.10/32"` |  |
 | global.azureMetadataApiCidr | string | `"169.254.169.254/32"` |  |
 | global.cluster | string | `"in-cluster"` |  |
 | global.container | object | `{}` |  |
 | global.helm | object | `{}` |  |
 | global.ingressDomain | string | `"example.ca"` |  |
-| global.loggingCidrs[0] | string | `"192.0.2.10/32"` |  |
+| global.loggingCidrs[0] | string | `"172.26.26.132/32"` |  |
 | global.namespace.helm.chart | string | `"aurora-namespace"` |  |
 | global.namespace.helm.repository | string | `"https://gccloudone-aurora.github.io/aurora-platform-charts"` |  |
 | global.namespace.helm.targetRevision | string | `"0.0.17"` |  |
