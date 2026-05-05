@@ -53,14 +53,11 @@ spec:
                       "description": "This Dashboard is used to visualise the metrics from the security reports of the Trivy Operator",
                       "editable": true,
                       "fiscalYearStartMonth": 0,
-                      "gnetId": 17813,
                       "graphTooltip": 0,
-                      "id": 31,
                       "links": [],
-                      "liveNow": false,
                       "panels": [
                         {
-                          "collapsed": true,
+                          "collapsed": false,
                           "gridPos": {
                             "h": 1,
                             "w": 24,
@@ -68,1261 +65,719 @@ spec:
                             "y": 0
                           },
                           "id": 12,
-                          "panels": [
-                            {
-                              "datasource": {
-                                "type": "prometheus",
-                                "uid": "prometheus"
-                              },
-                              "description": "Total number by type of security issues identified in the cluster",
-                              "fieldConfig": {
-                                "defaults": {
-                                  "mappings": [],
-                                  "thresholds": {
-                                    "mode": "absolute",
-                                    "steps": [
-                                      {
-                                        "color": "green"
-                                      },
-                                      {
-                                        "color": "red",
-                                        "value": 1
-                                      }
-                                    ]
-                                  },
-                                  "unit": "none"
-                                },
-                                "overrides": [
-                                  {
-                                    "matcher": {
-                                      "id": "byName",
-                                      "options": "Critical"
-                                    },
-                                    "properties": [
-                                      {
-                                        "id": "color",
-                                        "value": {
-                                          "fixedColor": "red",
-                                          "mode": "fixed"
-                                        }
-                                      }
-                                    ]
-                                  },
-                                  {
-                                    "matcher": {
-                                      "id": "byName",
-                                      "options": "High"
-                                    },
-                                    "properties": [
-                                      {
-                                        "id": "color",
-                                        "value": {
-                                          "fixedColor": "orange",
-                                          "mode": "fixed"
-                                        }
-                                      }
-                                    ]
-                                  },
-                                  {
-                                    "matcher": {
-                                      "id": "byName",
-                                      "options": "Medium"
-                                    },
-                                    "properties": [
-                                      {
-                                        "id": "color",
-                                        "value": {
-                                          "fixedColor": "dark-yellow",
-                                          "mode": "fixed"
-                                        }
-                                      }
-                                    ]
-                                  },
-                                  {
-                                    "matcher": {
-                                      "id": "byName",
-                                      "options": "Low"
-                                    },
-                                    "properties": [
-                                      {
-                                        "id": "color",
-                                        "value": {
-                                          "fixedColor": "green",
-                                          "mode": "fixed"
-                                        }
-                                      }
-                                    ]
-                                  },
-                                  {
-                                    "matcher": {
-                                      "id": "byName",
-                                      "options": "Unknown"
-                                    },
-                                    "properties": [
-                                      {
-                                        "id": "color",
-                                        "value": {
-                                          "mode": "fixed"
-                                        }
-                                      }
-                                    ]
-                                  }
-                                ]
-                              },
-                              "gridPos": {
-                                "h": 9,
-                                "w": 24,
-                                "x": 0,
-                                "y": 1
-                              },
-                              "id": 21,
-                              "options": {
-                                "colorMode": "background",
-                                "graphMode": "none",
-                                "justifyMode": "center",
-                                "orientation": "auto",
-                                "reduceOptions": {
-                                  "calcs": [
-                                    "lastNotNull"
-                                  ],
-                                  "fields": "",
-                                  "values": false
-                                },
-                                "textMode": "auto"
-                              },
-                              "pluginVersion": "9.3.1",
-                              "targets": [
-                                {
-                                  "datasource": {
-                                    "type": "prometheus",
-                                    "uid": "prometheus"
-                                  },
-                                  "editorMode": "code",
-                                  "exemplar": false,
-                                  "expr": "sum(trivy_image_vulnerabilities)",
-                                  "instant": true,
-                                  "legendFormat": "Vulnerabilities",
-                                  "range": false,
-                                  "refId": "A"
-                                },
-                                {
-                                  "datasource": {
-                                    "type": "prometheus",
-                                    "uid": "prometheus"
-                                  },
-                                  "editorMode": "code",
-                                  "exemplar": false,
-                                  "expr": "sum(trivy_resource_configaudits)",
-                                  "hide": false,
-                                  "instant": true,
-                                  "legendFormat": "Misconfiguration",
-                                  "range": false,
-                                  "refId": "B"
-                                },
-                                {
-                                  "datasource": {
-                                    "type": "prometheus",
-                                    "uid": "prometheus"
-                                  },
-                                  "editorMode": "code",
-                                  "exemplar": false,
-                                  "expr": "sum(trivy_image_exposedsecrets)",
-                                  "hide": false,
-                                  "instant": true,
-                                  "legendFormat": "Exposed Secrets",
-                                  "range": false,
-                                  "refId": "C"
-                                },
-                                {
-                                  "datasource": {
-                                    "type": "prometheus",
-                                    "uid": "prometheus"
-                                  },
-                                  "editorMode": "code",
-                                  "exemplar": false,
-                                  "expr": "sum(trivy_clusterrole_clusterrbacassessments)",
-                                  "hide": false,
-                                  "instant": true,
-                                  "legendFormat": "RBAC Assessment",
-                                  "range": false,
-                                  "refId": "D"
-                                }
-                              ],
-                              "title": "Number and Type of Security Issues",
-                              "type": "stat"
-                            }
-                          ],
+                          "panels": [],
                           "title": "Quick Overview",
                           "type": "row"
                         },
                         {
-                          "collapsed": true,
+                          "datasource": {
+                            "type": "prometheus",
+                            "uid": "prometheus"
+                          },
+                          "description": "Total number by type of security issues identified in the cluster",
+                          "fieldConfig": {
+                            "defaults": {
+                              "mappings": [],
+                              "thresholds": {
+                                "mode": "absolute",
+                                "steps": [
+                                  {
+                                    "color": "green",
+                                    "value": 0
+                                  },
+                                  {
+                                    "color": "red",
+                                    "value": 1
+                                  }
+                                ]
+                              },
+                              "unit": "none"
+                            },
+                            "overrides": [
+                              {
+                                "matcher": {
+                                  "id": "byName",
+                                  "options": "Critical"
+                                },
+                                "properties": [
+                                  {
+                                    "id": "color",
+                                    "value": {
+                                      "fixedColor": "red",
+                                      "mode": "fixed"
+                                    }
+                                  }
+                                ]
+                              },
+                              {
+                                "matcher": {
+                                  "id": "byName",
+                                  "options": "High"
+                                },
+                                "properties": [
+                                  {
+                                    "id": "color",
+                                    "value": {
+                                      "fixedColor": "orange",
+                                      "mode": "fixed"
+                                    }
+                                  }
+                                ]
+                              },
+                              {
+                                "matcher": {
+                                  "id": "byName",
+                                  "options": "Medium"
+                                },
+                                "properties": [
+                                  {
+                                    "id": "color",
+                                    "value": {
+                                      "fixedColor": "dark-yellow",
+                                      "mode": "fixed"
+                                    }
+                                  }
+                                ]
+                              },
+                              {
+                                "matcher": {
+                                  "id": "byName",
+                                  "options": "Low"
+                                },
+                                "properties": [
+                                  {
+                                    "id": "color",
+                                    "value": {
+                                      "fixedColor": "green",
+                                      "mode": "fixed"
+                                    }
+                                  }
+                                ]
+                              },
+                              {
+                                "matcher": {
+                                  "id": "byName",
+                                  "options": "Unknown"
+                                },
+                                "properties": [
+                                  {
+                                    "id": "color",
+                                    "value": {
+                                      "mode": "fixed"
+                                    }
+                                  }
+                                ]
+                              }
+                            ]
+                          },
                           "gridPos": {
-                            "h": 1,
+                            "h": 9,
                             "w": 24,
                             "x": 0,
                             "y": 1
                           },
-                          "id": 2,
-                          "panels": [
-                            {
-                              "datasource": {
-                                "type": "prometheus",
-                                "uid": "prometheus"
-                              },
-                              "description": "",
-                              "fieldConfig": {
-                                "defaults": {
-                                  "mappings": [],
-                                  "thresholds": {
-                                    "mode": "absolute",
-                                    "steps": [
-                                      {
-                                        "color": "green"
-                                      },
-                                      {
-                                        "color": "red",
-                                        "value": 80
-                                      }
-                                    ]
-                                  },
-                                  "unit": "none"
-                                },
-                                "overrides": [
-                                  {
-                                    "matcher": {
-                                      "id": "byName",
-                                      "options": "Critical"
-                                    },
-                                    "properties": [
-                                      {
-                                        "id": "color",
-                                        "value": {
-                                          "fixedColor": "red",
-                                          "mode": "fixed"
-                                        }
-                                      }
-                                    ]
-                                  },
-                                  {
-                                    "matcher": {
-                                      "id": "byName",
-                                      "options": "High"
-                                    },
-                                    "properties": [
-                                      {
-                                        "id": "color",
-                                        "value": {
-                                          "fixedColor": "orange",
-                                          "mode": "fixed"
-                                        }
-                                      }
-                                    ]
-                                  },
-                                  {
-                                    "matcher": {
-                                      "id": "byName",
-                                      "options": "Medium"
-                                    },
-                                    "properties": [
-                                      {
-                                        "id": "color",
-                                        "value": {
-                                          "fixedColor": "dark-yellow",
-                                          "mode": "fixed"
-                                        }
-                                      }
-                                    ]
-                                  },
-                                  {
-                                    "matcher": {
-                                      "id": "byName",
-                                      "options": "Low"
-                                    },
-                                    "properties": [
-                                      {
-                                        "id": "color",
-                                        "value": {
-                                          "fixedColor": "green",
-                                          "mode": "fixed"
-                                        }
-                                      }
-                                    ]
-                                  },
-                                  {
-                                    "matcher": {
-                                      "id": "byName",
-                                      "options": "Unknown"
-                                    },
-                                    "properties": [
-                                      {
-                                        "id": "color",
-                                        "value": {
-                                          "mode": "fixed"
-                                        }
-                                      }
-                                    ]
-                                  }
-                                ]
-                              },
-                              "gridPos": {
-                                "h": 9,
-                                "w": 24,
-                                "x": 0,
-                                "y": 2
-                              },
-                              "id": 19,
-                              "options": {
-                                "colorMode": "background",
-                                "graphMode": "none",
-                                "justifyMode": "center",
-                                "orientation": "auto",
-                                "reduceOptions": {
-                                  "calcs": [
-                                    "lastNotNull"
-                                  ],
-                                  "fields": "",
-                                  "values": false
-                                },
-                                "textMode": "auto"
-                              },
-                              "pluginVersion": "9.3.1",
-                              "targets": [
-                                {
-                                  "datasource": {
-                                    "type": "prometheus",
-                                    "uid": "prometheus"
-                                  },
-                                  "editorMode": "code",
-                                  "exemplar": false,
-                                  "expr": "sum(trivy_image_vulnerabilities{severity=\"Critical\"})",
-                                  "instant": true,
-                                  "legendFormat": "Critical",
-                                  "range": false,
-                                  "refId": "A"
-                                },
-                                {
-                                  "datasource": {
-                                    "type": "prometheus",
-                                    "uid": "prometheus"
-                                  },
-                                  "editorMode": "code",
-                                  "exemplar": false,
-                                  "expr": "sum(trivy_image_vulnerabilities{severity=\"High\"})",
-                                  "hide": false,
-                                  "instant": true,
-                                  "legendFormat": "High",
-                                  "range": false,
-                                  "refId": "B"
-                                },
-                                {
-                                  "datasource": {
-                                    "type": "prometheus",
-                                    "uid": "prometheus"
-                                  },
-                                  "editorMode": "code",
-                                  "exemplar": false,
-                                  "expr": "sum(trivy_image_vulnerabilities{severity=\"Medium\"})",
-                                  "hide": false,
-                                  "instant": true,
-                                  "legendFormat": "Medium",
-                                  "range": false,
-                                  "refId": "C"
-                                },
-                                {
-                                  "datasource": {
-                                    "type": "prometheus",
-                                    "uid": "prometheus"
-                                  },
-                                  "editorMode": "code",
-                                  "exemplar": false,
-                                  "expr": "sum(trivy_image_vulnerabilities{severity=\"Low\"})",
-                                  "hide": false,
-                                  "instant": true,
-                                  "legendFormat": "Low",
-                                  "range": false,
-                                  "refId": "D"
-                                },
-                                {
-                                  "datasource": {
-                                    "type": "prometheus",
-                                    "uid": "prometheus"
-                                  },
-                                  "editorMode": "code",
-                                  "exemplar": false,
-                                  "expr": "sum(trivy_image_vulnerabilities{severity=\"Unknown\"})",
-                                  "hide": false,
-                                  "instant": true,
-                                  "legendFormat": "Unknown",
-                                  "range": false,
-                                  "refId": "E"
-                                }
+                          "id": 21,
+                          "options": {
+                            "colorMode": "background",
+                            "graphMode": "none",
+                            "justifyMode": "center",
+                            "orientation": "auto",
+                            "percentChangeColorMode": "standard",
+                            "reduceOptions": {
+                              "calcs": [
+                                "lastNotNull"
                               ],
-                              "title": "Severity Breakdown of all Vulnerabilities",
-                              "type": "stat"
+                              "fields": "",
+                              "values": false
                             },
+                            "showPercentChange": false,
+                            "textMode": "auto",
+                            "wideLayout": true
+                          },
+                          "pluginVersion": "12.4.1",
+                          "targets": [
                             {
                               "datasource": {
                                 "type": "prometheus",
                                 "uid": "prometheus"
                               },
-                              "description": "",
-                              "fieldConfig": {
-                                "defaults": {
-                                  "color": {
-                                    "mode": "palette-classic"
-                                  },
-                                  "custom": {
-                                    "axisCenteredZero": false,
-                                    "axisColorMode": "text",
-                                    "axisLabel": "",
-                                    "axisPlacement": "auto",
-                                    "barAlignment": 0,
-                                    "drawStyle": "line",
-                                    "fillOpacity": 0,
-                                    "gradientMode": "none",
-                                    "hideFrom": {
-                                      "legend": false,
-                                      "tooltip": false,
-                                      "viz": false
-                                    },
-                                    "lineInterpolation": "linear",
-                                    "lineWidth": 3,
-                                    "pointSize": 5,
-                                    "scaleDistribution": {
-                                      "type": "linear"
-                                    },
-                                    "showPoints": "auto",
-                                    "spanNulls": false,
-                                    "stacking": {
-                                      "group": "A",
-                                      "mode": "none"
-                                    },
-                                    "thresholdsStyle": {
-                                      "mode": "off"
-                                    }
-                                  },
-                                  "mappings": [],
-                                  "thresholds": {
-                                    "mode": "absolute",
-                                    "steps": [
-                                      {
-                                        "color": "green"
-                                      },
-                                      {
-                                        "color": "red",
-                                        "value": 1
-                                      }
-                                    ]
-                                  }
-                                },
-                                "overrides": []
-                              },
-                              "gridPos": {
-                                "h": 8,
-                                "w": 12,
-                                "x": 0,
-                                "y": 11
-                              },
-                              "id": 27,
-                              "options": {
-                                "legend": {
-                                  "calcs": [],
-                                  "displayMode": "list",
-                                  "placement": "bottom",
-                                  "showLegend": true
-                                },
-                                "tooltip": {
-                                  "mode": "single",
-                                  "sort": "none"
-                                }
-                              },
-                              "targets": [
-                                {
-                                  "datasource": {
-                                    "type": "prometheus",
-                                    "uid": "prometheus"
-                                  },
-                                  "editorMode": "code",
-                                  "expr": "sum(trivy_image_vulnerabilities) by (namespace)",
-                                  "legendFormat": "__auto",
-                                  "range": true,
-                                  "refId": "A"
-                                }
-                              ],
-                              "title": "Number of Vulnerabilities by namespace",
-                              "type": "timeseries"
-                            },
-                            {
-                              "datasource": {
-                                "type": "prometheus",
-                                "uid": "prometheus"
-                              },
-                              "fieldConfig": {
-                                "defaults": {
-                                  "color": {
-                                    "mode": "thresholds"
-                                  },
-                                  "custom": {
-                                    "align": "left",
-                                    "displayMode": "color-text",
-                                    "filterable": true,
-                                    "inspect": false
-                                  },
-                                  "mappings": [],
-                                  "thresholds": {
-                                    "mode": "absolute",
-                                    "steps": [
-                                      {
-                                        "color": "green"
-                                      },
-                                      {
-                                        "color": "super-light-yellow",
-                                        "value": 1
-                                      },
-                                      {
-                                        "color": "orange",
-                                        "value": 100
-                                      },
-                                      {
-                                        "color": "red",
-                                        "value": 500
-                                      }
-                                    ]
-                                  }
-                                },
-                                "overrides": [
-                                  {
-                                    "matcher": {
-                                      "id": "byName",
-                                      "options": "Image"
-                                    },
-                                    "properties": [
-                                      {
-                                        "id": "custom.displayMode",
-                                        "value": "json-view"
-                                      },
-                                      {
-                                        "id": "custom.width",
-                                        "value": 350
-                                      }
-                                    ]
-                                  },
-                                  {
-                                    "matcher": {
-                                      "id": "byName",
-                                      "options": "image_tag"
-                                    },
-                                    "properties": [
-                                      {
-                                        "id": "custom.displayMode",
-                                        "value": "json-view"
-                                      }
-                                    ]
-                                  }
-                                ]
-                              },
-                              "gridPos": {
-                                "h": 14,
-                                "w": 24,
-                                "x": 0,
-                                "y": 19
-                              },
-                              "id": 23,
-                              "options": {
-                                "footer": {
-                                  "enablePagination": true,
-                                  "fields": "",
-                                  "reducer": [
-                                    "sum"
-                                  ],
-                                  "show": false
-                                },
-                                "frameIndex": 1,
-                                "showHeader": true,
-                                "sortBy": []
-                              },
-                              "pluginVersion": "9.3.1",
-                              "targets": [
-                                {
-                                  "datasource": {
-                                    "type": "prometheus",
-                                    "uid": "prometheus"
-                                  },
-                                  "editorMode": "code",
-                                  "exemplar": false,
-                                  "expr": "sum(trivy_image_vulnerabilities{severity=\"Critical\"}) by (image_repository,image_tag)",
-                                  "format": "table",
-                                  "instant": true,
-                                  "range": false,
-                                  "refId": "A"
-                                },
-                                {
-                                  "datasource": {
-                                    "type": "prometheus",
-                                    "uid": "prometheus"
-                                  },
-                                  "editorMode": "code",
-                                  "exemplar": false,
-                                  "expr": "sum(trivy_image_vulnerabilities{severity=\"High\"}) by (image_repository,image_tag)",
-                                  "format": "table",
-                                  "hide": false,
-                                  "instant": true,
-                                  "range": false,
-                                  "refId": "B"
-                                },
-                                {
-                                  "datasource": {
-                                    "type": "prometheus",
-                                    "uid": "prometheus"
-                                  },
-                                  "editorMode": "code",
-                                  "exemplar": false,
-                                  "expr": "sum(trivy_image_vulnerabilities{severity=\"Medium\"}) by (image_repository,image_tag)",
-                                  "format": "table",
-                                  "hide": false,
-                                  "instant": true,
-                                  "range": false,
-                                  "refId": "C"
-                                },
-                                {
-                                  "datasource": {
-                                    "type": "prometheus",
-                                    "uid": "prometheus"
-                                  },
-                                  "editorMode": "code",
-                                  "exemplar": false,
-                                  "expr": "sum(trivy_image_vulnerabilities{severity=\"Low\"}) by (image_repository,image_tag)",
-                                  "format": "table",
-                                  "hide": false,
-                                  "instant": true,
-                                  "range": false,
-                                  "refId": "D"
-                                },
-                                {
-                                  "datasource": {
-                                    "type": "prometheus",
-                                    "uid": "prometheus"
-                                  },
-                                  "editorMode": "code",
-                                  "exemplar": false,
-                                  "expr": "sum(trivy_image_vulnerabilities{severity=\"Unknown\"}) by (image_repository,image_tag)",
-                                  "format": "table",
-                                  "hide": false,
-                                  "instant": true,
-                                  "range": false,
-                                  "refId": "E"
-                                }
-                              ],
-                              "title": "Vulnerability by Image",
-                              "transformations": [
-                                {
-                                  "id": "filterFieldsByName",
-                                  "options": {
-                                    "include": {
-                                      "names": [
-                                        "image_repository",
-                                        "image_tag",
-                                        "Value #A",
-                                        "Value #B",
-                                        "Value #C",
-                                        "Value #D",
-                                        "Value #E"
-                                      ]
-                                    }
-                                  }
-                                },
-                                {
-                                  "id": "seriesToColumns",
-                                  "options": {
-                                    "byField": "image_repository"
-                                  }
-                                },
-                                {
-                                  "id": "filterFieldsByName",
-                                  "options": {
-                                    "include": {
-                                      "names": [
-                                        "image_repository",
-                                        "Value #A",
-                                        "Value #B",
-                                        "Value #C",
-                                        "Value #D",
-                                        "Value #E",
-                                        "image_tag 1"
-                                      ]
-                                    }
-                                  }
-                                },
-                                {
-                                  "id": "organize",
-                                  "options": {
-                                    "excludeByName": {
-                                      "image_tag": false
-                                    },
-                                    "indexByName": {},
-                                    "renameByName": {
-                                      "Value #A": "Critical",
-                                      "Value #B": "High",
-                                      "Value #C": "Medium",
-                                      "Value #D": "Low",
-                                      "Value #E": "Unknown",
-                                      "image_repository": "Image",
-                                      "image_tag": "Tag"
-                                    }
-                                  }
-                                }
-                              ],
-                              "type": "table"
+                              "editorMode": "code",
+                              "exemplar": false,
+                              "expr": "sum (\r\n    max by (image_tag, image_registry, image_repository, severity) (\r\n        trivy_image_vulnerabilities > 0\r\n    )\r\n) OR on() vector(0)",
+                              "instant": true,
+                              "legendFormat": "Vulnerabilities",
+                              "range": false,
+                              "refId": "A"
                             }
                           ],
+                          "title": "Number and Type of Security Issues",
+                          "type": "stat"
+                        },
+                        {
+                          "collapsed": false,
+                          "gridPos": {
+                            "h": 1,
+                            "w": 24,
+                            "x": 0,
+                            "y": 10
+                          },
+                          "id": 2,
+                          "panels": [],
                           "title": "Vulnerabilities",
                           "type": "row"
                         },
                         {
-                          "collapsed": true,
-                          "gridPos": {
-                            "h": 1,
-                            "w": 24,
-                            "x": 0,
-                            "y": 2
+                          "datasource": {
+                            "type": "prometheus",
+                            "uid": "prometheus"
                           },
-                          "id": 4,
-                          "panels": [
-                            {
-                              "datasource": {
-                                "type": "prometheus",
-                                "uid": "prometheus"
-                              },
-                              "description": "",
-                              "fieldConfig": {
-                                "defaults": {
-                                  "mappings": [],
-                                  "thresholds": {
-                                    "mode": "absolute",
-                                    "steps": [
-                                      {
-                                        "color": "green"
-                                      },
-                                      {
-                                        "color": "red",
-                                        "value": 80
-                                      }
-                                    ]
-                                  },
-                                  "unit": "none"
-                                },
-                                "overrides": [
+                          "fieldConfig": {
+                            "defaults": {
+                              "mappings": [],
+                              "thresholds": {
+                                "mode": "absolute",
+                                "steps": [
                                   {
-                                    "matcher": {
-                                      "id": "byName",
-                                      "options": "Critical"
-                                    },
-                                    "properties": [
-                                      {
-                                        "id": "color",
-                                        "value": {
-                                          "fixedColor": "red",
-                                          "mode": "fixed"
-                                        }
-                                      }
-                                    ]
+                                    "color": "green",
+                                    "value": 0
                                   },
                                   {
-                                    "matcher": {
-                                      "id": "byName",
-                                      "options": "High"
-                                    },
-                                    "properties": [
-                                      {
-                                        "id": "color",
-                                        "value": {
-                                          "fixedColor": "orange",
-                                          "mode": "fixed"
-                                        }
-                                      }
-                                    ]
-                                  },
-                                  {
-                                    "matcher": {
-                                      "id": "byName",
-                                      "options": "Medium"
-                                    },
-                                    "properties": [
-                                      {
-                                        "id": "color",
-                                        "value": {
-                                          "fixedColor": "dark-yellow",
-                                          "mode": "fixed"
-                                        }
-                                      }
-                                    ]
-                                  },
-                                  {
-                                    "matcher": {
-                                      "id": "byName",
-                                      "options": "Low"
-                                    },
-                                    "properties": [
-                                      {
-                                        "id": "color",
-                                        "value": {
-                                          "fixedColor": "green",
-                                          "mode": "fixed"
-                                        }
-                                      }
-                                    ]
-                                  },
-                                  {
-                                    "matcher": {
-                                      "id": "byName",
-                                      "options": "Unknown"
-                                    },
-                                    "properties": [
-                                      {
-                                        "id": "color",
-                                        "value": {
-                                          "mode": "fixed"
-                                        }
-                                      }
-                                    ]
+                                    "color": "red",
+                                    "value": 80
                                   }
                                 ]
                               },
-                              "gridPos": {
-                                "h": 9,
-                                "w": 24,
-                                "x": 0,
-                                "y": 3
-                              },
-                              "id": 28,
-                              "options": {
-                                "colorMode": "background",
-                                "graphMode": "none",
-                                "justifyMode": "center",
-                                "orientation": "auto",
-                                "reduceOptions": {
-                                  "calcs": [
-                                    "lastNotNull"
-                                  ],
-                                  "fields": "",
-                                  "values": false
+                              "unit": "none"
+                            },
+                            "overrides": [
+                              {
+                                "matcher": {
+                                  "id": "byName",
+                                  "options": "Critical"
                                 },
-                                "textMode": "auto"
-                              },
-                              "pluginVersion": "9.3.1",
-                              "targets": [
-                                {
-                                  "datasource": {
-                                    "type": "prometheus",
-                                    "uid": "prometheus"
-                                  },
-                                  "editorMode": "code",
-                                  "exemplar": false,
-                                  "expr": "sum(trivy_resource_configaudits{severity=\"Critical\"})",
-                                  "instant": true,
-                                  "legendFormat": "Critical",
-                                  "range": false,
-                                  "refId": "A"
-                                },
-                                {
-                                  "datasource": {
-                                    "type": "prometheus",
-                                    "uid": "prometheus"
-                                  },
-                                  "editorMode": "code",
-                                  "exemplar": false,
-                                  "expr": "sum(trivy_resource_configaudits{severity=\"High\"})",
-                                  "hide": false,
-                                  "instant": true,
-                                  "legendFormat": "High",
-                                  "range": false,
-                                  "refId": "B"
-                                },
-                                {
-                                  "datasource": {
-                                    "type": "prometheus",
-                                    "uid": "prometheus"
-                                  },
-                                  "editorMode": "code",
-                                  "exemplar": false,
-                                  "expr": "sum(trivy_resource_configaudits{severity=\"Medium\"})",
-                                  "hide": false,
-                                  "instant": true,
-                                  "legendFormat": "Medium",
-                                  "range": false,
-                                  "refId": "C"
-                                },
-                                {
-                                  "datasource": {
-                                    "type": "prometheus",
-                                    "uid": "prometheus"
-                                  },
-                                  "editorMode": "code",
-                                  "exemplar": false,
-                                  "expr": "sum(trivy_resource_configaudits{severity=\"Low\"})",
-                                  "hide": false,
-                                  "instant": true,
-                                  "legendFormat": "Low",
-                                  "range": false,
-                                  "refId": "D"
-                                }
-                              ],
-                              "title": "Severity Breakdown of all Misconfiguration",
-                              "type": "stat"
-                            }
-                          ],
-                          "title": "Misconfiguration",
-                          "type": "row"
-                        },
-                        {
-                          "collapsed": true,
-                          "gridPos": {
-                            "h": 1,
-                            "w": 24,
-                            "x": 0,
-                            "y": 3
-                          },
-                          "id": 8,
-                          "panels": [
-                            {
-                              "datasource": {
-                                "type": "prometheus",
-                                "uid": "prometheus"
-                              },
-                              "description": "",
-                              "fieldConfig": {
-                                "defaults": {
-                                  "mappings": [],
-                                  "thresholds": {
-                                    "mode": "absolute",
-                                    "steps": [
-                                      {
-                                        "color": "green"
-                                      },
-                                      {
-                                        "color": "red",
-                                        "value": 80
-                                      }
-                                    ]
-                                  },
-                                  "unit": "none"
-                                },
-                                "overrides": [
+                                "properties": [
                                   {
-                                    "matcher": {
-                                      "id": "byName",
-                                      "options": "Critical"
-                                    },
-                                    "properties": [
-                                      {
-                                        "id": "color",
-                                        "value": {
-                                          "fixedColor": "red",
-                                          "mode": "fixed"
-                                        }
-                                      }
-                                    ]
-                                  },
-                                  {
-                                    "matcher": {
-                                      "id": "byName",
-                                      "options": "High"
-                                    },
-                                    "properties": [
-                                      {
-                                        "id": "color",
-                                        "value": {
-                                          "fixedColor": "orange",
-                                          "mode": "fixed"
-                                        }
-                                      }
-                                    ]
-                                  },
-                                  {
-                                    "matcher": {
-                                      "id": "byName",
-                                      "options": "Medium"
-                                    },
-                                    "properties": [
-                                      {
-                                        "id": "color",
-                                        "value": {
-                                          "fixedColor": "dark-yellow",
-                                          "mode": "fixed"
-                                        }
-                                      }
-                                    ]
-                                  },
-                                  {
-                                    "matcher": {
-                                      "id": "byName",
-                                      "options": "Low"
-                                    },
-                                    "properties": [
-                                      {
-                                        "id": "color",
-                                        "value": {
-                                          "fixedColor": "green",
-                                          "mode": "fixed"
-                                        }
-                                      }
-                                    ]
-                                  },
-                                  {
-                                    "matcher": {
-                                      "id": "byName",
-                                      "options": "Unknown"
-                                    },
-                                    "properties": [
-                                      {
-                                        "id": "color",
-                                        "value": {
-                                          "mode": "fixed"
-                                        }
-                                      }
-                                    ]
+                                    "id": "color",
+                                    "value": {
+                                      "fixedColor": "red",
+                                      "mode": "fixed"
+                                    }
                                   }
                                 ]
                               },
-                              "gridPos": {
-                                "h": 9,
-                                "w": 24,
-                                "x": 0,
-                                "y": 4
+                              {
+                                "matcher": {
+                                  "id": "byName",
+                                  "options": "High"
+                                },
+                                "properties": [
+                                  {
+                                    "id": "color",
+                                    "value": {
+                                      "fixedColor": "orange",
+                                      "mode": "fixed"
+                                    }
+                                  }
+                                ]
                               },
-                              "id": 29,
-                              "options": {
-                                "colorMode": "background",
-                                "graphMode": "none",
-                                "justifyMode": "center",
-                                "orientation": "auto",
-                                "reduceOptions": {
-                                  "calcs": [
-                                    "lastNotNull"
-                                  ],
-                                  "fields": "",
-                                  "values": false
+                              {
+                                "matcher": {
+                                  "id": "byName",
+                                  "options": "Medium"
                                 },
-                                "textMode": "auto"
+                                "properties": [
+                                  {
+                                    "id": "color",
+                                    "value": {
+                                      "fixedColor": "dark-yellow",
+                                      "mode": "fixed"
+                                    }
+                                  }
+                                ]
                               },
-                              "pluginVersion": "9.3.1",
-                              "targets": [
-                                {
-                                  "datasource": {
-                                    "type": "prometheus",
-                                    "uid": "prometheus"
-                                  },
-                                  "editorMode": "code",
-                                  "exemplar": false,
-                                  "expr": "sum(trivy_role_rbacassessments{severity=\"Critical\"})",
-                                  "instant": true,
-                                  "legendFormat": "Critical",
-                                  "range": false,
-                                  "refId": "A"
+                              {
+                                "matcher": {
+                                  "id": "byName",
+                                  "options": "Low"
                                 },
-                                {
-                                  "datasource": {
-                                    "type": "prometheus",
-                                    "uid": "prometheus"
-                                  },
-                                  "editorMode": "code",
-                                  "exemplar": false,
-                                  "expr": "sum(trivy_role_rbacassessments{severity=\"High\"})",
-                                  "hide": false,
-                                  "instant": true,
-                                  "legendFormat": "High",
-                                  "range": false,
-                                  "refId": "B"
+                                "properties": [
+                                  {
+                                    "id": "color",
+                                    "value": {
+                                      "fixedColor": "green",
+                                      "mode": "fixed"
+                                    }
+                                  }
+                                ]
+                              },
+                              {
+                                "matcher": {
+                                  "id": "byName",
+                                  "options": "Unknown"
                                 },
-                                {
-                                  "datasource": {
-                                    "type": "prometheus",
-                                    "uid": "prometheus"
-                                  },
-                                  "editorMode": "code",
-                                  "exemplar": false,
-                                  "expr": "sum(trivy_role_rbacassessments{severity=\"Medium\"})",
-                                  "hide": false,
-                                  "instant": true,
-                                  "legendFormat": "Medium",
-                                  "range": false,
-                                  "refId": "C"
-                                },
-                                {
-                                  "datasource": {
-                                    "type": "prometheus",
-                                    "uid": "prometheus"
-                                  },
-                                  "editorMode": "code",
-                                  "exemplar": false,
-                                  "expr": "sum(trivy_role_rbacassessments{severity=\"Low\"})",
-                                  "hide": false,
-                                  "instant": true,
-                                  "legendFormat": "Low",
-                                  "range": false,
-                                  "refId": "D"
-                                },
-                                {
-                                  "datasource": {
-                                    "type": "prometheus",
-                                    "uid": "prometheus"
-                                  },
-                                  "editorMode": "code",
-                                  "exemplar": false,
-                                  "expr": "sum(trivy_role_rbacassessments{severity=\"UNKNOWN\"})",
-                                  "hide": false,
-                                  "instant": true,
-                                  "legendFormat": "Unknown",
-                                  "range": false,
-                                  "refId": "E"
-                                }
-                              ],
-                              "title": "Severity Breakdown of RBAC Security Issues",
-                              "type": "stat"
-                            }
-                          ],
-                          "title": "RBAC Assessment",
-                          "type": "row"
-                        },
-                        {
-                          "collapsed": true,
+                                "properties": [
+                                  {
+                                    "id": "color",
+                                    "value": {
+                                      "mode": "fixed"
+                                    }
+                                  }
+                                ]
+                              }
+                            ]
+                          },
                           "gridPos": {
-                            "h": 1,
+                            "h": 9,
                             "w": 24,
                             "x": 0,
-                            "y": 4
+                            "y": 11
                           },
-                          "id": 6,
-                          "panels": [
+                          "id": 19,
+                          "options": {
+                            "colorMode": "background",
+                            "graphMode": "none",
+                            "justifyMode": "center",
+                            "orientation": "auto",
+                            "percentChangeColorMode": "standard",
+                            "reduceOptions": {
+                              "calcs": [
+                                "lastNotNull"
+                              ],
+                              "fields": "",
+                              "values": false
+                            },
+                            "showPercentChange": false,
+                            "textMode": "auto",
+                            "wideLayout": true
+                          },
+                          "pluginVersion": "12.4.1",
+                          "targets": [
                             {
                               "datasource": {
                                 "type": "prometheus",
                                 "uid": "prometheus"
                               },
-                              "description": "",
-                              "fieldConfig": {
-                                "defaults": {
-                                  "color": {
-                                    "mode": "palette-classic"
+                              "editorMode": "code",
+                              "exemplar": false,
+                              "expr": "sum by (severity) (\r\n    max by (image_tag, image_registry, image_repository, severity) (\r\n        trivy_image_vulnerabilities{severity=\"Critical\"} > 0\r\n    )\r\n) OR on() vector(0)",
+                              "instant": true,
+                              "legendFormat": "Critical",
+                              "range": false,
+                              "refId": "A"
+                            },
+                            {
+                              "datasource": {
+                                "type": "prometheus",
+                                "uid": "prometheus"
+                              },
+                              "editorMode": "code",
+                              "exemplar": false,
+                              "expr": "sum by (severity) (\r\n    max by (image_tag, image_registry, image_repository, severity) (\r\n        trivy_image_vulnerabilities{severity=\"High\"} > 0\r\n    )\r\n) OR on() vector(0)",
+                              "instant": true,
+                              "legendFormat": "High",
+                              "range": false,
+                              "refId": "B"
+                            },
+                            {
+                              "datasource": {
+                                "type": "prometheus",
+                                "uid": "prometheus"
+                              },
+                              "editorMode": "code",
+                              "exemplar": false,
+                              "expr": "sum by (severity) (\r\n    max by (image_tag, image_registry, image_repository, severity) (\r\n        trivy_image_vulnerabilities{severity=\"Medium\"} > 0\r\n    )\r\n) OR on() vector(0)",
+                              "instant": true,
+                              "legendFormat": "Medium",
+                              "range": false,
+                              "refId": "C"
+                            },
+                            {
+                              "datasource": {
+                                "type": "prometheus",
+                                "uid": "prometheus"
+                              },
+                              "editorMode": "code",
+                              "exemplar": false,
+                              "expr": "sum by (severity) (\r\n    max by (image_tag, image_registry, image_repository, severity) (\r\n        trivy_image_vulnerabilities{severity=\"Low\"} > 0\r\n    )\r\n) OR on() vector(0)",
+                              "instant": true,
+                              "legendFormat": "Low",
+                              "range": false,
+                              "refId": "D"
+                            },
+                            {
+                              "datasource": {
+                                "type": "prometheus",
+                                "uid": "prometheus"
+                              },
+                              "editorMode": "code",
+                              "exemplar": false,
+                              "expr": "sum by (severity) (\r\n    max by (image_tag, image_registry, image_repository, severity) (\r\n        trivy_image_vulnerabilities{severity=\"Unknown\"} > 0\r\n    )\r\n) OR on() vector(0)",
+                              "instant": true,
+                              "legendFormat": "Unknown",
+                              "range": false,
+                              "refId": "E"
+                            }
+                          ],
+                          "title": "Severity Breakdown of all Vulnerabilities",
+                          "type": "stat"
+                        },
+                        {
+                          "datasource": {
+                            "type": "prometheus",
+                            "uid": "prometheus"
+                          },
+                          "fieldConfig": {
+                            "defaults": {
+                              "color": {
+                                "mode": "palette-classic"
+                              },
+                              "custom": {
+                                "axisBorderShow": false,
+                                "axisCenteredZero": false,
+                                "axisColorMode": "text",
+                                "axisLabel": "",
+                                "axisPlacement": "auto",
+                                "barAlignment": 0,
+                                "barWidthFactor": 0.6,
+                                "drawStyle": "line",
+                                "fillOpacity": 0,
+                                "gradientMode": "none",
+                                "hideFrom": {
+                                  "legend": false,
+                                  "tooltip": false,
+                                  "viz": false
+                                },
+                                "insertNulls": false,
+                                "lineInterpolation": "linear",
+                                "lineWidth": 3,
+                                "pointSize": 5,
+                                "scaleDistribution": {
+                                  "type": "linear"
+                                },
+                                "showPoints": "auto",
+                                "showValues": false,
+                                "spanNulls": false,
+                                "stacking": {
+                                  "group": "A",
+                                  "mode": "none"
+                                },
+                                "thresholdsStyle": {
+                                  "mode": "off"
+                                }
+                              },
+                              "mappings": [],
+                              "thresholds": {
+                                "mode": "absolute",
+                                "steps": [
+                                  {
+                                    "color": "green",
+                                    "value": 0
                                   },
-                                  "custom": {
-                                    "axisCenteredZero": false,
-                                    "axisColorMode": "text",
-                                    "axisLabel": "",
-                                    "axisPlacement": "auto",
-                                    "barAlignment": 0,
-                                    "drawStyle": "line",
-                                    "fillOpacity": 0,
-                                    "gradientMode": "none",
-                                    "hideFrom": {
-                                      "legend": false,
-                                      "tooltip": false,
-                                      "viz": false
-                                    },
-                                    "lineInterpolation": "linear",
-                                    "lineWidth": 3,
-                                    "pointSize": 5,
-                                    "scaleDistribution": {
-                                      "type": "linear"
-                                    },
-                                    "showPoints": "auto",
-                                    "spanNulls": false,
-                                    "stacking": {
-                                      "group": "A",
-                                      "mode": "none"
-                                    },
-                                    "thresholdsStyle": {
-                                      "mode": "off"
+                                  {
+                                    "color": "red",
+                                    "value": 1
+                                  }
+                                ]
+                              }
+                            },
+                            "overrides": []
+                          },
+                          "gridPos": {
+                            "h": 8,
+                            "w": 12,
+                            "x": 0,
+                            "y": 20
+                          },
+                          "id": 27,
+                          "options": {
+                            "legend": {
+                              "calcs": [],
+                              "displayMode": "list",
+                              "placement": "bottom",
+                              "showLegend": true
+                            },
+                            "tooltip": {
+                              "hideZeros": false,
+                              "mode": "single",
+                              "sort": "none"
+                            }
+                          },
+                          "pluginVersion": "12.4.1",
+                          "targets": [
+                            {
+                              "datasource": {
+                                "type": "prometheus",
+                                "uid": "prometheus"
+                              },
+                              "editorMode": "code",
+                              "expr": "sum by (namespace) (\r\n    max by (image_tag, image_registry, image_repository, namespace) (\r\n        trivy_image_vulnerabilities\r\n    )\r\n) OR on() vector(0)",
+                              "legendFormat": "__auto",
+                              "range": true,
+                              "refId": "A"
+                            }
+                          ],
+                          "title": "Number of Vulnerabilities by namespace",
+                          "type": "timeseries"
+                        },
+                        {
+                          "datasource": {
+                            "type": "prometheus",
+                            "uid": "prometheus"
+                          },
+                          "fieldConfig": {
+                            "defaults": {
+                              "color": {
+                                "mode": "thresholds"
+                              },
+                              "custom": {
+                                "align": "left",
+                                "cellOptions": {
+                                  "type": "color-text"
+                                },
+                                "filterable": true,
+                                "footer": {
+                                  "reducers": []
+                                },
+                                "inspect": false
+                              },
+                              "mappings": [],
+                              "thresholds": {
+                                "mode": "absolute",
+                                "steps": [
+                                  {
+                                    "color": "green",
+                                    "value": 0
+                                  },
+                                  {
+                                    "color": "super-light-yellow",
+                                    "value": 1
+                                  },
+                                  {
+                                    "color": "orange",
+                                    "value": 100
+                                  },
+                                  {
+                                    "color": "red",
+                                    "value": 500
+                                  }
+                                ]
+                              }
+                            },
+                            "overrides": [
+                              {
+                                "matcher": {
+                                  "id": "byName",
+                                  "options": "Image"
+                                },
+                                "properties": [
+                                  {
+                                    "id": "custom.cellOptions",
+                                    "value": {
+                                      "type": "json-view"
                                     }
                                   },
-                                  "mappings": [],
-                                  "thresholds": {
-                                    "mode": "absolute",
-                                    "steps": [
-                                      {
-                                        "color": "green"
-                                      },
-                                      {
-                                        "color": "red",
-                                        "value": 1
-                                      }
-                                    ]
+                                  {
+                                    "id": "custom.width",
+                                    "value": 350
                                   }
+                                ]
+                              },
+                              {
+                                "matcher": {
+                                  "id": "byName",
+                                  "options": "image_tag"
                                 },
-                                "overrides": []
+                                "properties": [
+                                  {
+                                    "id": "custom.cellOptions",
+                                    "value": {
+                                      "type": "json-view"
+                                    }
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          "gridPos": {
+                            "h": 14,
+                            "w": 24,
+                            "x": 0,
+                            "y": 28
+                          },
+                          "id": 23,
+                          "options": {
+                            "cellHeight": "sm",
+                            "enablePagination": true,
+                            "frameIndex": 1,
+                            "showHeader": true,
+                            "sortBy": []
+                          },
+                          "pluginVersion": "12.4.1",
+                          "targets": [
+                            {
+                              "datasource": {
+                                "type": "prometheus",
+                                "uid": "prometheus"
                               },
-                              "gridPos": {
-                                "h": 8,
-                                "w": 12,
-                                "x": 0,
-                                "y": 5
+                              "editorMode": "code",
+                              "exemplar": false,
+                              "expr": "sum by (image_repository, image_tag) (\r\n    max by (image_repository, image_tag, severity) (\r\n        trivy_image_vulnerabilities{severity=\"Critical\"}\r\n    )\r\n)",
+                              "format": "table",
+                              "instant": true,
+                              "range": false,
+                              "refId": "A"
+                            },
+                            {
+                              "datasource": {
+                                "type": "prometheus",
+                                "uid": "prometheus"
                               },
-                              "id": 30,
-                              "options": {
-                                "legend": {
-                                  "calcs": [],
-                                  "displayMode": "list",
-                                  "placement": "bottom",
-                                  "showLegend": true
-                                },
-                                "tooltip": {
-                                  "mode": "single",
-                                  "sort": "none"
-                                }
+                              "editorMode": "code",
+                              "exemplar": false,
+                              "expr": "sum by (image_repository, image_tag) (\r\n    max by (image_repository, image_tag, severity) (\r\n        trivy_image_vulnerabilities{severity=\"High\"}\r\n    )\r\n)",
+                              "format": "table",
+                              "instant": true,
+                              "range": false,
+                              "refId": "B"
+                            },
+                            {
+                              "datasource": {
+                                "type": "prometheus",
+                                "uid": "prometheus"
                               },
-                              "targets": [
-                                {
-                                  "datasource": {
-                                    "type": "prometheus",
-                                    "uid": "prometheus"
-                                  },
-                                  "editorMode": "code",
-                                  "expr": "sum(trivy_image_exposedsecrets) by (namespace)",
-                                  "legendFormat": "__auto",
-                                  "range": true,
-                                  "refId": "A"
-                                }
-                              ],
-                              "title": "Exposed Secrets per namespace",
-                              "type": "timeseries"
+                              "editorMode": "code",
+                              "exemplar": false,
+                              "expr": "sum by (image_repository, image_tag) (\r\n    max by (image_repository, image_tag, severity) (\r\n        trivy_image_vulnerabilities{severity=\"Medium\"}\r\n    )\r\n)",
+                              "format": "table",
+                              "instant": true,
+                              "range": false,
+                              "refId": "C"
+                            },
+                            {
+                              "datasource": {
+                                "type": "prometheus",
+                                "uid": "prometheus"
+                              },
+                              "editorMode": "code",
+                              "exemplar": false,
+                              "expr": "sum by (image_repository, image_tag) (\r\n    max by (image_repository, image_tag, severity) (\r\n        trivy_image_vulnerabilities{severity=\"Low\"}\r\n    )\r\n)",
+                              "format": "table",
+                              "instant": true,
+                              "range": false,
+                              "refId": "D"
+                            },
+                            {
+                              "datasource": {
+                                "type": "prometheus",
+                                "uid": "prometheus"
+                              },
+                              "editorMode": "code",
+                              "exemplar": false,
+                              "expr": "sum by (image_repository, image_tag) (\r\n    max by (image_repository, image_tag, severity) (\r\n        trivy_image_vulnerabilities{severity=\"Unknown\"}\r\n    )\r\n)",
+                              "format": "table",
+                              "instant": true,
+                              "range": false,
+                              "refId": "E"
                             }
                           ],
-                          "title": "Exposed Secrets",
-                          "type": "row"
+                          "title": "Vulnerability by Image",
+                          "transformations": [
+                            {
+                              "id": "filterFieldsByName",
+                              "options": {
+                                "include": {
+                                  "names": [
+                                    "image_repository",
+                                    "image_tag",
+                                    "Value #A",
+                                    "Value #B",
+                                    "Value #C",
+                                    "Value #D",
+                                    "Value #E"
+                                  ]
+                                }
+                              }
+                            },
+                            {
+                              "id": "seriesToColumns",
+                              "options": {
+                                "byField": "image_repository"
+                              }
+                            },
+                            {
+                              "id": "filterFieldsByName",
+                              "options": {
+                                "include": {
+                                  "names": [
+                                    "image_repository",
+                                    "Value #A",
+                                    "Value #B",
+                                    "Value #C",
+                                    "Value #D",
+                                    "Value #E",
+                                    "image_tag 1"
+                                  ]
+                                }
+                              }
+                            },
+                            {
+                              "id": "organize",
+                              "options": {
+                                "excludeByName": {
+                                  "image_tag": false
+                                },
+                                "indexByName": {},
+                                "renameByName": {
+                                  "Value #A": "Critical",
+                                  "Value #B": "High",
+                                  "Value #C": "Medium",
+                                  "Value #D": "Low",
+                                  "Value #E": "Unknown",
+                                  "image_repository": "Image",
+                                  "image_tag": "Tag"
+                                }
+                              }
+                            },
+                            {
+                              "id": "sortBy",
+                              "options": {
+                                "fields": {},
+                                "sort": [
+                                  {
+                                    "desc": true,
+                                    "field": "Critical"
+                                  }
+                                ]
+                              }
+                            }
+                          ],
+                          "type": "table"
                         }
                       ],
-                      "refresh": false,
-                      "schemaVersion": 37,
-                      "style": "dark",
+                      "preload": false,
+                      "refresh": "",
+                      "schemaVersion": 42,
                       "tags": [
                         "trivy",
                         "trivy operator",
                         "security",
                         "security scanning",
-                        "vulnerabilities",
-                        "exposed secrets",
-                        "misconfiguration"
+                        "vulnerabilities"
                       ],
                       "templating": {
                         "list": [
                           {
                             "current": {
-                              "selected": false,
                               "text": "Prometheus",
                               "value": "Prometheus"
                             },
-                            "hide": 0,
                             "includeAll": false,
                             "label": "datasource",
-                            "multi": false,
                             "name": "DS_PROMETHEUS",
                             "options": [],
                             "query": "prometheus",
-                            "queryValue": "",
                             "refresh": 1,
                             "regex": "",
-                            "skipUrlSync": false,
                             "type": "datasource"
                           }
                         ]
