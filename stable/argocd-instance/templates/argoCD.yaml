@@ -114,6 +114,12 @@ spec:
         securityContext:
           runAsNonRoot: true
           runAsUser: 999
+          # Fix restricted PSS violations by adding these three lines
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop: [ALL]
+          seccompProfile:
+            type: RuntimeDefault
         volumeMounts:
           - mountPath: /var/run/argocd
             name: var-files
@@ -134,6 +140,12 @@ spec:
         securityContext:
           runAsNonRoot: true
           runAsUser: 999
+          # Fix restrcited PSS violations by adding these three lines
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop: [ALL]
+          seccompProfile:
+            type: RuntimeDefault
         volumeMounts:
           - mountPath: /var/run/argocd
             name: var-files
