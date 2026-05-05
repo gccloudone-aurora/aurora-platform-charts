@@ -203,7 +203,7 @@ spec:
                               },
                               "editorMode": "code",
                               "exemplar": false,
-                              "expr": "sum (\r\n    max by (image_tag, image_registry, image_repository, severity) (\r\n        trivy_image_vulnerabilities > 0\r\n    )\r\n) OR on() vector(0)",
+                              "expr": "sum (\r\n    max by (image_tag, image_registry, image_repository, severity) (\r\n        trivy_image_vulnerabilities{namespace=~\"$namespace\"} > 0\r\n    )\r\n) OR on() vector(0)",
                               "instant": true,
                               "legendFormat": "Vulnerabilities",
                               "range": false,
@@ -359,7 +359,7 @@ spec:
                               },
                               "editorMode": "code",
                               "exemplar": false,
-                              "expr": "sum by (severity) (\r\n    max by (image_tag, image_registry, image_repository, severity) (\r\n        trivy_image_vulnerabilities{severity=\"Critical\"} > 0\r\n    )\r\n) OR on() vector(0)",
+                              "expr": "sum by (severity) (\r\n    max by (image_tag, image_registry, image_repository, severity) (\r\n        trivy_image_vulnerabilities{severity=\"Critical\", namespace=~\"$namespace\"} > 0\r\n    )\r\n) OR on() vector(0)",
                               "instant": true,
                               "legendFormat": "Critical",
                               "range": false,
@@ -372,7 +372,7 @@ spec:
                               },
                               "editorMode": "code",
                               "exemplar": false,
-                              "expr": "sum by (severity) (\r\n    max by (image_tag, image_registry, image_repository, severity) (\r\n        trivy_image_vulnerabilities{severity=\"High\"} > 0\r\n    )\r\n) OR on() vector(0)",
+                              "expr": "sum by (severity) (\r\n    max by (image_tag, image_registry, image_repository, severity) (\r\n        trivy_image_vulnerabilities{severity=\"High\", namespace=~\"$namespace\"} > 0\r\n    )\r\n) OR on() vector(0)",
                               "instant": true,
                               "legendFormat": "High",
                               "range": false,
@@ -385,7 +385,7 @@ spec:
                               },
                               "editorMode": "code",
                               "exemplar": false,
-                              "expr": "sum by (severity) (\r\n    max by (image_tag, image_registry, image_repository, severity) (\r\n        trivy_image_vulnerabilities{severity=\"Medium\"} > 0\r\n    )\r\n) OR on() vector(0)",
+                              "expr": "sum by (severity) (\r\n    max by (image_tag, image_registry, image_repository, severity) (\r\n        trivy_image_vulnerabilities{severity=\"Medium\", namespace=~\"$namespace\"} > 0\r\n    )\r\n) OR on() vector(0)",
                               "instant": true,
                               "legendFormat": "Medium",
                               "range": false,
@@ -398,7 +398,7 @@ spec:
                               },
                               "editorMode": "code",
                               "exemplar": false,
-                              "expr": "sum by (severity) (\r\n    max by (image_tag, image_registry, image_repository, severity) (\r\n        trivy_image_vulnerabilities{severity=\"Low\"} > 0\r\n    )\r\n) OR on() vector(0)",
+                              "expr": "sum by (severity) (\r\n    max by (image_tag, image_registry, image_repository, severity) (\r\n        trivy_image_vulnerabilities{severity=\"Low\", namespace=~\"$namespace\"} > 0\r\n    )\r\n) OR on() vector(0)",
                               "instant": true,
                               "legendFormat": "Low",
                               "range": false,
@@ -411,7 +411,7 @@ spec:
                               },
                               "editorMode": "code",
                               "exemplar": false,
-                              "expr": "sum by (severity) (\r\n    max by (image_tag, image_registry, image_repository, severity) (\r\n        trivy_image_vulnerabilities{severity=\"Unknown\"} > 0\r\n    )\r\n) OR on() vector(0)",
+                              "expr": "sum by (severity) (\r\n    max by (image_tag, image_registry, image_repository, severity) (\r\n        trivy_image_vulnerabilities{severity=\"Unknown\", namespace=~\"$namespace\"} > 0\r\n    )\r\n) OR on() vector(0)",
                               "instant": true,
                               "legendFormat": "Unknown",
                               "range": false,
@@ -440,8 +440,8 @@ spec:
                                 "barAlignment": 0,
                                 "barWidthFactor": 0.6,
                                 "drawStyle": "line",
-                                "fillOpacity": 0,
-                                "gradientMode": "none",
+                                "fillOpacity": 15,
+                                "gradientMode": "opacity",
                                 "hideFrom": {
                                   "legend": false,
                                   "tooltip": false,
@@ -449,8 +449,8 @@ spec:
                                 },
                                 "insertNulls": false,
                                 "lineInterpolation": "linear",
-                                "lineWidth": 3,
-                                "pointSize": 5,
+                                "lineWidth": 2,
+                                "pointSize": 1,
                                 "scaleDistribution": {
                                   "type": "linear"
                                 },
@@ -478,7 +478,8 @@ spec:
                                     "value": 1
                                   }
                                 ]
-                              }
+                              },
+                              "unit": "none"
                             },
                             "overrides": []
                           },
@@ -492,8 +493,8 @@ spec:
                           "options": {
                             "legend": {
                               "calcs": [],
-                              "displayMode": "list",
-                              "placement": "bottom",
+                              "displayMode": "table",
+                              "placement": "right",
                               "showLegend": true
                             },
                             "tooltip": {
@@ -510,13 +511,169 @@ spec:
                                 "uid": "prometheus"
                               },
                               "editorMode": "code",
-                              "expr": "sum by (namespace) (\r\n    max by (image_tag, image_registry, image_repository, namespace) (\r\n        trivy_image_vulnerabilities\r\n    )\r\n) OR on() vector(0)",
+                              "expr": "sum by (namespace) (\r\n    max by (image_tag, image_registry, image_repository, namespace) (\r\n        trivy_image_vulnerabilities{namespace=~\"$namespace\"} > 0\r\n    )\r\n) OR on() vector(0)",
                               "legendFormat": "__auto",
                               "range": true,
                               "refId": "A"
                             }
                           ],
                           "title": "Number of Vulnerabilities by namespace",
+                          "type": "timeseries"
+                        },
+                        {
+                          "datasource": {
+                            "type": "prometheus",
+                            "uid": "prometheus"
+                          },
+                          "fieldConfig": {
+                            "defaults": {
+                              "color": {
+                                "mode": "palette-classic"
+                              },
+                              "custom": {
+                                "axisBorderShow": false,
+                                "axisCenteredZero": false,
+                                "axisColorMode": "text",
+                                "axisLabel": "",
+                                "axisPlacement": "auto",
+                                "barAlignment": 0,
+                                "barWidthFactor": 0.6,
+                                "drawStyle": "line",
+                                "fillOpacity": 15,
+                                "gradientMode": "opacity",
+                                "hideFrom": {
+                                  "legend": false,
+                                  "tooltip": false,
+                                  "viz": false
+                                },
+                                "insertNulls": false,
+                                "lineInterpolation": "linear",
+                                "lineWidth": 2,
+                                "pointSize": 5,
+                                "scaleDistribution": {
+                                  "type": "linear"
+                                },
+                                "showPoints": "never",
+                                "showValues": false,
+                                "spanNulls": false,
+                                "stacking": {
+                                  "group": "A",
+                                  "mode": "none"
+                                },
+                                "thresholdsStyle": {
+                                  "mode": "off"
+                                }
+                              },
+                              "mappings": [],
+                              "thresholds": {
+                                "mode": "absolute",
+                                "steps": [
+                                  {
+                                    "color": "green",
+                                    "value": 0
+                                  },
+                                  {
+                                    "color": "blue",
+                                    "value": 1
+                                  }
+                                ]
+                              },
+                              "unit": "none"
+                            },
+                            "overrides": [
+                              {
+                                "matcher": {
+                                  "id": "byName",
+                                  "options": "Critical"
+                                },
+                                "properties": [
+                                  {
+                                    "id": "color",
+                                    "value": {
+                                      "fixedColor": "red",
+                                      "mode": "fixed"
+                                    }
+                                  }
+                                ]
+                              },
+                              {
+                                "matcher": {
+                                  "id": "byName",
+                                  "options": "High"
+                                },
+                                "properties": [
+                                  {
+                                    "id": "color",
+                                    "value": {
+                                      "fixedColor": "orange",
+                                      "mode": "fixed"
+                                    }
+                                  }
+                                ]
+                              },
+                              {
+                                "matcher": {
+                                  "id": "byName",
+                                  "options": "Medium"
+                                },
+                                "properties": [
+                                  {
+                                    "id": "color",
+                                    "value": {
+                                      "fixedColor": "yellow",
+                                      "mode": "fixed"
+                                    }
+                                  }
+                                ]
+                              },
+                              {
+                                "matcher": {
+                                  "id": "byName",
+                                  "options": "Low"
+                                },
+                                "properties": [
+                                  {
+                                    "id": "color",
+                                    "value": {
+                                      "fixedColor": "blue",
+                                      "mode": "fixed"
+                                    }
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          "gridPos": {
+                            "h": 8,
+                            "w": 12,
+                            "x": 12,
+                            "y": 20
+                          },
+                          "id": 28,
+                          "options": {
+                            "legend": {
+                              "calcs": [],
+                              "displayMode": "table",
+                              "placement": "right",
+                              "showLegend": true
+                            },
+                            "tooltip": {
+                              "hideZeros": false,
+                              "mode": "single",
+                              "sort": "none"
+                            }
+                          },
+                          "pluginVersion": "12.4.1",
+                          "targets": [
+                            {
+                              "editorMode": "code",
+                              "expr": "sum by (severity) (\r\n    max by (image_tag, image_registry, image_repository, severity) (\r\n        trivy_image_vulnerabilities{namespace=~\"$namespace\"} > 0\r\n    )\r\n) OR on() vector(0)",
+                              "legendFormat": "__auto",
+                              "range": true,
+                              "refId": "A"
+                            }
+                          ],
+                          "title": "Total vulnerabilities by severity in selected namespace(s)",
                           "type": "timeseries"
                         },
                         {
@@ -621,6 +778,20 @@ spec:
                               },
                               "editorMode": "code",
                               "exemplar": false,
+                              "expr": "sum by (image_repository, image_tag) (\r\n    max by (image_repository, image_tag, severity) (\r\n        trivy_image_vulnerabilities\r\n    )\r\n)",
+                              "format": "table",
+                              "instant": true,
+                              "legendFormat": "__auto",
+                              "range": false,
+                              "refId": "F"
+                            },
+                            {
+                              "datasource": {
+                                "type": "prometheus",
+                                "uid": "prometheus"
+                              },
+                              "editorMode": "code",
+                              "exemplar": false,
                               "expr": "sum by (image_repository, image_tag) (\r\n    max by (image_repository, image_tag, severity) (\r\n        trivy_image_vulnerabilities{severity=\"Critical\"}\r\n    )\r\n)",
                               "format": "table",
                               "instant": true,
@@ -688,12 +859,13 @@ spec:
                                 "include": {
                                   "names": [
                                     "image_repository",
-                                    "image_tag",
                                     "Value #A",
                                     "Value #B",
                                     "Value #C",
                                     "Value #D",
-                                    "Value #E"
+                                    "Value #E",
+                                    "Value #F",
+                                    "image_tag"
                                   ]
                                 }
                               }
@@ -710,6 +882,7 @@ spec:
                                 "include": {
                                   "names": [
                                     "image_repository",
+                                    "Value #F",
                                     "Value #A",
                                     "Value #B",
                                     "Value #C",
@@ -724,17 +897,27 @@ spec:
                               "id": "organize",
                               "options": {
                                 "excludeByName": {
-                                  "image_tag": false
+                                  "image_tag": false,
+                                  "image_tag 1": false,
+                                  "image_tag 2": true,
+                                  "image_tag 3": true,
+                                  "image_tag 4": true,
+                                  "image_tag 5": true,
+                                  "image_tag 6": true
                                 },
+                                "includeByName": {},
                                 "indexByName": {},
+                                "orderByMode": "manual",
                                 "renameByName": {
                                   "Value #A": "Critical",
                                   "Value #B": "High",
                                   "Value #C": "Medium",
                                   "Value #D": "Low",
                                   "Value #E": "Unknown",
+                                  "Value #F": "Total Vulnerabilities",
                                   "image_repository": "Image",
-                                  "image_tag": "Tag"
+                                  "image_tag": "Tag",
+                                  "image_tag 1": "Tag"
                                 }
                               }
                             },
@@ -745,7 +928,7 @@ spec:
                                 "sort": [
                                   {
                                     "desc": true,
-                                    "field": "Critical"
+                                    "field": "Total Vulnerabilities"
                                   }
                                 ]
                               }
@@ -779,6 +962,34 @@ spec:
                             "refresh": 1,
                             "regex": "",
                             "type": "datasource"
+                          },
+                          {
+                            "allowCustomValue": false,
+                            "current": {
+                              "text": "All",
+                              "value": [
+                                "$__all"
+                              ]
+                            },
+                            "datasource": {
+                              "type": "prometheus",
+                              "uid": "prometheus"
+                            },
+                            "definition": "label_values(kube_pod_info,namespace)",
+                            "includeAll": true,
+                            "multi": true,
+                            "name": "namespace",
+                            "options": [],
+                            "query": {
+                              "qryType": 1,
+                              "query": "label_values(kube_pod_info,namespace)",
+                              "refId": "PrometheusVariableQueryEditor-VariableQuery"
+                            },
+                            "refresh": 1,
+                            "regex": "",
+                            "regexApplyTo": "value",
+                            "sort": 1,
+                            "type": "query"
                           }
                         ]
                       },
