@@ -35,6 +35,16 @@ spec:
             deploymentMode: SimpleScalable
 
             gateway:
+              podSecurityContext:	
+                runAsNonRoot: true	
+                seccompProfile:	
+                  type: RuntimeDefault	
+              containerSecurityContext:	
+                allowPrivilegeEscalation: false	
+                capabilities:	
+                  drop: [ALL]	
+                seccompProfile:	
+                  type: RuntimeDefault
               nodeSelector: {{ toYaml .Values.components.loki.nodeSelector | nindent 16 }}
               tolerations: {{ toYaml .Values.components.loki.tolerations | nindent 16 }}
               ingress:
@@ -54,6 +64,17 @@ spec:
                 password: {{ required "loki.basicAuth.password is required" .Values.components.loki.basicAuth.password | quote }}
 
             loki:
+              podSecurityContext:
+                runAsNonRoot: true
+                seccompProfile:
+                  type: RuntimeDefault
+              containerSecurityContext:
+                allowPrivilegeEscalation: false
+                capabilities:
+                  drop:
+                    - ALL
+                seccompProfile:
+                  type: RuntimeDefault
               image: {{ default "{}" (include "loki.image" .) | nindent 16 }}
               analytics:
                 reporting_enabled: false
@@ -129,9 +150,27 @@ spec:
             memcached:
               image:
                 repository: docker.io/memcached
+              podSecurityContext:
+                runAsNonRoot: true
+                seccompProfile:
+                  type: RuntimeDefault
+              containerSecurityContext:
+                allowPrivilegeEscalation: false
+                capabilities:
+                  drop:
+                    - ALL
+                seccompProfile:
+                  type: RuntimeDefault
             memcachedExporter:
               image:
                 repository: docker.io/prom/memcached-exporter
+              containerSecurityContext:
+                allowPrivilegeEscalation: false
+                capabilities:
+                  drop:
+                    - ALL
+                seccompProfile:
+                  type: RuntimeDefault
             sidecar:
               image:
                 repository: docker.io/kiwigrid/k8s-sidecar
