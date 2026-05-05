@@ -113,10 +113,6 @@ spec:
                 securityContext:
                   enabled: true
                   runAsNonRoot: true
-                  allowPrivilegeEscalation: false
-                  capabilities:
-                    drop:
-                      - ALL
                   seccompProfile:
                     type: RuntimeDefault
                 nodeSelector: {{ toYaml .Values.components.cilium.nodeSelector | nindent 18 }}
