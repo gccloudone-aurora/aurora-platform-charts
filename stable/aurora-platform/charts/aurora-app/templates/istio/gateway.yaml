@@ -78,6 +78,20 @@ spec:
                   {{- toYaml .Values.components.istio.gateway.additionalLBPorts | nindent 18 }}
                   {{- end }}
 
+              containerSecurityContext:
+                # Required for Restricted PSS
+                seccompProfile:
+                  type: RuntimeDefault
+                # Re-applying the template's 'else' defaults to fix other failures
+                allowPrivilegeEscalation: false
+                capabilities:
+                  drop:
+                    - ALL
+                privileged: false
+                readOnlyRootFilesystem: true
+                runAsNonRoot: true
+                runAsUser: 1337
+                runAsGroup: 1337
             # Configures HTTPS on the ingress gateway.
             https:
               # Toggles HTTPS configurations on the ingress gateway.
