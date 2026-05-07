@@ -1497,6 +1497,9 @@ components:
     podtrackerConfiguration: []
 
     securityContext:
+      allowPrivilegeEscalation: false
+      seccompProfile:
+        type: RuntimeDefault
       runAsNonRoot: true
       capabilities:
         drop:
