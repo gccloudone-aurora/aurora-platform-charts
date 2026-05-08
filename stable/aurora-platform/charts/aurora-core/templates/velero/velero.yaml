@@ -59,9 +59,9 @@ spec:
                   runAsUser: 1002
                   seccompProfile:
                     type: RuntimeDefault
-              volumeMounts:
-                - mountPath: /target
-                  name: plugins
+                volumeMounts:
+                  - mountPath: /target
+                    name: plugins
 
             kubectl:
               image: {{ default "{}" (include "velero.kubectl.image" .) | nindent 16 }}

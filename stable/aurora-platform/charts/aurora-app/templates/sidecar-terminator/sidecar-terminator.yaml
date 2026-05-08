@@ -33,6 +33,8 @@ spec:
         affinity: {{ toYaml .Values.components.sidecarTerminator.affinity | nindent 10 }}
 
         priorityClassName: {{ .Values.components.sidecarTerminator.priorityClassName }}
+        podSecurityContext: {{ toYaml .Values.components.sidecarTerminator.podSecurityContext | nindent 10 }}
+        securityContext: {{ toYaml .Values.components.sidecarTerminator.securityContext | nindent 10 }}
   destination:
     name: {{ .Values.global.cluster }}
     namespace: sidecar-terminator-system
