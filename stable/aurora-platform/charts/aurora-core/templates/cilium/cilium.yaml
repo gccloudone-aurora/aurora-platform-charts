@@ -172,6 +172,11 @@ spec:
               image: {{ default "{}" (include "cilium.preflight.image" .) | nindent 16 }}
               nodeSelector: {{ toYaml .Values.components.cilium.nodeSelector | nindent 16 }}
               tolerations: {{ toYaml .Values.components.cilium.tolerations | nindent 16 }}
+
+            secretsNamespaceLabels:
+              pod-security.kubernetes.io/enforce: restricted
+              pod-security.kubernetes.io/enforce-version: v1.35
+              
   destination:
     name: {{ .Values.global.cluster }}
     namespace: cilium-system
