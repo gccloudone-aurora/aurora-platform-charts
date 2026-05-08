@@ -24,7 +24,20 @@ spec:
           value: |
             image: {{ default "{}" (include "auroraController.image" .) | nindent 14 }}
             imagePullSecrets: {{ toYaml .Values.components.auroraController.imagePullSecrets | nindent 14 }}
+            # Fix for: runAsNonRoot and seccompProfile
+            podSecurityContext:
+              runAsNonRoot: true
+              runAsUser: 1000
+              seccompProfile:
+                type: RuntimeDefault
 
+            # Fix for: allowPrivilegeEscalation and unrestricted capabilities
+            securityContext:
+              allowPrivilegeEscalation: false
+              capabilities:
+                drop:
+                  - ALL
+              readOnlyRootFilesystem: true
             replicaCount: {{ .Values.components.auroraController.replicas }}
             resources: {{ toYaml .Values.components.auroraController.resources | nindent 14 }}
 
