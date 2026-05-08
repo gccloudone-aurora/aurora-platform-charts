@@ -2120,6 +2120,12 @@ components:
       repository: aquasec/trivy-operator
       tag: "0.29.0"
       pullPolicy: IfNotPresent
+    
+    podSecurityContext:
+      runAsNonRoot: true
+      seccompProfile:
+        type: RuntimeDefault
+
     resources:
       requests:
         cpu: 100m
@@ -2166,9 +2172,23 @@ components:
       # -- excludeImages is comma separated glob patterns for excluding images from scanning.
       # Example: pattern: `k8s.gcr.io/*/*` will exclude image: `k8s.gcr.io/coredns/coredns:v1.8.0`.
       excludeImages: ""
+      containerSecurityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
 
     severity: "UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL"
     server:
+      podSecurityContext:
+        seccompProfile:
+          type: RuntimeDefault
+      securityContext:
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop:
+            - ALL
+        seccompProfile:
+          type: RuntimeDefault
       resources:
         requests:
           cpu: 200m
