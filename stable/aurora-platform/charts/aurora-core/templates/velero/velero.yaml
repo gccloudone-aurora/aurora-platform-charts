@@ -30,16 +30,49 @@ spec:
             tolerations: {{ toYaml .Values.components.velero.tolerations | nindent 14 }}
             affinity: {{ toYaml .Values.components.velero.affinity | nindent 14 }}
 
+            podSecurityContext:
+              runAsNonRoot: true
+              runAsUser: 1002      # Verified Paketo Jammy Runtime UID
+              runAsGroup: 1000     # Verified Paketo GID
+              fsGroup: 1000
+              seccompProfile:
+                type: RuntimeDefault
+
+            containerSecurityContext:
+              allowPrivilegeEscalation: false
+              capabilities:
+                drop: ["ALL"]
+              runAsNonRoot: true
+              runAsUser: 1002
+              seccompProfile:
+                type: RuntimeDefault
+
             initContainers:
               - name: velero-plugin-for-{{ .Values.global.provider }}
                 image: {{ include "velero.plugin.image" . }}
                 imagePullPolicy: IfNotPresent
-                volumeMounts:
-                  - mountPath: /target
-                    name: plugins
+                securityContext:
+                  allowPrivilegeEscalation: false
+                  capabilities:
+                    drop: ["ALL"]
+                  runAsNonRoot: true
+                  runAsUser: 1002
+                  seccompProfile:
+                    type: RuntimeDefault
+              volumeMounts:
+                - mountPath: /target
+                  name: plugins
 
             kubectl:
               image: {{ default "{}" (include "velero.kubectl.image" .) | nindent 16 }}
+              containerSecurityContext:
+                allowPrivilegeEscalation: false
+                capabilities:
+                  drop: ["ALL"]
+                runAsNonRoot: true
+                runAsUser: 1002
+                seccompProfile:
+                  type: RuntimeDefault
 
             {{- if eq .Values.global.provider "azure" }}
             podLabels:
@@ -47,6 +80,17 @@ spec:
               azure.workload.identity/use: "true"
               {{- end }}
             {{- end }}
+
+
+            upgradeJob:
+              containerSecurityContext:
+                allowPrivilegeEscalation: false
+                capabilities:
+                  drop: ["ALL"]
+                runAsNonRoot: true
+                runAsUser: 1002
+                seccompProfile:
+                  type: RuntimeDefault
 
             metrics:
               serviceMonitor:
