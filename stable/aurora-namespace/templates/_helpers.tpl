@@ -72,7 +72,9 @@ Defines the name of the namespace to adhere to required conventions.
 */}}
 {{- define "aurora-namespace.namespaceName" -}}
 {{- if (and (or (eq .Values.namespace.type "system") (eq .Values.namespace.type "gateway")) (not (hasSuffix "-system" .Release.Name))) }}
-{{- fail "namespace name must end with \"-system\" when type is one of [gateway, system]" }}
+{{- if ne .Release.Name "default" }}
+{{- fail "namespace name must end with \"-system\" when type is one of [gateway, system], unless it is 'default'" }}
+{{- end }}
 {{- else }}
 {{- .Release.Name }}
 {{- end }}
