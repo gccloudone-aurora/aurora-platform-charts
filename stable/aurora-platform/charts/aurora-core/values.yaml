@@ -62,14 +62,10 @@ global:
   # Ingress Class Name
   # ingressClassName: ingress-istio-controller
 
-  # The Azure subscription ID used for the cluster
-  # subscriptionId: ""
-
-  # The Azure tenant ID used for the cluster
-  # tenantId: ""
-
-  # Load Balancer Subnet Name for all Load Balancers
+  # Azure-specific settings.
   # load_balancer_subnet_name: ""
+  # subscriptionId: ""
+  # tenantId: ""
 
   # child values import via dependencies
   imports:
@@ -101,8 +97,13 @@ rbac:
     groups: []
     users: []
 
-# Components
+############
+### CORE ###
+############
 components:
+  ########################
+  ### AAD Pod Identity ###
+  ########################
   aadPodIdentity:
     enabled: true
 
@@ -182,6 +183,9 @@ components:
         # verbosity:
         # format:
 
+  #########################
+  ### Aurora Controller ###
+  #########################
   auroraController:
     enabled: true
 
@@ -229,6 +233,9 @@ components:
       secretName: "aurora-image-pull-secret"
       # secretDockerConfigJson: ""
 
+  ##########################
+  ### AWS EBS CSI Driver ###
+  ##########################
   awsEbsCsiDriver:
     enabled: true
 
@@ -307,6 +314,9 @@ components:
         # pullPolicy: IfNotPresent
       resources: {}
 
+  #########################
+  ### AWS LB Controller ###
+  #########################
   awsLoadbalancerController:
     enabled: true
 
@@ -344,6 +354,9 @@ components:
     enableCertManager: true
     enableServiceMinitor: true
 
+  ####################
+  ### Cert Manager ###
+  ####################
   certManager:
     enabled: true
 
@@ -521,6 +534,9 @@ components:
 
     priorityClassName: platform-cluster-medium
 
+  ######################
+  ### CIDR Allocator ###
+  ######################
   cidrAllocator:
     enabled: true
 
@@ -573,6 +589,10 @@ components:
 
     # secretDockerConfigJson: ""
 
+
+  ##############
+  ### Cilium ###
+  ##############
   cilium:
     enabled: true
 
@@ -693,6 +713,9 @@ components:
           kubernetes.io/os: linux
       bgpInstances: []
 
+  #######################
+  ### Fluent Operator ###
+  #######################
   fluentOperator:
     enabled: true
 
@@ -854,6 +877,9 @@ components:
             retryExponentialBackoffBase: "30"
             overflowAction: "drop_oldest_chunk"
 
+  ##################
+  ### Gatekeeper ###
+  ##################
   gatekeeper:
     enabled: true
 
@@ -1114,6 +1140,9 @@ components:
         - sidecar.istio.io/inject
         - topology.istio.io/subzone
 
+  #############
+  ### Falco ###
+  #############
   falco:
     enabled: true
 
@@ -1191,6 +1220,79 @@ components:
       # -- A list of volumes you want to add to the Falco pods.
       volumeMounts: []
 
+  #################
+  ### KubeBench ###
+  #################
+  kubebench:
+    enabled: true
+    # cronjob:
+      # schedule: "0 0 1 * *"
+
+    imagePullSecrets: []
+    image:
+      # registry: docker.io
+      repository: aquasec/kube-bench
+      tag: "v0.15.0"
+      pullPolicy: Always
+
+    resources:
+      requests:
+        cpu: '1'
+        memory: 512Mi
+      limits:
+        cpu: '1'
+        memory: 1Gi
+    nodeSelector:
+      kubernetes.io/os: linux
+      node.ssc-spc.gc.ca/purpose: system
+    tolerations:
+      - key: CriticalAddonsOnly
+        operator: Exists
+
+    cronjob:
+      schedule: "0 0 1 * *"
+      command: []
+
+    extraLabels: {}
+    podLabels: {}
+    concurrencyPolicy: Forbid
+    
+    volumes:
+      - name: var-lib-kubelet
+        hostPath:
+          path: "/var/lib/kubelet"
+      - name: etc-systemd
+        hostPath:
+          path: "/etc/systemd"
+      - name: etc-kubernetes
+        hostPath:
+          path: "/etc/kubernetes"
+    volumeMounts:
+      - name: var-lib-kubelet
+        mountPath: /var/lib/kubelet
+        readOnly: true
+      - name: etc-systemd
+        mountPath: /etc/systemd
+        readOnly: true
+      - name: etc-kubernetes
+        mountPath: /etc/kubernetes
+        readOnly: true
+
+    affinity:
+      podAntiAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 1
+          podAffinityTerm:
+            topologyKey: kubernetes.io/hostname
+            labelSelector:
+              matchLabels:
+                app.kubernetes.io/instance: kube-bench
+    serviceAccount:
+      annotations: {}
+
+  ################
+  ### KubeCost ###
+  ################
   kubecost:
     enabled: false
 
@@ -1288,8 +1390,7 @@ components:
           operator: Exists
       affinity: {}
       ## no support for priorityClassName
-    
-    
+
     clusterController:
       enabled: false
       fullImageName: ""
@@ -1353,8 +1454,7 @@ components:
       priority:
         enabled: true
         name: system-cluster-critical
-    
-    
+
     networkCosts:
       fullImageName: ""
       image:
@@ -1392,6 +1492,9 @@ components:
                 operator: Exists
       priorityClassName: system-cluster-critical
 
+  #################################
+  ### Kubernetes Event Exporter ###
+  #################################
   kubernetesEventExporter:
     enabled: true
 
@@ -1444,6 +1547,9 @@ components:
           # authorization: ""
           # url: ""
 
+  ###########
+  ### NTP ###
+  ###########
   ntp:
     enabled: true
 
@@ -1471,6 +1577,9 @@ components:
     tolerations:
       - operator: Exists
 
+  ##################
+  ### PodTracker ###
+  ##################
   podtracker:
     enabled: true
 
@@ -1551,6 +1660,9 @@ components:
               matchLabels:
                 app.kubernetes.io/instance: podtracker
 
+  ##################
+  ### Prometheus ###
+  ##################
   prometheus:
     enabled: true
 
@@ -1673,7 +1785,6 @@ components:
           routes: []
 
     prometheus:
-
       netpol:
         allowFederation: true
 
@@ -2061,6 +2172,9 @@ components:
       #  prodMajor: ""
       #  prodMinor: ""
 
+  ################################
+  ### Secrets Store CSI Driver ###
+  ################################
   secretsStoreCSIDriver:
     enabled: false
     helm: {}
@@ -2107,6 +2221,9 @@ components:
     
     priorityClassName: platform-cluster-medium
 
+  #############
+  ### Trivy ###
+  #############
   trivy:
     enabled: true
     helm: {}
@@ -2207,6 +2324,9 @@ components:
            configMap:
              name: trust-manager-propagated-custom-ca
 
+  ################
+  ### Tetragon ###
+  ################
   tetragon:
     enabled: false
 
@@ -2264,6 +2384,9 @@ components:
         tag: "v1.1.0"
         pullPolicy: IfNotPresent
 
+  #####################
+  ### Trust Manager ###
+  #####################
   trustManager:
     enabled: true
 
@@ -2323,6 +2446,9 @@ components:
 
     priorityClassName: platform-cluster-medium
 
+  ###################
+  ### Vault Agent ###
+  ###################
   vaultAgent:
     enabled: false
 
@@ -2384,6 +2510,9 @@ components:
 
     priorityClassName: platform-cluster-critical
 
+  ##############
+  ### Velero ###
+  ##############
   velero:
     enabled: true
 
@@ -2458,70 +2587,3 @@ components:
         # tag: "1.16.15"
 
     priorityClassName: platform-cluster-medium
-
-  kubebench:
-    enabled: true
-    # cronjob:
-      # schedule: "0 0 1 * *"
-
-    imagePullSecrets: []
-    image:
-      # registry: docker.io
-      repository: aquasec/kube-bench
-      tag: "v0.15.0"
-      pullPolicy: Always
-
-    resources:
-      requests:
-        cpu: '1'
-        memory: 512Mi
-      limits:
-        cpu: '1'
-        memory: 1Gi
-    nodeSelector:
-      kubernetes.io/os: linux
-      node.ssc-spc.gc.ca/purpose: system
-    tolerations:
-      - key: CriticalAddonsOnly
-        operator: Exists
-
-    cronjob:
-      schedule: "0 0 1 * *"
-      command: []
-
-    extraLabels: {}
-    podLabels: {}
-    concurrencyPolicy: Forbid
-    
-    volumes:
-      - name: var-lib-kubelet
-        hostPath:
-          path: "/var/lib/kubelet"
-      - name: etc-systemd
-        hostPath:
-          path: "/etc/systemd"
-      - name: etc-kubernetes
-        hostPath:
-          path: "/etc/kubernetes"
-    volumeMounts:
-      - name: var-lib-kubelet
-        mountPath: /var/lib/kubelet
-        readOnly: true
-      - name: etc-systemd
-        mountPath: /etc/systemd
-        readOnly: true
-      - name: etc-kubernetes
-        mountPath: /etc/kubernetes
-        readOnly: true
-
-    affinity:
-      podAntiAffinity:
-        preferredDuringSchedulingIgnoredDuringExecution:
-        - weight: 1
-          podAffinityTerm:
-            topologyKey: kubernetes.io/hostname
-            labelSelector:
-              matchLabels:
-                app.kubernetes.io/instance: kube-bench
-    serviceAccount:
-      annotations: {}

@@ -41,149 +41,39 @@ global:
   # Ingress Class Name
   # ingressClassName: ingress-istio-controller
 
-  # The Azure subscription ID used for the cluster
-  # subscriptionId: ""
-
-  # The Azure tenant ID used for the cluster
-  # tenantId: ""
-
-  # Load Balancer Subnet Name for all Load Balancers
+  # Azure-specific settings.
   # load_balancer_subnet_name: ""
+  # subscriptionId: ""
+  # tenantId: ""
 
 data:
   mgmt:
     enabled: true
 
-# Components
+# Role Based Access Control
+rbac:
+  # Groups and users that should be bound to the platform-admin role.
+  # Note: if using AKS with AAD enabled, this is not necessary since admins
+  #       will be defined in the configuration.
+  platformAdmin:
+    groups: []
+    users: []
+  # Configurations for the platform-operator-daily role.
+  # A read-only aggregated role which uses the
+  # 'rbac.ssc-spc.gc.ca/aggregate-to-platform-operator-view: "true"'
+  # label as the selector.
+  platformOperator:
+    groups: []
+    users: []
+
+############
+### MGMT ###
+############
 components:
-  argoFoundation:
 
-    argocdInstance:
-      helm: {}
-      # chart: argocd-instance
-      # repository: https://gccloudone-aurora.github.io/aurora-platform-charts
-      # targetRevision: 0.13.0
-
-      # disableAdmin: true
-      # ingressDomain: ""
-
-      nodeSelector:
-        kubernetes.io/os: linux
-        node.ssc-spc.gc.ca/purpose: system
-      tolerations:
-        - key: CriticalAddonsOnly
-          operator: Exists
-
-      argocdVaultPlugin:
-        env: {}
-          # ARGOCD_ENV_AVP_TYPE: ""
-
-          # # Azure
-          # ARGOCD_ENV_AZURE_TENANT_ID: ""
-          # ARGOCD_ENV_AZURE_CLIENT_ID: ""
-          # ARGOCD_ENV_AZURE_CLIENT_SECRET: ""
-
-          # # AWS
-          # ARGOCD_ENV_AWS_REGION: ""
-
-      azureWorkloadIdentity:
-        enabled: false
-        # clientId: ""
-
-      oidcAuthSP:
-        credentials: {}
-      #     tenantID: ""
-      #     clientID: ""
-      #     clientSecret: ""
-
-      netpol: {}
-        # enabled: false
-
-      notifications: {}
-        # enabled: false
-
-      server:
-        service: {}
-          # type: ""
-
-      repo:
-        resources: {}
-          # limits:
-          #   cpu: ""
-          #   memory: ""
-          # requests:
-          #   cpu: ""
-          #   memory: ""
-        serviceAcccount: ""
-        annotations: {}
-
-      controller:
-        resources: {}
-          # limits:
-          #   cpu: ""
-          #   memory: ""
-          # requests:
-          #   cpu: ""
-          #   memory: ""
-      applicationSet:
-        resources: {}
-          # limits:
-          #   cpu: ""
-          #   memory: ""
-          # requests:
-          #   cpu: ""
-          #   memory: ""
-
-      redis:
-        resources: {}
-          # limits:
-          #   cpu: ""
-          #   memory: ""
-          # requests:
-          #   cpu: ""
-          #   memory: ""
-
-      register:
-        clusters: {}
-        repositories: {}
-        repositoryCreds: {}
-
-    argocdProjects:
-      platform:
-        # applicationSet:
-        #   generator:
-        #     git:
-        #       repoURL
-        #       revision
-        #       files:
-        #   template:
-        #     source:
-        #       repoURL
-
-      solutions:
-        # applicationSet:
-        #   generator:
-        #     git:
-        #       repoURL:
-        #       revision:
-        #       files:
-        #   template:
-        #     source:
-        #       repoURL:
-        #       helmValues:
-        #         argocd:
-        #           project:
-        #             sourceRepos: ['*']
-
-      syncWindows:
-        - clusters:
-            - '*'
-          duration: 5h
-          kind: allow
-          manualSync: true
-          schedule: '* 19 * * 2,4'
-          timeZone: America/Toronto
-
+  #####################
+  ### Argo Operator ###
+  #####################
   argoOperator:
     helm: {}
       # chart: argocd-operator
@@ -323,6 +213,139 @@ components:
         repositories: {}
         repositoryCreds: {}
 
+  #######################
+  ### Argo Foundation ###
+  #######################
+  argoFoundation:
+    argocdInstance:
+      helm: {}
+      # chart: argocd-instance
+      # repository: https://gccloudone-aurora.github.io/aurora-platform-charts
+      # targetRevision: 0.13.0
+
+      # disableAdmin: true
+      # ingressDomain: ""
+
+      nodeSelector:
+        kubernetes.io/os: linux
+        node.ssc-spc.gc.ca/purpose: system
+      tolerations:
+        - key: CriticalAddonsOnly
+          operator: Exists
+
+      argocdVaultPlugin:
+        env: {}
+          # ARGOCD_ENV_AVP_TYPE: ""
+
+          # # Azure
+          # ARGOCD_ENV_AZURE_TENANT_ID: ""
+          # ARGOCD_ENV_AZURE_CLIENT_ID: ""
+          # ARGOCD_ENV_AZURE_CLIENT_SECRET: ""
+
+          # # AWS
+          # ARGOCD_ENV_AWS_REGION: ""
+
+      azureWorkloadIdentity:
+        enabled: false
+        # clientId: ""
+
+      oidcAuthSP:
+        credentials: {}
+      #     tenantID: ""
+      #     clientID: ""
+      #     clientSecret: ""
+
+      netpol: {}
+        # enabled: false
+
+      notifications: {}
+        # enabled: false
+
+      server:
+        service: {}
+          # type: ""
+
+      repo:
+        resources: {}
+          # limits:
+          #   cpu: ""
+          #   memory: ""
+          # requests:
+          #   cpu: ""
+          #   memory: ""
+        serviceAcccount: ""
+        annotations: {}
+
+      controller:
+        resources: {}
+          # limits:
+          #   cpu: ""
+          #   memory: ""
+          # requests:
+          #   cpu: ""
+          #   memory: ""
+      applicationSet:
+        resources: {}
+          # limits:
+          #   cpu: ""
+          #   memory: ""
+          # requests:
+          #   cpu: ""
+          #   memory: ""
+
+      redis:
+        resources: {}
+          # limits:
+          #   cpu: ""
+          #   memory: ""
+          # requests:
+          #   cpu: ""
+          #   memory: ""
+
+      register:
+        clusters: {}
+        repositories: {}
+        repositoryCreds: {}
+
+    argocdProjects:
+      platform:
+        # applicationSet:
+        #   generator:
+        #     git:
+        #       repoURL
+        #       revision
+        #       files:
+        #   template:
+        #     source:
+        #       repoURL
+
+      solutions:
+        # applicationSet:
+        #   generator:
+        #     git:
+        #       repoURL:
+        #       revision:
+        #       files:
+        #   template:
+        #     source:
+        #       repoURL:
+        #       helmValues:
+        #         argocd:
+        #           project:
+        #             sourceRepos: ['*']
+
+      syncWindows:
+        - clusters:
+            - '*'
+          duration: 5h
+          kind: allow
+          manualSync: true
+          schedule: '* 19 * * 2,4'
+          timeZone: America/Toronto
+
+  #######################
+  ### Bill of Landing ###
+  #######################
   billOfLanding:
     enabled: false
 
@@ -372,6 +395,9 @@ components:
         # clientId:
         # resourceId:
 
+  ############
+  ### Loki ###
+  ############
   loki:
     enabled: false
 
@@ -399,18 +425,3 @@ components:
     logStorageLocation: {}
       # storageAccountName: <storage-account-name>
       # storageAccountKey: <storage-account-key>
-
-rbac:
-  # Groups and users that should be bound to the platform-admin role.
-  # Note: if using AKS with AAD enabled, this is not necessary since admins
-  #       will be defined in the configuration.
-  platformAdmin:
-    groups: []
-    users: []
-  # Configurations for the platform-operator-daily role.
-  # A read-only aggregated role which uses the
-  # 'rbac.ssc-spc.gc.ca/aggregate-to-platform-operator-view: "true"'
-  # label as the selector.
-  platformOperator:
-    groups: []
-    users: []
