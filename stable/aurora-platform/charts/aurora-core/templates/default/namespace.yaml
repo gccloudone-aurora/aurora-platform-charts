@@ -1,9 +1,7 @@
-{{ if .Values.components.secretsStoreCSIDriver.enabled -}}
-
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: "{{ .Values.global.cluster }}-secrets-store-namespace"
+  name: "{{ .Values.global.cluster }}-default-namespace"
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
@@ -13,7 +11,7 @@ spec:
     repoURL: {{ default .Values.global.helm.repository .Values.global.namespace.helm.repository }}
     targetRevision: {{ .Values.global.namespace.helm.targetRevision }}
     helm:
-      releaseName: secrets-store-csi-driver-system
+      releaseName: default
       values: |
         # Information about the namespace.
         information:
@@ -51,9 +49,6 @@ spec:
         policies:
           # List of host/path that can be exposed from the namespace.
           allowedHosts: []
-            # - www.example.ca/service
-            # - www.example.ca/
-            # - www.example.ca
 
           # Configure the data plane mode for Istio.
           # "sidecar" Enables sidecar injection (istio-injection=enabled).
@@ -61,15 +56,15 @@ spec:
           # istioMode: "ambient"
 
           # Refer to https://kubernetes.io/docs/concepts/security/pod-security-admission/
-          podSecurityAdmission:
-            enforce:
-              level: privileged
-              version: v1.35
+          # podSecurityAdmission:
+          #   enforce:
+          #     level: privileged
+          #     version: v1.35
 
         # Defines the access control on the namespace.
         # Roles will be assigned based on the namespace type.
         rbac:
-          groups: []
+          groups: {{ toYaml .Values.rbac.platformOperator.groups | nindent 12 }}
 
         # Defines resource quotas on the namespace.
         resourceQuotas:
@@ -91,5 +86,3 @@ spec:
     automated:
       prune: true
       selfHeal: true
-
-{{- end }}
