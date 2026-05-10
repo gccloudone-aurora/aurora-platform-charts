@@ -29,13 +29,16 @@ spec:
           onboardingEpic: "CN-1"
           # The link to the authority to operate.
           authorityToOperate: "https://gcdocs.gc.ca/ssc-spc/example"
+
           # Information about tooling.
           gitGroupURL: "https://github.com/gccloudone-aurora"
+
           # Financial and organizational identifiers.
           FRC: 0001
           PE: 001
           workloadID: 0000001
           productID: 00001
+
         # Configurations about the namespace.
         namespace:
         # Extra labels to add to the namespace.
@@ -43,6 +46,7 @@ spec:
           # The type of namespace.
           # Can be one of [gateway, solution, system].
           type: "system"
+
         # Policy configurations on the namespace.
         policies:
           # List of host/path that can be exposed from the namespace.
@@ -66,6 +70,7 @@ spec:
         # Roles will be assigned based on the namespace type.
         rbac:
           groups: []
+
         # Defines resource quotas on the namespace.
         resourceQuotas:
           # The maximum number of pods that can be in the namespace.
