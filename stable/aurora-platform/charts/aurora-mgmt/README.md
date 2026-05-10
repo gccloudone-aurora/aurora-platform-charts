@@ -37,6 +37,10 @@ Aurora Platform - Management Components
 | components.argoFoundation.argocdProjects.syncWindows[0].schedule | string | `"* 19 * * 2,4"` |  |
 | components.argoFoundation.argocdProjects.syncWindows[0].timeZone | string | `"America/Toronto"` |  |
 | components.argoOperator.affinity | object | `{}` |  |
+| components.argoOperator.containerSecurityContext.allowPrivilegeEscalation | bool | `false` |  |
+| components.argoOperator.containerSecurityContext.capabilities.drop[0] | string | `"ALL"` |  |
+| components.argoOperator.containerSecurityContext.runAsNonRoot | bool | `true` |  |
+| components.argoOperator.containerSecurityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
 | components.argoOperator.helm | object | `{}` |  |
 | components.argoOperator.image.repository | string | `"argoprojlabs/argocd-operator"` |  |
 | components.argoOperator.image.tag | string | `"v0.16.0"` |  |

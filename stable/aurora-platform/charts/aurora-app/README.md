@@ -165,9 +165,16 @@ Aurora Platform - Application Components
 | components.sidecarTerminator.imagePullSecrets | list | `[]` |  |
 | components.sidecarTerminator.nodeSelector."kubernetes.io/os" | string | `"linux"` |  |
 | components.sidecarTerminator.nodeSelector."node.ssc-spc.gc.ca/purpose" | string | `"system"` |  |
+| components.sidecarTerminator.podSecurityContext.runAsNonRoot | bool | `true` |  |
+| components.sidecarTerminator.podSecurityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
 | components.sidecarTerminator.priorityClassName | string | `"platform-cluster-medium"` |  |
 | components.sidecarTerminator.replicas | int | `2` |  |
 | components.sidecarTerminator.resources | object | `{}` |  |
+| components.sidecarTerminator.securityContext.allowPrivilegeEscalation | bool | `false` |  |
+| components.sidecarTerminator.securityContext.capabilities.drop[0] | string | `"ALL"` |  |
+| components.sidecarTerminator.securityContext.runAsNonRoot | bool | `true` |  |
+| components.sidecarTerminator.securityContext.runAsUser | int | `1000` |  |
+| components.sidecarTerminator.securityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
 | components.sidecarTerminator.terminator.image.repository | string | `"alpine"` |  |
 | components.sidecarTerminator.tolerations[0].key | string | `"CriticalAddonsOnly"` |  |
 | components.sidecarTerminator.tolerations[0].operator | string | `"Exists"` |  |

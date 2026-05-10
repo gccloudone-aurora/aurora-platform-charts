@@ -652,10 +652,12 @@ Aurora Platform - Core Platform
 | components.podtracker.resources.limits.memory | string | `"128Mi"` |  |
 | components.podtracker.resources.requests.cpu | string | `"10m"` |  |
 | components.podtracker.resources.requests.memory | string | `"64Mi"` |  |
+| components.podtracker.securityContext.allowPrivilegeEscalation | bool | `false` |  |
 | components.podtracker.securityContext.capabilities.drop[0] | string | `"ALL"` |  |
 | components.podtracker.securityContext.readOnlyRootFilesystem | bool | `true` |  |
 | components.podtracker.securityContext.runAsNonRoot | bool | `true` |  |
 | components.podtracker.securityContext.runAsUser | int | `1000` |  |
+| components.podtracker.securityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
 | components.podtracker.tolerations[0].key | string | `"CriticalAddonsOnly"` |  |
 | components.podtracker.tolerations[0].operator | string | `"Exists"` |  |
 | components.podtracker.webhooksEnabled | bool | `true` |  |
@@ -862,11 +864,15 @@ Aurora Platform - Core Platform
 | components.trivy.nodeSelector."node.ssc-spc.gc.ca/purpose" | string | `"system"` |  |
 | components.trivy.operator.builtInTrivyServer | bool | `true` |  |
 | components.trivy.operator.configAuditScannerEnabled | bool | `false` | configAuditScannerEnabled the flag to enable configuration audit scanner |
+| components.trivy.operator.containerSecurityContext.runAsNonRoot | bool | `true` |  |
+| components.trivy.operator.containerSecurityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
 | components.trivy.operator.excludeImages | string | `""` | excludeImages is comma separated glob patterns for excluding images from scanning. Example: pattern: `k8s.gcr.io/*/*` will exclude image: `k8s.gcr.io/coredns/coredns:v1.8.0`. |
 | components.trivy.operator.exposedSecretScannerEnabled | bool | `false` | exposedSecretScannerEnabled the flag to enable exposed secret scanner |
 | components.trivy.operator.infraAssessmentScannerEnabled | bool | `false` | infraAssessmentScannerEnabled the flag to enable infra assessment scanner |
 | components.trivy.operator.rbacAssessmentScannerEnabled | bool | `false` | rbacAssessmentScannerEnabled the flag to enable rbac assessment scanner |
 | components.trivy.operator.vulnerabilityScannerEnabled | bool | `true` | the flag to enable vulnerability scanner |
+| components.trivy.podSecurityContext.runAsNonRoot | bool | `true` |  |
+| components.trivy.podSecurityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
 | components.trivy.priorityClassName | string | `"platform-cluster-medium"` |  |
 | components.trivy.resources.limits.cpu | string | `"500m"` |  |
 | components.trivy.resources.limits.memory | string | `"500M"` |  |
@@ -878,10 +884,14 @@ Aurora Platform - Core Platform
 | components.trivy.server.extraServerVolumes.volumeMounts[0].subPath | string | `"ca-certificates.crt"` |  |
 | components.trivy.server.extraServerVolumes.volumes[0].configMap.name | string | `"trust-manager-propagated-custom-ca"` |  |
 | components.trivy.server.extraServerVolumes.volumes[0].name | string | `"trust-manager-propagated-custom-ca"` |  |
+| components.trivy.server.podSecurityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
 | components.trivy.server.resources.limits.cpu | int | `1` |  |
 | components.trivy.server.resources.limits.memory | string | `"1Gi"` |  |
 | components.trivy.server.resources.requests.cpu | string | `"200m"` |  |
 | components.trivy.server.resources.requests.memory | string | `"512Mi"` |  |
+| components.trivy.server.securityContext.allowPrivilegeEscalation | bool | `false` |  |
+| components.trivy.server.securityContext.capabilities.drop[0] | string | `"ALL"` |  |
+| components.trivy.server.securityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
 | components.trivy.servicemonitor.enabled | bool | `true` |  |
 | components.trivy.severity | string | `"UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL"` |  |
 | components.trivy.targetWorkloads | string | `"pod,replicaset,replicationcontroller,statefulset,daemonset,cronjob,job"` |  |

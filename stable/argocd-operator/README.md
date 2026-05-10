@@ -1,6 +1,6 @@
 # argocd-operator
 
-![Version: 0.0.12](https://img.shields.io/badge/Version-0.0.12-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.14.0](https://img.shields.io/badge/AppVersion-0.14.0-informational?style=flat-square)
+![Version: 0.0.13](https://img.shields.io/badge/Version-0.0.13-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.14.0](https://img.shields.io/badge/AppVersion-0.14.0-informational?style=flat-square)
 
 A Helm chart that deploys ArgoCD Operator.
 
@@ -14,6 +14,7 @@ A Helm chart that deploys ArgoCD Operator.
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | operator.affinity | object | `{}` | A more expressive way to constrain ArgoCD controller Pods to specific nodes |
+| operator.containerSecurityContext | object | `{}` | NEW: Defines security settings for the ArgoCD controller Container (required for Restricted PSS) |
 | operator.extraEnv | list | `[]` | A list of environment objects used to inject additional environment variables into the controller pod |
 | operator.image | object | `{"pullPolicy":"IfNotPresent","repository":"quay.io/argoprojlabs/argocd-operator","tag":"v0.16.0"}` | Configures the image to use for the argocd-operator pod(s) |
 | operator.imagePullSecrets | list | `[]` | One or many secret(s), that store Docker credentials that are used for accessing a private image registry |
@@ -29,7 +30,7 @@ A Helm chart that deploys ArgoCD Operator.
 | operator.readinessProbe.periodSeconds | int | `10` |  |
 | operator.replicaCount | int | `1` | The number of replicas of the ArgoCD controller |
 | operator.resources | object | `{"requests":{"cpu":"200m","ephemeral-storage":"500Mi","memory":"256Mi"}}` | Resource requests and limits to define the allowed compute and storage for each deployment |
-| operator.securityContext | object | `{"runAsNonRoot":true}` | Defines privilege and access control settings for the ArgoCD controller Pod or Container |
+| operator.securityContext | object | `{"runAsNonRoot":true}` | Defines privilege and access control settings for the ArgoCD controller Pod |
 | operator.tolerations | list | `[]` | A list of node taints that this deployment should tolerate |
 
 ----------------------------------------------
