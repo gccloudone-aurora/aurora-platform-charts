@@ -36,7 +36,7 @@ Aurora Platform
 | global.loggingCidrs[0] | string | `"172.26.26.132/32"` |  |
 | global.namespace.helm.chart | string | `"aurora-namespace"` |  |
 | global.namespace.helm.repository | string | `"https://gccloudone-aurora.github.io/aurora-platform-charts"` |  |
-| global.namespace.helm.targetRevision | string | `"0.0.18"` |  |
+| global.namespace.helm.targetRevision | string | `"0.0.19"` |  |
 | global.provider | string | `"azure"` |  |
 | global.raw.helm.chart | string | `"raw"` |  |
 | global.raw.helm.repository | string | `"https://gccloudone-aurora.github.io/aurora-platform-charts"` |  |

@@ -73,10 +73,13 @@ Defines the name of the namespace to adhere to required conventions.
 {{- define "aurora-namespace.namespaceName" -}}
 {{- if (and (or (eq .Values.namespace.type "system") (eq .Values.namespace.type "gateway")) (not (hasSuffix "-system" .Release.Name))) }}
 {{- if ne .Release.Name "default" }}
-{{- fail "namespace name must end with \"-system\" when type is one of [gateway, system], unless it is 'default'" }}
+{{- fail "namespace name must end with \"-system\" when type is one of [gateway, system], unless the release name is 'default'" }}
+{{- else }}
+{{- .Release.Name -}}
+{{- end }}
 {{- end }}
 {{- else }}
-{{- .Release.Name }}
+{{- .Release.Name -}}
 {{- end }}
 {{- end }}
 
