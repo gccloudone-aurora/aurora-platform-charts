@@ -26,6 +26,10 @@ spec:
     {{- end }}
       containers:
         - name: {{ .Chart.Name }}
+          {{- with .Values.operator.containerSecurityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           image: "{{ .Values.operator.image.repository }}:{{ .Values.operator.image.tag }}"
           command:
           - /manager

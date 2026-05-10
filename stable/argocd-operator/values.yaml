@@ -20,9 +20,11 @@ operator:
   extraEnv: []
   # -- The number of replicas of the ArgoCD controller
   replicaCount: 1
-  # -- Defines privilege and access control settings for the ArgoCD controller Pod or Container
+  # -- Defines privilege and access control settings for the ArgoCD controller Pod
   securityContext:
     runAsNonRoot: true
+  # -- NEW: Defines security settings for the ArgoCD controller Container (required for Restricted PSS)
+  containerSecurityContext: {}
   # -- Liveness and Readiness Probes
   livenessProbe:
     httpGet:
