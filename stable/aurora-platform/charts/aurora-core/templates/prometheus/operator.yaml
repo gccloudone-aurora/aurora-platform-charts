@@ -289,6 +289,29 @@ spec:
 
               metricLabelsAllowlist:
                 - nodes=[agentpool]
+                - namespaces=[namespace.ssc-spc.gc.ca/purpose]
+              
+              collectors:
+                - pods
+                - deployments
+                - nodes
+                - namespaces
+                - replicasets
+                - statefulsets
+                - daemonsets
+                - jobs
+                - cronjobs
+                - persistentvolumeclaims
+                - resourcequotas
+                - horizontalpodautoscalers
+                - ingresses
+              
+              releaseLabel: true
+              prometheus:
+                monitor:
+                  enabled: true
+                  honorLabels: true
+                  interval: 30s
 
             prometheus-node-exporter:
               image: {{ default "{}" (include "prometheus.prometheusNodeExporter.image" .) | nindent 16 }}
