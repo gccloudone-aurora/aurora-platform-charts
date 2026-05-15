@@ -2273,19 +2273,24 @@ components:
     servicemonitor:
       enabled: true
 
+    # Ignore vulnerabilties where no fix is currently available (as there's no way to action on them)
+    ignoreUnfixed: true
     operator:
       # enable builtin server mode
       builtInTrivyServer: true
+      # Disable Trivy from using global secrets/service accounts to improve security
+      accessGlobalSecretsAndServiceaccount: false
       # -- the flag to enable vulnerability scanner
       vulnerabilityScannerEnabled: true
       # -- configAuditScannerEnabled the flag to enable configuration audit scanner
-      configAuditScannerEnabled: false
+      configAuditScannerEnabled: true
       # -- rbacAssessmentScannerEnabled the flag to enable rbac assessment scanner
-      rbacAssessmentScannerEnabled: false
+      rbacAssessmentScannerEnabled: true
       # -- infraAssessmentScannerEnabled the flag to enable infra assessment scanner
       infraAssessmentScannerEnabled: false
       # -- exposedSecretScannerEnabled the flag to enable exposed secret scanner
-      exposedSecretScannerEnabled: false
+      exposedSecretScannerEnabled: true
+      
       # -- excludeImages is comma separated glob patterns for excluding images from scanning.
       # Example: pattern: `k8s.gcr.io/*/*` will exclude image: `k8s.gcr.io/coredns/coredns:v1.8.0`.
       excludeImages: ""
@@ -2294,7 +2299,28 @@ components:
         seccompProfile:
           type: RuntimeDefault
 
-    severity: "UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL"
+    # Configuration of the trivy job
+    trivyOperator:
+      # Avoid mounting service tokens when scanning
+      scanJobAutomountServiceAccountToken: false
+      # Clean up scan jobs after completion to reduce job history bloat
+      scanJobTTL: "1h"
+      # Annotations to stop istio sidecar and to ensure autoscaling can evict
+      scanJobAnnotations:
+        sidecar.istio.io/inject: "false"
+        cluster-autoscaler.kubernetes.io/safe-to-evict: "true"
+      # Adding labels to job for simpler querying on status
+      scanJobPodTemplateLabels:
+        app.kubernetes.io/name: trivy-scan-job
+        app.kubernetes.io/managed-by: trivy-operator
+      # Only run on system nodes
+      scanJobNodeSelector:
+        node.ssc-spc.gc.ca/purpose: system
+      scanJobTolerations:
+        - key: CriticalAddonsOnly
+          operator: Exists
+
+    severity: "MEDIUM,HIGH,CRITICAL"
     server:
       podSecurityContext:
         seccompProfile:
