@@ -2320,7 +2320,7 @@ components:
         - key: CriticalAddonsOnly
           operator: Exists
 
-    severity: "MEDIUM,HIGH,CRITICAL"
+    severity: "HIGH,CRITICAL"
     server:
       podSecurityContext:
         seccompProfile:
