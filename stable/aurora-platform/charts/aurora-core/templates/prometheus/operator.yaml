@@ -287,8 +287,34 @@ spec:
               tolerations: {{ toYaml .Values.components.prometheus.kubeStateMetrics.tolerations | nindent 16 }}
               affinity: {{ toYaml .Values.components.prometheus.kubeStateMetrics.affinity | nindent 16 }}
 
+              ## This enables specific labels in Kubernetes to be used in Prometheus for grouping, as default behaviour is to strip away all labels
               metricLabelsAllowlist:
                 - nodes=[agentpool]
+                - namespaces=[namespace.ssc-spc.gc.ca/purpose]
+              
+              ## Defines which resource types kube-state-metrics should be monitoring 
+              collectors:
+                - pods
+                - deployments
+                - nodes
+                - namespaces
+                - replicasets
+                - statefulsets
+                - daemonsets
+                - jobs
+                - cronjobs
+                - persistentvolumeclaims
+                - resourcequotas
+                - horizontalpodautoscalers
+                - ingresses
+              
+              ## Release label is required so Prometheus Operator can scrape kube-state-metrics
+              releaseLabel: true
+              prometheus:
+                monitor:
+                  enabled: true
+                  honorLabels: true
+                  interval: 30s
 
             prometheus-node-exporter:
               image: {{ default "{}" (include "prometheus.prometheusNodeExporter.image" .) | nindent 16 }}
