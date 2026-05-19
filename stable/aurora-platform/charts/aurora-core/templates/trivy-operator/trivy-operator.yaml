@@ -42,6 +42,8 @@ spec:
             
             operator: {{ toYaml .Values.components.trivy.operator | nindent 14 }}
 
+            trivyOperator: {{ toYaml .Values.components.trivy.trivyOperator | nindent 14 }}
+
             serviceMonitor:
               enabled: {{ .Values.components.trivy.servicemonitor.enabled }} 
 
@@ -50,6 +52,7 @@ spec:
               javaDbRegistry: {{ default "docker.io" .Values.global.container.registry }}
               severity: {{ .Values.components.trivy.severity }}
               storageClassName: default
+              ignoreUnfixed: {{ default "false" .Values.components.trivy.ignoreUnfixed }}
               server: {{ toYaml .Values.components.trivy.server | nindent 16 }}
 
   destination:
