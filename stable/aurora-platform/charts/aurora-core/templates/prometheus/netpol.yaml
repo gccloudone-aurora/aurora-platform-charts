@@ -647,7 +647,7 @@ spec:
                     to:
                     - namespaceSelector:
                         matchLabels:
-                          kubernetes.io/metadata.name: loki
+                          kubernetes.io/metadata.name: loki-system
                       podSelector:
                         matchLabels:
                           app.kubernetes.io/component: gateway
