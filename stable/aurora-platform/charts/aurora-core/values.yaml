@@ -2320,10 +2320,22 @@ components:
       scanJobTolerations:
         - key: CriticalAddonsOnly
           operator: Exists
+      scanJobPodTemplatePodSecurityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      scanJobPodTemplateContainerSecurityContext:
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop:
+            - ALL
+        readOnlyRootFilesystem: true
+        runAsNonRoot: true
 
     severity: "HIGH,CRITICAL"
     server:
       podSecurityContext:
+        runAsNonRoot: true
         seccompProfile:
           type: RuntimeDefault
       securityContext:
