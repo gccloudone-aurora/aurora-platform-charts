@@ -2307,13 +2307,9 @@ components:
       # Clean up scan jobs after completion to reduce job history bloat
       scanJobTTL: "1h"
       # Annotations to stop istio sidecar and to ensure autoscaling can evict
-      scanJobAnnotations:
-        sidecar.istio.io/inject: "false"
-        cluster-autoscaler.kubernetes.io/safe-to-evict: "true"
+      scanJobAnnotations: "sidecar.istio.io/inject=false, cluster-autoscaler.kubernetes.io/safe-to-evict=true"
       # Adding labels to job for simpler querying on status
-      scanJobPodTemplateLabels:
-        app.kubernetes.io/name: trivy-scan-job
-        app.kubernetes.io/managed-by: trivy-operator
+      scanJobPodTemplateLabels: "app.kubernetes.io/name=trivy-scan-job, app.kubernetes.io/managed-by=trivy-operator"
       # Only run on system nodes
       scanJobNodeSelector:
         node.ssc-spc.gc.ca/purpose: system
