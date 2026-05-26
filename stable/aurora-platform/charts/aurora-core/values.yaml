@@ -2307,7 +2307,7 @@ components:
       # Avoid mounting service tokens when scanning
       scanJobAutomountServiceAccountToken: false
       # Annotations to stop istio sidecar and to ensure autoscaling can evict
-      scanJobAnnotations: "sidecar.istio.io/inject=false,cluster-autoscaler.kubernetes.io/safe-to-evict=true"
+      scanJobAnnotations: "sidecar.istio.io/inject=false,cluster-autoscaler.kubernetes.io/safe-to-evict=true,fluent.sidecar.io/inject=false"
       # Adding labels to job for simpler querying on status
       scanJobPodTemplateLabels: "app.kubernetes.io/name=trivy-scan-job,app.kubernetes.io/managed-by=trivy-operator"
       # Only run on system nodes
@@ -2318,6 +2318,9 @@ components:
           operator: Exists
       scanJobPodTemplatePodSecurityContext:
         runAsNonRoot: true
+        runAsUser: 10000
+        runAsGroup: 10000
+        fsGroup: 10000
         seccompProfile:
           type: RuntimeDefault
       scanJobPodTemplateContainerSecurityContext:
@@ -2327,6 +2330,7 @@ components:
             - ALL
         readOnlyRootFilesystem: true
         runAsNonRoot: true
+        runAsUser: 10000
 
     severity: "HIGH,CRITICAL"
     server:
