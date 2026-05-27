@@ -1232,7 +1232,7 @@ components:
     image:
       # registry: docker.io
       repository: aquasec/kube-bench
-      tag: "v0.15.0"
+      tag: "v0.15.5"
       pullPolicy: Always
 
     resources:
@@ -1265,17 +1265,12 @@ components:
         hostPath:
           path: "/etc/systemd"
       - name: etc-kubernetes
-        hostPath:
-          path: "/etc/kubernetes"
     volumeMounts:
       - name: var-lib-kubelet
         mountPath: /var/lib/kubelet
         readOnly: true
       - name: etc-systemd
         mountPath: /etc/systemd
-        readOnly: true
-      - name: etc-kubernetes
-        mountPath: /etc/kubernetes
         readOnly: true
 
     affinity:
