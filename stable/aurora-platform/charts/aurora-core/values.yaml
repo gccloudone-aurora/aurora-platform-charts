@@ -2173,6 +2173,8 @@ components:
   ################################
   secretsStoreCSIDriver:
     enabled: false
+    enableSecretRotation: false
+    rotationPollInterval: "2m"
     helm: {}
       # chart: secrets-store-csi-driver
       # repository: https://kubernetes-sigs.github.io/secrets-store-csi-driver/charts
