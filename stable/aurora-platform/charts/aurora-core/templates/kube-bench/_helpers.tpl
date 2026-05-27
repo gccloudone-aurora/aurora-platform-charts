@@ -19,11 +19,11 @@ The cronjob command section based on cloud provider
 {{ toJson .Values.components.kubebench.cronjob.command }}
 {{- else -}}
 {{- if eq "azure" .Values.global.provider -}}
-["kube-bench", "--benchmark", "aks-1.0", "run", "--targets", "node"]
+["kube-bench", "run", "--targets", "node"]
 {{- else if eq "aws" .Values.global.provider -}}
-["kube-bench", "--benchmark", "eks-1.1.0", "run", "--targets", "node"]
+["kube-bench", "run", "--targets", "node"]
 {{- else -}}
 ["kube-bench"]
 {{- end }}
-{{- end -}}
+{{- end }}
 {{- end -}}
