@@ -2247,7 +2247,7 @@ components:
         memory: 100M
       limits:
         cpu: 500m
-        memory: 500M
+        memory: 2Gi
     nodeSelector:
       kubernetes.io/os: linux
       node.ssc-spc.gc.ca/purpose: system
@@ -2328,6 +2328,15 @@ components:
         readOnlyRootFilesystem: true
         runAsNonRoot: true
         runAsUser: 10000
+      scanJobCustomVolumeMounts: 
+       - name: trust-manager-propagated-custom-ca
+         mountPath: /etc/ssl/certs/ca-certificates.crt
+         subPath: ca-certificates.crt
+         readOnly: true
+      scanJobCustomVolumes: 
+       - name: trust-manager-propagated-custom-ca
+         configMap:
+           name: trust-manager-propagated-custom-ca
 
     severity: "HIGH,CRITICAL"
     server:
@@ -2352,7 +2361,7 @@ components:
       extraServerVolumes:
         volumeMounts: 
          - name: trust-manager-propagated-custom-ca
-           mountPath: /etc/ssl/certs/trust-manager-propagated-custom-ca.crt
+           mountPath: /etc/ssl/certs/ca-certificates.crt
            subPath: ca-certificates.crt
            readOnly: true
         volumes: 
