@@ -52,7 +52,7 @@ spec:
                       app: konnectivity-agent
               podSelector:
                 matchLabels:
-                  app.kubernetes.io/name: vertical-pod-autoscaler
+                  app.kubernetes.io/name: vpa
                   app.kubernetes.io/component: admission-controller
               policyTypes:
               - Ingress
@@ -72,7 +72,7 @@ spec:
                     cidr: {{ required "global.apiServerCidr is required" .Values.global.apiServerCidr | quote }}
               podSelector:
                 matchLabels:
-                  app.kubernetes.io/name: vertical-pod-autoscaler
+                  app.kubernetes.io/name: vpa
               policyTypes:
               - Egress
   destination:

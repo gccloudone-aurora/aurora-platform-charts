@@ -2451,17 +2451,22 @@ components:
 
   verticalPodAutoscaler:
     # Vertical Pod Autoscaler (VPA) adjusts CPU/memory requests from workload usage.
-    # Uses the kubernetes/autoscaler Helm chart; CRDs are installed on first sync (upgrade CRDs manually per upstream docs).
+    # Fairwinds Helm chart: https://github.com/FairwindsOps/charts/tree/master/stable/vpa
+    # CRDs: upgrade manually per chart README when bumping chart/app version.
     enabled: false
 
     helm: {}
-      # chart: vertical-pod-autoscaler
-      # repository: https://kubernetes.github.io/autoscaler
-      # targetRevision: 0.9.0
+      # chart: vpa
+      # repository: https://charts.fairwinds.com/stable
+      # targetRevision: 4.11.0
 
     imagePullSecrets: []
 
     priorityClassName: platform-cluster-medium
+
+    # Aurora runs metrics-server separately; do not install the Fairwinds subchart.
+    metricsServer:
+      enabled: false
 
     nodeSelector:
       kubernetes.io/os: linux
@@ -2472,12 +2477,21 @@ components:
 
     rbac:
       create: true
-      extraRules: []
+      extraRules:
+        vpaActor: []
+        vpaStatusActor: []
+        vpaCheckpointActor: []
+        vpaEvictioner: []
+        vpaMetricsReader: []
+        vpaUpdaterInPlace: []
+        vpaTargetReader: []
+        vpaStatusReader: []
 
     admissionController:
       enabled: true
-      replicas: 2
+      replicaCount: 2
       registerWebhook: false
+      generateCertificate: true
 
       image:
         # registry: registry.k8s.io
@@ -2494,11 +2508,10 @@ components:
               topologyKey: kubernetes.io/hostname
               labelSelector:
                 matchLabels:
-                  app.kubernetes.io/name: vertical-pod-autoscaler
+                  app.kubernetes.io/name: vpa
                   app.kubernetes.io/component: admission-controller
 
-      extraArgs: []
-      extraEnv: []
+      extraArgs: {}
 
       mutatingWebhookConfiguration:
         failurePolicy: Ignore
@@ -2507,11 +2520,10 @@ components:
         timeoutSeconds: 5
 
       certGen:
-        enabled: true
         image:
           # registry: registry.k8s.io
           repository: ingress-nginx/kube-webhook-certgen
-          tag: v20231011-8b53cabe0
+          tag: v20230312-helm-chart-4.5.2-28-g66a760794
           # pullPolicy: IfNotPresent
         resources: {}
 
@@ -2519,9 +2531,12 @@ components:
         enabled: true
         minAvailable: 1
 
+      podMonitor:
+        enabled: false
+
     recommender:
       enabled: true
-      replicas: 2
+      replicaCount: 2
 
       image:
         # registry: registry.k8s.io
@@ -2538,19 +2553,23 @@ components:
               topologyKey: kubernetes.io/hostname
               labelSelector:
                 matchLabels:
-                  app.kubernetes.io/name: vertical-pod-autoscaler
+                  app.kubernetes.io/name: vpa
                   app.kubernetes.io/component: recommender
 
-      extraArgs: []
-      extraEnv: []
+      # Omit to use Fairwinds chart defaults (log verbosity, min recommendations, etc.).
+      # extraArgs: {}
+      envFromSecret: ""
 
       podDisruptionBudget:
         enabled: true
         minAvailable: 1
 
+      podMonitor:
+        enabled: false
+
     updater:
       enabled: true
-      replicas: 2
+      replicaCount: 2
 
       image:
         # registry: registry.k8s.io
@@ -2567,15 +2586,18 @@ components:
               topologyKey: kubernetes.io/hostname
               labelSelector:
                 matchLabels:
-                  app.kubernetes.io/name: vertical-pod-autoscaler
+                  app.kubernetes.io/name: vpa
                   app.kubernetes.io/component: updater
 
       # extraArgs:
-      #   - --in-place-skip-disruption-budget=true
+      #   in-place-skip-disruption-budget: "true"
 
       podDisruptionBudget:
         enabled: true
         minAvailable: 1
+
+      podMonitor:
+        enabled: false
 
   vaultAgent:
     enabled: false

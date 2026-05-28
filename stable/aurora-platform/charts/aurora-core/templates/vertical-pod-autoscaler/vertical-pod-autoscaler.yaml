@@ -9,77 +9,94 @@ metadata:
 spec:
   project: {{ .Values.global.project }}
   source:
-    chart: {{ default "vertical-pod-autoscaler" .Values.components.verticalPodAutoscaler.helm.chart }}
+    chart: {{ default "vpa" .Values.components.verticalPodAutoscaler.helm.chart }}
     {{- if .Values.components.verticalPodAutoscaler.helm.repository }}
     repoURL: {{ .Values.components.verticalPodAutoscaler.helm.repository }}
     {{- else }}
-    repoURL: {{ default "https://kubernetes.github.io/autoscaler" .Values.global.helm.repository }}
+    repoURL: {{ default "https://charts.fairwinds.com/stable" .Values.global.helm.repository }}
     {{- end }}
-    targetRevision: {{ default "0.9.0" .Values.components.verticalPodAutoscaler.helm.targetRevision }}
+    targetRevision: {{ default "4.11.0" .Values.components.verticalPodAutoscaler.helm.targetRevision }}
     helm:
-      releaseName: vertical-pod-autoscaler
+      releaseName: vpa
       values: |
         imagePullSecrets: {{ toYaml .Values.components.verticalPodAutoscaler.imagePullSecrets | nindent 10 }}
+        priorityClassName: {{ .Values.components.verticalPodAutoscaler.priorityClassName | quote }}
 
         rbac:
           create: {{ .Values.components.verticalPodAutoscaler.rbac.create }}
           extraRules: {{ toYaml .Values.components.verticalPodAutoscaler.rbac.extraRules | nindent 12 }}
 
+        metrics-server:
+          enabled: {{ .Values.components.verticalPodAutoscaler.metricsServer.enabled }}
+
         admissionController:
           enabled: {{ .Values.components.verticalPodAutoscaler.admissionController.enabled }}
-          replicas: {{ .Values.components.verticalPodAutoscaler.admissionController.replicas }}
+          replicaCount: {{ .Values.components.verticalPodAutoscaler.admissionController.replicaCount }}
           registerWebhook: {{ .Values.components.verticalPodAutoscaler.admissionController.registerWebhook }}
+          generateCertificate: {{ .Values.components.verticalPodAutoscaler.admissionController.generateCertificate }}
           image: {{ default "{}" (include "verticalPodAutoscaler.admissionController.image" .) | nindent 12 }}
           resources: {{ toYaml .Values.components.verticalPodAutoscaler.admissionController.resources | nindent 12 }}
           nodeSelector: {{ toYaml .Values.components.verticalPodAutoscaler.nodeSelector | nindent 12 }}
           tolerations: {{ toYaml .Values.components.verticalPodAutoscaler.tolerations | nindent 12 }}
           affinity: {{ toYaml .Values.components.verticalPodAutoscaler.admissionController.affinity | nindent 12 }}
-          priorityClassName: {{ .Values.components.verticalPodAutoscaler.priorityClassName | quote }}
-          extraArgs: {{ toYaml .Values.components.verticalPodAutoscaler.admissionController.extraArgs | nindent 12 }}
-          extraEnv: {{ toYaml .Values.components.verticalPodAutoscaler.admissionController.extraEnv | nindent 12 }}
+          {{- with .Values.components.verticalPodAutoscaler.admissionController.extraArgs }}
+          extraArgs: {{ toYaml . | nindent 12 }}
+          {{- end }}
           mutatingWebhookConfiguration:
             failurePolicy: {{ .Values.components.verticalPodAutoscaler.admissionController.mutatingWebhookConfiguration.failurePolicy | quote }}
             namespaceSelector: {{ toYaml .Values.components.verticalPodAutoscaler.admissionController.mutatingWebhookConfiguration.namespaceSelector | nindent 14 }}
             objectSelector: {{ toYaml .Values.components.verticalPodAutoscaler.admissionController.mutatingWebhookConfiguration.objectSelector | nindent 14 }}
             timeoutSeconds: {{ .Values.components.verticalPodAutoscaler.admissionController.mutatingWebhookConfiguration.timeoutSeconds }}
           certGen:
-            enabled: {{ .Values.components.verticalPodAutoscaler.admissionController.certGen.enabled }}
             image: {{ default "{}" (include "verticalPodAutoscaler.certGen.image" .) | nindent 14 }}
             resources: {{ toYaml .Values.components.verticalPodAutoscaler.admissionController.certGen.resources | nindent 14 }}
             nodeSelector: {{ toYaml .Values.components.verticalPodAutoscaler.nodeSelector | nindent 14 }}
             tolerations: {{ toYaml .Values.components.verticalPodAutoscaler.tolerations | nindent 14 }}
+          {{- if .Values.components.verticalPodAutoscaler.admissionController.podDisruptionBudget.enabled }}
           podDisruptionBudget:
-            enabled: {{ .Values.components.verticalPodAutoscaler.admissionController.podDisruptionBudget.enabled }}
             minAvailable: {{ .Values.components.verticalPodAutoscaler.admissionController.podDisruptionBudget.minAvailable }}
+          {{- end }}
+          podMonitor:
+            enabled: {{ .Values.components.verticalPodAutoscaler.admissionController.podMonitor.enabled }}
 
         recommender:
           enabled: {{ .Values.components.verticalPodAutoscaler.recommender.enabled }}
-          replicas: {{ .Values.components.verticalPodAutoscaler.recommender.replicas }}
+          replicaCount: {{ .Values.components.verticalPodAutoscaler.recommender.replicaCount }}
           image: {{ default "{}" (include "verticalPodAutoscaler.recommender.image" .) | nindent 12 }}
           resources: {{ toYaml .Values.components.verticalPodAutoscaler.recommender.resources | nindent 12 }}
           nodeSelector: {{ toYaml .Values.components.verticalPodAutoscaler.nodeSelector | nindent 12 }}
           tolerations: {{ toYaml .Values.components.verticalPodAutoscaler.tolerations | nindent 12 }}
           affinity: {{ toYaml .Values.components.verticalPodAutoscaler.recommender.affinity | nindent 12 }}
-          priorityClassName: {{ .Values.components.verticalPodAutoscaler.priorityClassName | quote }}
-          extraArgs: {{ toYaml .Values.components.verticalPodAutoscaler.recommender.extraArgs | nindent 12 }}
-          extraEnv: {{ toYaml .Values.components.verticalPodAutoscaler.recommender.extraEnv | nindent 12 }}
+          {{- with .Values.components.verticalPodAutoscaler.recommender.extraArgs }}
+          extraArgs: {{ toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.components.verticalPodAutoscaler.recommender.envFromSecret }}
+          envFromSecret: {{ . | quote }}
+          {{- end }}
+          {{- if .Values.components.verticalPodAutoscaler.recommender.podDisruptionBudget.enabled }}
           podDisruptionBudget:
-            enabled: {{ .Values.components.verticalPodAutoscaler.recommender.podDisruptionBudget.enabled }}
             minAvailable: {{ .Values.components.verticalPodAutoscaler.recommender.podDisruptionBudget.minAvailable }}
+          {{- end }}
+          podMonitor:
+            enabled: {{ .Values.components.verticalPodAutoscaler.recommender.podMonitor.enabled }}
 
         updater:
           enabled: {{ .Values.components.verticalPodAutoscaler.updater.enabled }}
-          replicas: {{ .Values.components.verticalPodAutoscaler.updater.replicas }}
+          replicaCount: {{ .Values.components.verticalPodAutoscaler.updater.replicaCount }}
           image: {{ default "{}" (include "verticalPodAutoscaler.updater.image" .) | nindent 12 }}
           resources: {{ toYaml .Values.components.verticalPodAutoscaler.updater.resources | nindent 12 }}
           nodeSelector: {{ toYaml .Values.components.verticalPodAutoscaler.nodeSelector | nindent 12 }}
           tolerations: {{ toYaml .Values.components.verticalPodAutoscaler.tolerations | nindent 12 }}
           affinity: {{ toYaml .Values.components.verticalPodAutoscaler.updater.affinity | nindent 12 }}
-          priorityClassName: {{ .Values.components.verticalPodAutoscaler.priorityClassName | quote }}
-          extraArgs: {{ toYaml .Values.components.verticalPodAutoscaler.updater.extraArgs | nindent 12 }}
+          {{- with .Values.components.verticalPodAutoscaler.updater.extraArgs }}
+          extraArgs: {{ toYaml . | nindent 12 }}
+          {{- end }}
+          {{- if .Values.components.verticalPodAutoscaler.updater.podDisruptionBudget.enabled }}
           podDisruptionBudget:
-            enabled: {{ .Values.components.verticalPodAutoscaler.updater.podDisruptionBudget.enabled }}
             minAvailable: {{ .Values.components.verticalPodAutoscaler.updater.podDisruptionBudget.minAvailable }}
+          {{- end }}
+          podMonitor:
+            enabled: {{ .Values.components.verticalPodAutoscaler.updater.podMonitor.enabled }}
 
   destination:
     name: {{ .Values.global.cluster }}
