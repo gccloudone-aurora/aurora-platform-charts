@@ -590,7 +590,7 @@ components:
       repository: gccloudone-aurora/sidecar-terminator
       # tag: "main"
       # pullPolicy: IfNotPresent
-      
+
     podSecurityContext:
       runAsNonRoot: true
       seccompProfile:
@@ -715,5 +715,53 @@ components:
               labelSelector:
                 matchLabels:
                   technology: zookeeper
+
+    priorityClassName: platform-cluster-medium
+
+  ###############
+  ### Strimzi ###
+  ###############
+  strimzi:
+    enabled: false
+
+    helm: {}
+      # chart: strimzi-kafka-operator
+      # repository: oci://quay.io/strimzi-helm/strimzi-kafka-operator
+      # targetRevision: 1.0.0
+
+    imagePullSecrets: []
+    image:
+      # registry: quay.io
+      repository: strimzi
+      name: operator
+      # tag: 1.0.0
+      # pullPolicy: IfNotPresent
+
+    defaultImageRegistry: quay.io
+    defaultImageRepository: strimzi
+
+    replicas: 1
+    resources: {}
+      # limits:
+      #   cpu: ""
+      #   memory: ""
+      # requests:
+      #   cpu: ""
+      #   memory: ""
+    nodeSelector:
+      kubernetes.io/os: linux
+      node.ssc-spc.gc.ca/purpose: system
+    tolerations:
+      - key: CriticalAddonsOnly
+        operator: Exists
+    affinity:
+      podAntiAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 1
+          podAffinityTerm:
+            topologyKey: kubernetes.io/hostname
+            labelSelector:
+              matchLabels:
+                app: strimzi
 
     priorityClassName: platform-cluster-medium

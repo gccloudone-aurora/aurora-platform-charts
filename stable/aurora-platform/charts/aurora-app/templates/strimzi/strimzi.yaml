@@ -1,0 +1,51 @@
+{{ if .Values.components.strimzi.enabled -}}
+
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-strimzi-operator"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    chart: {{ default "strimzi-kafka-operator" .Values.components.strimzi.helm.chart }}
+    {{- if .Values.components.strimzi.helm.repository }}
+    repoURL: {{ .Values.components.strimzi.helm.repository }}
+    {{- else }}
+    repoURL: {{ default "oci://quay.io/strimzi-helm/strimzi-kafka-operator" .Values.global.helm.repository }}
+    {{- end }}
+    targetRevision: {{ default "1.0.0" .Values.components.strimzi.helm.targetRevision }}
+    helm:
+      releaseName: strimzi-kafka-operator
+      values: |
+        image: {{ default "{}" (include "strimzi.image" .) | nindent 10 }}
+
+        defaultImageRegistry: {{ .Values.components.strimzi.defaultImageRegistry }}
+        defaultImageRepository: {{ .Values.components.strimzi.defaultImageRepository }}
+
+        replicas: {{ .Values.components.strimzi.replicas }}
+        resources: {{ toYaml .Values.components.strimzi.resources | nindent 10 }}
+
+        nodeSelector: {{ toYaml .Values.components.strimzi.nodeSelector | nindent 10 }}
+        tolerations: {{ toYaml .Values.components.strimzi.tolerations | nindent 10 }}
+        affinity: {{ toYaml .Values.components.strimzi.affinity | nindent 10 }}
+
+        watchNamespaces: []
+        watchAnyNamespace: true
+
+        rbac:
+          create: yes
+
+        serviceAccountCreate: true
+
+        priorityClassName: {{ .Values.components.strimzi.priorityClassName }}
+  destination:
+    name: {{ .Values.global.cluster }}
+    namespace: strimzi-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+
+{{- end }}
