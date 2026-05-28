@@ -2328,12 +2328,12 @@ components:
         readOnlyRootFilesystem: true
         runAsNonRoot: true
         runAsUser: 10000
-      scanJobCustomVolumeMounts: 
+      scanJobCustomVolumesMount: 
        - name: trust-manager-propagated-custom-ca
          mountPath: /etc/ssl/certs/ca-certificates.crt
          subPath: ca-certificates.crt
          readOnly: true
-      scanJobCustomVolumes: 
+      scanJobCustomVolumes:
        - name: trust-manager-propagated-custom-ca
          configMap:
            name: trust-manager-propagated-custom-ca
