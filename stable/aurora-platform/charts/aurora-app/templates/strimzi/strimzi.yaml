@@ -13,7 +13,7 @@ spec:
     {{- if .Values.components.strimzi.helm.repository }}
     repoURL: {{ .Values.components.strimzi.helm.repository }}
     {{- else }}
-    repoURL: {{ default "oci://quay.io/strimzi-helm/strimzi-kafka-operator" .Values.global.helm.repository }}
+    repoURL: {{ default "quay.io/strimzi-helm" .Values.global.helm.repository }}
     {{- end }}
     targetRevision: {{ default "1.0.0" .Values.components.strimzi.helm.targetRevision }}
     helm:
@@ -27,6 +27,22 @@ spec:
         replicas: {{ .Values.components.strimzi.replicas }}
         resources: {{ toYaml .Values.components.strimzi.resources | nindent 10 }}
 
+        podSecurityContext:
+          runAsNonRoot: true
+          seccompProfile:
+            type: RuntimeDefault
+
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+              - ALL
+          readOnlyRootFilesystem: true
+          runAsNonRoot: true
+
+        extraEnvs:
+          - name: STRIMZI_POD_SECURITY_PROVIDER_CLASS
+            value: restricted
         nodeSelector: {{ toYaml .Values.components.strimzi.nodeSelector | nindent 10 }}
         tolerations: {{ toYaml .Values.components.strimzi.tolerations | nindent 10 }}
         affinity: {{ toYaml .Values.components.strimzi.affinity | nindent 10 }}
