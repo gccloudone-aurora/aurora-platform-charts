@@ -2449,6 +2449,134 @@ components:
 
     priorityClassName: platform-cluster-medium
 
+  verticalPodAutoscaler:
+    # Vertical Pod Autoscaler (VPA) adjusts CPU/memory requests from workload usage.
+    # Uses the kubernetes/autoscaler Helm chart; CRDs are installed on first sync (upgrade CRDs manually per upstream docs).
+    enabled: false
+
+    helm: {}
+      # chart: vertical-pod-autoscaler
+      # repository: https://kubernetes.github.io/autoscaler
+      # targetRevision: 0.9.0
+
+    imagePullSecrets: []
+
+    priorityClassName: platform-cluster-medium
+
+    nodeSelector:
+      kubernetes.io/os: linux
+      node.ssc-spc.gc.ca/purpose: system
+    tolerations:
+      - key: CriticalAddonsOnly
+        operator: Exists
+
+    rbac:
+      create: true
+      extraRules: []
+
+    admissionController:
+      enabled: true
+      replicas: 2
+      registerWebhook: false
+
+      image:
+        # registry: registry.k8s.io
+        repository: autoscaling/vpa-admission-controller
+        # tag: # Defaults to chart AppVersion when unset
+        # pullPolicy: IfNotPresent
+
+      resources: {}
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 1
+            podAffinityTerm:
+              topologyKey: kubernetes.io/hostname
+              labelSelector:
+                matchLabels:
+                  app.kubernetes.io/name: vertical-pod-autoscaler
+                  app.kubernetes.io/component: admission-controller
+
+      extraArgs: []
+      extraEnv: []
+
+      mutatingWebhookConfiguration:
+        failurePolicy: Ignore
+        namespaceSelector: {}
+        objectSelector: {}
+        timeoutSeconds: 5
+
+      certGen:
+        enabled: true
+        image:
+          # registry: registry.k8s.io
+          repository: ingress-nginx/kube-webhook-certgen
+          tag: v20231011-8b53cabe0
+          # pullPolicy: IfNotPresent
+        resources: {}
+
+      podDisruptionBudget:
+        enabled: true
+        minAvailable: 1
+
+    recommender:
+      enabled: true
+      replicas: 2
+
+      image:
+        # registry: registry.k8s.io
+        repository: autoscaling/vpa-recommender
+        # tag:
+        # pullPolicy: IfNotPresent
+
+      resources: {}
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 1
+            podAffinityTerm:
+              topologyKey: kubernetes.io/hostname
+              labelSelector:
+                matchLabels:
+                  app.kubernetes.io/name: vertical-pod-autoscaler
+                  app.kubernetes.io/component: recommender
+
+      extraArgs: []
+      extraEnv: []
+
+      podDisruptionBudget:
+        enabled: true
+        minAvailable: 1
+
+    updater:
+      enabled: true
+      replicas: 2
+
+      image:
+        # registry: registry.k8s.io
+        repository: autoscaling/vpa-updater
+        # tag:
+        # pullPolicy: IfNotPresent
+
+      resources: {}
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 1
+            podAffinityTerm:
+              topologyKey: kubernetes.io/hostname
+              labelSelector:
+                matchLabels:
+                  app.kubernetes.io/name: vertical-pod-autoscaler
+                  app.kubernetes.io/component: updater
+
+      # extraArgs:
+      #   - --in-place-skip-disruption-budget=true
+
+      podDisruptionBudget:
+        enabled: true
+        minAvailable: 1
+
   vaultAgent:
     enabled: false
 
