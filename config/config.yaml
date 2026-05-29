@@ -593,6 +593,12 @@ app:
     solr:
       enabled: false
 
+    ###############
+    ### Strimzi ###
+    ###############
+    strimzi:
+      enabled: false
+
 ############
 ### MGMT ###
 ############

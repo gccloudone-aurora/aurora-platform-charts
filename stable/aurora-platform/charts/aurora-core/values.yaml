@@ -1232,7 +1232,7 @@ components:
     image:
       # registry: docker.io
       repository: aquasec/kube-bench
-      tag: "v0.15.0"
+      tag: "v0.15.5"
       pullPolicy: Always
 
     resources:
@@ -1265,17 +1265,12 @@ components:
         hostPath:
           path: "/etc/systemd"
       - name: etc-kubernetes
-        hostPath:
-          path: "/etc/kubernetes"
     volumeMounts:
       - name: var-lib-kubelet
         mountPath: /var/lib/kubelet
         readOnly: true
       - name: etc-systemd
         mountPath: /etc/systemd
-        readOnly: true
-      - name: etc-kubernetes
-        mountPath: /etc/kubernetes
         readOnly: true
 
     affinity:
@@ -2178,6 +2173,8 @@ components:
   ################################
   secretsStoreCSIDriver:
     enabled: false
+    enableSecretRotation: false
+    rotationPollInterval: "2m"
     helm: {}
       # chart: secrets-store-csi-driver
       # repository: https://kubernetes-sigs.github.io/secrets-store-csi-driver/charts
@@ -2250,7 +2247,7 @@ components:
         memory: 100M
       limits:
         cpu: 500m
-        memory: 500M
+        memory: 2Gi
     nodeSelector:
       kubernetes.io/os: linux
       node.ssc-spc.gc.ca/purpose: system
@@ -2280,7 +2277,7 @@ components:
       # enable builtin server mode
       builtInTrivyServer: true
       # Disable Trivy from using global secrets/service accounts to improve security
-      accessGlobalSecretsAndServiceaccount: false
+      accessGlobalSecretsAndServiceAccount: false
       # -- the flag to enable vulnerability scanner
       vulnerabilityScannerEnabled: true
       # -- configAuditScannerEnabled the flag to enable configuration audit scanner
@@ -2291,10 +2288,9 @@ components:
       infraAssessmentScannerEnabled: false
       # -- exposedSecretScannerEnabled the flag to enable exposed secret scanner
       exposedSecretScannerEnabled: true
+      # Clean up scan jobs after completion to reduce job history bloat
+      scanJobTTL: "1h"
       
-      # -- excludeImages is comma separated glob patterns for excluding images from scanning.
-      # Example: pattern: `k8s.gcr.io/*/*` will exclude image: `k8s.gcr.io/coredns/coredns:v1.8.0`.
-      excludeImages: ""
       containerSecurityContext:
         runAsNonRoot: true
         seccompProfile:
@@ -2302,28 +2298,50 @@ components:
 
     # Configuration of the trivy job
     trivyOperator:
+      # -- excludeImages is comma separated glob patterns for excluding images from scanning.
+      # Example: pattern: `k8s.gcr.io/*/*` will exclude image: `k8s.gcr.io/coredns/coredns:v1.8.0`.
+      excludeImages: ""
       # Avoid mounting service tokens when scanning
       scanJobAutomountServiceAccountToken: false
-      # Clean up scan jobs after completion to reduce job history bloat
-      scanJobTTL: "1h"
       # Annotations to stop istio sidecar and to ensure autoscaling can evict
-      scanJobAnnotations:
-        sidecar.istio.io/inject: "false"
-        cluster-autoscaler.kubernetes.io/safe-to-evict: "true"
+      scanJobAnnotations: "sidecar.istio.io/inject=false,cluster-autoscaler.kubernetes.io/safe-to-evict=true,fluent.sidecar.io/inject=false"
       # Adding labels to job for simpler querying on status
-      scanJobPodTemplateLabels:
-        app.kubernetes.io/name: trivy-scan-job
-        app.kubernetes.io/managed-by: trivy-operator
+      scanJobPodTemplateLabels: "app.kubernetes.io/name=trivy-scan-job,app.kubernetes.io/managed-by=trivy-operator"
       # Only run on system nodes
       scanJobNodeSelector:
         node.ssc-spc.gc.ca/purpose: system
       scanJobTolerations:
         - key: CriticalAddonsOnly
           operator: Exists
+      scanJobPodTemplatePodSecurityContext:
+        runAsNonRoot: true
+        runAsUser: 10000
+        runAsGroup: 10000
+        fsGroup: 10000
+        seccompProfile:
+          type: RuntimeDefault
+      scanJobPodTemplateContainerSecurityContext:
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop:
+            - ALL
+        readOnlyRootFilesystem: true
+        runAsNonRoot: true
+        runAsUser: 10000
+      scanJobCustomVolumesMount: 
+       - name: trust-manager-propagated-custom-ca
+         mountPath: /etc/ssl/certs/ca-certificates.crt
+         subPath: ca-certificates.crt
+         readOnly: true
+      scanJobCustomVolumes:
+       - name: trust-manager-propagated-custom-ca
+         configMap:
+           name: trust-manager-propagated-custom-ca
 
     severity: "HIGH,CRITICAL"
     server:
       podSecurityContext:
+        runAsNonRoot: true
         seccompProfile:
           type: RuntimeDefault
       securityContext:
@@ -2343,7 +2361,7 @@ components:
       extraServerVolumes:
         volumeMounts: 
          - name: trust-manager-propagated-custom-ca
-           mountPath: /etc/ssl/certs/trust-manager-propagated-custom-ca.crt
+           mountPath: /etc/ssl/certs/ca-certificates.crt
            subPath: ca-certificates.crt
            readOnly: true
         volumes: 

@@ -124,6 +124,7 @@ app:
     # kiali: {}
     # sidecarTerminator: {}
     # solr: {}
+    # strimzi: {}
 
 ############
 ### MGMT ###
