@@ -81,6 +81,9 @@ resourceQuotas:
   # The upper limit of storage that can be requested across all persistent volumes.
   # Expects a string value of a number with or without units (uses SI units).
   storage: '0'           # @schema required:true
+  # The maximum number of pods that don't need to follow priorityClass conventions.
+  priorityClasses:
+    pods: 0
 
 # Defines resources to be created in the namespace.
 raw:
