@@ -31,7 +31,7 @@ metadata:
     {{- include "aurora-namespace.labels" . | nindent 4 }}
 spec:
   hard:
-    pods: 0
+    pods: {{ .Values.resourceQuotas.priorityClasses.pods }}
   scopeSelector:
     matchExpressions:
     - operator : NotIn
