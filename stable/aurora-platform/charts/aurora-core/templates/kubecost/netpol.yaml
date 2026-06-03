@@ -16,42 +16,46 @@ spec:
       releaseName: kubecost-netpol
       values: |
         resources:
-          - apiVersion: networking.k8s.io/v1
-            kind: NetworkPolicy
+          - apiVersion: cilium.io/v2
+            kind: CiliumNetworkPolicy
             metadata:
-              name: allow-egress-to-api-server
+              name: allow-egress-to-apiserver-from-kubecost-finops-agent
               namespace: kubecost-system
             spec:
-              podSelector:
-                matchLabels: 
+              description: |
+                Kubecost finops agent queries cluster resources via the Kubernetes API.
+                Ports 443 and 6443 cover both ways the API server is reached: the in-cluster
+                kubernetes Service (443) and the API server's native secure port (6443).
+              endpointSelector:
+                matchLabels:
                   app.kubernetes.io/part-of: finops-agent
-              policyTypes:
-              - Egress
               egress:
-              - to:
-                - ipBlock:
-                    cidr: {{ .Values.global.apiServerCidr }}
-                ports:
-                - protocol: TCP
-                  port: 443
-          - apiVersion: networking.k8s.io/v1
-            kind: NetworkPolicy
+                - toEntities:
+                    - kube-apiserver
+                  toPorts:
+                    - ports:
+                        - port: "443"
+                        - port: "6443"
+          - apiVersion: cilium.io/v2
+            kind: CiliumNetworkPolicy
             metadata:
-              name: allow-egress-to-api-server-from-aggregator
+              name: allow-egress-to-apiserver-from-kubecost-aggregator
               namespace: kubecost-system
             spec:
-              podSelector:
-                matchLabels: 
+              description: |
+                Kubecost aggregator queries cluster resources via the Kubernetes API.
+                Ports 443 and 6443 cover both ways the API server is reached: the in-cluster
+                kubernetes Service (443) and the API server's native secure port (6443).
+              endpointSelector:
+                matchLabels:
                   app.kubernetes.io/name: aggregator
-              policyTypes:
-              - Egress
               egress:
-              - to:
-                - ipBlock:
-                    cidr: {{ .Values.global.apiServerCidr }}
-                ports:
-                - protocol: TCP
-                  port: 443
+                - toEntities:
+                    - kube-apiserver
+                  toPorts:
+                    - ports:
+                        - port: "443"
+                        - port: "6443"
           - apiVersion: networking.k8s.io/v1
             kind: NetworkPolicy
             metadata:
@@ -88,6 +92,31 @@ spec:
                   app.kubernetes.io/part-of: finops-agent
               policyTypes:
               - Egress
+          {{- if eq .Values.global.provider "aws" }}
+          # On AWS with EKS Pod Identity, the Pod Identity Agent serves temporary credentials from the
+          # link-local endpoint 169.254.170.23:80 (IPv6 [fd00:ec2::23]:80). The finops agent needs this
+          # path to obtain IAM credentials for AWS billing/pricing APIs.
+          - apiVersion: networking.k8s.io/v1
+            kind: NetworkPolicy
+            metadata:
+              name: allow-egress-to-eks-pod-identity-from-kubecost
+              namespace: kubecost-system
+            spec:
+              egress:
+              - ports:
+                - port: 80
+                  protocol: TCP
+                to:
+                - ipBlock:
+                    cidr: 169.254.170.23/32
+                - ipBlock:
+                    cidr: fd00:ec2::23/128
+              podSelector:
+                matchLabels:
+                  app.kubernetes.io/part-of: finops-agent
+              policyTypes:
+              - Egress
+          {{- end }}
           - apiVersion: networking.k8s.io/v1
             kind: NetworkPolicy
             metadata:

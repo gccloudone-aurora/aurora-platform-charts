@@ -1,6 +1,5 @@
 # This file is directly grabbed from: https://github.com/gccloudone-aurora/project-aurora-template
 global:
-  apiServerCidr: "<FILLIN_API_SERVER_ADDRESS>/27"
   azureMetadataApiCidr: "169.254.169.254/32"
 
   # alertManagerCidrs: ["172.26.26.132/32"]

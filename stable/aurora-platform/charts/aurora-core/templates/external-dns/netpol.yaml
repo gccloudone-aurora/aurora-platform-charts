@@ -96,6 +96,31 @@ spec:
               policyTypes:
               - Egress
           {{- end }}
+          {{- if eq .Values.global.provider "aws" }}
+          # On AWS with EKS Pod Identity, the Pod Identity Agent serves temporary credentials from the
+          # link-local endpoint 169.254.170.23:80 (IPv6 [fd00:ec2::23]:80). ExternalDNS needs this path to
+          # obtain IAM credentials for Route53; without it the AWS SDK cannot fetch credentials.
+          - apiVersion: networking.k8s.io/v1
+            kind: NetworkPolicy
+            metadata:
+              name: allow-egress-to-eks-pod-identity-from-external-dns
+              namespace: external-dns-system
+            spec:
+              egress:
+              - ports:
+                - port: 80
+                  protocol: TCP
+                to:
+                - ipBlock:
+                    cidr: 169.254.170.23/32
+                - ipBlock:
+                    cidr: fd00:ec2::23/128
+              podSelector:
+                matchLabels:
+                  app.kubernetes.io/name: external-dns
+              policyTypes:
+              - Egress
+          {{- end }}
           # kube-prometheus-stack scrapes the ExternalDNS metrics port; without ingress from Prometheus,
           # ServiceMonitor-based scraping fails when the namespace enforces default deny ingress.
           - apiVersion: networking.k8s.io/v1

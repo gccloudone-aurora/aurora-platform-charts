@@ -54,26 +54,38 @@ spec:
               egress:
                 - to:
                   - podSelector: {}
-          - apiVersion: networking.k8s.io/v1
-            kind: NetworkPolicy
+          - apiVersion: cilium.io/v2
+            kind: CiliumNetworkPolicy
             metadata:
               name: allow-ingress-from-apiserver-to-cidr-allocator
               namespace: cidr-allocator-system
             spec:
+              description: |
+                API server reaches the cidr-allocator admission webhook and health endpoints.
+              endpointSelector: {}
               ingress:
-              - from:
-                - ipBlock:
-                    cidr: {{ required "global.apiServerCidr is required" .Values.global.apiServerCidr | quote }}
-                - namespaceSelector:
-                    matchLabels:
-                      kubernetes.io/metadata.name: kube-system
-                  podSelector:
-                    matchLabels:
-                      app: konnectivity-agent
-              podSelector:
-                matchLabels: {}
-              policyTypes:
-              - Ingress
+                - fromEntities:
+                    - kube-apiserver
+          - apiVersion: cilium.io/v2
+            kind: CiliumNetworkPolicy
+            metadata:
+              name: allow-egress-to-apiserver-from-cidr-allocator
+              namespace: cidr-allocator-system
+            spec:
+              description: |
+                cidr-allocator reconciles IP pools via the Kubernetes API.
+                Ports 443 and 6443 cover both ways the API server is reached: the in-cluster
+                kubernetes Service (443) and the API server's native secure port (6443).
+              endpointSelector:
+                matchLabels:
+                  app.kubernetes.io/name: cidr-allocator
+              egress:
+                - toEntities:
+                    - kube-apiserver
+                  toPorts:
+                    - ports:
+                        - port: "443"
+                        - port: "6443"
   destination:
     name: {{ .Values.global.cluster }}
     namespace: platform-system

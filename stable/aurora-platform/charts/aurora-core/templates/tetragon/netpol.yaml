@@ -32,26 +32,38 @@ spec:
               egress:
                 - to:
                   - podSelector: {}
-          - apiVersion: networking.k8s.io/v1
-            kind: NetworkPolicy
+          - apiVersion: cilium.io/v2
+            kind: CiliumNetworkPolicy
             metadata:
               name: allow-ingress-from-apiserver-to-tetragon
               namespace: tetragon-system
             spec:
+              description: |
+                API server reaches Tetragon webhooks when configured.
+              endpointSelector: {}
               ingress:
-              - from:
-                - ipBlock:
-                    cidr: {{ required "global.apiServerCidr is required" .Values.global.apiServerCidr | quote }}
-                - namespaceSelector:
-                    matchLabels:
-                      kubernetes.io/metadata.name: kube-system
-                  podSelector:
-                    matchLabels:
-                      app: konnectivity-agent
-              podSelector:
-                matchLabels: {}
-              policyTypes:
-              - Ingress
+                - fromEntities:
+                    - kube-apiserver
+          - apiVersion: cilium.io/v2
+            kind: CiliumNetworkPolicy
+            metadata:
+              name: allow-egress-to-apiserver-from-tetragon
+              namespace: tetragon-system
+            spec:
+              description: |
+                Tetragon components watch workloads via the Kubernetes API.
+                Ports 443 and 6443 cover both ways the API server is reached: the in-cluster
+                kubernetes Service (443) and the API server's native secure port (6443).
+              endpointSelector:
+                matchLabels:
+                  app.kubernetes.io/name: tetragon
+              egress:
+                - toEntities:
+                    - kube-apiserver
+                  toPorts:
+                    - ports:
+                        - port: "443"
+                        - port: "6443"
   destination:
     name: {{ .Values.global.cluster }}
     namespace: platform-system

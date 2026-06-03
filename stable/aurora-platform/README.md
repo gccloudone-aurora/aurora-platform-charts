@@ -27,7 +27,6 @@ Aurora Platform
 | core.enabled | bool | `true` |  |
 | core.rbac | object | `{}` |  |
 | global.alertManagerCidrs[0] | string | `"192.0.2.10/32"` |  |
-| global.apiServerCidr | string | `"192.0.2.10/32"` |  |
 | global.azureMetadataApiCidr | string | `"169.254.169.254/32"` |  |
 | global.cluster | string | `"in-cluster"` |  |
 | global.container | object | `{}` |  |

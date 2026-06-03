@@ -38,25 +38,38 @@ spec:
                   app.kubernetes.io/instance: podtracker
               policyTypes:
               - Ingress
-          - apiVersion: networking.k8s.io/v1
-            kind: NetworkPolicy
+          - apiVersion: cilium.io/v2
+            kind: CiliumNetworkPolicy
             metadata:
               name: allow-ingress-from-apiserver-to-podtracker
               namespace: podtracker-system
             spec:
+              description: |
+                API server reaches podtracker webhooks and metrics endpoints.
+              endpointSelector: {}
               ingress:
-              - from:
-                - ipBlock:
-                    cidr: {{ required "global.apiServerCidr is required" .Values.global.apiServerCidr | quote }}
-                - namespaceSelector:
-                    matchLabels:
-                      kubernetes.io/metadata.name: kube-system
-                  podSelector:
-                    matchLabels:
-                      app: konnectivity-agent
-              podSelector: {}
-              policyTypes:
-              - Ingress
+                - fromEntities:
+                    - kube-apiserver
+          - apiVersion: cilium.io/v2
+            kind: CiliumNetworkPolicy
+            metadata:
+              name: allow-egress-to-apiserver-from-podtracker
+              namespace: podtracker-system
+            spec:
+              description: |
+                podtracker watches pods via the Kubernetes API.
+                Ports 443 and 6443 cover both ways the API server is reached: the in-cluster
+                kubernetes Service (443) and the API server's native secure port (6443).
+              endpointSelector:
+                matchLabels:
+                  app.kubernetes.io/name: podtracker
+              egress:
+                - toEntities:
+                    - kube-apiserver
+                  toPorts:
+                    - ports:
+                        - port: "443"
+                        - port: "6443"
   destination:
     name: {{ .Values.global.cluster }}
     namespace: platform-system

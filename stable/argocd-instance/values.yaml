@@ -1,3 +1,7 @@
+global:
+  # azure or aws
+  provider: azure
+
 argocdInstance:
 
   applicationInstanceLabelKey: "platform.ssc-spc.gc.ca/application-name"

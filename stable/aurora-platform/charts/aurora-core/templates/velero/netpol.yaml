@@ -68,6 +68,31 @@ spec:
                   app.kubernetes.io/name: velero
               policyTypes:
               - Egress
+          {{- if eq .Values.global.provider "aws" }}
+          # On AWS with EKS Pod Identity, the Pod Identity Agent serves temporary credentials from the
+          # link-local endpoint 169.254.170.23:80 (IPv6 [fd00:ec2::23]:80). Velero needs this path to
+          # obtain IAM credentials for S3 backup storage and volume snapshots.
+          - apiVersion: networking.k8s.io/v1
+            kind: NetworkPolicy
+            metadata:
+              name: allow-egress-to-eks-pod-identity-from-velero
+              namespace: velero-system
+            spec:
+              egress:
+              - ports:
+                - port: 80
+                  protocol: TCP
+                to:
+                - ipBlock:
+                    cidr: 169.254.170.23/32
+                - ipBlock:
+                    cidr: fd00:ec2::23/128
+              podSelector:
+                matchLabels:
+                  app.kubernetes.io/name: velero
+              policyTypes:
+              - Egress
+          {{- end }}
   destination:
     name: {{ .Values.global.cluster }}
     namespace: platform-system

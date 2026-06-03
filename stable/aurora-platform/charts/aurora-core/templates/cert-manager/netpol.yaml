@@ -108,28 +108,67 @@ spec:
                   app.kubernetes.io/component: controller
               policyTypes:
               - Egress
+          {{- if eq .Values.global.provider "aws" }}
+          # On AWS with EKS Pod Identity, the Pod Identity Agent serves temporary credentials from the
+          # link-local endpoint 169.254.170.23:80 (IPv6 [fd00:ec2::23]:80). The cert-manager controller
+          # needs this path to obtain IAM credentials for the Route53 DNS01 solver.
           - apiVersion: networking.k8s.io/v1
             kind: NetworkPolicy
+            metadata:
+              name: allow-egress-to-eks-pod-identity-from-cert-manager
+              namespace: cert-manager-system
+            spec:
+              egress:
+              - ports:
+                - port: 80
+                  protocol: TCP
+                to:
+                - ipBlock:
+                    cidr: 169.254.170.23/32
+                - ipBlock:
+                    cidr: fd00:ec2::23/128
+              podSelector:
+                matchLabels:
+                  app.kubernetes.io/name: cert-manager
+                  app.kubernetes.io/component: controller
+              policyTypes:
+              - Egress
+          {{- end }}
+          - apiVersion: cilium.io/v2
+            kind: CiliumNetworkPolicy
             metadata:
               name: allow-ingress-from-apiserver-to-certmanagerwebhook
               namespace: cert-manager-system
             spec:
-              ingress:
-              - from:
-                - ipBlock:
-                    cidr: {{ required "global.apiServerCidr is required" .Values.global.apiServerCidr | quote }}
-                - namespaceSelector:
-                    matchLabels:
-                      kubernetes.io/metadata.name: kube-system
-                  podSelector:
-                    matchLabels:
-                      app: konnectivity-agent
-              podSelector:
+              description: |
+                API server calls the cert-manager admission webhook (Cilium kube-apiserver entity).
+              endpointSelector:
                 matchLabels:
                   app.kubernetes.io/name: webhook
                   app.kubernetes.io/component: webhook
-              policyTypes:
-              - Ingress
+              ingress:
+                - fromEntities:
+                    - kube-apiserver
+          - apiVersion: cilium.io/v2
+            kind: CiliumNetworkPolicy
+            metadata:
+              name: allow-egress-to-apiserver-from-cert-manager
+              namespace: cert-manager-system
+            spec:
+              description: |
+                cert-manager controllers list/watch and update cert-manager API resources.
+                Ports 443 and 6443 cover both ways the API server is reached: the in-cluster
+                kubernetes Service (443) and the API server's native secure port (6443).
+              endpointSelector:
+                matchLabels:
+                  app.kubernetes.io/instance: cert-manager
+              egress:
+                - toEntities:
+                    - kube-apiserver
+                  toPorts:
+                    - ports:
+                        - port: "443"
+                        - port: "6443"
           - apiVersion: networking.k8s.io/v1
             kind: NetworkPolicy
             metadata:

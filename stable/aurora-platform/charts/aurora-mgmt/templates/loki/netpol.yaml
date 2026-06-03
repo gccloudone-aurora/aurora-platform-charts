@@ -50,6 +50,31 @@ spec:
                         cidr: 0.0.0.0/0
               policyTypes:
                 - Egress
+          {{- if eq .Values.global.provider "aws" }}
+          # On AWS with EKS Pod Identity, the Pod Identity Agent serves temporary credentials from the
+          # link-local endpoint 169.254.170.23:80 (IPv6 [fd00:ec2::23]:80). Loki needs this path to obtain
+          # IAM credentials for its S3 chunk/index object storage backend.
+          - apiVersion: networking.k8s.io/v1
+            kind: NetworkPolicy
+            metadata:
+              name: allow-egress-to-eks-pod-identity-from-loki
+              namespace: loki-system
+            spec:
+              podSelector:
+                matchLabels:
+                  app.kubernetes.io/name: loki
+              egress:
+                - ports:
+                    - protocol: TCP
+                      port: 80
+                  to:
+                    - ipBlock:
+                        cidr: 169.254.170.23/32
+                    - ipBlock:
+                        cidr: fd00:ec2::23/128
+              policyTypes:
+                - Egress
+          {{- end }}
           - apiVersion: networking.k8s.io/v1
             kind: NetworkPolicy
             metadata:

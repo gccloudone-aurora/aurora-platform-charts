@@ -16,6 +16,7 @@ spec:
   policyTypes:
     - Ingress
     - Egress
+{{- if eq .Values.global.provider "azure" }}
 ---
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
@@ -36,6 +37,33 @@ spec:
             cidr: 169.254.169.254/32
   policyTypes:
     - Egress
+{{- end }}
+{{- if eq .Values.global.provider "aws" }}
+---
+# On AWS with EKS Pod Identity, the Pod Identity Agent serves temporary credentials from the
+# link-local endpoint 169.254.170.23:80 (IPv6 [fd00:ec2::23]:80). Argo CD needs this path so the
+# application-controller and server can mint EKS auth tokens for managed clusters and the repo-server
+# can authenticate to AWS-backed repositories / the argocd-vault-plugin (awssecretsmanager).
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-egress-to-eks-pod-identity-from-argo
+  labels:
+    {{- include "argocd-foundation.labels" $ | nindent 4 }}
+spec:
+  podSelector: {}
+  egress:
+    - ports:
+        - protocol: TCP
+          port: 80
+      to:
+        - ipBlock:
+            cidr: 169.254.170.23/32
+        - ipBlock:
+            cidr: fd00:ec2::23/128
+  policyTypes:
+    - Egress
+{{- end }}
 ---
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy

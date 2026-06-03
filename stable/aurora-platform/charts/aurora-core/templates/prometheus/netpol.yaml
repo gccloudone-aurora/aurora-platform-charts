@@ -440,26 +440,18 @@ spec:
                       app.kubernetes.io/name: prometheus
                   policyTypes:
                   - Egress
-              - apiVersion: networking.k8s.io/v1
-                kind: NetworkPolicy
+              - apiVersion: cilium.io/v2
+                kind: CiliumNetworkPolicy
                 metadata:
                   name: allow-ingress-from-apiserver-to-prometheus
                   namespace: prometheus-system
                 spec:
+                  description: |
+                    API server scrapes Prometheus metrics and reaches admission endpoints when configured.
+                  endpointSelector: {}
                   ingress:
-                  - from:
-                    - ipBlock:
-                        cidr: {{ required "global.apiServerCidr is required" .Values.global.apiServerCidr | quote }}
-                    - namespaceSelector:
-                        matchLabels:
-                          kubernetes.io/metadata.name: kube-system
-                      podSelector:
-                        matchLabels:
-                          app: konnectivity-agent
-                  podSelector:
-                    matchLabels: {}
-                  policyTypes:
-                  - Ingress
+                    - fromEntities:
+                        - kube-apiserver
               - apiVersion: networking.k8s.io/v1
                 kind: NetworkPolicy
                 metadata:
@@ -585,21 +577,25 @@ spec:
                     matchLabels:
                       app.kubernetes.io/name: prometheus
               - apiVersion: cilium.io/v2
-                kind: CiliumClusterwideNetworkPolicy
+                kind: CiliumNetworkPolicy
                 metadata:
                   name: allow-egress-to-apiserver-from-prometheus
+                  namespace: prometheus-system
                 spec:
                   description: |
-                    Allows Prometheus instances to get information about, and connect to, Alertmanagers in the same namespace
-                  egress:
-                  - toEntities:
-                    - kube-apiserver
-                    toPorts:
-                    - ports:
-                      - port: "443"
+                    Prometheus discovers targets and Alertmanager configs via the Kubernetes API.
+                    Ports 443 and 6443 cover both ways the API server is reached: the in-cluster
+                    kubernetes Service (443) and the API server's native secure port (6443).
                   endpointSelector:
                     matchLabels:
                       app.kubernetes.io/name: prometheus
+                  egress:
+                    - toEntities:
+                        - kube-apiserver
+                      toPorts:
+                        - ports:
+                            - port: "443"
+                            - port: "6443"
               - apiVersion: cilium.io/v2
                 kind: CiliumClusterwideNetworkPolicy
                 metadata:

@@ -96,25 +96,38 @@ spec:
               egress:
                 - to:
                   - podSelector: {}
-          - apiVersion: networking.k8s.io/v1
-            kind: NetworkPolicy
+          - apiVersion: cilium.io/v2
+            kind: CiliumNetworkPolicy
             metadata:
-              name: allow-ingress-from-apiserver-to-general
+              name: allow-ingress-from-apiserver-to-istio
               namespace: istio-system
             spec:
+              description: |
+                API server reaches Istio webhooks (sidecar injection, validation, etc.).
+              endpointSelector: {}
               ingress:
-              - from:
-                - ipBlock:
-                    cidr: {{ required "global.apiServerCidr is required" .Values.global.apiServerCidr | quote }}
-                - namespaceSelector:
-                    matchLabels:
-                      kubernetes.io/metadata.name: kube-system
-                  podSelector:
-                    matchLabels:
-                      app: konnectivity-agent
-              podSelector: {}
-              policyTypes:
-              - Ingress
+                - fromEntities:
+                    - kube-apiserver
+          - apiVersion: cilium.io/v2
+            kind: CiliumNetworkPolicy
+            metadata:
+              name: allow-egress-to-apiserver-from-istiod
+              namespace: istio-system
+            spec:
+              description: |
+                istiod discovers services and endpoints via the Kubernetes API.
+                Ports 443 and 6443 cover both ways the API server is reached: the in-cluster
+                kubernetes Service (443) and the API server's native secure port (6443).
+              endpointSelector:
+                matchLabels:
+                  app: istiod
+              egress:
+                - toEntities:
+                    - kube-apiserver
+                  toPorts:
+                    - ports:
+                        - port: "443"
+                        - port: "6443"
           - apiVersion: networking.k8s.io/v1
             kind: NetworkPolicy
             metadata:
