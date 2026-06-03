@@ -5,7 +5,8 @@ argocdInstance:
   disableAdmin: false
 
   ingressDomain: ""
-
+  gateway:
+    enabled: false
   logLevel: "info"
 
   oidcAuthSP:
