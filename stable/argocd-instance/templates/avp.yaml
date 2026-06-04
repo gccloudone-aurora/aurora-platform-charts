@@ -40,7 +40,7 @@ data:
           command:
             - sh
             - "-c"
-            - "find . -name '*.yaml' | xargs -I {} grep \"<path\\|avp\\.kubernetes\\.io\" {} | grep ."
+            - "find . -name '*.yaml' | xargs -I {} grep \"<path:\" {} | grep ."
       generate:
         command:
           - argocd-vault-plugin
