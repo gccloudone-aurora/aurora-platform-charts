@@ -8,12 +8,12 @@ spec:
   project: {{ .Values.global.project }}
   source: # Setup ability to override to using a specific branch for testing
     # chart: {{ default "argocd-instance" .Values.components.argoFoundation.argocdInstance.helm.chart }}
-    path: "stable/aurora-platform"
-    {{- if .Values.components.argoFoundation.argocdInstance.helm.repository }}
+    path: "stable/argocd-instance"
+    # {{- if .Values.components.argoFoundation.argocdInstance.helm.repository }}
     repoURL: {{ .Values.components.argoFoundation.argocdInstance.helm.repository }}
-    {{- else }}
-    repoURL: {{ default "https://gccloudone-aurora.github.io/aurora-platform-charts" .Values.global.helm.repository }}
-    {{- end }}
+    # {{- else }}
+    # repoURL: {{ default "https://gccloudone-aurora.github.io/aurora-platform-charts" .Values.global.helm.repository }}
+    # {{- end }}
     targetRevision: {{ default "0.17.0" .Values.components.argoFoundation.argocdInstance.helm.targetRevision }}
     plugin:
       env:
