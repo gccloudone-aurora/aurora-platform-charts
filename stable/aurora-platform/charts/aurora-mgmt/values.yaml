@@ -421,6 +421,8 @@ components:
     basicAuth: {}
       # username:
       # password:
+      # htpasswd:
+      # existingSecret: 
 
     logStorageLocation: {}
       # storageAccountName: <storage-account-name>
