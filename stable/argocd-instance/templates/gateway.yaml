@@ -1,6 +1,6 @@
 {{- if .Values.argocdInstance.gateway.enabled }}
 apiVersion: cert-manager.io/v1
-kind: Issuer
+kind: ClusterIssuer
 metadata:
   name: selfsigned-issuer
 spec:
@@ -16,9 +16,14 @@ spec:
   dnsNames:
     - argocd.aurora.gc.ca
   issuerRef:
-    kind: Issuer
+    kind: ClusterIssuer
     name: selfsigned-issuer
-  secretName: temp-cert-secret
+    group: cert-manager.io
+  commonName: my-self-signed-argocd
+  secretName: argocd-server-tls
+  privateKey:
+    algorithm: ECDSA
+    size: 256
 ---
 apiVersion: gateway.networking.k8s.io/v1
 kind: Gateway
@@ -44,7 +49,7 @@ spec:
         certificateRefs:
           - group: ''
             kind: Secret
-            name: temp-cert-secret
+            name: argocd-server-tls
       allowedRoutes:
         namespaces:
           from: Same
