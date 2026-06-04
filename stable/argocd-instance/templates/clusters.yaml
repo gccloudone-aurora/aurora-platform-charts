@@ -3,7 +3,7 @@
 apiVersion: v1
 kind: Secret
 metadata:
-  name: {{ $cluster }}
+  name: {{ $cluster }}-test
   labels:
     argocd.argoproj.io/secret-type: cluster
     {{- include "argocd-foundation.labels" $ | nindent 4 }}
