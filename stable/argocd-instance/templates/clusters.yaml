@@ -9,7 +9,7 @@ metadata:
     {{- include "argocd-foundation.labels" $ | nindent 4 }}
 type: Opaque
 stringData:
-  name: {{ $cluster }}
+  name: {{ $cluster }}-test
   server: {{ $saSecrets.server }}
   config: |
     {
