@@ -71,9 +71,10 @@ spec:
     grpc:
       ingress:
         enabled: false
-    {{- if .Values.argocdInstance.ingressDomain }}
-    host: {{ .Values.argocdInstance.ingressDomain }}
-    {{- end }}
+    host : argocd.aurora.gc.ca
+    # {{- if .Values.argocdInstance.ingressDomain }}
+    # host: {{ .Values.argocdInstance.ingressDomain }}
+    # {{- end }}
     ingress:
       enabled: false
     insecure: true
