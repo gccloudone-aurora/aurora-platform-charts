@@ -6,8 +6,9 @@ metadata:
     - resources-finalizer.argocd.argoproj.io
 spec:
   project: {{ .Values.global.project }}
-  source:
-    chart: {{ default "argocd-instance" .Values.components.argoFoundation.argocdInstance.helm.chart }}
+  source: # Setup ability to override to using a specific branch for testing
+    # chart: {{ default "argocd-instance" .Values.components.argoFoundation.argocdInstance.helm.chart }}
+    path: "stable/aurora-platform"
     {{- if .Values.components.argoFoundation.argocdInstance.helm.repository }}
     repoURL: {{ .Values.components.argoFoundation.argocdInstance.helm.repository }}
     {{- else }}
