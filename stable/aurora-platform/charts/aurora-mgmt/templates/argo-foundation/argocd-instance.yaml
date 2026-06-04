@@ -22,7 +22,7 @@ spec:
         - name: HELM_VALUES
           value: |
             argocdInstance:
-
+              gateway: {{ toYaml .Values.components.argoFoundation.argocdInstance.gateway | nindent 16 }}
               nodeSelector: {{ toYaml .Values.components.argoFoundation.argocdInstance.nodeSelector | nindent 16 }}
               tolerations: {{ toYaml .Values.components.argoFoundation.argocdInstance.tolerations | nindent 16 }}
 
