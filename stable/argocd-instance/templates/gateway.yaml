@@ -120,6 +120,8 @@ spec:
       httpHealthCheck:
         port: 8080
         requestPath: /healthz
+      logging:
+        enabled: true
   targetRef:
     group: ""
     kind: Service
