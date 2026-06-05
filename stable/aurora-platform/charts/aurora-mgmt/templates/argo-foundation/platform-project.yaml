@@ -51,7 +51,8 @@ spec:
                     namespace: platform-management-system
                   project: aurora
                   source:
-                    chart: aurora-platform
+                    # chart: aurora-platform
+                    path: stable/aurora-platform
                     helm:
                       releaseName: '{{ "{{" }} path.basename }}'
                       values: |
