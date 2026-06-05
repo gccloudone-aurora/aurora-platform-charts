@@ -193,7 +193,6 @@ spec:
 
   initialSSHKnownHosts: {}
   kustomizeBuildOptions: --load-restrictor LoadRestrictionsNone --enable-helm
-
   {{- if and .Values.argocdInstance.oidcAuthSP.tenantID .Values.argocdInstance.oidcAuthSP.clientID .Values.argocdInstance.oidcAuthSP.clientSecret }}
   oidcConfig: |
     name: aurora
@@ -205,7 +204,20 @@ spec:
         essential: true
     requestedScopes: ["openid","profile","email"]
   {{- end }}
-
+  {{- if and .Values.argocdInstance.dex.google.clientID .Values.argocdInstance.dex.google.clientSecret }}
+  sso:
+    provider: dex
+    dex:
+      config: |
+        connectors:
+          - type: google
+            id: google
+            name: Google
+            config:
+              clientID: {{ .Values.argocdInstance.dex.google.clientID }}
+              clientSecret: {{ .Values.argocdInstance.dex.google.clientSecret }}
+              issuer: https://accounts.google.com
+  {{- end}}
   rbac:
     defaultPolicy: "role:none"
     policy: |

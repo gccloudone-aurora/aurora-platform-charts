@@ -257,6 +257,11 @@ components:
       #     clientID: ""
       #     clientSecret: ""
 
+      dex:
+        google: {}
+      #   clientID: ""
+      #   clientSecret: ""
+
       netpol: {}
         # enabled: false
 
