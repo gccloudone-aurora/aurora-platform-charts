@@ -276,7 +276,7 @@ spec:
                   defaultMode: 0440
                   mountPath: /etc/secrets/auth_azuread
                   readOnly: true
-              extraConfigmapMounts
+              extraConfigmapMounts:
                 - name: trust-manager-propagated-custom-ca
                   mountPath: /etc/ssl/certs/ca-certificates.crt
                   subPath: ca-certificates.crt
