@@ -36,8 +36,8 @@ spec:
                 clientSecret: "{{ .Values.components.argoFoundation.argocdInstance.oidcAuthSP.credentials.clientSecret }}"
               dex:
                 google:
-                  clientID: "{{ .Values.components.argoFoundations.argocdInstance.dex.google.clientID }}"
-                  clientSecret: "{{ .Values.components.argoFoundations.argocdInstance.dex.google.clientSecret }}"
+                  clientID: "{{ .Values.components.argoFoundation.argocdInstance.dex.google.clientID }}"
+                  clientSecret: "{{ .Values.components.argoFoundation.argocdInstance.dex.google.clientSecret }}"
               installationID: "platform"
 
               argocdVaultPlugin:
