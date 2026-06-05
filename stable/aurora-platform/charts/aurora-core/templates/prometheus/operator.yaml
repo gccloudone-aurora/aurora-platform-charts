@@ -276,6 +276,12 @@ spec:
                   defaultMode: 0440
                   mountPath: /etc/secrets/auth_azuread
                   readOnly: true
+              extraConfigmapMounts
+                - name: trust-manager-propagated-custom-ca
+                  mountPath: /etc/ssl/certs/ca-certificates.crt
+                  subPath: ca-certificates.crt
+                  configMap: trust-manager-propagated-custom-ca
+                  readOnly: true
 
             kube-state-metrics:
               image: {{ default "{}" (include "prometheus.kubeStateMetrics.image" .) | nindent 16 }}
