@@ -51,8 +51,11 @@ spec:
                     namespace: platform-management-system
                   project: aurora
                   source:
-                    # chart: aurora-platform
-                    path: stable/aurora-platform
+                    {{- if .Values.components.argoFoundation.argocdProjects.platform.applicationSet.template.source.path }}
+                    path: {{ .Values.components.argoFoundation.argocdProjects.platform.applicationSet.template.source.path }}
+                    {{- else }}
+                    chart: aurora-platform
+                    {{- end}}
                     helm:
                       releaseName: '{{ "{{" }} path.basename }}'
                       values: |
