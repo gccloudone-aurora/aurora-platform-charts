@@ -49,7 +49,7 @@ spec:
                     values:
                       - kube-system
               egress:
-                - toEntities
+                - toEntities:
                   - cluster
           - apiVersion: cilium.io/v2
             kind: CiliumClusterwideNetworkPolicy
