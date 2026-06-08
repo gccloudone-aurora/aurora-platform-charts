@@ -14,7 +14,7 @@ metadata:
     {{- include "argocd-foundation.labels" $ | nindent 4 }}
 spec:
   dnsNames:
-    - argocd.aurora.gc.ca
+    - {{ .Values.argocdInstance.gateway.host }}
   issuerRef:
     kind: ClusterIssuer
     name: selfsigned-issuer
@@ -69,7 +69,7 @@ spec:
     group: gateway.networking.k8s.io	
     kind: Gateway
   hostnames:
-  - argocd.aurora.gc.ca
+  - {{ .Values.argocdInstance.gateway.host }}
   rules:
   - backendRefs:
     - name: argocd-server
@@ -93,7 +93,7 @@ spec:
     group: gateway.networking.k8s.io	
     kind: Gateway
   hostnames:
-  - argocd.aurora.gc.ca
+  - {{ .Values.argocdInstance.gateway.host }}
   rules:
   - filters:
     - type: RequestRedirect

@@ -7,6 +7,7 @@ argocdInstance:
   ingressDomain: ""
   gateway:
     enabled: false
+    host: ""
   logLevel: "info"
 
   oidcAuthSP:
