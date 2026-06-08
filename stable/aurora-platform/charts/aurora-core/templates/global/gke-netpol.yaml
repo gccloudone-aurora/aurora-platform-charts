@@ -1,4 +1,4 @@
-{{- if equal .Values.global.provider "google" }}
+{{- if eq .Values.global.provider "google" }}
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
