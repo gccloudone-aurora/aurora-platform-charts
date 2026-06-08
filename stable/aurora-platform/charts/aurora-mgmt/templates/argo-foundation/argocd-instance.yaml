@@ -6,8 +6,7 @@ metadata:
     - resources-finalizer.argocd.argoproj.io
 spec:
   project: {{ .Values.global.project }}
-  source: # Setup ability to override to using a specific branch for testing
-    chart: {{ default "argocd-instance" .Values.components.argoFoundation.argocdInstance.helm.chart }}
+  source:
     {{- if .Values.components.argoFoundation.argocdInstance.helm.repository }}
     repoURL: {{ .Values.components.argoFoundation.argocdInstance.helm.repository }}
     {{- else }}
@@ -15,6 +14,8 @@ spec:
     {{- end }}
     {{- if .Values.components.argoFoundation.argocdInstance.helm.path }}
     path: {{ .Values.components.argoFoundation.argocdInstance.helm.path }}
+    {{- else }}
+    chart: {{ default "argocd-instance" .Values.components.argoFoundation.argocdInstance.helm.chart }}
     {{- end }}
     targetRevision: {{ default "0.17.0" .Values.components.argoFoundation.argocdInstance.helm.targetRevision }}
     plugin:
