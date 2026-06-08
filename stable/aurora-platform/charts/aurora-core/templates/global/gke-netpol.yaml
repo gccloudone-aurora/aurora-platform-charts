@@ -27,7 +27,7 @@ spec:
                     values:
                       - kube-system
               egress:
-                - toEndpoints
+                - toEndpoints:
                     - matchLabels:
                         k8s:k8s-app: kube-dns
                         k8s:io.kubernetes.pod.namespace: kube-system
@@ -37,6 +37,20 @@ spec:
                           protocol: UDP
                         - port: "53"
                           protocol: TCP
+          - apiVersion: cilium.io/v2
+            kind: CiliumClusterwideNetworkPolicy
+            metadata:
+              name: baseline-egress-cluster
+            spec:
+              endpointSelector:
+                matchExpressions:
+                  - key: io.kubernetes.pod.namespace
+                    operator: NotIn
+                    values:
+                      - kube-system
+              egress:
+                - toEntities
+                  - cluster
           - apiVersion: cilium.io/v2
             kind: CiliumClusterwideNetworkPolicy
             metadata:
