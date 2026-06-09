@@ -29,9 +29,8 @@ apiVersion: gateway.networking.k8s.io/v1
 kind: Gateway
 metadata:
   name: argocd-gateway
-  metadata:
-    labels:
-      {{- include "argocd-foundation.labels" $ | nindent 4 }}
+  labels:
+    {{- include "argocd-foundation.labels" $ | nindent 4 }}
 spec:
   gatewayClassName: {{.Values.argocdInstance.gateway.class | default "gke-l7-rilb"}}
   listeners:
