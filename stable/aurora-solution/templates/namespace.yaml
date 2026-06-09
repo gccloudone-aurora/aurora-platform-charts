@@ -5,11 +5,6 @@
 {{- $policies = merge $cluster.policies $.Values.policies }}
 {{- end }}
 
-{{- $aadPodIdentities := $.Values.aadPodIdentities }}
-{{- if and (hasKey $cluster "aadPodIdentities") (hasKey $.Values "aadPodIdentities") }}
-{{- $aadPodIdentities = merge $cluster.aadPodIdentities $.Values.aadPodIdentities }}
-{{- end }}
-
 {{- $resourceQuotas := $.Values.resourceQuotas }}
 {{- if and (hasKey $cluster "resourceQuotas") (hasKey $.Values "resourceQuotas") }}
 {{- $resourceQuotas = merge $cluster.resourceQuotas $.Values.resourceQuotas }}
@@ -35,7 +30,7 @@ spec:
     {{- else }}
     repoURL: {{ default "https://gccloudone-aurora.github.io/aurora-platform-charts" $.Values.global.helm.repository }}
     {{- end }}
-    targetRevision: {{ default "0.0.20" $.Values.global.helm.targetRevision }}
+    targetRevision: {{ default "0.0.22" $.Values.global.helm.targetRevision }}
     helm:
       releaseName: {{ $.Release.Name }}
       values: |
@@ -91,10 +86,10 @@ spec:
           # The upper limit of storage that can be requested across all persistent volumes.
           # Expects a string value of a number with or without units (uses SI units).
           storage: {{ $resourceQuotas.storage }}
-
+          # The maximum number of pods that don't need to follow priorityClass conventions.
+          priorityClasses:
+            pods: {{ $resourceQuotas.priorityClasses.pods }}
         raw: {{ toYaml $.Values.raw | nindent 10 }}
-
-        aadPodIdentities: {{ toYaml $aadPodIdentities | nindent 10 }}
   destination:
     name: {{ $clusterName }}
     namespace: {{ $.Release.Name }}

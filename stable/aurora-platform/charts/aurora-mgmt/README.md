@@ -75,7 +75,6 @@ Aurora Platform - Management Components
 | components.argoSolution.argocdInstance.tolerations[0].operator | string | `"Exists"` |  |
 | components.argoSolution.enabled | bool | `true` |  |
 | components.argoSolution.project.global.sourceRepos | list | `[]` |  |
-| components.billOfLanding.AADPodIdentity.azureManagedIdentity | object | `{}` |  |
 | components.billOfLanding.config.artifactRepository | object | `{}` |  |
 | components.billOfLanding.config.clusters | list | `[]` |  |
 | components.billOfLanding.enabled | bool | `false` |  |

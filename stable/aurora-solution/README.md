@@ -1,6 +1,6 @@
 # aurora-solution
 
-![Version: 0.0.30](https://img.shields.io/badge/Version-0.0.30-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.0.0](https://img.shields.io/badge/AppVersion-2.0.0-informational?style=flat-square)
+![Version: 0.0.32](https://img.shields.io/badge/Version-0.0.32-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.0.0](https://img.shields.io/badge/AppVersion-2.0.0-informational?style=flat-square)
 
 Aurora Solution
 
@@ -13,7 +13,6 @@ Aurora Solution
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| aadPodIdentities | object | `{}` |  |
 | argocd.deploymentRepoURL | string | `""` |  |
 | argocd.project.adminGroups | list | `[]` |  |
 | argocd.project.developerGroups | list | `[]` |  |
@@ -51,6 +50,7 @@ Aurora Solution
 | raw.resources | list | `[]` |  |
 | rbac.groups | list | `[]` |  |
 | resourceQuotas.pods | int | `60` |  |
+| resourceQuotas.priorityClasses.pods | int | `0` |  |
 | resourceQuotas.services.loadbalancers | int | `0` |  |
 | resourceQuotas.services.nodeports | int | `0` |  |
 | resourceQuotas.storage | string | `"0"` |  |

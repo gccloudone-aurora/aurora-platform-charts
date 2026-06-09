@@ -60,8 +60,14 @@ spec:
                       - loki.{{ .Values.global.ingressDomain }}
               basicAuth:
                 enabled: true
+                {{- if .Values.components.loki.basicAuth.existingSecret }}
+                existingSecret: {{ .Values.components.loki.basicAuth.existingSecret | quote }}
+                {{- else if .Values.components.loki.basicAuth.htpasswd }}
+                htpasswd: {{ .Values.components.loki.basicAuth.htpasswd | quote }}
+                {{- else }}
                 username: {{ required "loki.basicAuth.username is required" .Values.components.loki.basicAuth.username | quote }}
                 password: {{ required "loki.basicAuth.password is required" .Values.components.loki.basicAuth.password | quote }}
+                {{- end }}
 
             loki:
               podSecurityContext:

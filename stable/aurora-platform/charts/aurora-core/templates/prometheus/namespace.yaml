@@ -17,7 +17,7 @@ spec:
       values: |
         # Information about the namespace.
         information:
-          # Organisational information.
+          # Organizational information.
           division: "Aurora"
           team: "Aurora Solutions"
           projectName: "Aurora Platform"
@@ -42,7 +42,8 @@ spec:
         # Configurations about the namespace.
         namespace:
         # Extra labels to add to the namespace.
-          labels: {}
+          labels:
+            namespace.ssc-spc.gc.ca/trust-manager: active
           # The type of namespace.
           # Can be one of [gateway, solution, system].
           type: "system"
