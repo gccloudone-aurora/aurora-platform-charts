@@ -118,6 +118,9 @@ spec:
               - from:
                 - ipBlock:
                     cidr: {{ required "global.apiServerCidr is required" .Values.global.apiServerCidr | quote }}
+                  ports:
+                    - protocol: TCP
+                      port: 10250
                 - namespaceSelector:
                     matchLabels:
                       kubernetes.io/metadata.name: kube-system
