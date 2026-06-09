@@ -49,7 +49,7 @@ spec:
             spec:
               endpointSelector:
                 matchExpressions:
-                  - key: io.kubernetes.pod.namespace
+                  - key: k8s:io.kubernetes.pod.namespace
                     operator: NotIn
                     values:
                       - kube-system
