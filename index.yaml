@@ -545,6 +545,20 @@ entries:
   aurora-namespace:
   - apiVersion: v2
     appVersion: 2.0.0
+    created: "2026-06-09T14:33:29.544676441Z"
+    dependencies:
+    - name: raw
+      repository: file://../raw
+      version: 0.0.1
+    description: Aurora Namespace
+    digest: d2fd73f864f0ebfcb6d5ba36484be6c03fe5d74853245955ca4e6dca74690458
+    name: aurora-namespace
+    type: application
+    urls:
+    - https://github.com/gccloudone-aurora/aurora-platform-charts/releases/download/aurora-namespace-0.0.22/aurora-namespace-0.0.22.tgz
+    version: 0.0.22
+  - apiVersion: v2
+    appVersion: 2.0.0
     created: "2026-06-03T17:15:51.860370662Z"
     dependencies:
     - name: raw
@@ -9131,4 +9145,4 @@ entries:
     urls:
     - https://github.com/gccloudone-aurora/aurora-platform-charts/releases/download/raw-0.0.1/raw-0.0.1.tgz
     version: 0.0.1
-generated: "2026-06-09T13:39:27.671349692Z"
+generated: "2026-06-09T14:33:29.910644657Z"
