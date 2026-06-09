@@ -18,7 +18,7 @@ spec:
           - apiVersion: cilium.io/v2
             kind: CiliumClusterwideNetworkPolicy
             metadata:
-              name: dnscache-coredns-egress
+              name: allow-egress-to-coredns-from-ns
             spec:
               endpointSelector:
                 matchExpressions:
@@ -33,6 +33,9 @@ spec:
                     - matchLabels:
                         k8s:k8s-app: kube-dns
                         k8s:io.kubernetes.pod.namespace: kube-system
+                    - matchLabels:
+                        k8s:k8s-app: node-local-dns
+                        k8s:io.kubernetes.pod.namespace: kube-system
                   toPorts:
                     - ports:
                         - port: "53"
@@ -42,21 +45,7 @@ spec:
           - apiVersion: cilium.io/v2
             kind: CiliumClusterwideNetworkPolicy
             metadata:
-              name: baseline-egress-cluster
-            spec:
-              endpointSelector:
-                matchExpressions:
-                  - key: io.kubernetes.pod.namespace
-                    operator: NotIn
-                    values:
-                      - kube-system
-              egress:
-                - toEntities:
-                  - cluster
-          - apiVersion: cilium.io/v2
-            kind: CiliumClusterwideNetworkPolicy
-            metadata:
-              name: baseline-egress-gke-metadata
+              name: allow-egress-to-gke-metadata-from-ns
             spec:
               endpointSelector:
                 matchExpressions:
@@ -66,7 +55,7 @@ spec:
                       - kube-system
               egress:
                 - toCIDR:
-                    - 169.254.169.254/32
+                    - 169.254.169.252/32
                   toPorts:
                     - ports:
                         - port: "988"
