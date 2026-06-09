@@ -6,11 +6,11 @@ Aurora Platform
 
 ## Requirements
 
-| Repository | Name | Version |
-|------------|------|---------|
-|  | app(aurora-app) | 0.0.1 |
-|  | core(aurora-core) | 0.0.1 |
-|  | mgmt(aurora-mgmt) | 0.0.1 |
+| Repository | Name              | Version |
+|------------|-------------------|---------|
+|            | app(aurora-app)   | 0.0.1   |
+|            | core(aurora-core) | 0.0.1   |
+|            | mgmt(aurora-mgmt) | 0.0.1   |
 
 ## Prerequisites
 
@@ -19,30 +19,30 @@ Aurora Platform
 
 ## Values
 
-| Key | Type | Default | Description |
-|-----|------|---------|-------------|
-| app.components | object | `{}` |  |
-| app.enabled | bool | `false` |  |
-| core.components | object | `{}` |  |
-| core.enabled | bool | `true` |  |
-| core.rbac | object | `{}` |  |
-| global.alertManagerCidrs[0] | string | `"172.26.26.132/32"` |  |
-| global.apiServerCidr | string | `"192.0.2.10/32"` |  |
-| global.azureMetadataApiCidr | string | `"169.254.169.254/32"` |  |
-| global.cluster | string | `"in-cluster"` |  |
-| global.container | object | `{}` |  |
-| global.helm | object | `{}` |  |
-| global.ingressDomain | string | `"example.ca"` |  |
-| global.loggingCidrs[0] | string | `"172.26.26.132/32"` |  |
-| global.namespace.helm.chart | string | `"aurora-namespace"` |  |
-| global.namespace.helm.repository | string | `"https://gccloudone-aurora.github.io/aurora-platform-charts"` |  |
-| global.namespace.helm.targetRevision | string | `"0.0.21"` |  |
-| global.provider | string | `"azure"` |  |
-| global.raw.helm.chart | string | `"raw"` |  |
-| global.raw.helm.repository | string | `"https://gccloudone-aurora.github.io/aurora-platform-charts"` |  |
-| global.raw.helm.targetRevision | string | `"0.0.1"` |  |
-| mgmt.components | object | `{}` |  |
-| mgmt.enabled | bool | `false` |  |
+| Key                                  | Type   | Default                                                        | Description |
+|--------------------------------------|--------|----------------------------------------------------------------|-------------|
+| app.components                       | object | `{}`                                                           |             |
+| app.enabled                          | bool   | `false`                                                        |             |
+| core.components                      | object | `{}`                                                           |             |
+| core.enabled                         | bool   | `true`                                                         |             |
+| core.rbac                            | object | `{}`                                                           |             |
+| global.alertManagerCidrs[0]          | string | `"172.26.26.132/32"`                                           |             |
+| global.apiServerCidr                 | string | `"192.0.2.10/32"`                                              |             |
+| global.azureMetadataApiCidr          | string | `"169.254.169.254/32"`                                         |             |
+| global.cluster                       | string | `"in-cluster"`                                                 |             |
+| global.container                     | object | `{}`                                                           |             |
+| global.helm                          | object | `{}`                                                           |             |
+| global.ingressDomain                 | string | `"example.ca"`                                                 |             |
+| global.loggingCidrs[0]               | string | `"172.26.26.132/32"`                                           |             |
+| global.namespace.helm.chart          | string | `"aurora-namespace"`                                           |             |
+| global.namespace.helm.repository     | string | `"https://gccloudone-aurora.github.io/aurora-platform-charts"` |             |
+| global.namespace.helm.targetRevision | string | `"0.0.22"`                                                     |             |
+| global.provider                      | string | `"azure"`                                                      |             |
+| global.raw.helm.chart                | string | `"raw"`                                                        |             |
+| global.raw.helm.repository           | string | `"https://gccloudone-aurora.github.io/aurora-platform-charts"` |             |
+| global.raw.helm.targetRevision       | string | `"0.0.1"`                                                      |             |
+| mgmt.components                      | object | `{}`                                                           |             |
+| mgmt.enabled                         | bool   | `false`                                                        |             |
 
 ----------------------------------------------
 Autogenerated from chart metadata using [helm-docs v1.14.2](https://github.com/norwoodj/helm-docs/releases/v1.14.2)

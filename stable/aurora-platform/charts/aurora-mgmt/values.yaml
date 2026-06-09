@@ -53,8 +53,6 @@ data:
 # Role Based Access Control
 rbac:
   # Groups and users that should be bound to the platform-admin role.
-  # Note: if using AKS with AAD enabled, this is not necessary since admins
-  #       will be defined in the configuration.
   platformAdmin:
     groups: []
     users: []
@@ -390,11 +388,6 @@ components:
       # fileNameSuffix: ""
       # maximumReportingWindowInDays: 30
 
-    AADPodIdentity:
-      azureManagedIdentity: {}
-        # clientId:
-        # resourceId:
-
   ############
   ### Loki ###
   ############
@@ -422,7 +415,7 @@ components:
       # username:
       # password:
       # htpasswd:
-      # existingSecret: 
+      # existingSecret:
 
     logStorageLocation: {}
       # storageAccountName: <storage-account-name>

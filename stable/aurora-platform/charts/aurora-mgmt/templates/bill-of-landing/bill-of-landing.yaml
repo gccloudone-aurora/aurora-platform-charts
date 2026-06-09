@@ -28,14 +28,8 @@ spec:
 
             config: {{ toYaml .Values.components.billOfLanding.config | nindent 14 }}
 
-            aadPodIdentity:
-              azureManagedIdentity:
-                clientId: {{ .Values.components.billOfLanding.AADPodIdentity.azureManagedIdentity.clientId }}
-                resourceId: {{ .Values.components.billOfLanding.AADPodIdentity.azureManagedIdentity.resourceId }}
-
             nodeSelector: {{ toYaml .Values.components.billOfLanding.nodeSelector | nindent 14 }}
             tolerations: {{ toYaml .Values.components.billOfLanding.tolerations | nindent 14 }}
-
   destination:
     name: {{ .Values.global.cluster }}
     namespace: bill-of-landing-system

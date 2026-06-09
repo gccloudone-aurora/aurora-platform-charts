@@ -24,7 +24,7 @@ global:
   namespace:
     helm:
       chart: "aurora-namespace"
-      targetRevision: "0.0.21"
+      targetRevision: "0.0.22"
       repository: "https://gccloudone-aurora.github.io/aurora-platform-charts"
 
   raw:
@@ -85,7 +85,6 @@ core:
     # securityOperations: {}
 
   components: {}
-    # aadPodIdentity: {}
     # auroraController: {}
     # awsEbsCsiDriver: {}
     # awsLoadbalancerController: {}
