@@ -7,7 +7,7 @@ metadata:
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
-  project: {{ .Values.global.project }}
+  project: aurora-namespace
   source:
     chart: {{ .Values.global.namespace.helm.chart }}
     repoURL: {{ default .Values.global.helm.repository .Values.global.namespace.helm.repository }}
