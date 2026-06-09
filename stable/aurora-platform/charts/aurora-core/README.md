@@ -420,7 +420,7 @@ Aurora Platform - Core Platform
 | components.kubebench.extraLabels | object | `{}` |  |
 | components.kubebench.image.pullPolicy | string | `"Always"` |  |
 | components.kubebench.image.repository | string | `"aquasec/kube-bench"` |  |
-| components.kubebench.image.tag | string | `"v0.15.0"` |  |
+| components.kubebench.image.tag | string | `"v0.15.5"` |  |
 | components.kubebench.imagePullSecrets | list | `[]` |  |
 | components.kubebench.nodeSelector."kubernetes.io/os" | string | `"linux"` |  |
 | components.kubebench.nodeSelector."node.ssc-spc.gc.ca/purpose" | string | `"system"` |  |
@@ -438,14 +438,10 @@ Aurora Platform - Core Platform
 | components.kubebench.volumeMounts[1].mountPath | string | `"/etc/systemd"` |  |
 | components.kubebench.volumeMounts[1].name | string | `"etc-systemd"` |  |
 | components.kubebench.volumeMounts[1].readOnly | bool | `true` |  |
-| components.kubebench.volumeMounts[2].mountPath | string | `"/etc/kubernetes"` |  |
-| components.kubebench.volumeMounts[2].name | string | `"etc-kubernetes"` |  |
-| components.kubebench.volumeMounts[2].readOnly | bool | `true` |  |
 | components.kubebench.volumes[0].hostPath.path | string | `"/var/lib/kubelet"` |  |
 | components.kubebench.volumes[0].name | string | `"var-lib-kubelet"` |  |
 | components.kubebench.volumes[1].hostPath.path | string | `"/etc/systemd"` |  |
 | components.kubebench.volumes[1].name | string | `"etc-systemd"` |  |
-| components.kubebench.volumes[2].hostPath.path | string | `"/etc/kubernetes"` |  |
 | components.kubebench.volumes[2].name | string | `"etc-kubernetes"` |  |
 | components.kubecost.aggregator.affinity | object | `{}` |  |
 | components.kubecost.aggregator.fullImageName | string | `""` |  |
@@ -727,6 +723,7 @@ Aurora Platform - Core Platform
 | components.prometheus.kubeStateMetrics.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].podAffinityTerm.labelSelector.matchLabels."app.kubernetes.io/name" | string | `"kube-state-metrics"` |  |
 | components.prometheus.kubeStateMetrics.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].podAffinityTerm.topologyKey | string | `"kubernetes.io/hostname"` |  |
 | components.prometheus.kubeStateMetrics.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].weight | int | `1` |  |
+| components.prometheus.kubeStateMetrics.enabled | bool | `true` |  |
 | components.prometheus.kubeStateMetrics.image.repository | string | `"kube-state-metrics/kube-state-metrics"` |  |
 | components.prometheus.kubeStateMetrics.nodeSelector."kubernetes.io/os" | string | `"linux"` |  |
 | components.prometheus.kubeStateMetrics.nodeSelector."node.ssc-spc.gc.ca/purpose" | string | `"system"` |  |
@@ -789,6 +786,7 @@ Aurora Platform - Core Platform
 | components.prometheus.thanosRuler.thanosRulerSpec.resources | object | `{}` |  |
 | components.prometheus.thanosRuler.thanosRulerSpec.tolerations[0].key | string | `"CriticalAddonsOnly"` |  |
 | components.prometheus.thanosRuler.thanosRulerSpec.tolerations[0].operator | string | `"Exists"` |  |
+| components.secretsStoreCSIDriver.enableSecretRotation | bool | `false` |  |
 | components.secretsStoreCSIDriver.enabled | bool | `false` |  |
 | components.secretsStoreCSIDriver.helm | object | `{}` |  |
 | components.secretsStoreCSIDriver.images.crds.image.repository | string | `"csi-secrets-store/driver-crds"` |  |
@@ -797,6 +795,7 @@ Aurora Platform - Core Platform
 | components.secretsStoreCSIDriver.images.registrar.image.tag | string | `"v2.13.0"` |  |
 | components.secretsStoreCSIDriver.priorityClassName | string | `"platform-cluster-medium"` |  |
 | components.secretsStoreCSIDriver.resources | object | `{}` |  |
+| components.secretsStoreCSIDriver.rotationPollInterval | string | `"2m"` |  |
 | components.secretsStoreCSIDriver.tolerations[0].key | string | `"CriticalAddonsOnly"` |  |
 | components.secretsStoreCSIDriver.tolerations[0].operator | string | `"Exists"` |  |
 | components.secretsStoreCSIDriver.tolerations[1].effect | string | `"NoSchedule"` |  |
@@ -831,20 +830,22 @@ Aurora Platform - Core Platform
 | components.trivy.enabled | bool | `true` |  |
 | components.trivy.excludeNamespaces | string | `""` |  |
 | components.trivy.helm | object | `{}` |  |
+| components.trivy.ignoreUnfixed | bool | `true` |  |
 | components.trivy.image.pullPolicy | string | `"IfNotPresent"` |  |
 | components.trivy.image.repository | string | `"aquasec/trivy-operator"` |  |
 | components.trivy.image.tag | string | `"0.29.0"` |  |
 | components.trivy.imagePullSecrets | list | `[]` |  |
 | components.trivy.nodeSelector."kubernetes.io/os" | string | `"linux"` |  |
 | components.trivy.nodeSelector."node.ssc-spc.gc.ca/purpose" | string | `"system"` |  |
+| components.trivy.operator.accessGlobalSecretsAndServiceAccount | bool | `false` |  |
 | components.trivy.operator.builtInTrivyServer | bool | `true` |  |
-| components.trivy.operator.configAuditScannerEnabled | bool | `false` | configAuditScannerEnabled the flag to enable configuration audit scanner |
+| components.trivy.operator.configAuditScannerEnabled | bool | `true` | configAuditScannerEnabled the flag to enable configuration audit scanner |
 | components.trivy.operator.containerSecurityContext.runAsNonRoot | bool | `true` |  |
 | components.trivy.operator.containerSecurityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
-| components.trivy.operator.excludeImages | string | `""` | excludeImages is comma separated glob patterns for excluding images from scanning. Example: pattern: `k8s.gcr.io/*/*` will exclude image: `k8s.gcr.io/coredns/coredns:v1.8.0`. |
-| components.trivy.operator.exposedSecretScannerEnabled | bool | `false` | exposedSecretScannerEnabled the flag to enable exposed secret scanner |
+| components.trivy.operator.exposedSecretScannerEnabled | bool | `true` | exposedSecretScannerEnabled the flag to enable exposed secret scanner |
 | components.trivy.operator.infraAssessmentScannerEnabled | bool | `false` | infraAssessmentScannerEnabled the flag to enable infra assessment scanner |
-| components.trivy.operator.rbacAssessmentScannerEnabled | bool | `false` | rbacAssessmentScannerEnabled the flag to enable rbac assessment scanner |
+| components.trivy.operator.rbacAssessmentScannerEnabled | bool | `true` | rbacAssessmentScannerEnabled the flag to enable rbac assessment scanner |
+| components.trivy.operator.scanJobTTL | string | `"1h"` |  |
 | components.trivy.operator.vulnerabilityScannerEnabled | bool | `true` | the flag to enable vulnerability scanner |
 | components.trivy.podSecurityContext.runAsNonRoot | bool | `true` |  |
 | components.trivy.podSecurityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
@@ -853,12 +854,17 @@ Aurora Platform - Core Platform
 | components.trivy.resources.limits.memory | string | `"500M"` |  |
 | components.trivy.resources.requests.cpu | string | `"100m"` |  |
 | components.trivy.resources.requests.memory | string | `"100M"` |  |
-| components.trivy.server.extraServerVolumes.volumeMounts[0].mountPath | string | `"/etc/ssl/certs/trust-manager-propagated-custom-ca.crt"` |  |
+| components.trivy.scanJobResources.limits.cpu | string | `"500m"` |  |
+| components.trivy.scanJobResources.limits.memory | string | `"2Gi"` |  |
+| components.trivy.scanJobResources.requests.cpu | string | `"100m"` |  |
+| components.trivy.scanJobResources.requests.memory | string | `"100M"` |  |
+| components.trivy.server.extraServerVolumes.volumeMounts[0].mountPath | string | `"/etc/ssl/certs/ca-certificates.crt"` |  |
 | components.trivy.server.extraServerVolumes.volumeMounts[0].name | string | `"trust-manager-propagated-custom-ca"` |  |
 | components.trivy.server.extraServerVolumes.volumeMounts[0].readOnly | bool | `true` |  |
 | components.trivy.server.extraServerVolumes.volumeMounts[0].subPath | string | `"ca-certificates.crt"` |  |
 | components.trivy.server.extraServerVolumes.volumes[0].configMap.name | string | `"trust-manager-propagated-custom-ca"` |  |
 | components.trivy.server.extraServerVolumes.volumes[0].name | string | `"trust-manager-propagated-custom-ca"` |  |
+| components.trivy.server.podSecurityContext.runAsNonRoot | bool | `true` |  |
 | components.trivy.server.podSecurityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
 | components.trivy.server.resources.limits.cpu | int | `1` |  |
 | components.trivy.server.resources.limits.memory | string | `"1Gi"` |  |
@@ -868,10 +874,33 @@ Aurora Platform - Core Platform
 | components.trivy.server.securityContext.capabilities.drop[0] | string | `"ALL"` |  |
 | components.trivy.server.securityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
 | components.trivy.servicemonitor.enabled | bool | `true` |  |
-| components.trivy.severity | string | `"UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL"` |  |
+| components.trivy.severity | string | `"HIGH,CRITICAL"` |  |
 | components.trivy.targetWorkloads | string | `"pod,replicaset,replicationcontroller,statefulset,daemonset,cronjob,job"` |  |
 | components.trivy.tolerations[0].key | string | `"CriticalAddonsOnly"` |  |
 | components.trivy.tolerations[0].operator | string | `"Exists"` |  |
+| components.trivy.trivyOperator.excludeImages | string | `""` | excludeImages is comma separated glob patterns for excluding images from scanning. Example: pattern: `k8s.gcr.io/*/*` will exclude image: `k8s.gcr.io/coredns/coredns:v1.8.0`. |
+| components.trivy.trivyOperator.scanJobAnnotations | string | `"sidecar.istio.io/inject=false,cluster-autoscaler.kubernetes.io/safe-to-evict=true,fluent.sidecar.io/inject=false"` |  |
+| components.trivy.trivyOperator.scanJobAutomountServiceAccountToken | bool | `false` |  |
+| components.trivy.trivyOperator.scanJobCustomVolumesMount[0].mountPath | string | `"/etc/ssl/certs/ca-certificates.crt"` |  |
+| components.trivy.trivyOperator.scanJobCustomVolumesMount[0].name | string | `"trust-manager-propagated-custom-ca"` |  |
+| components.trivy.trivyOperator.scanJobCustomVolumesMount[0].readOnly | bool | `true` |  |
+| components.trivy.trivyOperator.scanJobCustomVolumesMount[0].subPath | string | `"ca-certificates.crt"` |  |
+| components.trivy.trivyOperator.scanJobCustomVolumes[0].configMap.name | string | `"trust-manager-propagated-custom-ca"` |  |
+| components.trivy.trivyOperator.scanJobCustomVolumes[0].name | string | `"trust-manager-propagated-custom-ca"` |  |
+| components.trivy.trivyOperator.scanJobNodeSelector."node.ssc-spc.gc.ca/purpose" | string | `"system"` |  |
+| components.trivy.trivyOperator.scanJobPodTemplateContainerSecurityContext.allowPrivilegeEscalation | bool | `false` |  |
+| components.trivy.trivyOperator.scanJobPodTemplateContainerSecurityContext.capabilities.drop[0] | string | `"ALL"` |  |
+| components.trivy.trivyOperator.scanJobPodTemplateContainerSecurityContext.readOnlyRootFilesystem | bool | `true` |  |
+| components.trivy.trivyOperator.scanJobPodTemplateContainerSecurityContext.runAsNonRoot | bool | `true` |  |
+| components.trivy.trivyOperator.scanJobPodTemplateContainerSecurityContext.runAsUser | int | `10000` |  |
+| components.trivy.trivyOperator.scanJobPodTemplateLabels | string | `"app.kubernetes.io/name=trivy-scan-job,app.kubernetes.io/managed-by=trivy-operator"` |  |
+| components.trivy.trivyOperator.scanJobPodTemplatePodSecurityContext.fsGroup | int | `10000` |  |
+| components.trivy.trivyOperator.scanJobPodTemplatePodSecurityContext.runAsGroup | int | `10000` |  |
+| components.trivy.trivyOperator.scanJobPodTemplatePodSecurityContext.runAsNonRoot | bool | `true` |  |
+| components.trivy.trivyOperator.scanJobPodTemplatePodSecurityContext.runAsUser | int | `10000` |  |
+| components.trivy.trivyOperator.scanJobPodTemplatePodSecurityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
+| components.trivy.trivyOperator.scanJobTolerations[0].key | string | `"CriticalAddonsOnly"` |  |
+| components.trivy.trivyOperator.scanJobTolerations[0].operator | string | `"Exists"` |  |
 | components.trustManager.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].podAffinityTerm.labelSelector.matchLabels."app.kubernetes.io/instance" | string | `"trust-manager"` |  |
 | components.trustManager.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].podAffinityTerm.topologyKey | string | `"kubernetes.io/hostname"` |  |
 | components.trustManager.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].weight | int | `1` |  |

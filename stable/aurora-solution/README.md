@@ -11,48 +11,49 @@ Aurora Solution
 
 ## Values
 
-| Key                                           | Type   | Default                      | Description |
-|-----------------------------------------------|--------|------------------------------|-------------|
-| argocd.deploymentRepoURL                      | string | `""`                         |             |
-| argocd.project.adminGroups                    | list   | `[]`                         |             |
-| argocd.project.developerGroups                | list   | `[]`                         |             |
-| argocd.project.namespace                      | string | `"platform-solution-system"` |             |
-| argocd.project.sourceRepos                    | list   | `[]`                         |             |
-| clusters                                      | object | `{}`                         |             |
-| global.helm                                   | object | `{}`                         |             |
-| global.project                                | string | `"aurora-solution"`          |             |
-| information.CBR                               | string | `""`                         |             |
-| information.FRC                               | string | `nil`                        |             |
-| information.PE                                | string | `nil`                        |             |
-| information.authorityToOperate                | string | `nil`                        |             |
-| information.division                          | string | `nil`                        |             |
-| information.gitGroupURL                       | string | `nil`                        |             |
-| information.onboardingEpic                    | string | `nil`                        |             |
-| information.priority                          | string | `"medium"`                   |             |
-| information.productID                         | string | `nil`                        |             |
-| information.projectLead                       | string | `nil`                        |             |
-| information.projectName                       | string | `nil`                        |             |
-| information.team                              | string | `nil`                        |             |
-| information.technicalLead                     | string | `nil`                        |             |
-| information.workloadID                        | string | `nil`                        |             |
-| namespace.deploymentMethod                    | string | `"argocd"`                   |             |
-| namespace.labels                              | object | `{}`                         |             |
-| namespace.type                                | string | `nil`                        |             |
-| netpol.allowSameNamespace                     | bool   | `true`                       |             |
-| policies.allowedHosts                         | list   | `[]`                         |             |
-| policies.podSecurityAdmission.audit.level     | string | `"restricted"`               |             |
-| policies.podSecurityAdmission.audit.version   | string | `"v1.27"`                    |             |
-| policies.podSecurityAdmission.enforce.level   | string | `"restricted"`               |             |
-| policies.podSecurityAdmission.enforce.version | string | `"v1.27"`                    |             |
-| policies.podSecurityAdmission.warn.level      | string | `"restricted"`               |             |
-| policies.podSecurityAdmission.warn.version    | string | `"v1.27"`                    |             |
-| policies.trustManagerBundleInjection          | bool   | `true`                       |             |
-| raw.resources                                 | list   | `[]`                         |             |
-| rbac.groups                                   | list   | `[]`                         |             |
-| resourceQuotas.pods                           | int    | `60`                         |             |
-| resourceQuotas.services.loadbalancers         | int    | `0`                          |             |
-| resourceQuotas.services.nodeports             | int    | `0`                          |             |
-| resourceQuotas.storage                        | string | `"0"`                        |             |
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| argocd.deploymentRepoURL | string | `""` |  |
+| argocd.project.adminGroups | list | `[]` |  |
+| argocd.project.developerGroups | list | `[]` |  |
+| argocd.project.namespace | string | `"platform-solution-system"` |  |
+| argocd.project.sourceRepos | list | `[]` |  |
+| clusters | object | `{}` |  |
+| global.helm | object | `{}` |  |
+| global.project | string | `"aurora-solution"` |  |
+| information.CBR | string | `""` |  |
+| information.FRC | string | `nil` |  |
+| information.PE | string | `nil` |  |
+| information.authorityToOperate | string | `nil` |  |
+| information.division | string | `nil` |  |
+| information.gitGroupURL | string | `nil` |  |
+| information.onboardingEpic | string | `nil` |  |
+| information.priority | string | `"medium"` |  |
+| information.productID | string | `nil` |  |
+| information.projectLead | string | `nil` |  |
+| information.projectName | string | `nil` |  |
+| information.team | string | `nil` |  |
+| information.technicalLead | string | `nil` |  |
+| information.workloadID | string | `nil` |  |
+| namespace.deploymentMethod | string | `"argocd"` |  |
+| namespace.labels | object | `{}` |  |
+| namespace.type | string | `nil` |  |
+| netpol.allowSameNamespace | bool | `true` |  |
+| policies.allowedHosts | list | `[]` |  |
+| policies.podSecurityAdmission.audit.level | string | `"restricted"` |  |
+| policies.podSecurityAdmission.audit.version | string | `"v1.27"` |  |
+| policies.podSecurityAdmission.enforce.level | string | `"restricted"` |  |
+| policies.podSecurityAdmission.enforce.version | string | `"v1.27"` |  |
+| policies.podSecurityAdmission.warn.level | string | `"restricted"` |  |
+| policies.podSecurityAdmission.warn.version | string | `"v1.27"` |  |
+| policies.trustManagerBundleInjection | bool | `true` |  |
+| raw.resources | list | `[]` |  |
+| rbac.groups | list | `[]` |  |
+| resourceQuotas.pods | int | `60` |  |
+| resourceQuotas.priorityClasses.pods | int | `0` |  |
+| resourceQuotas.services.loadbalancers | int | `0` |  |
+| resourceQuotas.services.nodeports | int | `0` |  |
+| resourceQuotas.storage | string | `"0"` |  |
 
 ----------------------------------------------
 Autogenerated from chart metadata using [helm-docs v1.14.2](https://github.com/norwoodj/helm-docs/releases/v1.14.2)
