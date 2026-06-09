@@ -826,6 +826,38 @@ entries:
   aurora-platform:
   - apiVersion: v2
     appVersion: 2.0.0
+    created: "2026-06-09T13:39:27.453050944Z"
+    dependencies:
+    - alias: core
+      condition: core.enabled
+      name: aurora-core
+      repository: ""
+      version: 0.0.1
+    - alias: app
+      condition: app.enabled
+      import-values:
+      - child: data
+        parent: global.imports
+      name: aurora-app
+      repository: ""
+      version: 0.0.1
+    - alias: mgmt
+      condition: mgmt.enabled
+      import-values:
+      - child: data
+        parent: global.imports
+      name: aurora-mgmt
+      repository: ""
+      version: 0.0.1
+    description: Aurora Platform
+    digest: 386b6d3d172037f094379373a5df1413d8f91dbc79b4f12fda504c19b4fc793d
+    name: aurora-platform
+    type: application
+    urls:
+    - https://github.com/gccloudone-aurora/aurora-platform-charts/releases/download/aurora-platform-0.0.246/aurora-platform-0.0.246.tgz
+    version: 0.0.246
+  - apiVersion: v2
+    appVersion: 2.0.0
     created: "2026-06-05T20:11:00.923337333Z"
     dependencies:
     - alias: core
@@ -8635,6 +8667,16 @@ entries:
   aurora-solution:
   - apiVersion: v2
     appVersion: 2.0.0
+    created: "2026-06-09T13:39:27.67021741Z"
+    description: Aurora Solution
+    digest: b0fd57353863a74c9881c522d91df4738596fb1ba38c9a07bde7f717f95d078d
+    name: aurora-solution
+    type: application
+    urls:
+    - https://github.com/gccloudone-aurora/aurora-platform-charts/releases/download/aurora-solution-0.0.32/aurora-solution-0.0.32.tgz
+    version: 0.0.32
+  - apiVersion: v2
+    appVersion: 2.0.0
     created: "2026-06-03T17:15:52.351022102Z"
     description: Aurora Solution
     digest: df5d90faa591e388a43fe1bce01eb9cb4044fb59ccd18610058af23e3a8b1f00
@@ -9089,4 +9131,4 @@ entries:
     urls:
     - https://github.com/gccloudone-aurora/aurora-platform-charts/releases/download/raw-0.0.1/raw-0.0.1.tgz
     version: 0.0.1
-generated: "2026-06-05T20:11:00.923921975Z"
+generated: "2026-06-09T13:39:27.671349692Z"
