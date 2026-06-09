@@ -49,7 +49,7 @@ spec:
                   destination:
                     name: in-cluster
                     namespace: platform-management-system
-                  project: aurora-solution
+                  project: aurora-namespace
                   source:
                     chart: aurora-solution
                     helm:
