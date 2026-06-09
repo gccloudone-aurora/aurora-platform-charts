@@ -84,6 +84,7 @@ spec:
                   toPorts:
                     - ports:
                         - port: "443"
+                          protocol: TCP
   destination:
     name: {{ .Values.global.cluster }}
     namespace: platform-system
