@@ -11,6 +11,20 @@ type: Opaque
 stringData:
   name: {{ $cluster }}
   server: {{ $saSecrets.server }}
+  {{- if and $argocd-k8s-auth ( eq $provider "gcp") }}
+  config: |
+    {
+      "execProviderConfig": {
+        "command": "argocd-k8s-auth",
+        "args": ["gcp"],
+        "apiVersion": "client.authentication.k8s.io/v1beta1"
+      },
+      "tlsClientConfig": {
+        "insecure": false,
+        "caData": {{ $saSecrets.caData | quote }}
+      }
+    }
+  {{- else }}
   config: |
     {
       "bearerToken": {{ $saSecrets.token | quote }},
@@ -19,4 +33,5 @@ stringData:
         "caData": {{ $saSecrets.caData | quote }}
       }
     }
+  {{- end }}
 {{- end }}

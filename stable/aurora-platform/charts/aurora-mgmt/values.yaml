@@ -29,6 +29,9 @@ global:
       targetRevision:
       repository:
 
+  # azure or aws or gcp
+  provider: azure
+
   # Cluster name for the Application targets.
   cluster: in-cluster
 
