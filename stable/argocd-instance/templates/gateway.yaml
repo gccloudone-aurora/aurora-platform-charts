@@ -131,7 +131,6 @@ metadata:
   name: iap-oauth-secret
 type: Opaque
 stringData:
-  # client_id: {{ .Values.argocdInstance.gateway.iapClientID }}
   client_secret: {{ .Values.argocdInstance.gateway.iapClientSecret }}
 ---
 apiVersion: networking.gke.io/v1
