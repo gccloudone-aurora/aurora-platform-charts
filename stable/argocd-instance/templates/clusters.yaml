@@ -21,7 +21,7 @@ stringData:
       },
       "tlsClientConfig": {
         "insecure": false,
-        "caData": {{ $saSecrets.caData | quote }}
+        "caData": ""
       }
     }
   {{- else }}
