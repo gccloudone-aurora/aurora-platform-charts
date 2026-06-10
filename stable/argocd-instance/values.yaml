@@ -10,6 +10,8 @@ argocdInstance:
     host: ""
     class: ""
     ipName: ""
+    iapClientID: ""
+    iapClientSecret: ""
   logLevel: "info"
 
   oidcAuthSP:
