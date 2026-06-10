@@ -50,7 +50,7 @@ spec:
                   email_template.html: {{ .Files.Get "conf/alertmanager_notification_templates/email.html" | b64enc }}
                 type: Opaque
               {{- end }}
-              {{- if .Values.components.prometheus.prometheusSpec.thanos.enabled }}
+              {{- if .Values.components.prometheus.prometheus.prometheusSpec.thanos.enabled }}
               - apiVersion: v1
                 kind: Secret
                 metadata:
