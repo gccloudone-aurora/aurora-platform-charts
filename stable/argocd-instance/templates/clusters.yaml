@@ -11,7 +11,7 @@ type: Opaque
 stringData:
   name: {{ $cluster }}
   server: {{ $saSecrets.server }}
-  {{- if and $saSecrets.argocd-k8s-auth ( eq $saSecrets.provider "gcp") }}
+  {{- if (index $saSecrets "argocd-k8s-auth") }}
   config: |
     {
       "execProviderConfig": {
