@@ -50,6 +50,23 @@ spec:
                   email_template.html: {{ .Files.Get "conf/alertmanager_notification_templates/email.html" | b64enc }}
                 type: Opaque
               {{- end }}
+              {{- if .Values.components.prometheus.prometheusSpec.thanos.enabled }}
+              - apiVersion: v1
+                kind: Secret
+                metadata:
+                  name: thanos-objstore-config
+                  namespace: prometheus-system
+                  labels:
+                    app.kubernetes.io/name: "prometheus-manifests"
+                    app.kubernetes.io/instance: "{{ .Values.global.cluster }}"
+                    app.kubernetes.io/component: thanos
+                    app.kubernetes.io/part-of: prometheus-system
+                    app.kubernetes.io/managed-by: argo
+                    helm.sh/chart: {{ printf "%s-%s" .Chart.Name .Chart.Version }}
+                data:
+                  objstore.yml: {{ include "prometheus.thanos.objstoreConfig" . | b64enc }}
+                type: Opaque
+                {{- end }}
               - apiVersion: v1
                 kind: ServiceAccount
                 metadata:
