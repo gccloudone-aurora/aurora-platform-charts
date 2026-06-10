@@ -8,6 +8,8 @@ argocdInstance:
   gateway:
     enabled: false
     host: ""
+    class: ""
+    ipName: ""
   logLevel: "info"
 
   oidcAuthSP:

@@ -54,7 +54,7 @@ spec:
           from: Same
   addresses:
     - type: NamedAddress
-      value: argocd-aurora-ip
+      value: {{ .Values.argocdInstance.gateway.ipName }}
 ---
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
@@ -123,4 +123,30 @@ spec:
     group: ""
     kind: Service
     name: argocd-server
+{{- if eq .Values.argocdInstance.gateway.class "gke-l7-global-external-managed" }}
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: iap-oauth-secret
+type: Opaque
+stringData:
+  client_id: ""
+  client_secret: ""
+---
+apiVersion: networking.gke.io/v1
+kind: GCPBackendPolicy
+metadata:
+  name: argocd-iap-policy
+spec:
+  default:
+    iap:
+      enabled: true
+      oauth2ClientSecret:
+        name: iap-oauth-secret
+  targetRef:
+    group: ""
+    kind: Service
+    name: argocd-server
+{{- end }}
 {{- end}}
