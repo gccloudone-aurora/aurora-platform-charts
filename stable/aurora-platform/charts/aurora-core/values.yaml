@@ -441,7 +441,7 @@ components:
     issuers:
       # email: ''
       # caBundle: ""
-      dns01Solver: {}
+
       dns01: {}
         # azureDNS:
         #   hostedZoneName:
