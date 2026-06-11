@@ -95,6 +95,9 @@ azureDNS:
         clientID: {{ required "certManager.azureWorkloadIdentity.clientId is required" .Values.components.certManager.azureWorkloadIdentity.clientId | quote }}
     resourceGroupName: {{ required "certManager.issuers.dns01.azure.resourceGroupName is required" .Values.components.certManager.issuers.dns01.azure.resourceGroupName }}
     subscriptionID: {{ required "certManager.issuers.dns01.azure.subscriptionId is required" .Values.components.certManager.issuers.dns01.azure.subscriptionId }}
+{{- else if eq .Values.global.provider "gcp" }}
+cloudDNS:
+    project: {{ required "certManager.issuers.dns01.gcp.projectId is required" .Values.components.certManager.issuers.dns01.gcp.projectId }}
 {{- else if eq .Values.global.provider "aws" }}
 cnameStrategy: Follow
 route53: {}
