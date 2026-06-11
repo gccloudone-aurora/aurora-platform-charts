@@ -1742,7 +1742,7 @@ components:
               provider: azure
               storageAccountName: ""
               containerName: thanos
-              createContainer: false
+              createContainer: true
               endpoint: blob.core.windows.net
               auth: workloadIdentity
               clientId: ""
