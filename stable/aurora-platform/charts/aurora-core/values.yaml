@@ -1742,7 +1742,7 @@ components:
               provider: azure
               storageAccountName: ""
               containerName: thanos
-              createContainer: true
+              createContainer: false # let TF Infra layer deal with the creation
               endpoint: blob.core.windows.net
               auth: workloadIdentity
               clientId: ""
