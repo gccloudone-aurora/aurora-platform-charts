@@ -13,6 +13,7 @@ kind: Certificate
 metadata:
   name: argocd-server-tls
   labels:
+    use-general-solver: "true"
     {{- include "argocd-foundation.labels" $ | nindent 4 }}
 spec:
   dnsNames:
