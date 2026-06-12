@@ -1,10 +1,11 @@
 {{ if .Values.components.prometheus.enabled -}}
 
 {{ if .Values.components.prometheus.alertmanager.enabled -}}
+{{- if .Values.components.prometheus.msteams.connectors.enabled }}
 
 # Convert a map of strings into a list of map of strings
 {{- $connectors := list -}}
-{{- range $key, $value := .Values.components.prometheus.msteams.connectors }}
+{{- range $key, $value := .Values.components.prometheus.msteams.connectors.urls }}
 {{- $newMap := dict $key $value -}}
 {{- $connectors = append $connectors $newMap -}}
 {{- end }}
@@ -59,11 +60,20 @@ spec:
       prune: true
       selfHeal: true
 
+{{- end }}
+
 {{- range $sKey, $sVal := .Values.components.prometheus.alertmanager.config.severities }}
 {{- range $environment, $matchers := $.Values.components.prometheus.alertmanager.config.environments }}
 {{- $envSeverityPair := printf "%s%s" $environment (camelcase $sKey) }}
-{{- if not (hasKey $.Values.components.prometheus.msteams.connectors $envSeverityPair) }}
-{{- fail (printf "A valid .Values.components.prometheus.msteams.connectors.%s entry required!" $envSeverityPair) }}
+{{- if $.Values.components.prometheus.msteams.connectors.enabled }}
+{{- if not (hasKey $.Values.components.prometheus.msteams.connectors.urls $envSeverityPair) }}
+{{- fail (printf "A valid .Values.components.prometheus.msteams.connectors.urls.%s entry required!" $envSeverityPair) }}
+{{- end }}
+{{- end }}
+{{- if $.Values.components.prometheus.msteams.workflows.enabled }}
+{{- if not (hasKey $.Values.components.prometheus.msteams.workflows.urls $envSeverityPair) }}
+{{- fail (printf "A valid .Values.components.prometheus.msteams.workflows.urls.%s entry required!" $envSeverityPair) }}
+{{- end }}
 {{- end }}
 {{- end }}
 {{- end }}

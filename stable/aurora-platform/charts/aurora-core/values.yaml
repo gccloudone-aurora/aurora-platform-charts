@@ -2072,17 +2072,37 @@ components:
                 matchLabels:
                   app: prometheus-msteams
 
-      connectors: {}
-      #  testing: ""
-      #  devCritical: ""
-      #  devMajor: ""
-      #  devMinor: ""
-      #  nonProdCritical: ""
-      #  nonProdMajor: ""
-      #  nonProdMinor: ""
-      #  prodCritical: ""
-      #  prodMajor: ""
-      #  prodMinor: ""
+      connectors:
+        enabled: true
+        urls: {}
+        #  testing: ""
+        #  devCritical: ""
+        #  devMajor: ""
+        #  devMinor: ""
+        #  nonProdCritical: ""
+        #  nonProdMajor: ""
+        #  nonProdMinor: ""
+        #  prodCritical: ""
+        #  prodMajor: ""
+        #  prodMinor: ""
+
+      workflows:
+        enabled: false
+        urls: {}
+        #  testing: ""
+        #  devCritical: ""
+        #  devMajor: ""
+        #  devMinor: ""
+        #  nonProdCritical: ""
+        #  nonProdMajor: ""
+        #  nonProdMinor: ""
+        #  prodCritical: ""
+        #  prodMajor: ""
+        #  prodMinor: ""
+
+
+      workflowFQDNs:
+        - "*.environment.api.powerplatform.com"
 
   ################################
   ### Secrets Store CSI Driver ###

@@ -2,14 +2,27 @@
 {{- range $severity, $sVal := .Values.components.prometheus.alertmanager.config.severities }}
 {{- range $environment, $matchers := $.Values.components.prometheus.alertmanager.config.environments }}
 {{- $envSeverityPair := printf "%s%s" $environment (camelcase $severity) }}
-- name: aurora_{{ $environment }}_{{ $severity }}
+{{- if $.Values.components.prometheus.msteams.connectors.enabled }}
+- name: aurora_{{ $environment }}_{{ $severity }}_connector
   webhook_configs:
     - url: "http://prometheus-msteams:2000/{{ $envSeverityPair }}"
       send_resolved: true
-- name: aurora_{{ $environment }}_{{ $severity }}_no_resolve
+- name: aurora_{{ $environment }}_{{ $severity }}_connector_no_resolve
   webhook_configs:
     - url: "http://prometheus-msteams:2000/{{ $envSeverityPair }}"
       send_resolved: false
+{{- end }}
+{{- if $.Values.components.prometheus.msteams.workflows.enabled }}
+- name: aurora_{{ $environment }}_{{ $severity }}_workflow
+  webhook_configs:
+    - url: {{ required (printf "A valid .Values.components.prometheus.msteams.workflows.urls.%s entry required!" $envSeverityPair) (index $.Values.components.prometheus.msteams.workflows.urls $envSeverityPair) | quote }}
+      send_resolved: true
+- name: aurora_{{ $environment }}_{{ $severity }}_workflow_no_resolve
+  webhook_configs:
+    - url: {{ required (printf "A valid .Values.components.prometheus.msteams.workflows.urls.%s entry required!" $envSeverityPair) (index $.Values.components.prometheus.msteams.workflows.urls $envSeverityPair) | quote }}
+      send_resolved: false
+{{- end }}
+
 {{- end }}
 {{- end }}
 {{- end }}
@@ -18,11 +31,26 @@
 {{- $severity := index . 0 -}}
 {{- $matcher := index . 1 -}}
 {{- $environment := index . 2 -}}
+{{- if $.Values.components.prometheus.msteams.connectors.enabled }}
 - matchers: [{{ $matcher }}]
-  receiver: aurora_{{ $environment }}_{{ $severity }}
+  receiver: aurora_{{ $environment }}_{{ $severity }}_connector
+  {{- if $.Values.components.prometheus.msteams.workflows.enabled }}
+  continue: true
+  {{- end }}
   routes:
     - matchers: ["resolves = never"]
-      receiver: aurora_{{ $environment }}_{{ $severity }}_no_resolve
+      receiver: aurora_{{ $environment }}_{{ $severity }}_connector_no_resolve
+      {{- if $.Values.components.prometheus.msteams.workflows.enabled }}
+      continue: true
+      {{- end }}
+{{- end }}
+{{- if $.Values.components.prometheus.msteams.workflows.enabled }}
+- matchers: [{{ $matcher }}]
+  receiver: aurora_{{ $environment }}_{{ $severity }}_workflow
+  routes:
+    - matchers: ["resolves = never"]
+      receiver: aurora_{{ $environment }}_{{ $severity }}_workflow_no_resolve
+{{- end }}
 {{- end }}
 
 {{- define "alertmanager.email.receivers" -}}

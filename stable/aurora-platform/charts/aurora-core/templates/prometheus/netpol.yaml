@@ -616,6 +616,7 @@ spec:
                   endpointSelector:
                     matchLabels:
                       k8s:app.kubernetes.io/name: alertmanager
+              {{- if .Values.components.prometheus.msteams.connectors.enabled }}
               - apiVersion: cilium.io/v2
                 kind: CiliumClusterwideNetworkPolicy
                 metadata:
@@ -632,6 +633,27 @@ spec:
                   endpointSelector:
                     matchLabels:
                       k8s:app: prometheus-msteams
+              {{- end }}
+              {{- if .Values.components.prometheus.msteams.workflows.enabled }}
+              - apiVersion: cilium.io/v2
+                kind: CiliumClusterwideNetworkPolicy
+                metadata:
+                  name: allow-egress-to-msteams-workflow-from-alertmanager
+                spec:
+                  description: |
+                    Allows Alertmanager to directly send notification to MSTeams workflow (via powerautomate)
+                  egress:
+                  - toFQDNs:
+                    {{- range .Values.components.prometheus.msteams.workflowFQDNs }}
+                    - matchPattern: {{ . | quote }}
+                    {{- end }}
+                    toPorts:
+                    - ports:
+                      - port: "443"
+                  endpointSelector:
+                    matchLabels:
+                      k8s:app: alertmanager
+              {{- end }}
               {{- end }}
               {{ if .Values.global.clusterHasLoki }}
               - apiVersion: networking.k8s.io/v1
