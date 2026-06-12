@@ -61,6 +61,10 @@ core:
   enabled: true
 
   rbac:
+    # Allow MSI for firewall rbac
+    firewall:
+      msi: ""
+
     platformAdmin:
       groups: ["<FILLIN_AZURE_AD_GROUP>"]
     platformOperator:
