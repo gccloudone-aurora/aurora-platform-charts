@@ -95,7 +95,7 @@ spec:
               name: {{ $serviceAccountName }}
               namespace: {{ $namespace }}
 
-          {{- if .Values.rbac.firwall.enabled }}
+          {{- if .Values.rbac.firewall.enabled }}
           # MSI based authentication
           - apiVersion: rbac.authorization.k8s.io/v1
             kind: ClusterRoleBinding
