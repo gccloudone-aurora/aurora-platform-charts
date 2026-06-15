@@ -659,23 +659,24 @@ spec:
               {{- end }}
               {{- if .Values.components.prometheus.prometheus.prometheusSpec.thanos.enabled }}
               # thanos side car egress rule to upload TDSB blocks
-              - apiVersion: cilium.io/v2
-                kind: CiliumNetworkPolicy
+              - apiVersion: networking.k8s.io/v1
+                kind: NetworkPolicy
                 metadata:
-                  name: allow-egress-to-azure-blob-from-prometheus
+                  name: allow-egress-to-object-storage-from-prometheus
                   namespace: prometheus-system
                 spec:
-                  description: |
-                    Allows the Thanos sidecar to ship metric blocks to Azure Blob Storage
-                  egress:
-                  - toFQDNs:
-                    - matchPattern: "*.{{ .Values.components.prometheus.prometheus.prometheusSpec.thanos.objectStorage.endpoint }}"
-                    toPorts:
-                    - ports:
-                      - port: "443"
-                  endpointSelector:
+                  podSelector:
                     matchLabels:
                       app.kubernetes.io/name: prometheus
+                  policyTypes:
+                  - Egress
+                  egress:
+                  - ports:
+                    - port: 443
+                      protocol: TCP
+                    to:
+                    - ipBlock:
+                        cidr: 0.0.0.0/0
               {{- end }}
   destination:
     name: {{ .Values.global.cluster }}
