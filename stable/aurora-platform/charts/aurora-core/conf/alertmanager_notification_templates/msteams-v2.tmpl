@@ -7,9 +7,9 @@
 **Status:** {{ .Status | toUpper }}
 **Severity:** {{ .Labels.severity }}
 **Namespace:** {{ .Labels.namespace }}
-{{- if .Annotations.message }}**Message:** {{ .Annotations.message}}
+{{- if .Annotations.message }}**Message:** {{ .Annotations.message }}
 {{ end -}}
-{{- if .Annotations.summary }}**Summary:** {{ .Annotations.summary}}
+{{- if .Annotations.summary }}**Summary:** {{ .Annotations.summary }}
 {{ end -}}
 ---
 {{ end -}}
