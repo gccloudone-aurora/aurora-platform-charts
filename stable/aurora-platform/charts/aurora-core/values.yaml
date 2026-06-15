@@ -78,6 +78,11 @@ global:
 
 # Role Based Access Control
 rbac:
+  # Allow MSI for firewall rbac
+  firewall:
+    enabled: false
+    # msi: ""
+
   # Groups and users that should be bound to the platform-admin role.
   platformAdmin:
     groups: []
@@ -431,7 +436,7 @@ components:
     podDnsConfig:
       nameservers: []
 
-    azureWorkloadIdentity:
+    workloadIdentity:
       enabled: true
       # clientId: ""
 
@@ -2544,7 +2549,7 @@ components:
               matchLabels:
                 app.kubernetes.io/instance: velero
 
-    azureWorkloadIdentity:
+    workloadIdentity:
       enabled: true
       # clientId: ""
 
