@@ -7,10 +7,10 @@
 **Status:** {{ .Status | toUpper }}
 **Severity:** {{ .Labels.severity }}
 **Namespace:** {{ .Labels.namespace }}
-{{ if .Annotations.message }}**Message:** {{ .Annotations.message}}{{ end }}
-{{ if .Annotations.summary }}**Summary:** {{ .Annotations.summary}}{{ end }}
-{{ if .Annotations.runbook }}[Runbook]({{ .Annotations.runbook }}){{ if .Annotations.grafanaDashboard }} | {{ end }}{{ end -}}
-{{- if .Annotations.grafanaDashboard }}[Grafana]({{ .Annotations.grafanaDashboard }}){{ end }}
+{{- if .Annotations.message }}**Message:** {{ .Annotations.message}}
+{{ end -}}
+{{- if .Annotations.summary }}**Summary:** {{ .Annotations.summary}}
+{{ end -}}
 ---
 {{ end -}}
 {{- end -}}

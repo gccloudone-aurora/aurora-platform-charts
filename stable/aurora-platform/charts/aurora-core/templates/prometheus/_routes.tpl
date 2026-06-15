@@ -21,15 +21,15 @@
 - name: aurora_{{ $environment }}_{{ $severity }}_v2
   msteamsv2_configs:
     - webhook_url: {{ $webhookUrl | quote }}
-    send_resolved: true
-    title: '{{`{{ template "teams.v2.title" . }}`}}'
-    text: '{{`{{ template "teams.v2.text" . }}`}}'
+      send_resolved: true
+      title: '{{`{{ template "teams.v2.title" . }}`}}'
+      text: '{{`{{ template "teams.v2.text" . }}`}}'
 - name: aurora_{{ $environment }}_{{ $severity }}_v2_no_resolve
   msteamsv2_configs:
     - webhook_url: {{ $webhookUrl | quote }}
-    send_resolved: false
-    title: '{{`{{ template "teams.v2.title" . }}`}}'
-    text: '{{`{{ template "teams.v2.text" . }}`}}'
+      send_resolved: false
+      title: '{{`{{ template "teams.v2.title" . }}`}}'
+      text: '{{`{{ template "teams.v2.text" . }}`}}'
 {{- end }}
 {{- end }}
 {{- end }}
