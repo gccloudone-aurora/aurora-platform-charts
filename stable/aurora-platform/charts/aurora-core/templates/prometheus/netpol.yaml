@@ -641,7 +641,7 @@ spec:
                     Allows Alertmanager to send alert notifications to MS Teams
                   egress:
                   - toFQDNs:
-                    - matchPattern: "**.logic.azure.com"
+                    - matchPattern: "**.api.powerplatform.com"
                     toPorts:
                     - ports:
                       - port: "443"
