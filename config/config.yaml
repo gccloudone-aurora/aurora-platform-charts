@@ -359,7 +359,13 @@ core:
 
       prometheus:
         prometheusSpec: {}
-
+        thanos:
+          # Thanos Sidecar - sends 2h TDSB blocks to Azure Blob for long term storage
+          enabled: false
+          storageAccountName: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-thanos-sa-name>'
+          containerName: thanos
+          auth: workloadIdentity
+          clientId: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-thanos-workloadidentity-client-id>'
       thanosRuler:
         thanosRulerSpec: {}
 
