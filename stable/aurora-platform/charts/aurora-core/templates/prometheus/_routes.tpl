@@ -47,13 +47,14 @@
 - matchers: [{{ $matcher }}]
   receiver: aurora_{{ $environment }}_{{ $severity }}
   routes:
-    {{- if $.Values.components.prometheus.msteams.webhooks }}
-    {{- if hasKey $.Values.components.prometheus.msteams.webhooks $envSeverityPair }}
-    {{- $webhookUrl := index $.Values.components.prometheus.msteams.webhooks $envSeverityPair }}
+    {{- if $root.Values.components.prometheus.msteams.webhooks }}
+    {{- if hasKey $root.Values.components.prometheus.msteams.webhooks $envSeverityPair }}
+    {{- $webhookUrl := index $root.Values.components.prometheus.msteams.webhooks $envSeverityPair }}
+    {{- if $webhookUrl }}
     - matchers: ["teams_version = v2"]
       receiver: aurora_{{ $environment }}_{{ $severity }}_v2
       routes:
-        - matchers: ["alertname = TrivyCriticalVulnerablitiesDetected"]
+        - matchers: ["alertname = TrivyCriticalVulnerabilitiesDetected"]
           receiver: aurora_{{ $environment }}_{{ $severity }}_v2
           repeat_interval: 24h
         - matchers: ["resolves = never"]
