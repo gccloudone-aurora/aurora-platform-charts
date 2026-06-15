@@ -80,7 +80,8 @@ global:
 rbac:
   # Allow MSI for firewall rbac
   firewall:
-    msi: ""
+    enabled: false
+    # msi: ""
 
   # Groups and users that should be bound to the platform-admin role.
   platformAdmin:
