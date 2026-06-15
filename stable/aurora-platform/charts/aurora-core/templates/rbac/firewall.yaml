@@ -105,7 +105,7 @@ spec:
                 kubernetes.io/description: Permissions required by the MSI to implement metadata-based network policies.
               labels:
                 app.kubernetes.io/name: rbac-firewall
-                app.kubernetes.io/instance: {{ .Values.global.firewall.msi | quote }}
+                app.kubernetes.io/instance: {{ .Values.rbac.firewall.msi | quote }}
                 app.kubernetes.io/part-of: rbac-firewall
                 app.kubernetes.io/managed-by: argo
                 helm.sh/chart: {{ printf "%s-%s" .Chart.Name .Chart.Version | quote }}
