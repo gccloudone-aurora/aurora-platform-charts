@@ -67,7 +67,7 @@ Aurora Platform - Core Platform
 | components.certManager.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].podAffinityTerm.labelSelector.matchLabels."app.kubernetes.io/component" | string | `"controller"` |  |
 | components.certManager.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].podAffinityTerm.topologyKey | string | `"kubernetes.io/hostname"` |  |
 | components.certManager.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].weight | int | `1` |  |
-| components.certManager.azureWorkloadIdentity.enabled | bool | `true` |  |
+| components.certManager.workloadIdentity.enabled | bool | `true` |  |
 | components.certManager.cainjector.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].podAffinityTerm.labelSelector.matchLabels."app.kubernetes.io/component" | string | `"cainjector"` |  |
 | components.certManager.cainjector.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].podAffinityTerm.topologyKey | string | `"kubernetes.io/hostname"` |  |
 | components.certManager.cainjector.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].weight | int | `1` |  |
@@ -939,7 +939,7 @@ Aurora Platform - Core Platform
 | components.velero.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].podAffinityTerm.labelSelector.matchLabels."app.kubernetes.io/instance" | string | `"velero"` |  |
 | components.velero.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].podAffinityTerm.topologyKey | string | `"kubernetes.io/hostname"` |  |
 | components.velero.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].weight | int | `1` |  |
-| components.velero.azureWorkloadIdentity.enabled | bool | `true` |  |
+| components.velero.workloadIdentity.enabled | bool | `true` |  |
 | components.velero.backupStorage | object | `{}` |  |
 | components.velero.enabled | bool | `true` |  |
 | components.velero.helm | object | `{}` |  |

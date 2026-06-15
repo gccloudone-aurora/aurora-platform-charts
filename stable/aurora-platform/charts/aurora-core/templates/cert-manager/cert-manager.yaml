@@ -60,7 +60,7 @@ spec:
 
         {{- if eq .Values.global.provider "azure" }}
         podLabels:
-          {{- if .Values.components.certManager.azureWorkloadIdentity.enabled }}
+          {{- if .Values.components.certManager.workloadIdentity.enabled }}
           azure.workload.identity/use: "true"
           {{- end }}
         {{- end }}  
@@ -75,7 +75,7 @@ spec:
 
         serviceAccount:
           annotations:
-              {{- include "certManager.azureWorkloadIdentity.clientId" . | nindent 12 }}        
+              {{- include "certManager.workloadIdentity.clientId" . | nindent 12 }}        
 
   destination:
     name: {{ .Values.global.cluster }}
