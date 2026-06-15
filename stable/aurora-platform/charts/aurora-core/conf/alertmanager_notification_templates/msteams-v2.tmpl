@@ -1,0 +1,17 @@
+{{- define "teams.v2.title" -}}
+[{{ .Status | toUpper }}{{ if eq .Status "firing" }}:{{ .Alerts.Firing | len }}{{ end }}] {{ .CommonLabels.alertname }}
+{{- end -}}
+
+{{- define "teams.v2.text" -}}
+{{ range .Alerts -}}
+**Status:** {{ .Status | toUpper }}
+**Severity:** {{ .Labels.severity }}
+**Namespace:** {{ .Labels.namespace }}
+{{ if .Annotations.message }}**Message:** {{ .Annotations.message}}{{ end }}
+{{ if .Annotations.summary }}**Summary:** {{ .Annotations.summary}}{{ end }}
+{{ if .Annotations.runbook }}[Runbook]({{ .Annotations.runbook }}){{ if .Annotations.grafanaDashboard }} | {{ end }}{{ end -}}
+{{- if .Annotations.grafanaDashboard }}[Grafana]({{ .Annotations.grafanaDashboard }}){{ end }}
+---
+{{ end -}}
+{{- end -}}
+

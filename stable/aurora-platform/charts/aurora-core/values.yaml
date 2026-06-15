@@ -2113,6 +2113,17 @@ components:
       #  prodMajor: ""
       #  prodMinor: ""
 
+      webhooks: {}
+      #  devCritical: ""
+      #  devMajor: ""
+      #  devMinor: ""
+      #  nonProdCritical: ""
+      #  nonProdMajor: ""
+      #  nonProdMinor: ""
+      #  prodCritical: ""
+      #  prodMajor: ""
+      #  prodMinor: ""
+
   ################################
   ### Secrets Store CSI Driver ###
   ################################

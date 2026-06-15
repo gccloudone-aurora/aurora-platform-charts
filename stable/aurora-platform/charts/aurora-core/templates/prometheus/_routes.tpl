@@ -2,6 +2,8 @@
 {{- range $severity, $sVal := .Values.components.prometheus.alertmanager.config.severities }}
 {{- range $environment, $matchers := $.Values.components.prometheus.alertmanager.config.environments }}
 {{- $envSeverityPair := printf "%s%s" $environment (camelcase $severity) }}
+
+# msteams v1
 - name: aurora_{{ $environment }}_{{ $severity }}
   webhook_configs:
     - url: "http://prometheus-msteams:2000/{{ $envSeverityPair }}"
@@ -10,6 +12,28 @@
   webhook_configs:
     - url: "http://prometheus-msteams:2000/{{ $envSeverityPair }}"
       send_resolved: false
+
+# msteams v2
+{{- if $.Values.components.prometheus.msteams.webhooks }}
+{{- if hasKey $.Values.components.prometheus.msteams.webhooks $envSeverityPair }}
+{{- $webhookUrl := index $.Values.components.prometheus.msteams.webhooks $envSeverityPair }}
+{{- if $webhookUrl }}
+- name: aurora_{{ $environment }}_{{ $severity }}_v2
+  msteamsv2_configs:
+    - webhook_url: {{ $webhookUrl | quote }}
+    send_resolved: true
+    title: '{{`{{ template "teams.v2.title" . }}`}}'
+    text: '{{`{{ template "teams.v2.text" . }}`}}'
+- name: aurora_{{ $environment }}_{{ $severity }}_v2_no_resolve
+  msteamsv2_configs:
+    - webhook_url: {{ $webhookUrl | quote }}
+    send_resolved: false
+    title: '{{`{{ template "teams.v2.title" . }}`}}'
+    text: '{{`{{ template "teams.v2.text" . }}`}}'
+{{- end }}
+{{- end }}
+{{- end }}
+
 {{- end }}
 {{- end }}
 {{- end }}
@@ -18,9 +42,25 @@
 {{- $severity := index . 0 -}}
 {{- $matcher := index . 1 -}}
 {{- $environment := index . 2 -}}
+{{- $root := index . 3 -}}
+{{- $envSeverityPair := printf "%s%s" $environment (camelcase $severity) -}}
 - matchers: [{{ $matcher }}]
   receiver: aurora_{{ $environment }}_{{ $severity }}
   routes:
+    {{- if $.Values.components.prometheus.msteams.webhooks }}
+    {{- if hasKey $.Values.components.prometheus.msteams.webhooks $envSeverityPair }}
+    {{- $webhookUrl := index $.Values.components.prometheus.msteams.webhooks $envSeverityPair }}
+    - matchers: ["teams_version = v2"]
+      receiver: aurora_{{ $environment }}_{{ $severity }}_v2
+      routes:
+        - matchers: ["alertname = TrivyCriticalVulnerablitiesDetected"]
+          receiver: aurora_{{ $environment }}_{{ $severity }}_v2
+          repeat_interval: 24h
+        - matchers: ["resolves = never"]
+          receiver: aurora_{{ $environment }}_{{ $severity }}_v2_no_resolve
+    {{- end }}
+    {{- end }}
+    {{- end }}
     - matchers: ["resolves = never"]
       receiver: aurora_{{ $environment }}_{{ $severity }}_no_resolve
 {{- end }}
@@ -130,7 +170,7 @@ route:
           {{- end }}
           {{- range $environment, $envRoute := $.Values.components.prometheus.alertmanager.config.environments }}
           {{- range $matcher := $envRoute.matchers }}
-{{ include "alertmanager.channel.routes" (list $severity $matcher $environment .) | indent 12 }}
+{{ include "alertmanager.channel.routes" (list $severity $matcher $environment $) | indent 12 }}
         {{- end }}
         {{- end }}
         {{- end }}
@@ -148,7 +188,7 @@ route:
           {{- end }}
           {{- range $environment, $envRoute := $.Values.components.prometheus.alertmanager.config.environments }}
           {{- range $matcher := $envRoute.matchers }}
-{{ include "alertmanager.channel.routes" (list $severity $matcher $environment .) | indent 12 }}
+{{ include "alertmanager.channel.routes" (list $severity $matcher $environment $) | indent 12 }}
         {{- end }}
         {{- end }}
         {{- end }}
@@ -166,7 +206,7 @@ route:
           {{- end }}
           {{- range $environment, $envRoute := $.Values.components.prometheus.alertmanager.config.environments }}
           {{- range $matcher := $envRoute.matchers }}
-{{ include "alertmanager.channel.routes" (list $severity $matcher $environment .) | indent 12 }}
+{{ include "alertmanager.channel.routes" (list $severity $matcher $environment $) | indent 12 }}
         {{- end }}
         {{- end }}
         {{- end }}
