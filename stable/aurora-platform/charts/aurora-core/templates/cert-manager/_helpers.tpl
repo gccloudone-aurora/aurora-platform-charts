@@ -92,7 +92,7 @@ cnameStrategy: Follow
 azureDNS:
     hostedZoneName: {{ required "certManager.issuers.dns01.azure.zone is required" .Values.components.certManager.issuers.dns01.azure.zone }}
     managedIdentity:
-        clientID: {{ required "certManager.azureWorkloadIdentity.clientId is required" .Values.components.certManager.azureWorkloadIdentity.clientId | quote }}
+        clientID: {{ required "certManager.workloadIdentity.clientId is required" .Values.components.certManager.workloadIdentity.clientId | quote }}
     resourceGroupName: {{ required "certManager.issuers.dns01.azure.resourceGroupName is required" .Values.components.certManager.issuers.dns01.azure.resourceGroupName }}
     subscriptionID: {{ required "certManager.issuers.dns01.azure.subscriptionId is required" .Values.components.certManager.issuers.dns01.azure.subscriptionId }}
 {{- else if eq .Values.global.provider "aws" }}
@@ -102,10 +102,10 @@ route53: {}
 {{- end }}
 
 {{/*
-The azureWorkloadIdentity configuration.
+The workloadIdentity configuration.
 */}}
-{{- define "certManager.azureWorkloadIdentity.clientId" -}}
-{{- if .Values.components.certManager.azureWorkloadIdentity.enabled -}}
-azure.workload.identity/client-id: {{ required "certManager.azureWorkloadIdentity.clientId is required" .Values.components.certManager.azureWorkloadIdentity.clientId | quote }}
+{{- define "certManager.workloadIdentity.clientId" -}}
+{{- if .Values.components.certManager.workloadIdentity.enabled -}}
+azure.workload.identity/client-id: {{ required "certManager.workloadIdentity.clientId is required" .Values.components.certManager.workloadIdentity.clientId | quote }}
 {{- end }}
 {{- end }}

@@ -436,7 +436,7 @@ components:
     podDnsConfig:
       nameservers: []
 
-    azureWorkloadIdentity:
+    workloadIdentity:
       enabled: true
       # clientId: ""
 
@@ -2525,7 +2525,7 @@ components:
               matchLabels:
                 app.kubernetes.io/instance: velero
 
-    azureWorkloadIdentity:
+    workloadIdentity:
       enabled: true
       # clientId: ""
 

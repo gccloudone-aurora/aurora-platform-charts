@@ -76,7 +76,7 @@ spec:
 
             {{- if eq .Values.global.provider "azure" }}
             podLabels:
-              {{- if .Values.components.velero.azureWorkloadIdentity.enabled }}
+              {{- if .Values.components.velero.workloadIdentity.enabled }}
               azure.workload.identity/use: "true"
               {{- end }}
             {{- end }}
@@ -135,7 +135,7 @@ spec:
             serviceAccount:
               server:
                 annotations:
-                  {{- include "velero.azureWorkloadIdentity.clientId" . | nindent 18 }}
+                  {{- include "velero.workloadIdentity.clientId" . | nindent 18 }}
 
             priorityClassName: {{ .Values.components.velero.priorityClassName }}
   destination:
