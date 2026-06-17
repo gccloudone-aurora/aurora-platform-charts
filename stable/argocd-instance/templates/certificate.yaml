@@ -31,4 +31,5 @@ spec:
     kind: ClusterIssuer
     name: {{ .Values.argocdInstance.clusterIssuer }}
   secretName: argocd-server-tls
+  {{- end }}
 {{- end }}
