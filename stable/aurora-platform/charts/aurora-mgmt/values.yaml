@@ -219,9 +219,10 @@ components:
   #######################
   argoFoundation:
     argocdInstance:
+      selfSigned: false # Set to true for development
+      clusterIssuer: letsencrypt # or letsencrypt-staging
       gateway:
         enabled: false
-        host: ""
       helm: {}
       # chart: argocd-instance
       # repository: https://gccloudone-aurora.github.io/aurora-platform-charts

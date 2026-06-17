@@ -31,7 +31,8 @@ spec:
               tolerations: {{ toYaml .Values.components.argoFoundation.argocdInstance.tolerations | nindent 16 }}
 
               ingressDomain: "{{ .Values.components.argoFoundation.argocdInstance.ingressDomain }}"
-
+              selfSigned: "{{ .Values.components.argoFoundation.argocdInstance.selfSigned }}"
+              clusterIssuer: "{{ .Values.components.argoFoundation.argocdInstance.clusterIssuer }}"
               adminSecurityGroup: {{ .Values.components.argoFoundation.argocdInstance.adminSecurityGroup }}
               disableAdmin: "{{ .Values.components.argoFoundation.argocdInstance.disableAdmin }}"
               oidcAuthSP:
