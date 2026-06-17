@@ -80,7 +80,7 @@ spec:
           type: PathPrefix	
           value: /
 ---
-{{- if eq .Values.provider 'gcp' }}
+{{- if eq .Values.provider "gcp" }}
 apiVersion: networking.gke.io/v1
 kind: HealthCheckPolicy
 metadata:
@@ -125,6 +125,6 @@ spec:
     group: ""
     kind: Service
     name: argocd-server
-{{- end }}
-{{- end }}
-{{- end }}
+{{- end }} # if IAP
+{{- end }} # if GCP
+{{- end }} # if Gateway enabled
