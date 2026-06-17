@@ -29,7 +29,7 @@ spec:
               gateway: {{ toYaml .Values.components.argoFoundation.argocdInstance.gateway | nindent 16 }}
               nodeSelector: {{ toYaml .Values.components.argoFoundation.argocdInstance.nodeSelector | nindent 16 }}
               tolerations: {{ toYaml .Values.components.argoFoundation.argocdInstance.tolerations | nindent 16 }}
-              certificate: "{{ .Values.components.argoFoundation.argocdInstance.certificate | nindent 16 }}"
+              certificate: {{ toYaml .Values.components.argoFoundation.argocdInstance.certificate | nindent 16 }}
 
               ingressDomain: "{{ .Values.components.argoFoundation.argocdInstance.ingressDomain }}"
               adminSecurityGroup: {{ .Values.components.argoFoundation.argocdInstance.adminSecurityGroup }}
