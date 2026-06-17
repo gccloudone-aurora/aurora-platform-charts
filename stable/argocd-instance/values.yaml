@@ -10,7 +10,6 @@ argocdInstance:
   selfSigned: false # For development
   gateway:
     enabled: false
-    host: ""
     class: ""
     ipName: ""
     iapClientID: ""
