@@ -168,7 +168,6 @@ spec:
                 ##
                 ruleSelectorNilUsesHelmValues: false
                 priorityClassName: {{ .Values.components.prometheus.priorityClassName }}
-                {{- if .Values.components.prometheus.priorityClassName }}
                 {{- $thanos := .Values.components.prometheus.prometheus.prometheusSpec.thanos }}
                 {{- if $thanos.enabled }}
                 {{- if eq $thanos.objectStorage.auth "workloadIdentity" }}
