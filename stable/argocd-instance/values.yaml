@@ -1,3 +1,4 @@
+provider: azure # or gcp or aws
 argocdInstance:
 
   applicationInstanceLabelKey: "platform.ssc-spc.gc.ca/application-name"
@@ -5,9 +6,10 @@ argocdInstance:
   disableAdmin: false
 
   ingressDomain: ""
+  clusterIssuer: "letsencrypt"
+  selfSigned: false # For development
   gateway:
     enabled: false
-    selfSigned: false
     host: ""
     class: ""
     ipName: ""

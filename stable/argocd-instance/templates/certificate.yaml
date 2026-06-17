@@ -1,3 +1,11 @@
+{{- if .Values.argocdInstance.selfSigned }}
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: selfsigned-issuer
+spec:
+  selfSigned: {}
+{{- end }}
 {{- if .Values.argocdInstance.ingressDomain }}
 apiVersion: cert-manager.io/v1
 kind: Certificate
@@ -10,8 +18,17 @@ spec:
   commonName: {{ .Values.argocdInstance.ingressDomain }}
   dnsNames:
     - {{ .Values.argocdInstance.ingressDomain }}
+  {{- if .Values.argocdInstance.selfSigned }}
   issuerRef:
     kind: ClusterIssuer
-    name: letsencrypt
+    name: selfsigned-issuer
+    group: cert-manager.io
+  privateKey:
+    algorithm: ECDSA
+    size: 256
+  {{- else }}
+  issuerRef:
+    kind: ClusterIssuer
+    name: {{ .Values.argocdInstance.clusterIssuer }}
   secretName: argocd-server-tls
 {{- end }}

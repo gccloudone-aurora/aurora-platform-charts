@@ -24,6 +24,7 @@ spec:
           value: "argocd-instance"
         - name: HELM_VALUES
           value: |
+            provider: {{ toYaml .Values.global.provider | nindent 16 }}
             argocdInstance:
               gateway: {{ toYaml .Values.components.argoFoundation.argocdInstance.gateway | nindent 16 }}
               nodeSelector: {{ toYaml .Values.components.argoFoundation.argocdInstance.nodeSelector | nindent 16 }}

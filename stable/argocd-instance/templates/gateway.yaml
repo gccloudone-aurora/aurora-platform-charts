@@ -1,39 +1,4 @@
 {{- if .Values.argocdInstance.gateway.enabled }}
-{{- if .Values.argocdInstance.gateway.selfSigned }}
-apiVersion: cert-manager.io/v1
-kind: ClusterIssuer
-metadata:
-  name: selfsigned-issuer
-spec:
-  selfSigned: {}
----
-{{- end}}
-apiVersion: cert-manager.io/v1
-kind: Certificate
-metadata:
-  name: argocd-server-tls
-  labels:
-    use-general-solver: "true"
-    {{- include "argocd-foundation.labels" $ | nindent 4 }}
-spec:
-  dnsNames:
-    - {{ .Values.argocdInstance.gateway.host }}
-  secretName: argocd-server-tls
-  commonName: {{ .Values.argocdInstance.gateway.host }}
-  {{- if .Values.argocdInstance.gateway.selfSigned }}
-  issuerRef:
-    kind: ClusterIssuer
-    name: selfsigned-issuer
-    group: cert-manager.io
-  privateKey:
-    algorithm: ECDSA
-    size: 256
-  {{- else }}
-  issuerRef:
-    kind: ClusterIssuer
-    name: letsencrypt-staging
-  {{- end }}
----
 apiVersion: gateway.networking.k8s.io/v1
 kind: Gateway
 metadata:
@@ -41,7 +6,7 @@ metadata:
   labels:
     {{- include "argocd-foundation.labels" $ | nindent 4 }}
 spec:
-  gatewayClassName: {{.Values.argocdInstance.gateway.class | default "gke-l7-rilb"}}
+  gatewayClassName: {{.Values.argocdInstance.gateway.class | default "gke-l7-rilb" }} # Update default
   listeners:
     - name: http
       protocol: HTTP
@@ -61,9 +26,11 @@ spec:
       allowedRoutes:
         namespaces:
           from: Same
+  {{- if .Values.argocdInstance.gateway.ipName }}
   addresses:
     - type: NamedAddress
       value: {{ .Values.argocdInstance.gateway.ipName }}
+  {{- end }}
 ---
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
@@ -77,7 +44,7 @@ spec:
     group: gateway.networking.k8s.io	
     kind: Gateway
   hostnames:
-  - {{ .Values.argocdInstance.gateway.host }}
+  - {{ .Values.argocdInstance.ingressDomain }}
   rules:
   - backendRefs:
     - name: argocd-server
@@ -101,7 +68,7 @@ spec:
     group: gateway.networking.k8s.io	
     kind: Gateway
   hostnames:
-  - {{ .Values.argocdInstance.gateway.host }}
+  - {{ .Values.argocdInstance.ingressDomain }}
   rules:
   - filters:
     - type: RequestRedirect
@@ -113,6 +80,7 @@ spec:
           type: PathPrefix	
           value: /
 ---
+{{- if equal .Values.provider 'gcp' }}
 apiVersion: networking.gke.io/v1
 kind: HealthCheckPolicy
 metadata:
@@ -132,8 +100,8 @@ spec:
     group: ""
     kind: Service
     name: argocd-server
-{{- if eq .Values.argocdInstance.gateway.class "gke-l7-global-external-managed" }}
 ---
+{{- if eq .Values.argocdInstance.gateway.class "gke-l7-global-external-managed" }}
 apiVersion: v1
 kind: Secret
 metadata:
@@ -158,4 +126,5 @@ spec:
     kind: Service
     name: argocd-server
 {{- end }}
-{{- end}}
+{{- end }}
+{{- end }}
