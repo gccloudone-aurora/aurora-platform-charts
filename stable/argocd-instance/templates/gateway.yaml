@@ -80,7 +80,7 @@ spec:
           type: PathPrefix	
           value: /
 ---
-{{- if equal .Values.provider 'gcp' }}
+{{- if eq .Values.provider 'gcp' }}
 apiVersion: networking.gke.io/v1
 kind: HealthCheckPolicy
 metadata:
