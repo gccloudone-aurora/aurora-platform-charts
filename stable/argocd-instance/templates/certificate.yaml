@@ -30,6 +30,6 @@ spec:
   issuerRef:
     kind: ClusterIssuer
     name: {{ .Values.argocdInstance.certificate.clusterIssuer }}
-  secretName: argocd-server-tls
   {{- end }}
+  secretName: argocd-server-tls
 {{- end }}
