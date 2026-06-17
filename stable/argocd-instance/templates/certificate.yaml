@@ -1,4 +1,4 @@
-{{- if .Values.argocdInstance.selfSigned }}
+{{- if .Values.argocdInstance.certificate.selfSigned }}
 apiVersion: cert-manager.io/v1
 kind: ClusterIssuer
 metadata:
@@ -18,7 +18,7 @@ spec:
   commonName: {{ .Values.argocdInstance.ingressDomain }}
   dnsNames:
     - {{ .Values.argocdInstance.ingressDomain }}
-  {{- if .Values.argocdInstance.selfSigned }}
+  {{- if .Values.argocdInstance.certificate.selfSigned }}
   issuerRef:
     kind: ClusterIssuer
     name: selfsigned-issuer
@@ -29,7 +29,7 @@ spec:
   {{- else }}
   issuerRef:
     kind: ClusterIssuer
-    name: {{ .Values.argocdInstance.clusterIssuer }}
+    name: {{ .Values.argocdInstance.certificate.clusterIssuer }}
   secretName: argocd-server-tls
   {{- end }}
 {{- end }}

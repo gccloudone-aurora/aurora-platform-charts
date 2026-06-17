@@ -6,8 +6,9 @@ argocdInstance:
   disableAdmin: false
 
   ingressDomain: ""
-  clusterIssuer: "letsencrypt"
-  selfSigned: false # For development
+  certificate:
+    clusterIssuer: "letsencrypt"
+    selfSigned: false # For development
   gateway:
     enabled: false
     class: ""

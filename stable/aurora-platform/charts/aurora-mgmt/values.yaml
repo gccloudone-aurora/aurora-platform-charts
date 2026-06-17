@@ -219,8 +219,9 @@ components:
   #######################
   argoFoundation:
     argocdInstance:
-      selfSigned: false # Set to true for development
-      clusterIssuer: letsencrypt # or letsencrypt-staging
+      certificate:
+        selfSigned: false # Set to true for development
+        clusterIssuer: letsencrypt # or letsencrypt-staging
       gateway:
         enabled: false
       helm: {}
