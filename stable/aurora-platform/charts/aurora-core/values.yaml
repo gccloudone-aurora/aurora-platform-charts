@@ -2393,6 +2393,11 @@ components:
         tag: "v1.1.0"
         pullPolicy: IfNotPresent
 
+    policies: {}
+      # repository: https://github.com/gccloudone-aurora/tetragon-policies.git
+      # path: .
+      # targetRevision: main
+
   #####################
   ### Trust Manager ###
   #####################
