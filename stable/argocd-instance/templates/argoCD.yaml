@@ -74,9 +74,6 @@ spec:
     {{- if .Values.argocdInstance.ingressDomain }}
     host: {{ .Values.argocdInstance.ingressDomain }}
     {{- end }}
-    {{- if and .Values.argocdInstance.gateway.enabled .Values.argocdInstance.gateway.host }}
-    host: {{ .Values.argocdInstance.gateway.host }}
-    {{- end }}
     ingress:
       enabled: false
     insecure: true
