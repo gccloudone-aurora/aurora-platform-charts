@@ -59,8 +59,8 @@ spec:
 
               repo:
                 resources: {{ toYaml .Values.components.argoFoundation.argocdInstance.repo.resources | nindent 18 }}
-                {{- if .Values.components.argoFoundation.argocdInstance.azureWorkloadIdentity.enabled }}
-                serviceAccountAnnotations: {{ include "argoFoundation.argocdInstance.azureWorkloadIdentity.clientId" . | nindent 18 }}
+                {{- if .Values.components.argoFoundation.argocdInstance.workloadIdentity.enabled }}
+                serviceAccountAnnotations: {{ include "argoFoundation.argocdInstance.workloadIdentity.clientId" . | nindent 18 }}
                 labels:
                   azure.workload.identity/use: "true"
                 {{- end }}

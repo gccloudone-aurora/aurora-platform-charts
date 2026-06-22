@@ -61,6 +61,11 @@ core:
   enabled: true
 
   rbac:
+    # Allow MSI for firewall rbac
+    firewall:
+      enabled: false
+      # msi: ""
+
     platformAdmin:
       groups: ["<FILLIN_AZURE_AD_GROUP>"]
     platformOperator:
@@ -100,7 +105,7 @@ core:
 
       startupapicheck: {}
 
-      azureWorkloadIdentity:
+      workloadIdentity:
         enabled: true
         clientId: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-certmanager-aadpodidentity-client-id>'
 
@@ -354,7 +359,13 @@ core:
 
       prometheus:
         prometheusSpec: {}
-
+        thanos:
+          # Thanos Sidecar - sends 2h TDSB blocks to Azure Blob for long term storage
+          enabled: false
+          storageAccountName: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-thanos-sa-name>'
+          containerName: thanos
+          auth: workloadIdentity
+          clientId: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-thanos-workloadidentity-client-id>'
       thanosRuler:
         thanosRulerSpec: {}
 
@@ -423,6 +434,11 @@ core:
     tetragon:
       enabled: true
 
+      policies:
+        repository: https://github.com/gccloudone-aurora/tetragon-policies.git
+        path: .
+        targetRevision: main
+
     #####################
     ### Trust Manager ###
     #####################
@@ -459,7 +475,7 @@ core:
       volumeSnapshot:
         resourceGroupName: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-velero-sa-resource-group-name>'
 
-      azureWorkloadIdentity:
+      workloadIdentity:
         enabled: true
         clientId: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-velero-aadpodidentity-client-id>'
 
@@ -614,7 +630,7 @@ mgmt:
           env:
             ARGOCD_ENV_AVP_TYPE: "azurekeyvault"
             ARGOCD_ENV_AZURE_CLIENT_ID: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-argocd-kv-aadpodidentity-client-id>'
-        azureWorkloadIdentity:
+        workloadIdentity:
           enabled: true
           clientId: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-argocd-kv-aadpodidentity-client-id>'
         oidcAuthSP:
@@ -734,7 +750,7 @@ mgmt:
             tenantID: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-tenant-id>'
             clientID: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-argocd-oidc-sp-client-id>'
             clientSecret: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-argocd-oidc-sp-client-secret>'
-        azureWorkloadIdentity:
+        workloadIdentity:
           enabled: true
           clientId: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-argocd-kv-sol-workload-identity-client-id>'
         notifications:

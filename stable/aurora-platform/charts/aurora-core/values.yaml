@@ -78,6 +78,11 @@ global:
 
 # Role Based Access Control
 rbac:
+  # Allow MSI for firewall rbac
+  firewall:
+    enabled: false
+    # msi: ""
+
   # Groups and users that should be bound to the platform-admin role.
   platformAdmin:
     groups: []
@@ -431,7 +436,7 @@ components:
     podDnsConfig:
       nameservers: []
 
-    azureWorkloadIdentity:
+    workloadIdentity:
       enabled: true
       # clientId: ""
 
@@ -1734,6 +1739,30 @@ components:
 
         additionalAlertManagerHosts: []
 
+        thanos:
+          enabled: false
+          logLevel: info
+          blockSize: 2h
+          objectStorage:
+              provider: azure
+              storageAccountName: ""
+              containerName: thanos
+              createContainer: false # let TF Infra layer deal with the creation
+              endpoint: blob.core.windows.net
+              auth: workloadIdentity
+              clientId: ""
+              storageAccountKey: ""
+          sidecar:
+            ## side-car image inherited from prometheusOperator.thanosImage
+            ## components.prometheus.operator.thanos.image
+            resources: {} # empty for now
+#              limits:
+#                  cpu: ""
+#                  memory: ""
+#              requests:
+#                cpu: ""
+#                memory: ""
+
       rules:
         backup:
           enabled: false
@@ -2084,6 +2113,17 @@ components:
       #  prodMajor: ""
       #  prodMinor: ""
 
+      webhooks: {}
+      #  devCritical: ""
+      #  devMajor: ""
+      #  devMinor: ""
+      #  nonProdCritical: ""
+      #  nonProdMajor: ""
+      #  nonProdMinor: ""
+      #  prodCritical: ""
+      #  prodMajor: ""
+      #  prodMinor: ""
+
   ################################
   ### Secrets Store CSI Driver ###
   ################################
@@ -2353,6 +2393,11 @@ components:
         tag: "v1.1.0"
         pullPolicy: IfNotPresent
 
+    policies: {}
+      # repository: https://github.com/gccloudone-aurora/tetragon-policies.git
+      # path: .
+      # targetRevision: main
+
   #####################
   ### Trust Manager ###
   #####################
@@ -2520,7 +2565,7 @@ components:
               matchLabels:
                 app.kubernetes.io/instance: velero
 
-    azureWorkloadIdentity:
+    workloadIdentity:
       enabled: true
       # clientId: ""
 

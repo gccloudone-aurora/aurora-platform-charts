@@ -61,7 +61,13 @@ spec:
                 pathType: Prefix
                 annotations: {}
                 ingressClassName: "{{ .Values.global.ingressClassName }}"
-
+              
+              {{- if and .Values.components.prometheus.prometheus.prometheusSpec.thanos.enabled (eq .Values.components.prometheus.prometheus.prometheusSpec.thanos.objectStorage.auth "workloadIdentity") }}
+              ## Federate Prometheus ServiceAccount to Azure workload identity in order for Thanos to auth into blob storage
+              serviceAccount:
+                annotations:
+                  azure.workload.identity/client-id: {{ required "prometheus..prometheusSpec.thanos.objectStorage.clientId is required when auth=workloadIdentity" .Values.components.prometheus.prometheus.prometheusSpec.thanos.objectStorage.clientId | quote }}
+              {{- end }}
               prometheusSpec:
                 image: {{ default "{}" (include "prometheus.prometheus.prometheusSpec.image" .) | nindent 18 }}
 
@@ -162,6 +168,23 @@ spec:
                 ##
                 ruleSelectorNilUsesHelmValues: false
                 priorityClassName: {{ .Values.components.prometheus.priorityClassName }}
+                {{- $thanos := .Values.components.prometheus.prometheus.prometheusSpec.thanos }}
+                {{- if $thanos.enabled }}
+                {{- if eq $thanos.objectStorage.auth "workloadIdentity" }}
+                podMetadata:
+                  labels:
+                    azure.workload.identity/use: "true"
+                {{- end }}
+                thanos:
+                  blockSize: {{ $thanos.blockSize }}
+                  logLevel: {{ $thanos.logLevel }}
+                  resources: {{ toYaml $thanos.sidecar.resources | nindent 20 }}
+                  objectStorageConfig:
+                    existingSecret:
+                      name: thanos-objstore-config
+                      key: objstore.yml
+                {{- end }}
+                    
 
               thanosRulerSpec:
                 image: {{ default "{}" (include "prometheus.thanosRuler.thanosRulerSpec.image" .) | nindent 18 }}

@@ -148,7 +148,7 @@ components:
           # # AWS
           # ARGOCD_ENV_AWS_REGION: ""
 
-      azureWorkloadIdentity:
+      workloadIdentity:
         enabled: false
         # clientId: ""
 
@@ -251,7 +251,7 @@ components:
           # # AWS
           # ARGOCD_ENV_AWS_REGION: ""
 
-      azureWorkloadIdentity:
+      workloadIdentity:
         enabled: false
         # clientId: ""
 

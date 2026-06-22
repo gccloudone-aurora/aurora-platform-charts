@@ -139,6 +139,24 @@ pullPolicy: {{ .Values.components.prometheus.thanosRuler.thanosRulerSpec.image.p
 {{- end }}
 
 {{/*
+The image section for Thanos Object Storage.
+*/}}
+{{- define "prometheus.thanos.objstoreConfig" -}}
+{{- $os := .Values.components.prometheus.prometheus.prometheusSpec.thanos.objectStorage -}}
+type: AZURE
+config:
+    storage_account: {{ required "prometheus..prometheusSpec.thanos.objectStorage.storageAccountName is required!" $os.storageAccountName | quote }}
+    container: {{ $os.containerName | quote }}
+    endpoint: {{ $os.endpoint | quote }}
+    storage_create_container: {{ $os.createContainer }}
+    {{- if eq $os.auth "accountKey" }}
+    storage_account_key: {{ required "prometheus..prometheusSpec.thanos.objectStorage.storageAccountKey is required when auth=accountKey" $os.storageAccountKey | quote }}
+    {{- else }}
+    storage_account_key: ""
+    {{- end }}
+{{- end}}
+
+{{/*
 The image section for Grafana.
 */}}
 {{- define "prometheus.grafana.image" -}}

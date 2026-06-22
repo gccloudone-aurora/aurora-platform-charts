@@ -10,7 +10,6 @@ Aurora Platform - Management Components
 |-----|------|---------|-------------|
 | components.argoFoundation.argocdInstance.applicationSet.resources | object | `{}` |  |
 | components.argoFoundation.argocdInstance.argocdVaultPlugin.env | object | `{}` |  |
-| components.argoFoundation.argocdInstance.azureWorkloadIdentity.enabled | bool | `false` |  |
 | components.argoFoundation.argocdInstance.controller.resources | object | `{}` |  |
 | components.argoFoundation.argocdInstance.helm | object | `{}` |  |
 | components.argoFoundation.argocdInstance.netpol | object | `{}` |  |
@@ -28,6 +27,7 @@ Aurora Platform - Management Components
 | components.argoFoundation.argocdInstance.server.service | object | `{}` |  |
 | components.argoFoundation.argocdInstance.tolerations[0].key | string | `"CriticalAddonsOnly"` |  |
 | components.argoFoundation.argocdInstance.tolerations[0].operator | string | `"Exists"` |  |
+| components.argoFoundation.argocdInstance.workloadIdentity.enabled | bool | `false` |  |
 | components.argoFoundation.argocdProjects.platform | string | `nil` |  |
 | components.argoFoundation.argocdProjects.solutions | string | `nil` |  |
 | components.argoFoundation.argocdProjects.syncWindows[0].clusters[0] | string | `"*"` |  |
@@ -56,7 +56,6 @@ Aurora Platform - Management Components
 | components.argoSolution.argocdInstance.applicationSet.scmProviders | list | `[]` |  |
 | components.argoSolution.argocdInstance.applicationSet.sourceNamespaces[0] | string | `"/^gitops-((?!-system$).)*$/"` |  |
 | components.argoSolution.argocdInstance.argocdVaultPlugin.env | object | `{}` |  |
-| components.argoSolution.argocdInstance.azureWorkloadIdentity.enabled | bool | `false` |  |
 | components.argoSolution.argocdInstance.controller.resources | object | `{}` |  |
 | components.argoSolution.argocdInstance.helm | object | `{}` |  |
 | components.argoSolution.argocdInstance.netpol | object | `{}` |  |
@@ -73,6 +72,7 @@ Aurora Platform - Management Components
 | components.argoSolution.argocdInstance.sourceNamespaces[0] | string | `"/^gitops-((?!-system$).)*$/"` |  |
 | components.argoSolution.argocdInstance.tolerations[0].key | string | `"CriticalAddonsOnly"` |  |
 | components.argoSolution.argocdInstance.tolerations[0].operator | string | `"Exists"` |  |
+| components.argoSolution.argocdInstance.workloadIdentity.enabled | bool | `false` |  |
 | components.argoSolution.enabled | bool | `true` |  |
 | components.argoSolution.project.global.sourceRepos | list | `[]` |  |
 | components.billOfLanding.config.artifactRepository | object | `{}` |  |
