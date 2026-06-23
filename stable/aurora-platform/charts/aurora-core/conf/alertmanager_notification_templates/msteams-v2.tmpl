@@ -6,7 +6,10 @@
 {{ range .Alerts -}}
 **Status:** {{ .Status | toUpper }}
 **Severity:** {{ .Labels.severity }}
-**Namespace:** {{ .Labels.namespace }}
+{{ if .Labels.namespace }}**Namespace:** {{ .Labels.namespace }}
+{{ end -}}
+{{ if .Labels.cluster }}**Cluster:** {{ .Labels.cluster }}
+{{ end -}}
 {{ if .Annotations.message }}**Message:** {{ .Annotations.message }}
 {{ end -}}
 {{ if .Annotations.summary }}**Summary:** {{ .Annotations.summary }}
