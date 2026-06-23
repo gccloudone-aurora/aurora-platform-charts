@@ -54,7 +54,7 @@
     - matchers: ["teams_version = v2"]
       receiver: aurora_{{ $environment }}_{{ $severity }}_v2
       routes:
-        - matchers: ["alertname ~= Trivy.*Vulnerabilities.*"]
+        - matchers: ["alertname =~ Trivy.*Vulnerabilities.*"]
           receiver: aurora_{{ $environment }}_{{ $severity }}_v2
           repeat_interval: 24h
         - matchers: ["resolves = never"]
