@@ -73,11 +73,11 @@ region: ca-central-1
 
 
 {{/*
-The azureWorkloadIdentity configuration.
+The workloadIdentity configuration.
 */}}
-{{- define "velero.azureWorkloadIdentity.clientId" -}}
-{{- if .Values.components.velero.azureWorkloadIdentity.enabled -}}
-azure.workload.identity/client-id: {{ required "velero.azureWorkloadIdentity.clientId is required" .Values.components.velero.azureWorkloadIdentity.clientId | quote }}
+{{- define "velero.workloadIdentity.clientId" -}}
+{{- if .Values.components.velero.workloadIdentity.enabled -}}
+azure.workload.identity/client-id: {{ required "velero.workloadIdentity.clientId is required" .Values.components.velero.workloadIdentity.clientId | quote }}
 {{- end }}
 {{- end }}
 

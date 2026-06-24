@@ -67,7 +67,6 @@ Aurora Platform - Core Platform
 | components.certManager.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].podAffinityTerm.labelSelector.matchLabels."app.kubernetes.io/component" | string | `"controller"` |  |
 | components.certManager.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].podAffinityTerm.topologyKey | string | `"kubernetes.io/hostname"` |  |
 | components.certManager.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].weight | int | `1` |  |
-| components.certManager.azureWorkloadIdentity.enabled | bool | `true` |  |
 | components.certManager.cainjector.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].podAffinityTerm.labelSelector.matchLabels."app.kubernetes.io/component" | string | `"cainjector"` |  |
 | components.certManager.cainjector.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].podAffinityTerm.topologyKey | string | `"kubernetes.io/hostname"` |  |
 | components.certManager.cainjector.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].weight | int | `1` |  |
@@ -124,6 +123,7 @@ Aurora Platform - Core Platform
 | components.certManager.webhook.resources | object | `{}` |  |
 | components.certManager.webhook.tolerations[0].key | string | `"CriticalAddonsOnly"` |  |
 | components.certManager.webhook.tolerations[0].operator | string | `"Exists"` |  |
+| components.certManager.workloadIdentity.enabled | bool | `true` |  |
 | components.cidrAllocator.addressPools | list | `[]` |  |
 | components.cidrAllocator.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].podAffinityTerm.labelSelector.matchLabels."app.kubernetes.io/instance" | string | `"cidr-allocator"` |  |
 | components.cidrAllocator.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].podAffinityTerm.topologyKey | string | `"kubernetes.io/hostname"` |  |
@@ -939,7 +939,6 @@ Aurora Platform - Core Platform
 | components.velero.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].podAffinityTerm.labelSelector.matchLabels."app.kubernetes.io/instance" | string | `"velero"` |  |
 | components.velero.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].podAffinityTerm.topologyKey | string | `"kubernetes.io/hostname"` |  |
 | components.velero.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].weight | int | `1` |  |
-| components.velero.azureWorkloadIdentity.enabled | bool | `true` |  |
 | components.velero.backupStorage | object | `{}` |  |
 | components.velero.enabled | bool | `true` |  |
 | components.velero.helm | object | `{}` |  |
@@ -961,6 +960,7 @@ Aurora Platform - Core Platform
 | components.velero.tolerations[0].key | string | `"CriticalAddonsOnly"` |  |
 | components.velero.tolerations[0].operator | string | `"Exists"` |  |
 | components.velero.volumeSnapshot | object | `{}` |  |
+| components.velero.workloadIdentity.enabled | bool | `true` |  |
 | global.alertManagerCidrs[0] | string | `"192.0.2.10/32"` |  |
 | global.apiServerCidr | string | `"192.0.2.10/32"` |  |
 | global.azureMetadataApiCidr | string | `"169.254.169.254/32"` |  |
@@ -979,6 +979,7 @@ Aurora Platform - Core Platform
 | global.raw.helm.chart | string | `nil` |  |
 | global.raw.helm.repository | string | `nil` |  |
 | global.raw.helm.targetRevision | string | `nil` |  |
+| rbac.firewall.enabled | bool | `false` |  |
 | rbac.platformAdmin.groups | list | `[]` |  |
 | rbac.platformAdmin.users | list | `[]` |  |
 | rbac.platformOperator.groups | list | `[]` |  |
