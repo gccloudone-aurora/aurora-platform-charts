@@ -24,6 +24,20 @@ spec:
             spec:
               mtls:
                 mode: STRICT
+          - apiVersion: v1
+            kind: ResourceQuota
+            metadata:
+              name: istio-system-critical-pods-quota
+            spec:
+              hard:
+                pods: "10"
+              scopeSelector:
+                matchExpressions:
+                  - operator: In
+                    scopeName: PriorityClass
+                    values:
+                      - system-cluster-critical
+                      - system-node-critical
   destination:
     name: {{ .Values.global.cluster }}
     namespace: platform-system
