@@ -30,7 +30,7 @@ spec:
               name: istio-system-critical-pods-quota
             spec:
               hard:
-                pods: "10"
+                pods: "100"
               scopeSelector:
                 matchExpressions:
                   - operator: In
