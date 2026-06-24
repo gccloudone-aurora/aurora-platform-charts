@@ -75,7 +75,6 @@ spec:
         {{- if eq .Values.global.provider "azure" }}
         serviceAccount:
           annotations:
-              {{- include "certManager.azureWorkloadIdentity.clientId" . | nindent 12 }}
               {{- include "certManager.workloadIdentity.clientId" . | nindent 12 }}  
         {{- end}}      
 
