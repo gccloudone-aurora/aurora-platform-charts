@@ -303,7 +303,7 @@ components:
         # tag: "1.29.1"
         # pullPolicy: IfNotPresent
         # variant: distroless
-
+      cniBinDir: /opt/cni/bin
       resources: {}
         # limits:
         #  cpu: ""
