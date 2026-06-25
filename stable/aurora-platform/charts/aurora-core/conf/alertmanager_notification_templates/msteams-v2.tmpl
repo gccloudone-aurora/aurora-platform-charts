@@ -3,6 +3,13 @@
 {{- end -}}
 
 {{- define "teams.v2.text" -}}
+{{- if eq .CommonLabels.alertname "TrivyVulnerabilitiesReport" -}}
+{{ if .CommonLabels.cluster }}**Cluster:** {{ .CommonLabels.cluster }}
+{{ end -}}
+**Vulnerabilities Summary:**
+{{ range .Alerts -}}
+• [{{ .Labels.severity }}] {{ if .Annotations.message }}{{ .Annotations.message }}{{ else }}{{ .Annotations.summary }}{{ end }}
+{{ end -}}
 {{ range .Alerts -}}
 **Status:** {{ .Status | toUpper }}
 **Severity:** {{ .Labels.severity }}
@@ -16,5 +23,6 @@
 {{ end -}}
 ---
 {{ end -}}
+{{- end -}}
 {{- end -}}
 
