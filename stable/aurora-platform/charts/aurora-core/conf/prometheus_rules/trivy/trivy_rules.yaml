@@ -6,7 +6,7 @@ groups:
     for: 5m
     keep_firing_for: 15m
     labels:
-      severity: P1-Critical
+      severity: P2-Major
       scope: cluster
       teams_version: v2
       vuln_type: summary_crit
@@ -32,7 +32,7 @@ groups:
     for: 5m
     keep_firing_for: 15m
     labels:
-      severity: P1-Critical
+      severity: P2-Major
       scope: cluster
       teams_version: v2
       vuln_type: 24h_delta_crit
@@ -58,7 +58,7 @@ groups:
     for: 5m
     keep_firing_for: 15m
     labels:
-      severity: P1-Critical
+      severity: P2-Major
       scope: cluster
       teams_version: v2
       vuln_type: 7d_delta_crit
