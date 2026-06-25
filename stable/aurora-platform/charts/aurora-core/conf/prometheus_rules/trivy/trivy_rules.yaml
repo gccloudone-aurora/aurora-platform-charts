@@ -1,19 +1,20 @@
 groups:
 - name: trivy.rules
   rules:
-  - alert: TrivyCriticalVulnerabilitiesSummary
+  - alert: TrivyVulnerabilitiesReport
     expr: 'sum (max by (image_repository, image_tag) (trivy_image_vulnerabilities{severity="Critical", image_registry!~"mcr\\.microsoft\\.com|.*\\.azurecr\\.io|.*\\.amazonaws\\.com|gcr\\.io"} * on (namespace) group_left() kube_namespace_labels{label_namespace_ssc_spc_gc_ca_purpose="system"})) > 0'
     for: 5m
     keep_firing_for: 15m
     labels:
-      severity: P1-Critical
+      severity: P2-Major
       scope: cluster
       teams_version: v2
       vuln_type: summary_crit
     annotations:
-      message: 'Cluster has {{ $$value }} critical vulnerabilities.'
+      message: 'Cluster has {{ printf "%.0f" $$value }} critical vulnerabilities.'
+      value: '{{ printf "%.0f" $$value }}'
   
-  - alert: TrivyHighVulnerabilitiesSummary
+  - alert: TrivyVulnerabilitiesReport
     expr: 'sum (max by (image_repository, image_tag) (trivy_image_vulnerabilities{severity="High", image_registry!~"mcr\\.microsoft\\.com|.*\\.azurecr\\.io|.*\\.amazonaws\\.com|gcr\\.io"} * on (namespace) group_left() kube_namespace_labels{label_namespace_ssc_spc_gc_ca_purpose="system"})) > 0'
     for: 5m
     keep_firing_for: 15m
@@ -23,21 +24,23 @@ groups:
       teams_version: v2
       vuln_type: summary_high
     annotations:
-      message: 'Cluster has {{ $$value }} high vulnerabilities.'
+      message: 'Cluster has {{ printf "%.0f" $$value }} high vulnerabilities.'
+      value: '{{ printf "%.0f" $$value }}'
 
-  - alert: TrivyCriticalVulnerabilities24hDelta
+  - alert: TrivyVulnerabilitiesReport
     expr: 'sum (max by (image_repository, image_tag) (delta(trivy_image_vulnerabilities{severity="Critical", image_registry!~"mcr\\.microsoft\\.com|.*\\.azurecr\\.io|.*\\.amazonaws\\.com|gcr\\.io"}[24h]) * on (namespace) group_left() kube_namespace_labels{label_namespace_ssc_spc_gc_ca_purpose="system"})) != 0'
     for: 5m
     keep_firing_for: 15m
     labels:
-      severity: P1-Critical
+      severity: P2-Major
       scope: cluster
       teams_version: v2
       vuln_type: 24h_delta_crit
     annotations:
-      message: 'Cluster has a 24h delta of {{ $$value }} critical vulnerabilities.'
+      message: 'Cluster has a 24h delta of {{ printf "%.0f" $$value }} critical vulnerabilities.'
+      value: '{{ printf "%.0f" $$value }}'
   
-  - alert: TrivyHighVulnerabilities24hDelta
+  - alert: TrivyVulnerabilitiesReport
     expr: 'sum (max by (image_repository, image_tag) (delta(trivy_image_vulnerabilities{severity="High", image_registry!~"mcr\\.microsoft\\.com|.*\\.azurecr\\.io|.*\\.amazonaws\\.com|gcr\\.io"}[24h]) * on (namespace) group_left() kube_namespace_labels{label_namespace_ssc_spc_gc_ca_purpose="system"})) != 0'
     for: 5m
     keep_firing_for: 15m
@@ -47,21 +50,23 @@ groups:
       teams_version: v2
       vuln_type: 24h_delta_high
     annotations:
-      message: 'Cluster has a 24h delta of {{ $$value }} high vulnerabilities.'
+      message: 'Cluster has a 24h delta of {{ printf "%.0f" $$value }} high vulnerabilities.'
+      value: '{{ printf "%.0f" $$value }}'
     
-  - alert: TrivyCriticalVulnerabilities7dDelta
+  - alert: TrivyVulnerabilitiesReport
     expr: 'sum (max by (image_repository, image_tag) (delta(trivy_image_vulnerabilities{severity="Critical", image_registry!~"mcr\\.microsoft\\.com|.*\\.azurecr\\.io|.*\\.amazonaws\\.com|gcr\\.io"}[7d]) * on (namespace) group_left() kube_namespace_labels{label_namespace_ssc_spc_gc_ca_purpose="system"})) != 0'
     for: 5m
     keep_firing_for: 15m
     labels:
-      severity: P1-Critical
+      severity: P2-Major
       scope: cluster
       teams_version: v2
       vuln_type: 7d_delta_crit
     annotations:
-      message: 'Cluster has a 7d delta of {{ $$value }} critical vulnerabilities.'
+      message: 'Cluster has a 7d delta of {{ printf "%.0f" $$value }} critical vulnerabilities.'
+      value: '{{ printf "%.0f" $$value }}'
   
-  - alert: TrivyHighVulnerabilities7dDelta
+  - alert: TrivyVulnerabilitiesReport
     expr: 'sum (max by (image_repository, image_tag) (delta(trivy_image_vulnerabilities{severity="High", image_registry!~"mcr\\.microsoft\\.com|.*\\.azurecr\\.io|.*\\.amazonaws\\.com|gcr\\.io"}[7d]) * on (namespace) group_left() kube_namespace_labels{label_namespace_ssc_spc_gc_ca_purpose="system"})) != 0'
     for: 5m
     keep_firing_for: 15m
@@ -71,4 +76,5 @@ groups:
       teams_version: v2
       vuln_type: 7d_delta_high
     annotations:
-      message: 'Cluster has a 7d delta of {{ $$value }} high vulnerabilities.'
+      message: 'Cluster has a 7d delta of {{ printf "%.0f" $$value }} high vulnerabilities.'
+      value: '{{ printf "%.0f" $$value }}'
