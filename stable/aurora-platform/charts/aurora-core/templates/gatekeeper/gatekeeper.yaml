@@ -71,7 +71,12 @@ spec:
           nodeSelector: {{ toYaml .Values.components.gatekeeper.crds.nodeSelector | nindent 12 }}
           tolerations: {{ toYaml .Values.components.gatekeeper.crds.tolerations | nindent 12 }}
           affinity: {{ toYaml .Values.components.gatekeeper.crds.affinity | nindent 12 }}
-
+  ignoreDifferences:
+    - group: "admissionregistration.k8s.io"
+      kind: "ValidatingWebhookConfiguration"
+      name: "gatekeeper-validating-webhook-configuration"
+      jqPathExpressions:
+        - ".webhooks[]?.clientConfig.caBundle"
   destination:
     name: {{ .Values.global.cluster }}
     namespace: gatekeeper-system
