@@ -197,6 +197,10 @@ spec:
                 affinity: {{ toYaml .Values.components.prometheus.thanosRuler.thanosRulerSpec.affinity | nindent 18 }}
                 priorityClassName: {{ .Values.components.prometheus.priorityClassName }}
 
+            {{- if not .Values.components.prometheus.grafana.enabled }}
+            grafana:
+              enabled: false
+            {{- else }}
             grafana:
               priorityClassName: {{ .Values.components.prometheus.priorityClassName }}
               ingress:
@@ -282,7 +286,7 @@ spec:
                   allowed_domains: ""
                   allowed_groups: {{ .Values.components.prometheus.grafana.allowedGroups | quote }}
                   role_attribute_strict: false
-
+              {{- end }}
               ldap:
                 enabled: false
 
