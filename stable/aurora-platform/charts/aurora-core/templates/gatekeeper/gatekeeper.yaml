@@ -19,7 +19,7 @@ spec:
     helm:
       releaseName: gatekeeper
       values: |
-        validatingWebhookFailurePolicy: Fail
+        validatingWebhookFailurePolicy: Ignore
         logLevel: WARNING
         auditMatchKindOnly: true
 
