@@ -3,15 +3,46 @@
 {{- end -}}
 
 {{- define "teams.v2.text" -}}
+{{- if eq .CommonLabels.alertname "TrivyVulnerabilitiesReport" -}}
+{{- $crit_total := "0" -}}
+{{- $crit_24h := "0" -}}
+{{- $crit_7d := "0" -}}
+{{- $high_total := "0" -}}
+{{- $high_24h := "0" -}}
+{{- $high_7d := "0" -}}
+{{ range .Alerts -}}
+  {{- if eq .Labels.vuln_type "summary_crit" }}{{ $crit_total = .Annotations.value }}{{ end -}}
+  {{- if eq .Labels.vuln_type "24h_delta_crit" }}{{ $crit_24h = .Annotations.value }}{{ end -}}
+  {{- if eq .Labels.vuln_type "7d_delta_crit" }}{{ $crit_7d = .Annotations.value }}{{ end -}}
+  {{- if eq .Labels.vuln_type "summary_high" }}{{ $high_total = .Annotations.value }}{{ end -}}
+  {{- if eq .Labels.vuln_type "24h_delta_high" }}{{ $high_24h = .Annotations.value }}{{ end -}}
+  {{- if eq .Labels.vuln_type "7d_delta_high" }}{{ $high_7d = .Annotations.value }}{{ end -}}
+{{- end -}}
+{{ if .CommonLabels.cluster }}**Cluster:** {{ .CommonLabels.cluster }}
+{{ end -}}
+**Critical Vulnerabilities:**
+• Total: {{ $crit_total }}
+• 24h Delta: {{ $crit_24h }}
+• 7d Delta: {{ $crit_7d }}
+
+**High Vulnerabilities:**
+• Total: {{ $high_total }}
+• 24h Delta: {{ $high_24h }}
+• 7d Delta: {{ $high_7d }}
+{{- else -}}
 {{ range .Alerts -}}
 **Status:** {{ .Status | toUpper }}
 **Severity:** {{ .Labels.severity }}
-**Namespace:** {{ .Labels.namespace }}
+{{ if .Labels.namespace }}**Namespace:** {{ .Labels.namespace }}
+{{ end -}}
+{{ if .Labels.cluster }}**Cluster:** {{ .Labels.cluster }}
+{{ end -}}
 {{ if .Annotations.message }}**Message:** {{ .Annotations.message }}
 {{ end -}}
 {{ if .Annotations.summary }}**Summary:** {{ .Annotations.summary }}
 {{ end -}}
 ---
 {{ end -}}
+{{- end -}}
 {{- end -}}
 
