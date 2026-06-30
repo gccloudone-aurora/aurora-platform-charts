@@ -13,7 +13,7 @@ spec:
     {{- if .Values.components.grafana.helm.repository}}
     repoURL: {{ .Values.components.grafana.helm.repository }}
     {{- else }}
-    repoURL: {{ default "oci://ghcr.io/grafana/helm-charts" .Values.global.helm.repository }}
+    repoURL: {{ default "ghcr.io/grafana/helm-charts" .Values.global.helm.repository }}
     {{- end }}
     targetRevision: {{ default "5.24.0" .Values.components.grafana.helm.targetRevision }}
     plugin:
@@ -24,15 +24,15 @@ spec:
           value: |
             global:
               imageRegistry: {{ default "ghcr.io" .Values.global.container.registry }}
-            
+
             podSecurityContext:
               runAsNonRoot: true
               runAsUser: 10000
               seccompProfile:
                 type: RuntimeDefault
-                
+
             image: {{ default "{}" (include "grafana-operator.image" .) | nindent 14 }}
-            
+
             resources: {{ toYaml .Values.components.grafana.resources | nindent 14 }}
             nodeSelector: {{ toYaml .Values.components.grafana.nodeSelector | nindent 14 }}
             tolerations: {{ toYaml .Values.components.grafana.tolerations | nindent 14 }}
