@@ -1,0 +1,64 @@
+{{ if .Values.components.grafana.enabled -}}
+
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-grafana-resources"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    chart: {{ .Values.global.raw.helm.chart }}
+    repoURL: {{ default .Values.global.helm.repository .Values.global.raw.helm.repository }}
+    targetRevision: {{ .Values.global.raw.helm.targetRevision }}
+    helm:
+      releaseName: grafana-resources
+      values: |
+        resources:
+          - apiVersion: grafana.integreatly.org/v1beta1
+            kind: Grafana
+            metadata:
+              name: grafana
+              namespace: grafana-system
+            spec:
+              config:
+                auth.anonymous:
+                  enabled: "false"
+              deployment:
+                spec:
+                  strategy:
+                    type: Recreate
+                  template:
+                    spec:
+                      runAsNonRoot: true
+                      runAsUser: 10000
+                      seccompProfile:
+                        type: RuntimeDefault
+                      priorityClassName: platform-cluster-critical
+                      nodeSelector:
+                        kubernetes.io/os: linux
+                        node.ssc-spc.gc.ca/purpose: system
+                      tolerations:
+                        - key: CriticalAddonsOnly
+                          operator: Exists
+                      containers:
+                        - name: grafana
+                          image: "{{ default "docker.io" .Values.global.container.registry }}/grafana/grafana:13.1.0"
+                          resources:
+                            limits:
+                              cpu: 500m
+                              memory: 500M
+                            requests:
+                              cpu: 100m
+                              memory: 100M
+
+  destination:
+    name: {{ .Values.global.cluster }}
+    namespace: grafana-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+
+{{- end }}
