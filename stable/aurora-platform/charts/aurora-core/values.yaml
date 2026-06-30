@@ -1061,6 +1061,49 @@ components:
         - sidecar.istio.io/inject
         - topology.istio.io/subzone
 
+  #########################
+  ### Grafana Operator ###
+  #########################
+  grafana:
+    enabled: true
+
+    helm: {}
+      # chart: grafana-operator
+      # repository: oci://ghcr.io/grafana/helm-charts/grafana-operator
+      # targetRevision: 5.24.0
+
+    image:
+      # registry: ghcr.io
+      repository: grafana/grafana-operator
+      # tag: "v5.24.0"
+      # pullPolicy: IfNotPresent
+
+    priorityClassName: platform-cluster-medium
+
+    resources: {}
+      # limits:
+      #   cpu: ""
+      #   memory: ""
+      # requests:
+      #   cpu: ""
+      #   memory: ""
+
+    nodeSelector:
+      kubernetes.io/os: linux
+      node.ssc-spc.gc.ca/purpose: system
+    tolerations:
+      - key: CriticalAddonsOnly
+        operator: Exists
+    affinity:
+      podAntiAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 1
+          podAffinityTerm:
+            topologyKey: kubernetes.io/hostname
+            labelSelector:
+              matchLabels:
+                app.kubernetes.io/instance: grafana-operator
+
   #############
   ### Falco ###
   #############
