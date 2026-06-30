@@ -27,7 +27,7 @@ spec:
         resources: {{ toYaml .Values.components.istio.cni.resources | nindent 10 }}
         nodeSelector: {{ toYaml .Values.components.istio.cni.nodeSelector | nindent 10 }}
         tolerations: {{ toYaml .Values.components.istio.cni.tolerations | nindent 10 }}
-
+        cniBinDir: {{ toYaml .Values.components.istio.cni.cniBinDir | nindent 10 }}
         global:
           priorityClassName: {{ .Values.components.istio.cni.priorityClassName }}
 
