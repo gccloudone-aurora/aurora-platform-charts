@@ -94,6 +94,7 @@ core:
     # falco: {}
     # fluentOperator: {}
     # gatekeeper: {}
+    # grafana: {}
     # kubebench: {}
     # kubecost: {}
     # kubernetesEventExporter: {}
