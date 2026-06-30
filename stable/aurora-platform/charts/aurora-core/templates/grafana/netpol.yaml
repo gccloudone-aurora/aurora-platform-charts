@@ -1,4 +1,4 @@
-{{ if .Values.components.trivy.enabled -}}
+{{ if .Values.components.grafana.enabled -}}
 
 apiVersion: argoproj.io/v1alpha1
 kind: Application
@@ -32,6 +32,49 @@ spec:
               egress:
                 - to:
                   - podSelector: {}
+
+          - apiVersion: networking.k8s.io/v1
+            kind: NetworkPolicy
+            metadata:
+              name: allow-egress-to-prometheus-system
+              namespace: grafana-system
+            spec:
+              podSelector:
+                matchLabels:
+                  app: grafana
+              policyTypes:
+                - Egress
+              egress:
+                - to:
+                    - namespaceSelector:
+                        matchLabels:
+                          kubernetes.io/metadata.name: prometheus-system
+                  ports:
+                    - protocol: TCP
+                      port: 9090
+
+          - apiVersion: networking.k8s.io/v1
+            kind: NetworkPolicy
+            metadata:
+              name: allow-ingress-from-grafana-system-to-prometheus
+              namespace: prometheus-system
+            spec:
+              podSelector:
+                matchLabels:
+                  app.kubernetes.io/name: prometheus
+                  prometheus: kube-prometheus-stack-prometheus
+              policyTypes:
+                - Ingress
+              ingress:
+                - from:
+                    - namespaceSelector: {}
+                      podSelector:
+                        matchLabels:
+                          app: grafana
+                  ports:
+                    - protocol: TCP
+                      port: 9090
+
   destination:
     name: {{ .Values.global.cluster }}
     namespace: platform-system
