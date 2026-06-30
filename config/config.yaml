@@ -96,7 +96,10 @@ core:
     #############
     grafana:
       enabled: true
-
+      helm: 
+        chart: {}
+        repository: {}
+        targetRevision: {}
 
     ####################
     ### Cert Manager ###
