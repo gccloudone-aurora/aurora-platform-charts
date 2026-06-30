@@ -91,6 +91,13 @@ core:
       aurora:
         secretDockerConfigJson: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-image-pull-secret>'
 
+    #############
+    ### Grafana-operator ###
+    #############
+    grafana:
+      enabled: true
+
+
     ####################
     ### Cert Manager ###
     ####################
