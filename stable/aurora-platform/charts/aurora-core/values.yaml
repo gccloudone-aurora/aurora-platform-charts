@@ -1103,6 +1103,7 @@ components:
             labelSelector:
               matchLabels:
                 app.kubernetes.io/instance: grafana-operator
+    allowedGroups: ""
 
   #############
   ### Falco ###

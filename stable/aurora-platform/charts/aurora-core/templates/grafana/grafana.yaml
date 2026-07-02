@@ -40,7 +40,22 @@ spec:
                   check_for_updates: "false"
                 plugins:
                   plugins_update_checker: "false"
-                  
+                security:
+                  admin_password: {{ required "grafana.adminPassword is required" .Values.components.grafana.adminPassword | quote }}
+
+                auth.azuread:
+                  enabled: "true"
+                  name: "Azure AD"
+                  allow_sign_up: "true"
+                  client_id: "$$__file{/etc/secrets/auth_azuread/client_id}"
+                  client_secret: "$$__file{/etc/secrets/auth_azuread/client_secret}"
+                  scopes: "openid email profile"
+                  auth_url: {{ .Values.components.grafana.authUrl | default (printf "https://microsoftonline.com" .Values.global.tenantId) | quote }}
+                  token_url: {{ .Values.components.grafana.tokenUrl | default (printf "https://microsoftonline.com" .Values.global.tenantId) | quote }}
+                  allowed_domains: ""
+                  allowed_groups: {{ .Values.components.grafana.allowedGroups | quote }}
+                  role_attribute_strict: "false"
+
               deployment:
                 spec:
                   strategy:
@@ -54,7 +69,6 @@ spec:
                         fsGroup: 10000
                         seccompProfile:
                           type: RuntimeDefault
-                          
                       priorityClassName: platform-cluster-critical
                       nodeSelector:
                         kubernetes.io/os: linux
@@ -62,12 +76,19 @@ spec:
                       tolerations:
                         - key: CriticalAddonsOnly
                           operator: Exists
-                          
+                      
                       volumes:
                         - name: grafana-storage
                           persistentVolumeClaim:
                             claimName: grafana-pvc
-                            
+                        - name: auth-azuread-oauth-secret-mount
+                          secret:
+                            secretName: auth-azuread-oauth-secret
+                            defaultMode: 288
+                        - name: trust-manager-custom-ca
+                          configMap:
+                            name: trust-manager-propagated-custom-ca
+
                       containers:
                         - name: grafana
                           image: "{{ default "docker.io" .Values.global.container.registry }}/grafana/grafana:13.1.0"
@@ -84,6 +105,13 @@ spec:
                           volumeMounts:
                             - name: grafana-storage
                               mountPath: /var/lib/grafana
+                            - name: auth-azuread-oauth-secret-mount
+                              mountPath: /etc/secrets/auth_azuread
+                              readOnly: true
+                            - name: trust-manager-custom-ca
+                              mountPath: /etc/ssl/certs/ca-certificates.crt
+                              subPath: ca-certificates.crt
+                              readOnly: true
 
   destination:
     name: {{ .Values.global.cluster }}
