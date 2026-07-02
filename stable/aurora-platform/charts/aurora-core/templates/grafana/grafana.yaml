@@ -28,7 +28,11 @@ spec:
                 spec:
                   accessModes:
                     - ReadWriteOnce
+                  {{- if eq .Values.global.provider "gcp" }}
+                  storageClassName: standard-rwo
+                  {{- else }}
                   storageClassName: default
+                  {{- end }}
                   resources:
                     requests:
                       storage: 20Gi
