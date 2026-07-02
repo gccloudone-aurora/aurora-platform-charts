@@ -40,7 +40,7 @@ spec:
             spec:
               ingress:
               - from:
-                {{- if not eq .Values.global.provider "gcp" }}
+                {{- if not (eq .Values.global.provider "gcp") }}
                 - ipBlock:
                     cidr: {{ required "global.apiServerCidr is required" .Values.global.apiServerCidr | quote }}
                 {{- end }}
