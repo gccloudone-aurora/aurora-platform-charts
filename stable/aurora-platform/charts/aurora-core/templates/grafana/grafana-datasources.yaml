@@ -1,0 +1,47 @@
+{{ if .Values.components.grafana.enabled -}}
+
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-grafana-datasource-resources"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    chart: {{ .Values.global.raw.helm.chart }}
+    repoURL: {{ default .Values.global.helm.repository .Values.global.raw.helm.repository }}
+    targetRevision: {{ .Values.global.raw.helm.targetRevision }}
+    helm:
+      releaseName: grafana-datasource-resources
+      values: |
+        resources:
+          - apiVersion: grafana.integreatly.org/v1beta1
+            kind: GrafanaDatasource
+            metadata:
+              name: aurora-prometheus-source
+              namespace: grafana-system
+            spec:
+              instanceSelector:
+                matchLabels:
+                  dashboards: "aurora"
+              datasource:
+                name: Prometheus
+                type: prometheus
+                uid: prometheus
+                url: http://kube-prometheus-stack-prometheus.prometheus-system:9090/
+                access: proxy
+                isDefault: true
+                jsonData:
+                  httpMethod: POST
+                  timeInterval: 30s
+
+  destination:
+    name: {{ .Values.global.cluster }}
+    namespace: grafana-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+
+{{- end }}
