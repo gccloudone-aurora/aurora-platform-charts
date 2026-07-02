@@ -82,7 +82,11 @@ spec:
                   volumeClaimTemplate:
                     spec:
                       accessModes: ["ReadWriteOnce"]
+                      {{- if eq .Values.global.provider "gcp" }}
+                      storageClassName: standard-rwo
+                      {{- else }}
                       storageClassName: default
+                      {{- end }}
                       resources:
                         requests:
                           storage: {{ .Values.components.prometheus.prometheus.prometheusSpec.storage }}
