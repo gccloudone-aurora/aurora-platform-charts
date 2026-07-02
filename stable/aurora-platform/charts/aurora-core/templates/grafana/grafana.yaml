@@ -1,0 +1,96 @@
+{{ if .Values.components.grafana.enabled -}}
+
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-grafana-resources"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    chart: {{ .Values.global.raw.helm.chart }}
+    repoURL: {{ default .Values.global.helm.repository .Values.global.raw.helm.repository }}
+    targetRevision: {{ .Values.global.raw.helm.targetRevision }}
+    helm:
+      releaseName: grafana-resources
+      values: |
+        resources:
+          - apiVersion: grafana.integreatly.org/v1beta1
+            kind: Grafana
+            metadata:
+              name: grafana
+              namespace: grafana-system
+              labels:
+                dashboards: "aurora"
+            spec:
+              persistentVolumeClaim:
+                spec:
+                  accessModes:
+                    - ReadWriteOnce
+                  storageClassName: default
+                  resources:
+                    requests:
+                      storage: 20Gi
+              
+              config:
+                auth.anonymous:
+                  enabled: "false"
+                analytics:
+                  check_for_updates: "false"
+                plugins:
+                  plugins_update_checker: "false"
+                  
+              deployment:
+                spec:
+                  strategy:
+                    type: Recreate
+                  template:
+                    spec:
+                      securityContext:
+                        runAsNonRoot: true
+                        runAsUser: 10000
+                        runAsGroup: 10000
+                        fsGroup: 10000
+                        seccompProfile:
+                          type: RuntimeDefault
+                          
+                      priorityClassName: platform-cluster-critical
+                      nodeSelector:
+                        kubernetes.io/os: linux
+                        node.ssc-spc.gc.ca/purpose: system
+                      tolerations:
+                        - key: CriticalAddonsOnly
+                          operator: Exists
+                          
+                      volumes:
+                        - name: grafana-storage
+                          persistentVolumeClaim:
+                            claimName: grafana-pvc
+                            
+                      containers:
+                        - name: grafana
+                          image: "{{ default "docker.io" .Values.global.container.registry }}/grafana/grafana:13.1.0"
+                          env:
+                            - name: GF_PLUGINS_PREINSTALL
+                              value: ""
+                          resources:
+                            limits:
+                              cpu: 500m
+                              memory: 500M
+                            requests:
+                              cpu: 100m
+                              memory: 100M
+                          volumeMounts:
+                            - name: grafana-storage
+                              mountPath: /var/lib/grafana
+
+  destination:
+    name: {{ .Values.global.cluster }}
+    namespace: grafana-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+
+{{- end }}
