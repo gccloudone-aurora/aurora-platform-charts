@@ -45,6 +45,7 @@ spec:
                 security:
                   adminPassword: {{ required "grafana.adminPassword is required" .Values.components.grafana.adminPassword | quote }}
 
+                {{- if eq .Values.global.provider "azure" }}
                 auth.azuread:
                   enabled: "true"
                   name: "Azure AD"
@@ -57,6 +58,7 @@ spec:
                   allowed_domains: ""
                   allowed_groups: {{ .Values.components.grafana.allowedGroups | quote }}
                   role_attribute_strict: "false"
+                  {{- end }}
 
               deployment:
                 spec:
@@ -83,10 +85,12 @@ spec:
                         - name: grafana-storage
                           persistentVolumeClaim:
                             claimName: grafana-pvc
+                        {{- if eq .Values.global.provider "azure" }}
                         - name: auth-azuread-oauth-secret-mount
                           secret:
                             secretName: auth-azuread-oauth-secret
                             defaultMode: 288
+                        {{- end }}
                         - name: trust-manager-custom-ca
                           configMap:
                             name: trust-manager-propagated-custom-ca
@@ -107,9 +111,11 @@ spec:
                           volumeMounts:
                             - name: grafana-storage
                               mountPath: /var/lib/grafana
+                           {{- if eq .Values.global.provider "azure" }}
                             - name: auth-azuread-oauth-secret-mount
                               mountPath: /etc/secrets/auth_azuread
                               readOnly: true
+                            {{- end }}
                             - name: trust-manager-custom-ca
                               mountPath: /etc/ssl/certs/ca-certificates.crt
                               subPath: ca-certificates.crt
