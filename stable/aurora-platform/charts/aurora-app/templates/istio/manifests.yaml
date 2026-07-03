@@ -60,8 +60,7 @@ spec:
                 group: ""
                 kind: Service
                 name: general
-            ---
-          {{- if hasKey .Values.components.istio.gateway "iap" }}
+          {{- if hasKey .Values.components.istio.gateway "iap" | quote }}
           - apiVersion: v1
             kind: Secret
             metadata:
@@ -69,8 +68,7 @@ spec:
               namespace: istio-system
             type: Opaque
             stringData:
-              client_secret: {{ .Values.components.istio.gateway.iap.clientSecret }}
-            ---
+              client_secret: {{ .Values.components.istio.gateway.iap.clientSecret | quote}}
           - apiVersion: networking.gke.io/v1
             kind: GCPBackendPolicy
             metadata:
@@ -87,8 +85,8 @@ spec:
                 group: ""
                 kind: Service
                 name: general
-          {{- end }} # if IAP
-          {{- end }} # if GCP
+          {{- end }}
+          {{- end }}
   destination:
     name: {{ .Values.global.cluster }}
     namespace: platform-system
