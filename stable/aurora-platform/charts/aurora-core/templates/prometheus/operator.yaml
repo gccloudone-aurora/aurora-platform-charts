@@ -82,7 +82,11 @@ spec:
                   volumeClaimTemplate:
                     spec:
                       accessModes: ["ReadWriteOnce"]
+                      {{- if eq .Values.global.provider "gcp" }}
+                      storageClassName: standard-rwo
+                      {{- else }}
                       storageClassName: default
+                      {{- end }}
                       resources:
                         requests:
                           storage: {{ .Values.components.prometheus.prometheus.prometheusSpec.storage }}
@@ -198,6 +202,7 @@ spec:
                 priorityClassName: {{ .Values.components.prometheus.priorityClassName }}
 
             grafana:
+              enabled: {{ .Values.components.prometheus.grafana.enabled }}
               priorityClassName: {{ .Values.components.prometheus.priorityClassName }}
               ingress:
                 enabled: true
@@ -249,9 +254,9 @@ spec:
                 secureJsonData:
                   basicAuthPassword: {{ required "prometheus.grafana.lokiDataSource.password is required" .Values.components.prometheus.grafana.lokiDataSource.password }}
               {{- end }}
-
+              {{- if .Values.components.prometheus.grafana.enabled }}
               adminPassword: {{ required "prometheus.grafana.adminPassword is required" .Values.components.prometheus.grafana.adminPassword | quote }}
-
+              {{- end}}
               dashboardProviders:
                 dashboardproviders.yaml:
                   apiVersion: 1

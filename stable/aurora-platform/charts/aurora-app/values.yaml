@@ -40,6 +40,9 @@ global:
 
   # Ingress Class Name
   # ingressClassName: ingress-istio-controller
+  # iap:
+  #   clientID: ""
+  #   clientSecret: ""
 
   # Azure-specific settings.
   # load_balancer_subnet_name: ""
@@ -360,7 +363,7 @@ components:
               labelSelector:
                 matchLabels:
                   istio: general
-
+      # loadBalancerClass: ""
       # loadBalancerIP: XXX.XX.XX.XX
 
       additionalDnsNames: []

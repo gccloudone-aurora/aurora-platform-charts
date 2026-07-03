@@ -52,28 +52,29 @@ spec:
                   ports:
                     - protocol: TCP
                       port: 9090
-
           - apiVersion: networking.k8s.io/v1
             kind: NetworkPolicy
             metadata:
-              name: allow-ingress-from-grafana-system-to-prometheus
-              namespace: prometheus-system
+              name: allow-ingress-from-istio-gateway
+              namespace: grafana-system
             spec:
               podSelector:
                 matchLabels:
-                  app.kubernetes.io/name: prometheus
-                  prometheus: kube-prometheus-stack-prometheus
+                  app: grafana
               policyTypes:
                 - Ingress
               ingress:
                 - from:
-                    - namespaceSelector: {}
+                    - namespaceSelector:
+                        matchLabels:
+                          kubernetes.io/metadata.name: istio-general-system
                       podSelector:
                         matchLabels:
-                          app: grafana
+                          istio: general
                   ports:
                     - protocol: TCP
-                      port: 9090
+                      port: 3000
+                      
 
   destination:
     name: {{ .Values.global.cluster }}
