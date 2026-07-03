@@ -94,7 +94,7 @@ spec:
               name: grafana
               namespace: grafana-system
             spec:
-              ingressClassName: {{ .Values.global.ingress.className }}
+              ingressClassName: {{ .Values.global.ingressClassName }}
               rules:
                 - host: grafana.{{ .Values.global.ingressDomain }}
                   http:
