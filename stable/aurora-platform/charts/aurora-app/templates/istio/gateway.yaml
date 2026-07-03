@@ -49,9 +49,11 @@ spec:
                   {{- else if eq .Values.global.provider "aws" }}
                   service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
                   service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: "ip"
+                  {{- else }}
+                  {}
                   {{- end}}
                 {{- if hasKey .Values.components.istio.gateway "loadBalancerClass" }}
-                loadBalancerClass: {{ .Values.components.istio.gateway.loadBalancerClass }}
+                loadBalancerClass: {{ .Values.components.istio.gateway.loadBalancerClass | quote }}
                 {{- end }}
 
                 # Specifies the IP that the LoadBalancer should use. Skipped if empty.
