@@ -106,6 +106,7 @@ spec:
                             name: grafana-service
                             port:
                               number: 3000
+  destination:
     name: {{ .Values.global.cluster }}
     namespace: grafana-system
   syncPolicy:
