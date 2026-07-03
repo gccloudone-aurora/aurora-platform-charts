@@ -44,7 +44,7 @@ spec:
             kind: HealthCheckPolicy
             metadata:
               name: istio-gateway-health-check
-              namespace: istio-system
+              namespace: istio-general-system
             spec:
               default:
                 checkIntervalSec: 30
@@ -65,7 +65,7 @@ spec:
             kind: Secret
             metadata:
               name: iap-oauth-secret
-              namespace: istio-system
+              namespace: istio-general-system
             type: Opaque
             stringData:
               client_secret: {{ .Values.components.istio.gateway.iap.clientSecret | quote}}
@@ -73,7 +73,7 @@ spec:
             kind: GCPBackendPolicy
             metadata:
               name: istio-iap-policy
-              namespace: istio-system
+              namespace: istio-general-system
             spec:
               default:
                 iap:
