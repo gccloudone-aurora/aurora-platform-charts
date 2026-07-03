@@ -24,6 +24,7 @@ spec:
               labels:
                 dashboards: "aurora"
             spec:
+
               persistentVolumeClaim:
                 spec:
                   accessModes:
@@ -38,10 +39,11 @@ spec:
                   enabled: "false"
                 analytics:
                   check_for_updates: "false"
+                  reporting_enabled: "false"
                 plugins:
                   plugins_update_checker: "false"
                 security:
-                  admin_password: {{ required "grafana.adminPassword is required" .Values.components.grafana.adminPassword | quote }}
+                  adminPassword: {{ required "grafana.adminPassword is required" .Values.components.grafana.adminPassword | quote }}
 
                 auth.azuread:
                   enabled: "true"
