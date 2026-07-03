@@ -53,9 +53,9 @@ spec:
                   deployment:
                     accessible_namespaces:
                       - '**'
-                    image_name: {{ include "kiali.instance.image" (dict "instance" . "values" $.Values) | quote }}
+                    # image_name: {{ include "kiali.instance.image" (dict "instance" . "values" $.Values) | quote }}
                     image_pull_secrets: {{ toYaml $.Values.components.kiali.imagePullSecrets | nindent 22 }}
-                    image_version: operator_version
+                    # image_version: operator_version
                     ingress:
                       class_name: {{ $.Values.global.ingressClassName }}
                       enabled: true
