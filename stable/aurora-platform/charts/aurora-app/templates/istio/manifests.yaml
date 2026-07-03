@@ -39,7 +39,7 @@ spec:
                     values:
                       - system-cluster-critical
                       - system-node-critical
-          {{- if eq .Values.provider "gcp" }}
+          {{- if eq .Values.global.provider "gcp" }}
           - apiVersion: networking.gke.io/v1
             kind: HealthCheckPolicy
             metadata:
