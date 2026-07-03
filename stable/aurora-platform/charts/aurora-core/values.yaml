@@ -2167,6 +2167,123 @@ components:
       #  prodMajor: ""
       #  prodMinor: ""
 
+  ##############
+  ### Thanos ###
+  ##############
+  # Thanos Querier, Store Gateway, and Compactor
+  # Prerequisite: Base Thanos in prometheus-kube-prometheus-stack must be enabled!
+  # (components.prometheus.prometheus.prometheusSpec.thanos.enabled) — this set of components
+  # Reuses the sidecar's thanos-objstore-config secret and the same object-storage bucket
+  thanos:
+    enabled: false
+
+    # Image reused across Querier/Store Gateway/Compactor. Tag must be aligned with the
+    # Base Thanos Sidecar image. Keep it at parity or higher (>=) !!!
+    image:
+      # registry: quay.io
+      repository: thanos/thanos
+      tag: "v0.41.0"
+      # pullPolicy: IfNotPresent
+
+    logLevel: info
+
+    # Object-storage auth. Reuse the thanos-objstore-config Secret for the bucket
+    # Only need the workload identity UAMI here
+    objectStorage:
+      auth: workloadIdentity
+      clientId: ""
+
+    priorityClassName: platform-cluster-medium
+
+    ### Querier — stateless PromQL fan-out over the sidecar + Store Gateway (Grafana datasource) ###
+    query:
+      replicas: 2
+      # External labels used to dedupe HA/replica series. kube-prometheus-stack sets
+      # prometheus_replica on each Prometheus pod.
+      replicaLabels:
+        - prometheus_replica
+      resources: {}
+        # limits:
+        #   cpu: ""
+        #   memory: ""
+        # requests:
+        #   cpu: ""
+        #   memory: ""
+      nodeSelector:
+        kubernetes.io/os: linux
+        node.ssc-spc.gc.ca/purpose: system
+      tolerations:
+        - key: CriticalAddonsOnly
+          operator: Exists
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 1
+            podAffinityTerm:
+              topologyKey: kubernetes.io/hostname
+              labelSelector:
+                matchLabels:
+                  app.kubernetes.io/name: thanos-query
+
+    ### Store Gateway — serves historical blocks from Blob (index/chunk cache on a PVC) ###
+    storeGateway:
+      replicas: 1
+      persistence:
+        size: 20Gi
+        storageClassName: default
+      resources: {}
+        # limits:
+        #   cpu: ""
+        #   memory: ""
+        # requests:
+        #   cpu: ""
+        #   memory: ""
+      nodeSelector:
+        kubernetes.io/os: linux
+        node.ssc-spc.gc.ca/purpose: system
+      tolerations:
+        - key: CriticalAddonsOnly
+          operator: Exists
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 1
+            podAffinityTerm:
+              topologyKey: kubernetes.io/hostname
+              labelSelector:
+                matchLabels:
+                  app.kubernetes.io/name: thanos-storegateway
+
+    ### Compactor — compaction, downsampling & retention. SINGLETON (replicas fixed at 1) ###
+    compactor:
+      # Retention per resolution. All accept Prometheus/Thanos durations (e.g. 30d, 90d, 1y).
+      # Until the Compactor runs, Blob grows unbounded — size this before production.
+      retention:
+        raw: 30d
+        fiveMin: 90d
+        oneHour: 1y
+      persistence:
+        size: 50Gi
+        storageClassName: default
+      resources: {}
+        # limits:
+        #   cpu: ""
+        #   memory: ""
+        # requests:
+        #   cpu: ""
+        #   memory: ""
+      nodeSelector:
+        kubernetes.io/os: linux
+        node.ssc-spc.gc.ca/purpose: system
+      tolerations:
+        - key: CriticalAddonsOnly
+          operator: Exists
+      affinity: {}
+
+    # Scrape Querier/Store Gateway/Compactor metrics via ServiceMonitors.
+    serviceMonitor:
+      enabled: true
+
   ################################
   ### Secrets Store CSI Driver ###
   ################################

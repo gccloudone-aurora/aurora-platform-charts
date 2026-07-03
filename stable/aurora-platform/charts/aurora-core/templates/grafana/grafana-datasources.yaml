@@ -35,6 +35,30 @@ spec:
                 jsonData:
                   httpMethod: POST
                   timeInterval: 30s
+          {{- if .Values.components.thanos.enabled }}
+          # This is a non-default datasource pointing at the Thanos Querier.
+          # Purpose: long-term (Blob) data can be queried without touching the primary datasource.
+          # The Querier is a drop-in PromQL endpoint, grafana can point to this datasource if we wish to
+          - apiVersion: grafana.integreatly.org/v1beta1
+            kind: GrafanaDatasource
+            metadata:
+              name: aurora-thanos-source
+              namespace: grafana-system
+            spec:
+              instanceSelector:
+                matchLabels:
+                  dashboards: "aurora"
+              datasource:
+                name: Thanos
+                type: prometheus
+                uid: thanos
+                url: http://thanos-query.prometheus-system:9090/
+                access: proxy
+                isDefault: false
+                jsonData:
+                  httpMethod: POST
+                  timeInterval: 30s
+          {{- end }}
 
   destination:
     name: {{ .Values.global.cluster }}

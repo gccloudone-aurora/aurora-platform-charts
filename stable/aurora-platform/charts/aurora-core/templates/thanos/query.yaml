@@ -1,0 +1,130 @@
+{{ if and .Values.components.thanos.enabled .Values.components.prometheus.enabled -}}
+{{- $t := .Values.components.thanos -}}
+
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-thanos-query"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    chart: {{ .Values.global.raw.helm.chart }}
+    repoURL: {{ default .Values.global.helm.repository .Values.global.raw.helm.repository }}
+    targetRevision: {{ .Values.global.raw.helm.targetRevision }}
+    helm:
+      releaseName: thanos-query
+      values: |
+        resources:
+          - apiVersion: v1
+            kind: ServiceAccount
+            metadata:
+              name: thanos-query
+              namespace: prometheus-system
+              labels:
+                app.kubernetes.io/name: thanos-query
+                app.kubernetes.io/component: query
+                app.kubernetes.io/part-of: thanos
+                app.kubernetes.io/managed-by: argo
+          - apiVersion: apps/v1
+            kind: Deployment
+            metadata:
+              name: thanos-query
+              namespace: prometheus-system
+              labels:
+                app.kubernetes.io/name: thanos-query
+                app.kubernetes.io/component: query
+                app.kubernetes.io/part-of: thanos
+                app.kubernetes.io/managed-by: argo
+            spec:
+              replicas: {{ $t.query.replicas }}
+              selector:
+                matchLabels:
+                  app.kubernetes.io/name: thanos-query
+              template:
+                metadata:
+                  labels:
+                    app.kubernetes.io/name: thanos-query
+                    app.kubernetes.io/component: query
+                    app.kubernetes.io/part-of: thanos
+                spec:
+                  serviceAccountName: thanos-query
+                  priorityClassName: {{ $t.priorityClassName }}
+                  nodeSelector: {{ toYaml $t.query.nodeSelector | nindent 20 }}
+                  tolerations: {{ toYaml $t.query.tolerations | nindent 20 }}
+                  affinity: {{ toYaml $t.query.affinity | nindent 20 }}
+                  securityContext:
+                    runAsNonRoot: true
+                    runAsUser: 1001
+                    runAsGroup: 1001
+                    fsGroup: 1001
+                    seccompProfile:
+                      type: RuntimeDefault
+                  containers:
+                    - name: thanos-query
+                      image: {{ include "thanos.image" . }}
+                      imagePullPolicy: {{ default "IfNotPresent" $t.image.pullPolicy }}
+                      args:
+                        - query
+                        - --log.level={{ $t.logLevel }}
+                        - --http-address=0.0.0.0:9090
+                        - --grpc-address=0.0.0.0:10901
+                        - --query.auto-downsampling
+                        {{- range $t.query.replicaLabels }}
+                        - --query.replica-label={{ . }}
+                        {{- end }}
+                        # Hot data: Prometheus sidecar(s), discovered via the kube-prometheus-stack thanosService
+                        - --endpoint=dnssrv+_grpc._tcp.kube-prometheus-stack-thanos-discovery.prometheus-system.svc.cluster.local
+                        # Historical data: Store Gateway
+                        - --endpoint=dnssrv+_grpc._tcp.thanos-storegateway.prometheus-system.svc.cluster.local
+                      ports:
+                        - name: http
+                          containerPort: 9090
+                        - name: grpc
+                          containerPort: 10901
+                      resources: {{ toYaml $t.query.resources | nindent 24 }}
+                      livenessProbe:
+                        httpGet:
+                          path: /-/healthy
+                          port: http
+                        initialDelaySeconds: 30
+                      readinessProbe:
+                        httpGet:
+                          path: /-/ready
+                          port: http
+                        initialDelaySeconds: 15
+                      securityContext:
+                        allowPrivilegeEscalation: false
+                        readOnlyRootFilesystem: true
+                        capabilities:
+                          drop: ["ALL"]
+          - apiVersion: v1
+            kind: Service
+            metadata:
+              name: thanos-query
+              namespace: prometheus-system
+              labels:
+                app.kubernetes.io/name: thanos-query
+                app.kubernetes.io/component: query
+                app.kubernetes.io/part-of: thanos
+                app.kubernetes.io/managed-by: argo
+            spec:
+              selector:
+                app.kubernetes.io/name: thanos-query
+              ports:
+                - name: http
+                  port: 9090
+                  targetPort: http
+                - name: grpc
+                  port: 10901
+                  targetPort: grpc
+  destination:
+    name: {{ .Values.global.cluster }}
+    namespace: prometheus-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+
+{{- end }}

@@ -62,6 +62,11 @@ spec:
                 annotations: {}
                 ingressClassName: "{{ .Values.global.ingressClassName }}"
               
+              {{- if .Values.components.thanos.enabled }}
+              ## Exposes the sidecar gRPC (:10901) via a service so Thanos Querier can discover it
+              thanosService:
+                enabled: true
+              {{- end }}
               {{- if and .Values.components.prometheus.prometheus.prometheusSpec.thanos.enabled (eq .Values.components.prometheus.prometheus.prometheusSpec.thanos.objectStorage.auth "workloadIdentity") }}
               ## Federate Prometheus ServiceAccount to Azure workload identity in order for Thanos to auth into blob storage
               serviceAccount:

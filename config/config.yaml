@@ -422,6 +422,19 @@ core:
 
       priorityClassName: platform-cluster-critical
 
+    ##############
+    ### Thanos ###
+    ##############
+    # Thanos Querier, Store Gateway, and Compactor.
+    # Requires base Thanos sidecar (in prometheus spec) to be enabled. Leverage the base Thanos workload-identity UAMI
+    # The UAMI federates the store-gateway/compactor ServiceAccounts in the terraform, before enabling -
+    # (subjects: system:serviceaccount:prometheus-system:thanos-storegateway and :thanos-compactor).
+    # Bucket config and etc derived from the common shared thanos-objstore-config secret with base thanos
+    thanos:
+      enabled: false
+      objectStorage:
+        clientId: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-thanos-workloadidentity-client-id>'
+
     ################################
     ### Secrets Store CSI Driver ###
     ################################
