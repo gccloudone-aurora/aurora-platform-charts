@@ -360,7 +360,7 @@ components:
               labelSelector:
                 matchLabels:
                   istio: general
-
+      # loadBalancerClass: ""
       # loadBalancerIP: XXX.XX.XX.XX
 
       additionalDnsNames: []
