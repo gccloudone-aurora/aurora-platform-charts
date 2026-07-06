@@ -1,0 +1,54 @@
+{
+  "extends": [
+    "config:recommended"
+  ],
+  "labels": [
+    "dependencies"
+  ],
+  "enabledManagers": [
+    "github-actions",
+    "helmv3",
+    "helm-values"
+  ],
+  "helm-values": {
+    "managerFilePatterns": [
+      "/(^|/)values\\.ya?ml$/",
+      "/^config/config\\.ya?ml$/"
+    ]
+    
+  },
+  "lockFileMaintenance": {
+    "enabled": true
+  },
+  "packageRules": [
+    {
+      "description": "Group Helm chart dependency updates",
+      "matchManagers": [
+        "helmv3"
+      ],
+      "groupName": "helm chart dependencies"
+    },
+    {
+      "description": "Group GitHub Actions updates",
+      "matchManagers": [
+        "github-actions"
+      ],
+      "groupName": "github actions"
+    },
+    {
+      "description": "Do not update branch-like image tags",
+      "matchManagers": [
+        "helm-values"
+      ],
+      "matchCurrentValue": [
+        "/^(main|master)$/"
+      ],
+      "enabled": false
+    }
+  ],
+  "ignorePaths": [
+    "stable/**/README.md",
+    "stable/**/README.md.gotmpl",
+    "stable/argocd-operator/crds/**"
+  ]
+}
