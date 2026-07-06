@@ -204,13 +204,13 @@ spec:
               tolerations: {{ toYaml .Values.components.loki.tolerations | nindent 16 }}
               persistence:
                 size: 8Gi
-                storageClass: default
+                storageClass: {{ .Values.global.defaultStorageClass }}
             read:
               nodeSelector: {{ toYaml .Values.components.loki.nodeSelector | nindent 16 }}
               tolerations: {{ toYaml .Values.components.loki.tolerations | nindent 16 }}
               persistence:
                 size: 8Gi
-                storageClass: default
+                storageClass: {{ .Values.global.defaultStorageClass }}
               extraVolumeMounts:
                 - name: rules
                   mountPath: "/var/loki/rulestorage/fake"
@@ -223,7 +223,7 @@ spec:
               tolerations: {{ toYaml .Values.components.loki.tolerations | nindent 16 }}
               persistence:
                 size: 8Gi
-                storageClass: default
+                storageClass: {{ .Values.global.defaultStorageClass }}
 
   destination:
     name: '{{ .Values.global.cluster }}'

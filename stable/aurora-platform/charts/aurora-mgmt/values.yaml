@@ -49,6 +49,8 @@ global:
   # subscriptionId: ""
   # tenantId: ""
 
+  defaultStorageClass: default
+
 data:
   mgmt:
     enabled: true
