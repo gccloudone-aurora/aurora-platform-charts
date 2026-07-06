@@ -51,11 +51,7 @@ spec:
               dbRegistry: {{ default "docker.io" .Values.global.container.registry }}
               javaDbRegistry: {{ default "docker.io" .Values.global.container.registry }}
               severity: {{ .Values.components.trivy.severity }}
-              {{- if eq .Values.global.provider "gcp" }}
-              storageClassName: standard-rwo
-              {{- else }}
-              storageClassName: default
-              {{- end }}
+              storageClassName: {{ .Values.global.defaultStorageClass }}
               resources: {{ toYaml .Values.components.trivy.scanJobResources | nindent 16 }}
               ignoreUnfixed: {{ default "false" .Values.components.trivy.ignoreUnfixed }}
               server: {{ toYaml .Values.components.trivy.server | nindent 16 }}
