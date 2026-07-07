@@ -433,5 +433,9 @@ components:
       # existingSecret:
 
     logStorageLocation: {}
+      # azure configuration
       # storageAccountName: <storage-account-name>
       # storageAccountKey: <storage-account-key>
+      # gcp configuration
+      # chunks: <gcp-bucket-name>
+      # ruler: <gcp-bucket-name>
