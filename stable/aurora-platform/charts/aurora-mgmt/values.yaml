@@ -439,3 +439,122 @@ components:
       # gcp configuration
       # chunks: <gcp-bucket-name>
       # ruler: <gcp-bucket-name>
+
+  ##############
+  ### Thanos ###
+  ##############
+  # Thanos: Querier, Store Gateway, Compactor (Central and Shared)
+  # Purpose: long-term metrics  in the mgmt cluster.
+  # Takes 2 hour TDSB blocks from spokes and sends to object store
+  # Allows for querable blocks as well (querier and the store gateway)
+  # Compactor is data management
+  # Query mode is blob-only - no cross-cluster gRPC
+  thanos:
+    enabled: false
+
+    # Uses the same thanos side car image thanos/thanos image
+    # ensure the image tag is >= the sidecar's Thanos version (kube-prometheus-stack 86.0.2 ships v0.41.0)
+    image:
+      # registry: quay.io
+      repository: thanos/thanos
+      tag: "v0.41.0"
+      # pullPolicy: IfNotPresent
+
+    logLevel: info
+
+    objectStorage:
+      auth: workloadIdentity
+      # List of buckets for querying. Intentionally single bucket but additonal buckets can be added
+      # if a single shared bucket is not possible.
+      # Each item has it's own objstore secret + store Gateway + compactor
+      #   name - short DNS-safe key used in resource names (thanos-*-<name>)
+      #   clientId - workload-identity UAMI federated to this bucket's store/compactor SAs
+      buckets:
+        - name: default
+          storageAccountName: ""
+          containerName: thanos
+          endpoint: blob.core.windows.net
+          clientId: ""
+
+    priorityClassName: platform-cluster-medium
+
+    ### Querier — stateless PromQL fan-out over the Store Gateway(s); the Grafana datasource ###
+    query:
+      replicas: 2
+      # Dedupe HA/replica series; kube-prometheus-stack stamps prometheus_replica per pod.
+      replicaLabels:
+        - prometheus_replica
+      resources: {}
+      nodeSelector:
+        kubernetes.io/os: linux
+        node.ssc-spc.gc.ca/purpose: system
+      tolerations:
+        - key: CriticalAddonsOnly
+          operator: Exists
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 1
+            podAffinityTerm:
+              topologyKey: kubernetes.io/hostname
+              labelSelector:
+                matchLabels:
+                  app.kubernetes.io/name: thanos-query
+
+    ### Store Gateway — serves historical blocks from Blob (one deployed per bucket) ###
+    storeGateway:
+      # Replicas per bucket. Store Gateway is read-only, so >1 is safe (HA)
+      replicas: 1
+      persistence:
+        size: 20Gi
+        storageClassName: default
+      resources: {}
+      nodeSelector:
+        kubernetes.io/os: linux
+        node.ssc-spc.gc.ca/purpose: system
+      tolerations:
+        - key: CriticalAddonsOnly
+          operator: Exists
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 1
+            podAffinityTerm:
+              topologyKey: kubernetes.io/hostname
+              labelSelector:
+                matchLabels:
+                  app.kubernetes.io/name: thanos-storegateway
+
+    ### Compactor — compaction, downsampling, retention. Singleton per bucket (replicas fixed at 1) ###
+    compactor:
+      # retention per resolution (Prometheus/Thanos durations, e.g. 30d/90d/1y).
+      # until compactor runs, blob grows unbounded
+      retention:
+        raw: 30d
+        fiveMin: 90d
+        oneHour: 1y
+      persistence:
+        size: 50Gi
+        storageClassName: default
+      resources: {}
+      nodeSelector:
+        kubernetes.io/os: linux
+        node.ssc-spc.gc.ca/purpose: system
+      tolerations:
+        - key: CriticalAddonsOnly
+          operator: Exists
+      affinity: {}
+
+    # Thanos Grafana Datasource
+    grafana:
+      datasource:
+        enabled: true
+      dashboard:
+        enabled: true
+      instanceSelector:
+        dashboards: aurora
+      namespace: grafana-system
+
+    # Scrape Querier/Store Gateway/Compactor via ServiceMonitors
+    serviceMonitor:
+      enabled: true

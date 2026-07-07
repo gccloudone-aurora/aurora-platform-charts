@@ -1,0 +1,59 @@
+{{ if .Values.components.thanos.enabled -}}
+
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-thanos-namespace"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    chart: {{ .Values.global.namespace.helm.chart }}
+    repoURL: {{ default .Values.global.helm.repository .Values.global.namespace.helm.repository }}
+    targetRevision: {{ .Values.global.namespace.helm.targetRevision }}
+    helm:
+      releaseName: thanos-system
+      values: |
+        information:
+          division: "Aurora"
+          team: "Aurora Solutions"
+          projectName: "Aurora Platform"
+          projectLead: "Albert Abdullah Kouri"
+          priority: "medium"
+          technicalLead: "William Hearn"
+          onboardingEpic: "CN-1"
+          authorityToOperate: "https://gcdocs.gc.ca/ssc-spc/example"
+          gitGroupURL: "https://github.com/gccloudone-aurora"
+          FRC: 0001
+          PE: 001
+          workloadID: 0000001
+          productID: 00001
+
+        # Configurations about the namespace.
+        namespace:
+          labels: {}
+          # system namespaces are discovered by the platform Prometheus - ServiceMonitor scraper.
+          type: "system"
+
+        policies:
+          allowedHosts: []
+
+        rbac:
+          groups: {{ toYaml .Values.rbac.platformOperator.groups | nindent 12 }}
+
+        resourceQuotas:
+          pods: 60
+          services:
+            loadbalancers: 0
+            nodeports: 0
+          storage: '256Gi'
+  destination:
+    name: {{ .Values.global.cluster }}
+    namespace: platform-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+
+{{- end }}
