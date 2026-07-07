@@ -96,6 +96,11 @@ core:
     ########################
     grafana:
       enabled: true
+      adminPassword: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-grafana-admin-password>'
+      lokiDataSource:
+        url: "http://loki-gateway.loki-system.svc.cluster.local"
+        user: '<path:GcDc-Auror-ARGO-13726-kv#gcdc-auroramgmt-argo-kvs-loki-user>'
+        password: '<path:GcDc-Auror-ARGO-13726-kv#gcdc-auroramgmt-argo-kvs-loki-password>'
 
     ####################
     ### Cert Manager ###
