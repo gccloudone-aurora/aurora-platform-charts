@@ -198,6 +198,7 @@ spec:
                 priorityClassName: {{ .Values.components.prometheus.priorityClassName }}
 
             grafana:
+              enabled: {{ .Values.components.prometheus.grafana.enabled }}
               priorityClassName: {{ .Values.components.prometheus.priorityClassName }}
               ingress:
                 enabled: true
