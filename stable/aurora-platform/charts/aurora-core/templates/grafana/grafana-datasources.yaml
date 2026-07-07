@@ -36,6 +36,27 @@ spec:
                   httpMethod: POST
                   timeInterval: 30s
 
+          {{- if .Values.global.clusterHasLoki }}
+          - apiVersion: grafana.integreatly.org/v1beta1
+            kind: GrafanaDatasource
+            metadata:
+              name: aurora-loki-source
+              namespace: grafana-system
+            spec:
+              instanceSelector:
+                matchLabels:
+                  dashboards: "aurora"
+              datasource:
+                name: Loki
+                type: loki
+                access: proxy
+                url: {{ required "grafana.lokiDataSource.url is required" .Values.components.grafana.lokiDataSource.url | quote }}
+                basicAuth: true
+                basicAuthUser: {{ required "grafana.lokiDataSource.user is required" .Values.components.grafana.lokiDataSource.user | quote }}
+                secureJsonData:
+                  basicAuthPassword: {{ required "grafana.lokiDataSource.password is required" .Values.components.grafana.lokiDataSource.password | quote }}
+          {{- end }}
+
   destination:
     name: {{ .Values.global.cluster }}
     namespace: grafana-system
