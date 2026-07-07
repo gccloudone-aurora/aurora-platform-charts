@@ -1065,7 +1065,7 @@ components:
   ### Grafana Operator ###
   #########################
   grafana:
-    enabled: true
+    enabled: false
 
     helm: {}
       # chart: grafana-operator
