@@ -188,7 +188,7 @@ spec:
                           },
                           "editorMode": "code",
                           "exemplar": false,
-                          "expr": "sum(\r\n    max by (image_registry, image_repository, image_tag, severity) (\r\n        (trivy_image_vulnerabilities{severity=\"Critical\", image_registry!~\"mcr\\\\.microsoft\\\\.com|.*\\\\.azurecr\\\\.io|.*\\\\.amazonaws\\\\.com|gcr\\\\.io\"} > 0)\r\n        * on(namespace) group_left()\r\n        kube_namespace_labels{label_namespace_ssc_spc_gc_ca_purpose=\"system\"}\r\n    )\r\n) OR on() vector(0)",
+                          "expr": "sum(\r\n    max by (image_registry, image_repository, image_tag, severity) (\r\n        (trivy_image_vulnerabilities{severity=\"Critical\", image_registry!~\"mcr\\\\.microsoft\\\\.com|.*\\\\.azurecr\\\\.io|.*\\\\.amazonaws\\\\.com|gke\\\\.gcr\\\\.io\"} > 0)\r\n        * on(namespace) group_left()\r\n        kube_namespace_labels{label_namespace_ssc_spc_gc_ca_purpose=\"system\"}\r\n    )\r\n) OR on() vector(0)",
                           "instant": true,
                           "legendFormat": "Critical",
                           "range": false,
