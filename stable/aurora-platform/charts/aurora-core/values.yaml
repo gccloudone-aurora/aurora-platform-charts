@@ -1065,7 +1065,7 @@ components:
   ### Grafana Operator ###
   #########################
   grafana:
-    enabled: true
+    enabled: false
 
     helm: {}
       # chart: grafana-operator
@@ -1103,6 +1103,7 @@ components:
             labelSelector:
               matchLabels:
                 app.kubernetes.io/instance: grafana-operator
+    allowedGroups: ""
 
   #############
   ### Falco ###
