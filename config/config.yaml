@@ -96,6 +96,9 @@ core:
     ########################
     grafana:
       enabled: true
+      azure:
+        clientId: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-grafana-sp-client-id>'
+        clientPassword: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-grafana-sp-client-secret>'
       adminPassword: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-grafana-admin-password>'
       lokiDataSource:
         url: "http://loki-gateway.loki-system.svc.cluster.local"
