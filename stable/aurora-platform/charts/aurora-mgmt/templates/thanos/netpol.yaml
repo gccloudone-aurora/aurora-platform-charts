@@ -1,0 +1,155 @@
+{{ if .Values.components.thanos.enabled -}}
+
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-thanos-netpol"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    chart: {{ .Values.global.raw.helm.chart }}
+    repoURL: {{ default .Values.global.helm.repository .Values.global.raw.helm.repository }}
+    targetRevision: {{ .Values.global.raw.helm.targetRevision }}
+    helm:
+      releaseName: thanos-netpol
+      values: |
+        resources:
+          # Intra-namespace: Querier <-> Store Gateway gRPC
+          - apiVersion: networking.k8s.io/v1
+            kind: NetworkPolicy
+            metadata:
+              name: allow-same-namespace
+              namespace: thanos-system
+            spec:
+              podSelector: {}
+              policyTypes:
+                - Ingress
+                - Egress
+              ingress:
+                - from:
+                  - podSelector: {}
+              egress:
+                - to:
+                  - podSelector: {}
+          # Store Gateway + Compactor read/write blocks for Azure Blob.
+          - apiVersion: networking.k8s.io/v1
+            kind: NetworkPolicy
+            metadata:
+              name: allow-egress-to-azure-storage-from-thanos
+              namespace: thanos-system
+            spec:
+              podSelector:
+                matchExpressions:
+                  - key: app.kubernetes.io/name
+                    operator: In
+                    values:
+                      - thanos-storegateway
+                      - thanos-compactor
+              policyTypes:
+                - Egress
+              egress:
+                - ports:
+                    - protocol: TCP
+                      port: 443
+                  to:
+                    - ipBlock:
+                        cidr: 0.0.0.0/0
+          # Grafana (grafana-system) queries the Querier over HTTP :9090
+          - apiVersion: networking.k8s.io/v1
+            kind: NetworkPolicy
+            metadata:
+              name: allow-ingress-from-grafana-system-to-thanos-query
+              namespace: thanos-system
+            spec:
+              podSelector:
+                matchLabels:
+                  app.kubernetes.io/name: thanos-query
+              policyTypes:
+                - Ingress
+              ingress:
+                - from:
+                    - namespaceSelector:
+                        matchLabels:
+                          kubernetes.io/metadata.name: grafana-system
+                      podSelector:
+                        matchLabels:
+                          app: grafana
+                  ports:
+                    - protocol: TCP
+                      port: 9090
+          - apiVersion: networking.k8s.io/v1
+            kind: NetworkPolicy
+            metadata:
+              name: allow-egress-to-thanos-system-from-grafana
+              namespace: grafana-system
+            spec:
+              podSelector:
+                matchLabels:
+                  app: grafana
+              policyTypes:
+                - Egress
+              egress:
+                - to:
+                    - namespaceSelector:
+                        matchLabels:
+                          kubernetes.io/metadata.name: thanos-system
+                  ports:
+                    - protocol: TCP
+                      port: 9090
+          # Platform Prometheus (prometheus-system) scrapes for Thanos metrics - ServiceMonitors.
+          - apiVersion: networking.k8s.io/v1
+            kind: NetworkPolicy
+            metadata:
+              name: allow-ingress-from-prometheus-system-to-thanos
+              namespace: thanos-system
+            spec:
+              podSelector:
+                matchLabels:
+                  app.kubernetes.io/part-of: thanos
+              policyTypes:
+                - Ingress
+              ingress:
+                - from:
+                    - namespaceSelector:
+                        matchLabels:
+                          kubernetes.io/metadata.name: prometheus-system
+                      podSelector:
+                        matchLabels:
+                          app.kubernetes.io/name: prometheus
+                  ports:
+                    - protocol: TCP
+                      port: 9090
+                    - protocol: TCP
+                      port: 10902
+          - apiVersion: networking.k8s.io/v1
+            kind: NetworkPolicy
+            metadata:
+              name: allow-egress-to-thanos-system-from-prometheus
+              namespace: prometheus-system
+            spec:
+              podSelector:
+                matchLabels:
+                  app.kubernetes.io/name: prometheus
+              policyTypes:
+                - Egress
+              egress:
+                - to:
+                    - namespaceSelector:
+                        matchLabels:
+                          kubernetes.io/metadata.name: thanos-system
+                  ports:
+                    - protocol: TCP
+                      port: 9090
+                    - protocol: TCP
+                      port: 10902
+  destination:
+    name: {{ .Values.global.cluster }}
+    namespace: platform-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+
+{{- end }}

@@ -1,0 +1,46 @@
+{{ if and .Values.components.thanos.enabled .Values.components.thanos.serviceMonitor.enabled -}}
+
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-thanos-servicemonitor"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    chart: {{ .Values.global.raw.helm.chart }}
+    repoURL: {{ default .Values.global.helm.repository .Values.global.raw.helm.repository }}
+    targetRevision: {{ .Values.global.raw.helm.targetRevision }}
+    helm:
+      releaseName: thanos-servicemonitor
+      values: |
+        resources:
+          {{- range $c := list "thanos-query" "thanos-storegateway" "thanos-compactor" }}
+          - apiVersion: monitoring.coreos.com/v1
+            kind: ServiceMonitor
+            metadata:
+              name: {{ $c }}
+              namespace: thanos-system
+              labels:
+                app.kubernetes.io/name: {{ $c }}
+                app.kubernetes.io/part-of: thanos
+                app.kubernetes.io/managed-by: argo
+            spec:
+              selector:
+                matchLabels:
+                  app.kubernetes.io/name: {{ $c }}
+                  app.kubernetes.io/part-of: thanos
+              endpoints:
+                - port: http
+                  interval: 30s
+          {{- end }}
+  destination:
+    name: {{ .Values.global.cluster }}
+    namespace: platform-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+
+{{- end }}
