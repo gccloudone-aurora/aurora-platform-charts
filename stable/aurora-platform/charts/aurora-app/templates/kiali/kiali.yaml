@@ -84,7 +84,8 @@ spec:
                       auth:
                         token: {{ required "kiali.instances[].grafana.token is required" .grafana.token | quote }}
                         type: bearer
-                      in_cluster_url: http://kube-prometheus-stack-grafana.prometheus-system:80
+                      # in_cluster_url: http://kube-prometheus-stack-grafana.prometheus-system:80
+                      in_cluster_url: http://grafana-service.grafana-system:80
                       url: https://grafana.{{ $.Values.global.ingressDomain }}
                     istio:
                       component_status:
