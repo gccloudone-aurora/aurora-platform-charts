@@ -27,11 +27,11 @@ spec:
               image:
                 registry: docker.io # Changed from null to ensure registry resolution
 
-            image:
-              pullSecrets:
-              - aurora-image-pull-secret
-            imagePullSecrets:
-              - name: aurora-image-pull-secret
+            # image:
+            #   pullSecrets:
+            #   - aurora-image-pull-secret
+            # imagePullSecrets:
+            #   - name: aurora-image-pull-secret
             deploymentMode: SimpleScalable
 
             gateway:
