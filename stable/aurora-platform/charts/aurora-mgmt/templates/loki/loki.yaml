@@ -27,7 +27,7 @@ spec:
               image:
                 registry: docker.io # Changed from null to ensure registry resolution
 
-            imagePullSecrets: {{ toYaml .Values.components.loki.imagePullSecrets | nindent 12 }}
+            imagePullSecrets: {{ toYaml .Values.components.loki.imagePullSecrets | nindent 14 }}
             deploymentMode: SimpleScalable
 
             gateway:
