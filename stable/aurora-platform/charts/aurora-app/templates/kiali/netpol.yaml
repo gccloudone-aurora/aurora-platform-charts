@@ -68,6 +68,13 @@ spec:
                   podSelector:
                     matchLabels:
                       app.kubernetes.io/name: grafana
+                - namespaceSelector:
+                    matchLabels:
+                      namespace.ssc-spc.gc.ca/purpose: system
+                      kubernetes.io/metadata.name: grafana-system
+                  podSelector:
+                    matchLabels:
+                      app: grafana
               podSelector:
                 matchLabels:
                   app.kubernetes.io/part-of: kiali
@@ -109,6 +116,13 @@ spec:
                     podSelector:
                       matchLabels:
                         app.kubernetes.io/name: grafana
+                  - namespaceSelector:
+                      matchLabels:
+                        namespace.ssc-spc.gc.ca/purpose: system
+                        kubernetes.io/metadata.name: grafana-system
+                    podSelector:
+                      matchLabels:
+                        app: grafana
               podSelector:
                 matchLabels:
                   app.kubernetes.io/part-of: kiali
