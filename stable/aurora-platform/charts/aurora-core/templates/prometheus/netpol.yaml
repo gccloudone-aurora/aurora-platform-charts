@@ -665,6 +665,8 @@ spec:
                   - ports:
                     - port: 8080
                       protocol: TCP
+                    - port: 80
+                      protocol: TCP
                     to:
                     - namespaceSelector:
                         matchLabels:

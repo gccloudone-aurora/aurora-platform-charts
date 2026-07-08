@@ -49,6 +49,8 @@ global:
   # subscriptionId: ""
   # tenantId: ""
 
+  defaultStorageClass: default
+
 data:
   mgmt:
     enabled: true
@@ -416,7 +418,7 @@ components:
       # registry: docker.io
       repository: grafana/loki
       # tag: v3.3.0
-
+    imagePullSecrets: []
     nodeSelector:
       kubernetes.io/os: linux
       node.ssc-spc.gc.ca/purpose: system
@@ -431,5 +433,9 @@ components:
       # existingSecret:
 
     logStorageLocation: {}
+      # azure configuration
       # storageAccountName: <storage-account-name>
       # storageAccountKey: <storage-account-key>
+      # gcp configuration
+      # chunks: <gcp-bucket-name>
+      # ruler: <gcp-bucket-name>

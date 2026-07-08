@@ -196,7 +196,6 @@ spec:
                 tolerations: {{ toYaml .Values.components.prometheus.thanosRuler.thanosRulerSpec.tolerations | nindent 18 }}
                 affinity: {{ toYaml .Values.components.prometheus.thanosRuler.thanosRulerSpec.affinity | nindent 18 }}
                 priorityClassName: {{ .Values.components.prometheus.priorityClassName }}
-
             grafana:
               enabled: {{ .Values.components.prometheus.grafana.enabled }}
               priorityClassName: {{ .Values.components.prometheus.priorityClassName }}
@@ -239,7 +238,7 @@ spec:
                 datasources:
                   defaultDataSourceEnabled: false
 
-              {{- if .Values.global.clusterHasLoki }}
+              {{- if and .Values.global.clusterHasLoki .Values.components.prometheus.grafana.enabled }}
               additionalDataSources:
               - name: Loki
                 type: loki
