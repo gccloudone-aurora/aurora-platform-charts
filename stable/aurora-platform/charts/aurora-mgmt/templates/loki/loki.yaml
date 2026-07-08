@@ -27,11 +27,7 @@ spec:
               image:
                 registry: docker.io # Changed from null to ensure registry resolution
 
-            # image:
-            #   pullSecrets:
-            #   - aurora-image-pull-secret
-            # imagePullSecrets:
-            #   - name: aurora-image-pull-secret
+            imagePullSecrets: {{ toYaml .Values.components.loki.imagePullSecrets | nindent 12 }}
             deploymentMode: SimpleScalable
 
             gateway:
