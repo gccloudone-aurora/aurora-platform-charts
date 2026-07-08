@@ -198,113 +198,113 @@ spec:
                 priorityClassName: {{ .Values.components.prometheus.priorityClassName }}
             grafana:
               enabled: {{ .Values.components.prometheus.grafana.enabled }}
-              priorityClassName: {{ .Values.components.prometheus.priorityClassName }}
-              ingress:
-                enabled: true
-                hosts:
-                  - "grafana.{{ .Values.global.ingressDomain }}"
-                paths:
-                  - /
-                pathType: Prefix
-                annotations: {}
-                ingressClassName: "{{ .Values.global.ingressClassName }}"
+              # priorityClassName: {{ .Values.components.prometheus.priorityClassName }}
+              # ingress:
+              #   enabled: true
+              #   hosts:
+              #     - "grafana.{{ .Values.global.ingressDomain }}"
+              #   paths:
+              #     - /
+              #   pathType: Prefix
+              #   annotations: {}
+              #   ingressClassName: "{{ .Values.global.ingressClassName }}"
 
-              image: {{ default "{}" (include "prometheus.grafana.image" .) | nindent 16 }}
+              # image: {{ default "{}" (include "prometheus.grafana.image" .) | nindent 16 }}
 
-              deploymentStrategy:
-                type: {{ toYaml .Values.components.prometheus.grafana.deploymentStrategy.type | nindent 18 }}
+              # deploymentStrategy:
+              #   type: {{ toYaml .Values.components.prometheus.grafana.deploymentStrategy.type | nindent 18 }}
 
-              replicas: {{ .Values.components.prometheus.grafana.replicas }}
-              resources: {{ toYaml .Values.components.prometheus.grafana.resources | nindent 16 }}
+              # replicas: {{ .Values.components.prometheus.grafana.replicas }}
+              # resources: {{ toYaml .Values.components.prometheus.grafana.resources | nindent 16 }}
 
-              nodeSelector: {{ toYaml .Values.components.prometheus.grafana.nodeSelector | nindent 16 }}
-              tolerations: {{ toYaml .Values.components.prometheus.grafana.tolerations | nindent 16 }}
-              affinity: {{ toYaml .Values.components.prometheus.grafana.affinity | nindent 16 }}
+              # nodeSelector: {{ toYaml .Values.components.prometheus.grafana.nodeSelector | nindent 16 }}
+              # tolerations: {{ toYaml .Values.components.prometheus.grafana.tolerations | nindent 16 }}
+              # affinity: {{ toYaml .Values.components.prometheus.grafana.affinity | nindent 16 }}
 
-              downloadDashboardsImage:
-                {{- default "{}" (include "prometheus.grafana.downloadDashboards.image" .) | nindent 16 }}
-                resources: {{ toYaml .Values.components.prometheus.grafana.downloadDashboards.resources | nindent 18 }}
+              # downloadDashboardsImage:
+              #   {{- default "{}" (include "prometheus.grafana.downloadDashboards.image" .) | nindent 16 }}
+              #   resources: {{ toYaml .Values.components.prometheus.grafana.downloadDashboards.resources | nindent 18 }}
 
-              initChownData:
-                image: {{ default "{}" (include "prometheus.grafana.initChownData.image" .) | nindent 18 }}
-                resources: {{ toYaml .Values.components.prometheus.grafana.initChownData.resources | nindent 18 }}
+              # initChownData:
+              #   image: {{ default "{}" (include "prometheus.grafana.initChownData.image" .) | nindent 18 }}
+              #   resources: {{ toYaml .Values.components.prometheus.grafana.initChownData.resources | nindent 18 }}
 
-              sidecar:
-                image: {{ default "{}" (include "prometheus.grafana.sidecar.image" .) | nindent 18 }}
-                resources: {{ toYaml .Values.components.prometheus.grafana.sidecar.resources | nindent 18 }}
+              # sidecar:
+              #   image: {{ default "{}" (include "prometheus.grafana.sidecar.image" .) | nindent 18 }}
+              #   resources: {{ toYaml .Values.components.prometheus.grafana.sidecar.resources | nindent 18 }}
 
-                dashboards:
-                  searchNamespace: ALL
-                datasources:
-                  defaultDataSourceEnabled: false
+              #   dashboards:
+              #     searchNamespace: ALL
+              #   datasources:
+              #     defaultDataSourceEnabled: false
 
-              {{- if and .Values.global.clusterHasLoki .Values.components.prometheus.grafana.enabled }}
-              additionalDataSources:
-              - name: Loki
-                type: loki
-                url: {{ required "prometheus.grafana.lokiDataSource.url is required" .Values.components.prometheus.grafana.lokiDataSource.url }}
-                access: proxy
-                basicAuth: true
-                basicAuthUser: {{ required "prometheus.grafana.lokiDataSource.user is required" .Values.components.prometheus.grafana.lokiDataSource.user }}
-                secureJsonData:
-                  basicAuthPassword: {{ required "prometheus.grafana.lokiDataSource.password is required" .Values.components.prometheus.grafana.lokiDataSource.password }}
-              {{- end }}
-              {{- if .Values.components.prometheus.grafana.enabled }}
-              adminPassword: {{ required "prometheus.grafana.adminPassword is required" .Values.components.prometheus.grafana.adminPassword | quote }}
-              {{- end}}
-              dashboardProviders:
-                dashboardproviders.yaml:
-                  apiVersion: 1
-                  providers:
-                    - name: monitoring
-                      orgId: 1
-                      folder: monitoring
-                      type: file
-                      disableDeletion: true
-                      editable: false
-                      options:
-                        path: /tmp/dashboards/monitoring
+              # {{- if .Values.global.clusterHasLoki }}
+              # additionalDataSources:
+              # - name: Loki
+              #   type: loki
+              #   url: {{ required "prometheus.grafana.lokiDataSource.url is required" .Values.components.prometheus.grafana.lokiDataSource.url }}
+              #   access: proxy
+              #   basicAuth: true
+              #   basicAuthUser: {{ required "prometheus.grafana.lokiDataSource.user is required" .Values.components.prometheus.grafana.lokiDataSource.user }}
+              #   secureJsonData:
+              #     basicAuthPassword: {{ required "prometheus.grafana.lokiDataSource.password is required" .Values.components.prometheus.grafana.lokiDataSource.password }}
+              # {{- end }}
 
-              grafana.ini:
-                server:
-                  root_url: "https://grafana.{{ .Values.global.ingressDomain }}"
-                auth.ldap:
-                  enabled: false
-                auth.azuread:
-                  enabled: true
-                  name: "Azure AD"
-                  allow_sign_up: true
-                  client_id: "$$__file{/etc/secrets/auth_azuread/client_id}"
-                  client_secret: "$$__file{/etc/secrets/auth_azuread/client_secret}"
-                  scopes: "openid email profile"
-                  auth_url: {{ .Values.components.prometheus.grafana.authUrl | default (printf "https://login.microsoftonline.com/%s/oauth2/v2.0/authorize" .Values.global.tenantId) | quote }}
-                  token_url: {{ .Values.components.prometheus.grafana.tokenUrl | default (printf "https://login.microsoftonline.com/%s/oauth2/v2.0/token" .Values.global.tenantId) | quote }}
-                  allowed_domains: ""
-                  allowed_groups: {{ .Values.components.prometheus.grafana.allowedGroups | quote }}
-                  role_attribute_strict: false
+              # adminPassword: {{ required "prometheus.grafana.adminPassword is required" .Values.components.prometheus.grafana.adminPassword | quote }}
 
-              ldap:
-                enabled: false
+              # dashboardProviders:
+              #   dashboardproviders.yaml:
+              #     apiVersion: 1
+              #     providers:
+              #       - name: monitoring
+              #         orgId: 1
+              #         folder: monitoring
+              #         type: file
+              #         disableDeletion: true
+              #         editable: false
+              #         options:
+              #           path: /tmp/dashboards/monitoring
 
-              persistence:
-                enabled: true
-                storageClassName: {{ .Values.global.defaultStorageClass }}
-                accessModes: ["ReadWriteOnce"]
-                size: {{ .Values.components.prometheus.grafana.persistence.size }}
-                selectorLabels: {}
+              # grafana.ini:
+              #   server:
+              #     root_url: "https://grafana.{{ .Values.global.ingressDomain }}"
+              #   auth.ldap:
+              #     enabled: false
+              #   auth.azuread:
+              #     enabled: true
+              #     name: "Azure AD"
+              #     allow_sign_up: true
+              #     client_id: "$$__file{/etc/secrets/auth_azuread/client_id}"
+              #     client_secret: "$$__file{/etc/secrets/auth_azuread/client_secret}"
+              #     scopes: "openid email profile"
+              #     auth_url: {{ .Values.components.prometheus.grafana.authUrl | default (printf "https://login.microsoftonline.com/%s/oauth2/v2.0/authorize" .Values.global.tenantId) | quote }}
+              #     token_url: {{ .Values.components.prometheus.grafana.tokenUrl | default (printf "https://login.microsoftonline.com/%s/oauth2/v2.0/token" .Values.global.tenantId) | quote }}
+              #     allowed_domains: ""
+              #     allowed_groups: {{ .Values.components.prometheus.grafana.allowedGroups | quote }}
+              #     role_attribute_strict: false
 
-              extraSecretMounts:
-                - name: auth-azuread-oauth-secret-mount
-                  secretName: auth-azuread-oauth-secret
-                  defaultMode: 0440
-                  mountPath: /etc/secrets/auth_azuread
-                  readOnly: true
-              extraConfigmapMounts:
-                - name: trust-manager-propagated-custom-ca
-                  mountPath: /etc/ssl/certs/ca-certificates.crt
-                  subPath: ca-certificates.crt
-                  configMap: trust-manager-propagated-custom-ca
-                  readOnly: true
+              # ldap:
+              #   enabled: false
+
+              # persistence:
+              #   enabled: true
+              #   storageClassName: default
+              #   accessModes: ["ReadWriteOnce"]
+              #   size: {{ .Values.components.prometheus.grafana.persistence.size }}
+              #   selectorLabels: {}
+
+              # extraSecretMounts:
+              #   - name: auth-azuread-oauth-secret-mount
+              #     secretName: auth-azuread-oauth-secret
+              #     defaultMode: 0440
+              #     mountPath: /etc/secrets/auth_azuread
+              #     readOnly: true
+              # extraConfigmapMounts:
+              #   - name: trust-manager-propagated-custom-ca
+              #     mountPath: /etc/ssl/certs/ca-certificates.crt
+              #     subPath: ca-certificates.crt
+              #     configMap: trust-manager-propagated-custom-ca
+              #     readOnly: true
 
             kube-state-metrics:
               image: {{ default "{}" (include "prometheus.kubeStateMetrics.image" .) | nindent 16 }}
