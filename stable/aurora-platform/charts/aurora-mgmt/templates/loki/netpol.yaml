@@ -63,6 +63,12 @@ spec:
                 from:
                 - namespaceSelector:
                     matchLabels:
+                      kubernetes.io/metadata.name: grafana-system
+                  podSelector:
+                    matchLabels:
+                      app.kubernetes.io/name: grafana
+                - namespaceSelector:
+                    matchLabels:
                       kubernetes.io/metadata.name: prometheus-system
                   podSelector:
                     matchLabels:
