@@ -144,6 +144,28 @@ spec:
                       port: 9090
                     - protocol: TCP
                       port: 10902
+          - apiVersion: networking.k8s.io/v1
+            kind: NetworkPolicy
+            metadata:
+              name: allow-egress-to-prometheus-sidecar-from-thanos-query
+              namespace: thanos-system
+            spec:
+              podSelector:
+                matchLabels:
+                  app.kubernetes.io/name: thanos-query
+              policyTypes:
+                - Egress
+              egress:
+                - to:
+                    - namespaceSelector:
+                        matchLabels:
+                          kubernetes.io/metadata.name: prometheus-system
+                      podSelector:
+                        matchLabels:
+                          app.kubernetes.io/name: prometheus
+                  ports:
+                    - protocol: TCP
+                      port: 10901
   destination:
     name: {{ .Values.global.cluster }}
     namespace: platform-system
