@@ -6,8 +6,10 @@ on:
     - cron: "0 0 * * 1-5"
 
 permissions:
-  contents: read
-
+  contents: write
+  issues: write
+  pull-requests: write
+  
 concurrency:
   group: renovate
   cancel-in-progress: false
