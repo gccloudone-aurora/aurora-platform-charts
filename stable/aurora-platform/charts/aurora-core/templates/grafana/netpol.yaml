@@ -95,55 +95,8 @@ spec:
                           istio: general
                   ports:
                     - protocol: TCP
-                      port: 3000
-          - apiVersion: networking.k8s.io/v1
-            kind: NetworkPolicy
-            metadata:
-              name: allow-egress-to-loki-from-grafana
-              namespace: grafana-system
-            spec:
-              egress:
-              - ports:
-                - port: 8080
-                  protocol: TCP
-                - port: 80
-                  protocol: TCP
-                to:
-                - namespaceSelector:
-                    matchLabels:
-                      kubernetes.io/metadata.name: loki-system
-                  podSelector:
-                    matchLabels:
-                      app.kubernetes.io/component: gateway
-              podSelector:
-                matchLabels:
-                  app: grafana
-              policyTypes:
-              - Egress
-          - apiVersion: networking.k8s.io/v1
-            kind: NetworkPolicy
-            metadata:
-              name: allow-ingress-from-kiali
-              namespace: grafana-system
-            spec:
-              podSelector:
-                matchLabels:
-                  app: grafana
-              policyTypes:
-                - Ingress
-              ingress:
-                - from:
-                    - namespaceSelector:
-                        matchLabels:
-                          kubernetes.io/metadata.name: kiali-system
-                      podSelector:
-                        matchLabels:
-                          app.kubernetes.io/part-of: kiali
-                  ports:
-                    - protocol: TCP
-                      port: 3000
-                      
-
+                      port: 9090
+          {{- if .Values.global.clusterHasLoki }}
           - apiVersion: networking.k8s.io/v1
             kind: NetworkPolicy
             metadata:
@@ -163,6 +116,7 @@ spec:
                       port: 80
                     - protocol: TCP
                       port: 8080
+          {{- end }}
           - apiVersion: networking.k8s.io/v1
             kind: NetworkPolicy
             metadata:
