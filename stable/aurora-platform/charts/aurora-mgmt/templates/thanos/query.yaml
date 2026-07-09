@@ -75,8 +75,10 @@ spec:
                         - --query.replica-label={{ . }}
                         {{- end }}
                         # Historical data: all Store Gateways (all buckets) via the aggregate
-                        # discovery Service. Blob-only — no cross-cluster sidecar fan-out.
+                        # discovery Service
                         - --endpoint=dnssrv+_grpc._tcp.thanos-storegateway.thanos-system.svc.cluster.local
+                        # Fresh Data Endpoint for Query (Data <2Hours), allow local cluster thanos side car
+                        - --endpoint=dnssrv+_grpc._tcp.kube-prometheus-stack-thanos-discovery.prometheus-system.svc.cluster.local
                       ports:
                         - name: http
                           containerPort: 9090

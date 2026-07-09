@@ -29,6 +29,8 @@ spec:
                   {{- if eq $t.objectStorage.auth "workloadIdentity" }}
                   annotations:
                     azure.workload.identity/client-id: {{ required "components.thanos.objectStorage.buckets[].clientId is required for workloadIdentity" $b.clientId | quote }}
+                  {{- else if ne $t.objectStorage.auth "workloadIdentity" }}
+                  {{- fail (printf "objectStorage.auth must be 'workloadIdentity' or 'accountKey', got %q" $t.objectStorage.auth) }}
                   {{- end }}
                   labels:
                     app.kubernetes.io/name: thanos-storegateway
