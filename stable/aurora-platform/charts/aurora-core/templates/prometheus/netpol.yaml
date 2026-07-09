@@ -708,8 +708,8 @@ spec:
                   ingress:
                     - from:
                         - namespaceSelector:
-                          matchLabels:
-                            kubernetes.io/metadata.name: thanos-system
+                            matchLabels:
+                              kubernetes.io/metadata.name: thanos-system
                           podSelector:
                             matchLabels:
                               app.kubernetes.io/name: thanos-query
