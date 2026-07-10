@@ -57,7 +57,7 @@ spec:
           # Configure the data plane mode for Istio.
           # "sidecar" Enables sidecar injection (istio-injection=enabled).
           # "ambient" Enables Ambient Mesh (istio.io/dataplane-mode=ambient).
-          # istioMode: "ambient"
+          istioMode: "ambient"
 
           # Refer to https://kubernetes.io/docs/concepts/security/pod-security-admission/
           podSecurityAdmission:
