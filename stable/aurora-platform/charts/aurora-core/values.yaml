@@ -517,10 +517,12 @@ components:
   cilium:
     enabled: true
 
-    helm: {}
+    helm:
       # chart: cilium
       # repository: https://helm.cilium.io
-      # targetRevision: 1.18.7
+      # Default chart version for the Cilium ArgoCD application.
+      # Renovate can update this value when managing chart versions.
+      targetRevision: 1.19.2
 
     imagePullSecrets:
       - name: cilium-image-pull-secret
