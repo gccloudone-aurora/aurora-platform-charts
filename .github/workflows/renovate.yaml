@@ -32,3 +32,5 @@ jobs:
           RENOVATE_PLATFORM: github
           RENOVATE_REPOSITORIES: ${{ github.repository }}
           RENOVATE_REQUIRE_CONFIG: required
+          RENOVATE_DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          RENOVATE_DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
