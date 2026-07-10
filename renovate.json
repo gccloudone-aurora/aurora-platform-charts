@@ -10,14 +10,6 @@
     "helmv3",
     "helm-values"
   ],
-  "hostRules": [
-    {
-      "hostType": "docker",
-      "matchHost": "docker.io",
-      "username": "${RENOVATE_DOCKER_USERNAME}",
-      "password": "${RENOVATE_DOCKER_PASSWORD}"
-    }
-  ],
   "helm-values": {
     "managerFilePatterns": [
       "/(^|/)values\\.ya?ml$/",
