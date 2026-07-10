@@ -63,6 +63,8 @@ spec:
                 ingressClassName: "{{ .Values.global.ingressClassName }}"
               thanosService:
                 enabled: true
+              thanosServiceMonitor:
+                enabled: true
               {{- if and .Values.components.prometheus.prometheus.prometheusSpec.thanos.enabled (eq .Values.components.prometheus.prometheus.prometheusSpec.thanos.objectStorage.auth "workloadIdentity") }}
               ## Federate Prometheus ServiceAccount to Azure workload identity in order for Thanos to auth into blob storage
               serviceAccount:
