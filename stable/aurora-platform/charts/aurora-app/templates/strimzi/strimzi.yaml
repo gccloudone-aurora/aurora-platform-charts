@@ -15,7 +15,7 @@ spec:
     {{- else }}
     repoURL: {{ default "quay.io/strimzi-helm" .Values.global.helm.repository }}
     {{- end }}
-    targetRevision: {{ default "0.45.2" .Values.components.strimzi.helm.targetRevision }}
+    targetRevision: {{ default "1.0.0" .Values.components.strimzi.helm.targetRevision }}
     helm:
       releaseName: strimzi-kafka-operator
       values: |
