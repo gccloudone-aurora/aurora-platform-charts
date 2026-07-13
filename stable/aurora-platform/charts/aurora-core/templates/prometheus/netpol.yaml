@@ -38,6 +38,25 @@ spec:
               - apiVersion: networking.k8s.io/v1
                 kind: NetworkPolicy
                 metadata:
+                  name: allow-egress-from-grafana-to=prometheus
+                  namespace: prometheus-system
+                spec:
+                  podSelector:
+                    matchLabels:
+                      app: grafana
+                  policyTypes:
+                    - Egress
+                  egress:
+                    - to:
+                        - namespaceSelector:
+                            matchLabels:
+                              kubernetes.io/metadata.name: grafana-system
+                      ports:
+                        - protocol: TCP
+                          port: 3000
+              - apiVersion: networking.k8s.io/v1
+                kind: NetworkPolicy
+                metadata:
                   name: allow-egress-to-kiali-from-prometheus
                   namespace: prometheus-system
                 spec:
