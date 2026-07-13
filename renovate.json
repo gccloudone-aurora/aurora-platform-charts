@@ -8,7 +8,8 @@
   "enabledManagers": [
     "github-actions",
     "helmv3",
-    "helm-values"
+    "helm-values",
+    "custom.regex"
   ],
   "helm-values": {
     "managerFilePatterns": [
@@ -17,6 +18,20 @@
     ]
     
   },
+  "customManagers": [
+    {
+      "customType": "regex",
+      "description": "Update Helm chart targetRevision values documented with chart/repository comments",
+      "managerFilePatterns": [
+        "/(^|/)values\\.ya?ml$/",
+        "/^config/config\\.ya?ml$/"
+      ],
+      "matchStrings": [
+        "#\\s*chart:\\s*(?<depName>\\S+)\\s*\\n\\s*#\\s*repository:\\s*(?<registryUrl>\\S+)\\s*\\n(?:\\s*#.*\\n)*\\s*targetRevision:\\s*[\"']?(?<currentValue>[^\"'\\s#]+)[\"']?"
+      ],
+      "datasourceTemplate": "helm"
+    }
+  ],
   "lockFileMaintenance": {
     "enabled": true
   },
@@ -24,7 +39,11 @@
     {
       "description": "Group Helm chart dependency updates",
       "matchManagers": [
-        "helmv3"
+        "helmv3",
+        "custom.regex"
+      ],
+      "matchDatasources": [
+        "helm"
       ],
       "groupName": "helm chart dependencies"
     },
