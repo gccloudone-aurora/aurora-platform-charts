@@ -32,10 +32,3 @@ jobs:
           RENOVATE_PLATFORM: github
           RENOVATE_REPOSITORIES: ${{ github.repository }}
           RENOVATE_REQUIRE_CONFIG: required
-          RENOVATE_HOST_RULES: >-
-            [{
-              "hostType": "docker",
-              "matchHost": "docker.io",
-              "username": "${{ secrets.RENOVATE_DOCKER_USERNAME }}",
-              "password": "${{ secrets.RENOVATE_DOCKER_PASSWORD }}"
-            }]
