@@ -16,8 +16,10 @@ spec:
       releaseName: grafana-dashboard-resources
       values: |
         namespace: grafana-system
+{{ with .Values.components.grafana.dashboard.instanceSelector }}
         instanceSelector:
-{{ toYaml .Values.components.grafana.dashboard.instanceSelector | nindent 10 }}
+{{ toYaml . | nindent 10 }}
+{{ end }}
   destination:
     name: {{ .Values.global.cluster }}
     namespace: grafana-system
