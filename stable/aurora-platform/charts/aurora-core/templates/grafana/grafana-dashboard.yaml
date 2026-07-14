@@ -9,27 +9,15 @@ metadata:
 spec:
   project: {{ .Values.global.project }}
   source:
-    chart: {{ .Values.global.raw.helm.chart }}
-    repoURL: {{ default .Values.global.helm.repository .Values.global.raw.helm.repository }}
-    targetRevision: {{ .Values.global.raw.helm.targetRevision }}
+    repoURL: {{ default "https://github.com/gccloudone-aurora/grafana-dashboards.git" .Values.components.grafana.dashboard.repository }}
+    path: {{ default "." .Values.components.grafana.dashboard.path }}
+    targetRevision: {{ default "main" .Values.components.grafana.dashboard.targetRevision }}
     helm:
       releaseName: grafana-dashboard-resources
       values: |
-        resources:
-{{- range $path, $_ := .Files.Glob "conf/grafana_dashboards/*.json" }}
-{{- $dashboardName := trimSuffix ".json" (base $path) }}
-          - apiVersion: grafana.integreatly.org/v1beta1
-            kind: GrafanaDashboard
-            metadata:
-              name: {{ $dashboardName }}-dashboard
-              namespace: grafana-system
-            spec:
-              instanceSelector:
-                matchLabels:
-                  dashboards: "aurora"
-              json: |-
-{{ $.Files.Get $path | nindent 16 }}
-{{- end }}
+        namespace: grafana-system
+        instanceSelector:
+{{ toYaml .Values.components.grafana.dashboard.instanceSelector | nindent 10 }}
   destination:
     name: {{ .Values.global.cluster }}
     namespace: grafana-system
