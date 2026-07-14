@@ -11,7 +11,7 @@ spec:
   source:
     repoURL: {{ default "https://github.com/gccloudone-aurora/grafana-dashboards.git" .Values.components.grafana.dashboard.repository }}
     path: {{ default "." .Values.components.grafana.dashboard.path }}
-    targetRevision: {{ default "main" .Values.components.grafana.dashboard.targetRevision }}
+    targetRevision: {{ default "main" .Values.components.grafana.dashboard.targetRevision | quote }}
     helm:
       releaseName: grafana-dashboard-resources
       values: |
