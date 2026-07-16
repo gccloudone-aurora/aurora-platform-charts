@@ -18,4 +18,8 @@ tag: {{ .Values.components.trivy.image.tag }}
 {{- if .Values.components.trivy.image.pullPolicy }}
 pullPolicy: {{ .Values.components.trivy.image.pullPolicy }}
 {{- end }}
+{{- with .Values.components.trivy.imagePullSecrets }}
+pullSecrets:
+{{ toYaml . | nindent 2 }}
+{{- end }}
 {{- end }}

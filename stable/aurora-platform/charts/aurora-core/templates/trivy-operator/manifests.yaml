@@ -1,0 +1,45 @@
+{{ if and .Values.components.trivy.enabled .Values.components.trivy.registryCredentials.enabled -}}
+
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-trivy-manifests"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    chart: {{ .Values.global.raw.helm.chart }}
+    repoURL: {{ default .Values.global.helm.repository .Values.global.raw.helm.repository }}
+    targetRevision: {{ .Values.global.raw.helm.targetRevision }}
+    plugin:
+      env:
+        - name: HELM_RELEASE_NAME
+          value: "trivy-manifests"
+        - name: HELM_VALUES
+          value: |
+            resources:
+              - apiVersion: v1
+                kind: Secret
+                metadata:
+                  name: trivy-image-pull-secret
+                  namespace: trivy-system
+                  labels:
+                    app.kubernetes.io/name: "trivy-manifests"
+                    app.kubernetes.io/instance: "{{ .Values.global.cluster }}"
+                    app.kubernetes.io/component: config
+                    app.kubernetes.io/part-of: trivy-system
+                    app.kubernetes.io/managed-by: argo
+                    helm.sh/chart: {{ printf "%s-%s" .Chart.Name .Chart.Version }}
+                type: kubernetes.io/dockerconfigjson
+                data:
+                  .dockerconfigjson: {{ required "trivy.secretDockerConfigJson is required" .Values.components.trivy.secretDockerConfigJson | b64enc }}
+  destination:
+    name: {{ .Values.global.cluster }}
+    namespace: trivy-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+
+{{- end }}
