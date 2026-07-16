@@ -60,6 +60,7 @@ spec:
                   allowed_domains: ""
                   allowed_groups: {{ .Values.components.grafana.allowedGroups | quote }}
                   role_attribute_strict: "false"
+                  role_attribute_path: "contains(roles[*], 'grafana-admin') && 'Admin' || 'Viewer'"
                   {{- end }}
 
               service:
