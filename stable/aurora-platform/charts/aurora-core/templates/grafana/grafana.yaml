@@ -50,7 +50,7 @@ spec:
                     security:
                       adminPassword: {{ required "grafana.adminPassword is required" .Values.components.grafana.adminPassword | quote }}
                     server:
-                      root_url: {{ .Values.components.grafana.serverUrl | default (printf "http://localhost:3000/login/azuread" .Values.components.grafana.serverUrl | quote }}
+                      root_url: {{ .Values.components.grafana.serverUrl | default (printf "http://localhost:3000/login/azuread" .Values.components.grafana.serverUrl) | quote }}
                     {{- if eq .Values.global.provider "azure" }}
                     auth.azuread:
                       enabled: "true"
