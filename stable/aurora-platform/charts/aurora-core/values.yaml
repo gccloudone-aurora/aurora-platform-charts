@@ -2244,6 +2244,12 @@ components:
       tag: "0.29.0"
       pullPolicy: IfNotPresent
 
+    # This enables creating the secret for pulling the image
+    registryCredentials:
+      enabled: false
+
+    # secretDockerConfigJson: ""
+
     podSecurityContext:
       runAsNonRoot: true
       seccompProfile:
