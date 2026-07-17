@@ -451,6 +451,11 @@ core:
     trivy:
       enabled: true
 
+      registryCredentials:
+        enabled: true
+
+      secretDockerConfigJson: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-artifactory-credentials>'
+
     ################
     ### Tetragon ###
     ################
