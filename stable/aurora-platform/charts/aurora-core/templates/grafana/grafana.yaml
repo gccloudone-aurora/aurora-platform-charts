@@ -50,7 +50,7 @@ spec:
                     security:
                       adminPassword: {{ required "grafana.adminPassword is required" .Values.components.grafana.adminPassword | quote }}
                     server:
-                      root_url: "grafana.{{ .Values.global.ingressDomain }}"
+                      root_url: "https://grafana.{{ .Values.global.ingressDomain }}/"
                     {{- if eq .Values.global.provider "azure" }}
                     auth.azuread:
                       enabled: "true"
