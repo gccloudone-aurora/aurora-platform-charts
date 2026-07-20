@@ -725,14 +725,14 @@ components:
     helm: {}
       # chart: strimzi-kafka-operator
       # repository: oci://quay.io/strimzi-helm/strimzi-kafka-operator
-      # targetRevision: 0.45.2
+      # targetRevision: 1.0.0
 
     imagePullSecrets: []
     image:
       # registry: quay.io
       repository: strimzi
       name: operator
-      # tag: 0.45.2
+      # tag: 1.0.0
       # pullPolicy: IfNotPresent
 
     defaultImageRegistry: quay.io

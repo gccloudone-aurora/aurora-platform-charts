@@ -1065,7 +1065,15 @@ components:
   ### Grafana Operator ###
   #########################
   grafana:
-    enabled: true
+    enabled: false
+
+    dashboard: {}
+      # repository: https://github.com/gccloudone-aurora/grafana-dashboards.git
+      # path: .
+      # targetRevision: main
+      # instanceSelector:
+      #   matchLabels:
+      #     dashboards: aurora   
 
     helm: {}
       # chart: grafana-operator
@@ -1103,6 +1111,7 @@ components:
             labelSelector:
               matchLabels:
                 app.kubernetes.io/instance: grafana-operator
+    allowedGroups: ""
 
   #############
   ### Falco ###
@@ -2234,6 +2243,12 @@ components:
       repository: aquasec/trivy-operator
       tag: "0.29.0"
       pullPolicy: IfNotPresent
+
+    # This enables creating the secret for pulling the image
+    registryCredentials:
+      enabled: false
+
+    # secretDockerConfigJson: ""
 
     podSecurityContext:
       runAsNonRoot: true

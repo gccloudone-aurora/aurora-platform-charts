@@ -1,4 +1,9 @@
 {{ if .Values.components.trivy.enabled -}}
+{{- $platformRegistry := default "docker.io" .Values.global.container.registry -}}
+{{- $upstreamGlobalRegistry := $platformRegistry -}}
+{{- if .Values.components.trivy.image.registry -}}
+{{- $upstreamGlobalRegistry = "" -}}
+{{- end }}
 
 apiVersion: argoproj.io/v1alpha1
 kind: Application
@@ -24,7 +29,7 @@ spec:
           value: |
             global:
               image: 
-                registry: {{ default "docker.io" .Values.global.container.registry }}
+                registry: {{ $upstreamGlobalRegistry | quote }}
             podSecurityContext:
               runAsNonRoot: true
               runAsUser: 10000
@@ -47,9 +52,14 @@ spec:
             serviceMonitor:
               enabled: {{ .Values.components.trivy.servicemonitor.enabled }} 
 
+            nodeCollector:
+              registry: {{ $platformRegistry }}
+
             trivy:
-              dbRegistry: {{ default "docker.io" .Values.global.container.registry }}
-              javaDbRegistry: {{ default "docker.io" .Values.global.container.registry }}
+              image:
+                registry: {{ $platformRegistry }}
+              dbRegistry: {{ $platformRegistry }}
+              javaDbRegistry: {{ $platformRegistry }}
               severity: {{ .Values.components.trivy.severity }}
               storageClassName: default
               resources: {{ toYaml .Values.components.trivy.scanJobResources | nindent 16 }}
