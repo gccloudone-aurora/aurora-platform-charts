@@ -1,0 +1,46 @@
+{{ if .Values.components.grafana.enabled -}}
+## The operator's built-in ingress builder generated a blank hostname string under the hood, which triggered platform's strict Gatekeeper policy against wildcard connections. So using native ingress resource.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-grafana-ingress"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    chart: {{ .Values.global.raw.helm.chart }}
+    repoURL: {{ default .Values.global.helm.repository .Values.global.raw.helm.repository }}
+    targetRevision: {{ .Values.global.raw.helm.targetRevision }}
+    helm:
+      releaseName: grafana-ingress
+      values: |
+        resources:
+          - apiVersion: networking.k8s.io/v1
+            kind: Ingress
+            metadata:
+              name: grafana-routing-ingress
+              namespace: grafana-system
+            spec:
+              ingressClassName: "{{ .Values.global.ingressClassName }}"
+              rules:
+                - host: "grafana.{{ .Values.global.ingressDomain }}"
+                  http:
+                    paths:
+                      - path: /
+                        pathType: Prefix
+                        backend:
+                          service:
+                            name: grafana-service
+                            port:
+                              number: 3000
+
+  destination:
+    name: {{ .Values.global.cluster }}
+    namespace: grafana-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+
+{{- end }}

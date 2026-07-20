@@ -98,6 +98,21 @@ core:
     ########################
     grafana:
       enabled: true
+      dashboard:
+        repository: https://github.com/gccloudone-aurora/grafana-dashboards.git
+        path: .
+        targetRevision: main
+        instanceSelector:
+          matchLabels:
+            dashboards: aurora 
+      azure:
+        clientId: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-grafana-sp-client-id>'
+        clientPassword: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-grafana-sp-client-secret>'
+      adminPassword: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-grafana-admin-password>'
+      lokiDataSource:
+        url: "http://loki-gateway.loki-system.svc.cluster.local"
+        user: '<path:GcDc-Auror-ARGO-13726-kv#gcdc-auroramgmt-argo-kvs-loki-user>'
+        password: '<path:GcDc-Auror-ARGO-13726-kv#gcdc-auroramgmt-argo-kvs-loki-password>'
 
     ####################
     ### Cert Manager ###
@@ -435,6 +450,11 @@ core:
     #############
     trivy:
       enabled: true
+
+      registryCredentials:
+        enabled: true
+
+      secretDockerConfigJson: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-artifactory-credentials>'
 
     ################
     ### Tetragon ###
