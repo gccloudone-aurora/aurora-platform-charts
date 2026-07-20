@@ -32,7 +32,7 @@ spec:
                     spec:
                       accessModes:
                         - ReadWriteOnce
-                      storageClassName: default
+                      storageClassName: {{ .Values.global.defaultStorageClass | default "default" }}
                       resources:
                         requests:
                           storage: 20Gi
