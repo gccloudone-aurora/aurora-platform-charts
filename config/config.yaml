@@ -102,7 +102,75 @@ core:
         targetRevision: main
         instanceSelector:
           matchLabels:
-            dashboards: aurora 
+            dashboards: aurora
+      alerting:
+        enabled: true
+        repository: https://github.com/gccloudone-aurora/grafana-alerts.git
+        path: .
+        targetRevision: main
+        namespace: grafana-system
+        values:
+          datasourceUid: prometheus
+          instanceSelector:
+            matchLabels:
+              dashboards: aurora
+          notificationPolicy:
+            enabled: true
+            routingLabel: notification_route
+          folders:
+            trivy:
+              enabled: true
+          timeIntervals:
+            weekday-morning:
+              enabled: true
+              name: weekday-morning
+              startTime: "08:00"
+              endTime: "09:00"
+              weekdays:
+                - monday:friday
+              location: America/Toronto
+          notificationTemplates:
+            gcNotify:
+              enabled: true
+          managedSecrets:
+            trivy-gc-notify:
+              enabled: true
+              name: grafana-alert-contact-points
+              stringData:
+                trivy-webhook-url: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-grafana-alert-webhook-url>'
+                trivy-webhook-authorization-credentials: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-grafana-alert-webhook-api-key>'
+          contactPoints:
+            trivy-gc-notify:
+              enabled: true
+              name: trivy-webhook
+              type: gc-notify-webhook
+              disableResolveMessage: true
+              recipient:
+                email: <FILLIN_ALERT_EMAIL>
+                name: <FILLIN_ALERT_NAME>
+              gcNotify:
+                templateId: <FILLIN_GCNOTIFY_TEMPLATE>
+              secretRef:
+                name: grafana-alerting-contact-points
+                urlKey: trivy-webhook-url
+                authorizationCredentialsKey: trivy-webhook-authorization-credentials
+              authorization:
+                enabled: true
+                scheme: ApiKey-v1
+          routes:
+            trivy:
+              enabled: true
+              receiverRef: trivy-gc-notify
+              matcherValue: trivy
+              additionalMatchers: []
+              groupBy:
+                - alertname
+              groupWait: 30s
+              groupInterval: 5m
+              repeatInterval: 24h
+              activeTimeIntervalRefs:
+                - weekday-morning
+              muteTimeIntervalRefs: []  
       azure:
         clientId: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-grafana-sp-client-id>'
         clientPassword: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-grafana-sp-client-secret>'
