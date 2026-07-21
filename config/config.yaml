@@ -133,10 +133,10 @@ core:
             trivy-gc-notify:
               enabled: true
               recipients:
-                - email: <FILLIN_ALERT_EMAIL>
-                  name: <FILLIN_ALERT_NAME>
-                - email: <FILLIN_ALERT_EMAIL>
-                  name: <FILLIN_ALERT_NAME>
+                - email: <FILLIN_ALERT_EMAIL1>
+                  name: <FILLIN_ALERT_NAME1>
+                - email: <FILLIN_ALERT_EMAIL2>
+                  name: <FILLIN_ALERT_NAME2>
               gcNotify:
                 templateId: <FILLIN_GCNOTIFY_TEMPLATE>
               authorization:
