@@ -132,9 +132,11 @@ core:
           contactPoints:
             trivy-gc-notify:
               enabled: true
-              recipient:
-                email: <FILLIN_ALERT_EMAIL>
-                name: <FILLIN_ALERT_NAME>
+              recipients:
+                - email: <FILLIN_ALERT_EMAIL>
+                  name: <FILLIN_ALERT_NAME>
+                - email: <FILLIN_ALERT_EMAIL>
+                  name: <FILLIN_ALERT_NAME>
               gcNotify:
                 templateId: <FILLIN_GCNOTIFY_TEMPLATE>
               authorization:
