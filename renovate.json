@@ -1,0 +1,212 @@
+{
+  "extends": [
+    "config:recommended"
+  ],
+  "labels": [
+    "dependencies"
+  ],
+  "enabledManagers": [
+    "github-actions",
+    "helmv3",
+    "helm-values",
+    "custom.regex"
+  ],
+  "helm-values": {
+    "managerFilePatterns": [
+      "/(^|/)values\\.ya?ml$/",
+      "/^config/config\\.ya?ml$/"
+    ]
+    
+  },
+  "customManagers": [
+    {
+      "customType": "regex",
+      "description": "Update Helm chart targetRevision values documented with chart/repository comments",
+      "managerFilePatterns": [
+        "/(^|/)values\\.ya?ml$/",
+        "/^config/config\\.ya?ml$/"
+      ],
+      "matchStrings": [
+        "#\\s*chart:\\s*(?<depName>\\S+)\\s*\\n\\s*#\\s*repository:\\s*(?<registryUrl>\\S+)\\s*\\n(?:\\s*#.*\\n)*\\s*targetRevision:\\s*[\"']?(?<currentValue>[^\"'\\s#]+)[\"']?"
+      ],
+      "datasourceTemplate": "helm"
+    }
+  ],
+  "lockFileMaintenance": {
+    "enabled": true
+  },
+  "packageRules": [
+    {
+      "description": "Group Helm chart dependency updates",
+      "matchManagers": [
+        "helmv3",
+        "custom.regex"
+      ],
+      "matchDatasources": [
+        "helm"
+      ],
+      "groupName": "helm chart dependencies"
+    },
+    {
+      "description": "Group GitHub Actions updates",
+      "matchManagers": [
+        "github-actions"
+      ],
+      "groupName": "github actions"
+    },
+    {
+      "description": "Do not update branch-like image tags",
+      "matchManagers": [
+        "helm-values"
+      ],
+      "matchCurrentValue": "/^(main|master)$/",
+      "enabled": false
+    },
+    {
+      "description": "Resolve Quay-backed Helm values images against their upstream registry",
+      "matchManagers": [
+        "helm-values"
+      ],
+      "matchDatasources": [
+        "docker"
+      ],
+      "matchPackageNames": [
+        "argoprojlabs/argocd-operator",
+        "argoproj/argocli",
+        "argoproj/argoexec",
+        "argoproj/workflow-controller",
+        "cilium/certgen",
+        "cilium/cilium",
+        "cilium/cilium-envoy",
+        "cilium/cilium-etcd-operator",
+        "cilium/clustermesh-apiserver",
+        "cilium/hubble-export-stdout",
+        "cilium/hubble-relay",
+        "cilium/hubble-ui",
+        "cilium/hubble-ui-backend",
+        "cilium/operator",
+        "cilium/startup-script",
+        "cilium/tetragon",
+        "cilium/tetragon-operator",
+        "coreos/etcd",
+        "jetstack/cert-manager-acmesolver",
+        "jetstack/cert-manager-cainjector",
+        "jetstack/cert-manager-controller",
+        "jetstack/cert-manager-startupapicheck",
+        "jetstack/cert-manager-webhook",
+        "jetstack/trust-manager",
+        "jetstack/trust-pkg-debian-bookworm",
+        "kiali/kiali-operator",
+        "prometheus-operator/prometheus-config-reloader",
+        "prometheus-operator/prometheus-operator",
+        "prometheus/alertmanager",
+        "prometheus/blackbox-exporter",
+        "prometheus/node-exporter",
+        "prometheus/prometheus",
+        "thanos/thanos"
+      ],
+      "registryUrls": [
+        "https://quay.io"
+      ]
+    },
+    {
+      "description": "Resolve public ECR-backed Helm values images against their upstream registry",
+      "matchManagers": [
+        "helm-values"
+      ],
+      "matchDatasources": [
+        "docker"
+      ],
+      "matchPackageNames": [
+        "csi-components/csi-attacher",
+        "csi-components/csi-node-driver-registrar",
+        "csi-components/csi-provisioner",
+        "csi-components/csi-resizer",
+        "csi-components/csi-snapshotter",
+        "ebs-csi-driver/aws-ebs-csi-driver",
+        "ebs-csi-driver/volume-modifier-for-k8s",
+        "eks/aws-load-balancer-controller"
+      ],
+      "registryUrls": [
+        "https://public.ecr.aws"
+      ]
+    },
+    {
+      "description": "Resolve Kubernetes registry-backed Helm values images against their upstream registry",
+      "matchManagers": [
+        "helm-values"
+      ],
+      "matchDatasources": [
+        "docker"
+      ],
+      "matchPackageNames": [
+        "csi-secrets-store/driver",
+        "csi-secrets-store/driver-crds",
+        "kube-state-metrics/kube-state-metrics",
+        "sig-storage/csi-node-driver-registrar"
+      ],
+      "registryUrls": [
+        "https://registry.k8s.io"
+      ]
+    },
+    {
+      "description": "Resolve Elastic Helm values images against their upstream registry",
+      "matchManagers": [
+        "helm-values"
+      ],
+      "matchDatasources": [
+        "docker"
+      ],
+      "matchPackageNames": [
+        "eck/eck-operator"
+      ],
+      "registryUrls": [
+        "https://docker.elastic.co"
+      ]
+    },
+    {
+      "description": "Resolve IBM Container Registry-backed Kubecost images against their upstream registry",
+      "matchManagers": [
+        "helm-values"
+      ],
+      "matchDatasources": [
+        "docker"
+      ],
+      "matchPackageNames": [
+        "ibm-finops/agent",
+        "kubecost/cluster-controller",
+        "kubecost/cost-model",
+        "kubecost/frontend",
+        "kubecost/modeling",
+        "kubecost/network-costs"
+      ],
+      "registryUrls": [
+        "https://icr.io"
+      ]
+    },
+    {
+      "description": "Resolve Aurora-owned Helm values images against their upstream registry",
+      "matchManagers": [
+        "helm-values"
+      ],
+      "matchDatasources": [
+        "docker"
+      ],
+      "matchPackageNames": [
+        "gccloudone-aurora/argo-controller",
+        "gccloudone-aurora/aurora-controller",
+        "gccloudone-aurora/cidr-allocator",
+        "gccloudone-aurora/podtracker",
+        "gccloudone-aurora/sidecar-terminator"
+      ],
+      "registryUrls": [
+        "https://ghcr.io"
+      ]
+    }
+  ],
+  "ignorePaths": [
+    "stable/**/README.md",
+    "stable/**/README.md.gotmpl",
+    "stable/argocd-operator/crds/**"
+  ]
+}
