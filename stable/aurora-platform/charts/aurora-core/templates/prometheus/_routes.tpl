@@ -93,21 +93,6 @@
 {{- end }}
 {{- end }}
 
-{{- define "alertmanager.jiraAlert.receivers" -}}
-{{- range $severity, $sVal := .Values.components.prometheus.jiralert.receivers }}
-- name: jiralert_{{ $severity }}
-  webhook_configs:
-    - url: 'http://prometheus-jiralert:9097/alert'
-{{- end }}
-{{- end }}
-
-
-{{- define "alertmanager.jiraAlert.routes" -}}
-{{- $severity := index . 0 -}}
-- receiver: jiralert_{{ $severity }}
-  continue: true
-{{- end }}
-
 
 
 {{/*
@@ -126,7 +111,6 @@ receivers:
   - name: black_hole #Empty default receiver
   {{- include "alertmanager.channel.receivers" . | indent 2 }}
   {{- include "alertmanager.email.receivers" . | indent 2 }}
-  {{- include "alertmanager.jiraAlert.receivers" . | indent 2 }}
   {{- with .Values.components.prometheus.alertmanager.config.deadMansSwitchURL }}
   - name: dms
     webhook_configs:
@@ -166,9 +150,6 @@ route:
         {{- range $severity, $severityValue := .Values.components.prometheus.alertmanager.config.severities }}
         - matchers: ["severity = {{ $severityValue }}"]
           routes:
-          {{- if hasKey $.Values.components.prometheus.jiralert.receivers $severity }}
-{{ include "alertmanager.jiraAlert.routes" (list $severity)  | indent 12 }}
-          {{- end }}
           {{- range $environment, $envRoute := $.Values.components.prometheus.alertmanager.config.environments }}
           {{- range $matcher := $envRoute.matchers }}
 {{ include "alertmanager.channel.routes" (list $severity $matcher $environment $) | indent 12 }}
@@ -184,9 +165,6 @@ route:
         {{- range $severity, $severityValue := .Values.components.prometheus.alertmanager.config.severities }}
         - matchers: ["severity = {{ $severityValue }}"]
           routes:
-          {{- if hasKey $.Values.components.prometheus.jiralert.receivers $severity }}
-{{ include "alertmanager.jiraAlert.routes" (list $severity)  | indent 12 }}
-          {{- end }}
           {{- range $environment, $envRoute := $.Values.components.prometheus.alertmanager.config.environments }}
           {{- range $matcher := $envRoute.matchers }}
 {{ include "alertmanager.channel.routes" (list $severity $matcher $environment $) | indent 12 }}
@@ -202,9 +180,6 @@ route:
         {{- range $severity, $severityValue := .Values.components.prometheus.alertmanager.config.severities }}
         - matchers: ["severity = {{ $severityValue }}"]
           routes:
-          {{- if hasKey $.Values.components.prometheus.jiralert.receivers $severity }}
-{{ include "alertmanager.jiraAlert.routes" (list $severity)  | indent 12 }}
-          {{- end }}
           {{- range $environment, $envRoute := $.Values.components.prometheus.alertmanager.config.environments }}
           {{- range $matcher := $envRoute.matchers }}
 {{ include "alertmanager.channel.routes" (list $severity $matcher $environment $) | indent 12 }}
