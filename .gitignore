@@ -2,3 +2,5 @@ packages
 index.yaml
 rendered.yaml
 .vscode
+*.log
+.env
