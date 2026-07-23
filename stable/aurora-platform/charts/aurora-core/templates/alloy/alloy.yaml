@@ -1,0 +1,64 @@
+{{ if .Values.components.alloy.enabled -}}
+
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-alloy"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    chart: {{ default "alloy" .Values.components.alloy.helm.chart }}
+    {{- if .Values.components.alloy.helm.repository }}
+    repoURL: {{ .Values.components.alloy.helm.repository }}
+    {{- else }}
+    repoURL: {{ default "https://grafana.github.io/helm-charts" .Values.global.helm.repository }}
+    {{- end }}
+    targetRevision: {{ default "1.11.0" .Values.components.alloy.helm.targetRevision }}
+    plugin:
+      env:
+        - name: HELM_RELEASE_NAME
+          value: "alloy"
+        - name: HELM_VALUES
+          value: |
+            image:
+              {{- include "alloy.image" . | nindent 14 }}
+              pullSecrets: {{ toYaml .Values.components.alloy.imagePullSecrets | nindent 16 }}
+            
+            serviceAccount:
+              create: true
+            # the following is the requirements for loki.source.kubernetes_events
+            rbac:
+              create: true
+              rules:
+                - apiGroups: [""]
+                  resources: ["events"]
+                  verbs: ["get", "list", "watch"]
+              clusterRules:
+                - apiGroups: [""]
+                  resources: ["events"]
+                  verbs: ["get", "list", "watch"]
+            
+            controller:
+            # kubernetes_events will read once from cluster-wide API. Does not read per node.
+            # daemonset multiplies ingestion, therefore run it as deployment
+              type: deployment
+              replicas: {{ .Values.components.alloy.replicas }}
+              nodeSelector: {{ toYaml .Values.components.alloy.nodeSelector | nindent 16 }}
+              tolerations: {{ toYaml .Values.components.alloy.tolerations | nindent 16 }}
+              priorityClassName: {{ .Values.components.alloy.priorityClassName | quote }}
+            alloy:
+              resources: {{ toYaml .Values.components.alloy.resources | nindent 16 }}
+              configMap:
+                content: |
+                  {{- include "alloy.config" . | nindent 18 }}
+  destination:
+    name: '{{ .Values.global.cluster }}'
+    namespace: alloy-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+
+  {{- end }}
