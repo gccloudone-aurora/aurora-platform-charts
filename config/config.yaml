@@ -695,11 +695,18 @@ mgmt:
               type: git
               url: https://github.com/gccloudone-aurora/project-aurora-sdlc.git
           repositoryCreds:
-            private-repo-cred:
+            # GitHub App (recommended)
+            github-app:
               type: git
-              url: https://github.com/gccloudone-aurora/project-aurora-mgmt.git
-              username: "<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-github-username>"
-              password: "<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-github-password>"
+              url: https://github.com/gccloudone-aurora
+              githubApp:
+                id: "<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-github-app-id>"
+                installationID: "<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-github-app-installation-id>"
+                privateKey: "<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-github-app-private-key>"
+            private-repo-cred:
+                url: https://github.com/gccloudone-aurora/project-aurora-mgmt.git
+                username: "<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-github-username>"
+                password: "<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-github-password>"
             private-repo-creds-sdlc:
               type: git
               url: https://github.com/gccloudone-aurora/project-aurora-sdlc.git

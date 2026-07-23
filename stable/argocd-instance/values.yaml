@@ -145,21 +145,30 @@ register:
     #   path: platform/namespaces
 
   repositoryCreds: {}
+    # Username / password
     # aurora-helm:
     #   type: helm
     #   url: https://gccloudone-aurora.github.io/aurora-platform-charts
     #   username: ""
     #   password: ""
-    # aurora-clusters:
+    # aurora-git:
     #   type: git
-    #   url: https://github.com/gccloudone-aurora/aurora-template-example.git
+    #   url: https://github.com/gccloudone-aurora
     #   username: ""
     #   password: ""
-    # aurora-namespaces:
+    #
+    # GitHub App
+    # aurora-github-app:
     #   type: git
-    #   url: https://github.com/gccloudone-aurora/aurora-template-example.git
-    #   username: ""
-    #   password: ""
+    #   url: https://github.com/gccloudone-aurora
+    #   githubApp:
+    #     id: ""
+    #     installationID: ""
+    #     privateKey: |
+    #       -----BEGIN RSA PRIVATE KEY-----
+    #       ...
+    #       -----END RSA PRIVATE KEY-----
+    #     # enterpriseBaseUrl: https://ghe.example.com/api/v3  # optional
 
 netpol:
   enabled: false
