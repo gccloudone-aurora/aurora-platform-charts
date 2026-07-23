@@ -85,7 +85,7 @@ spec:
                   volumeClaimTemplate:
                     spec:
                       accessModes: ["ReadWriteOnce"]
-                      storageClassName: default
+                      storageClassName: {{ .Values.global.defaultStorageClass }}
                       resources:
                         requests:
                           storage: {{ .Values.components.prometheus.prometheus.prometheusSpec.storage }}
@@ -199,7 +199,6 @@ spec:
                 tolerations: {{ toYaml .Values.components.prometheus.thanosRuler.thanosRulerSpec.tolerations | nindent 18 }}
                 affinity: {{ toYaml .Values.components.prometheus.thanosRuler.thanosRulerSpec.affinity | nindent 18 }}
                 priorityClassName: {{ .Values.components.prometheus.priorityClassName }}
-
             grafana:
               enabled: {{ .Values.components.prometheus.grafana.enabled }}
 
@@ -311,7 +310,7 @@ spec:
                   volumeClaimTemplate:
                     spec:
                       accessModes: ["ReadWriteOnce"]
-                      storageClassName: default
+                      storageClassName: {{ .Values.global.defaultStorageClass }}
                       resources:
                         requests:
                           storage: {{ .Values.components.prometheus.alertmanager.alertmanagerSpec.storage }}

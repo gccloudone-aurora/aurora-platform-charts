@@ -49,6 +49,8 @@ global:
   # Indicates if Loki logging is enabled cluster-wide.
   # clusterHasLoki: false
 
+  defaultStorageClass: default
+
   # Azure-specific settings.
   load_balancer_subnet_name: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-load-balancer-subnet-name>'
   subscriptionId: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-subscription-id>'

@@ -27,11 +27,7 @@ spec:
               image:
                 registry: docker.io # Changed from null to ensure registry resolution
 
-            image:
-              pullSecrets:
-              - aurora-image-pull-secret
-            imagePullSecrets:
-              - name: aurora-image-pull-secret
+            imagePullSecrets: {{ toYaml .Values.components.loki.imagePullSecrets | nindent 14 }}
             deploymentMode: SimpleScalable
 
             gateway:
@@ -96,8 +92,11 @@ spec:
                 retention_enabled: true
                 retention_delete_delay: 10m 
                 retention_delete_worker_count: 150
+                {{- if eq .Values.global.provider "azure" }}
                 delete_request_store: azure
-
+                {{- else if eq .Values.global.provider "gcp" }}
+                delete_request_store: gcs
+                {{- end }}
               limits_config:
                 ingestion_rate_mb: 10
                 ingestion_burst_size_mb: 20
@@ -110,24 +109,31 @@ spec:
                 - selector: '{source="kubernetes-event-exporter"}'
                   priority: 1
                   period: 336h 
-
               schemaConfig:
                 configs:
                   - from: 2024-05-01
+                    {{- if eq .Values.global.provider "azure" }}
                     object_store: azure
+                    {{- else if eq .Values.global.provider "gcp" }}
+                    object_store: gcs
+                    {{- end }}
                     store: tsdb
                     schema: v13
                     index:
                       prefix: loki_
                       period: 24h
               storage:
+                {{- if eq .Values.global.provider "azure" }}
                 type: azure
                 bucketNames:
                   admin: chunks
                   chunks: chunks
                   ruler: chunks
                 azure: {{ include "loki.logStorageLocation" . | nindent  18 }}
-
+                {{- else if eq .Values.global.provider "gcp" }}
+                type: gcs
+                bucketNames: {{ include "loki.logStorageLocation" . | nindent  18 }}
+                {{- end}}
               # MOVED: Now properly nested under 'loki' for 6.x
               rulerConfig:
                 storage:
@@ -204,13 +210,13 @@ spec:
               tolerations: {{ toYaml .Values.components.loki.tolerations | nindent 16 }}
               persistence:
                 size: 8Gi
-                storageClass: default
+                storageClass: {{ .Values.global.defaultStorageClass }}
             read:
               nodeSelector: {{ toYaml .Values.components.loki.nodeSelector | nindent 16 }}
               tolerations: {{ toYaml .Values.components.loki.tolerations | nindent 16 }}
               persistence:
                 size: 8Gi
-                storageClass: default
+                storageClass: {{ .Values.global.defaultStorageClass }}
               extraVolumeMounts:
                 - name: rules
                   mountPath: "/var/loki/rulestorage/fake"
@@ -223,7 +229,7 @@ spec:
               tolerations: {{ toYaml .Values.components.loki.tolerations | nindent 16 }}
               persistence:
                 size: 8Gi
-                storageClass: default
+                storageClass: {{ .Values.global.defaultStorageClass }}
 
   destination:
     name: '{{ .Values.global.cluster }}'

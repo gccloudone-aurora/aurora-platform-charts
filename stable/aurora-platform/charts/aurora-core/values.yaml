@@ -1852,6 +1852,7 @@ components:
                     app.kubernetes.io/name: thanos
 
     grafana:
+      enabled: false
       image:
         # registry: docker.io
         repository: grafana/grafana

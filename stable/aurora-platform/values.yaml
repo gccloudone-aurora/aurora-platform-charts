@@ -56,6 +56,9 @@ global:
   loggingCidrs: ["172.26.26.132/32"]
   # vaultCidrs: ["172.23.211.18/32"]
 
+  # Default storage class differs for CSPs
+  # For GCP, the default storage class is "standard-rwo"
+  defaultStorageClass: default
   # Indicates if Loki logging is enabled cluster-wide.
   # clusterHasLoki: false
 
