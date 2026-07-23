@@ -8,6 +8,18 @@ Aurora Platform - Core Platform
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
+| components.alloy.config.loki.write | object | `{}` |  |
+| components.alloy.enabled | bool | `true` |  |
+| components.alloy.helm | object | `{}` |  |
+| components.alloy.image | object | `{}` |  |
+| components.alloy.imagePullSecrets | list | `[]` |  |
+| components.alloy.nodeSelector."kubernetes.io/os" | string | `"linux"` |  |
+| components.alloy.nodeSelector."node.ssc-spc.gc.ca/purpose" | string | `"system"` |  |
+| components.alloy.priorityClassName | string | `"platform-cluster-medium"` |  |
+| components.alloy.replicas | int | `1` |  |
+| components.alloy.resources | object | `{}` |  |
+| components.alloy.tolerations[0].key | string | `"CriticalAddonsOnly"` |  |
+| components.alloy.tolerations[0].operator | string | `"Exists"` |  |
 | components.auroraController.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].podAffinityTerm.labelSelector.matchLabels."app.kubernetes.io/instance" | string | `"aurora-controller"` |  |
 | components.auroraController.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].podAffinityTerm.topologyKey | string | `"kubernetes.io/hostname"` |  |
 | components.auroraController.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].weight | int | `1` |  |
@@ -157,7 +169,7 @@ Aurora Platform - Core Platform
 | components.cilium.enabled | bool | `true` |  |
 | components.cilium.envoy.image.repository | string | `"cilium/cilium-envoy"` |  |
 | components.cilium.etcd.image.repository | string | `"cilium/cilium-etcd-operator"` |  |
-| components.cilium.helm | object | `{}` |  |
+| components.cilium.helm.targetRevision | string | `"1.19.2"` |  |
 | components.cilium.hubble.relay.image.repository | string | `"cilium/hubble-relay"` |  |
 | components.cilium.hubble.ui.backend.image.repository | string | `"cilium/hubble-ui-backend"` |  |
 | components.cilium.hubble.ui.frontend.image.repository | string | `"cilium/hubble-ui"` |  |
@@ -410,6 +422,20 @@ Aurora Platform - Core Platform
 | components.gatekeeper.priorityClassName | string | `"system-cluster-critical"` |  |
 | components.gatekeeper.replicas | int | `3` |  |
 | components.gatekeeper.templates | object | `{}` |  |
+| components.grafana.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].podAffinityTerm.labelSelector.matchLabels."app.kubernetes.io/instance" | string | `"grafana-operator"` |  |
+| components.grafana.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].podAffinityTerm.topologyKey | string | `"kubernetes.io/hostname"` |  |
+| components.grafana.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].weight | int | `1` |  |
+| components.grafana.allowedGroups | string | `""` |  |
+| components.grafana.dashboard | object | `{}` |  |
+| components.grafana.enabled | bool | `false` |  |
+| components.grafana.helm | object | `{}` |  |
+| components.grafana.image.repository | string | `"grafana/grafana-operator"` |  |
+| components.grafana.nodeSelector."kubernetes.io/os" | string | `"linux"` |  |
+| components.grafana.nodeSelector."node.ssc-spc.gc.ca/purpose" | string | `"system"` |  |
+| components.grafana.priorityClassName | string | `"platform-cluster-medium"` |  |
+| components.grafana.resources | object | `{}` |  |
+| components.grafana.tolerations[0].key | string | `"CriticalAddonsOnly"` |  |
+| components.grafana.tolerations[0].operator | string | `"Exists"` |  |
 | components.kubebench.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].podAffinityTerm.labelSelector.matchLabels."app.kubernetes.io/instance" | string | `"kube-bench"` |  |
 | components.kubebench.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].podAffinityTerm.topologyKey | string | `"kubernetes.io/hostname"` |  |
 | components.kubebench.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].weight | int | `1` |  |
@@ -745,6 +771,7 @@ Aurora Platform - Core Platform
 | components.prometheus.msteams.resources | object | `{}` |  |
 | components.prometheus.msteams.tolerations[0].key | string | `"CriticalAddonsOnly"` |  |
 | components.prometheus.msteams.tolerations[0].operator | string | `"Exists"` |  |
+| components.prometheus.msteams.webhooks | object | `{}` |  |
 | components.prometheus.operator.admissionWebhooks.image.repository | string | `"jkroepke/kube-webhook-certgen"` |  |
 | components.prometheus.operator.admissionWebhooks.resources | object | `{}` |  |
 | components.prometheus.operator.image.repository | string | `"prometheus-operator/prometheus-operator"` |  |
@@ -764,6 +791,18 @@ Aurora Platform - Core Platform
 | components.prometheus.prometheus.prometheusSpec.replicas | int | `1` |  |
 | components.prometheus.prometheus.prometheusSpec.resources | object | `{}` |  |
 | components.prometheus.prometheus.prometheusSpec.storage | string | `"80Gi"` |  |
+| components.prometheus.prometheus.prometheusSpec.thanos.blockSize | string | `"2h"` |  |
+| components.prometheus.prometheus.prometheusSpec.thanos.enabled | bool | `false` |  |
+| components.prometheus.prometheus.prometheusSpec.thanos.logLevel | string | `"info"` |  |
+| components.prometheus.prometheus.prometheusSpec.thanos.objectStorage.auth | string | `"workloadIdentity"` |  |
+| components.prometheus.prometheus.prometheusSpec.thanos.objectStorage.clientId | string | `""` |  |
+| components.prometheus.prometheus.prometheusSpec.thanos.objectStorage.containerName | string | `"thanos"` |  |
+| components.prometheus.prometheus.prometheusSpec.thanos.objectStorage.createContainer | bool | `false` |  |
+| components.prometheus.prometheus.prometheusSpec.thanos.objectStorage.endpoint | string | `"blob.core.windows.net"` |  |
+| components.prometheus.prometheus.prometheusSpec.thanos.objectStorage.provider | string | `"azure"` |  |
+| components.prometheus.prometheus.prometheusSpec.thanos.objectStorage.storageAccountKey | string | `""` |  |
+| components.prometheus.prometheus.prometheusSpec.thanos.objectStorage.storageAccountName | string | `""` |  |
+| components.prometheus.prometheus.prometheusSpec.thanos.sidecar.resources | object | `{}` |  |
 | components.prometheus.prometheus.prometheusSpec.tolerations[0].key | string | `"CriticalAddonsOnly"` |  |
 | components.prometheus.prometheus.prometheusSpec.tolerations[0].operator | string | `"Exists"` |  |
 | components.prometheus.prometheus.rules.backup.enabled | bool | `false` |  |
@@ -824,6 +863,7 @@ Aurora Platform - Core Platform
 | components.tetragon.operator.resources | object | `{}` |  |
 | components.tetragon.operator.tolerations[0].key | string | `"CriticalAddonsOnly"` |  |
 | components.tetragon.operator.tolerations[0].operator | string | `"Exists"` |  |
+| components.tetragon.policies | object | `{}` |  |
 | components.trivy.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].podAffinityTerm.labelSelector.matchLabels."app.kubernetes.io/instance" | string | `"trivy-operator"` |  |
 | components.trivy.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].podAffinityTerm.topologyKey | string | `"kubernetes.io/hostname"` |  |
 | components.trivy.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].weight | int | `1` |  |
@@ -850,6 +890,7 @@ Aurora Platform - Core Platform
 | components.trivy.podSecurityContext.runAsNonRoot | bool | `true` |  |
 | components.trivy.podSecurityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
 | components.trivy.priorityClassName | string | `"platform-cluster-medium"` |  |
+| components.trivy.registryCredentials.enabled | bool | `false` |  |
 | components.trivy.resources.limits.cpu | string | `"500m"` |  |
 | components.trivy.resources.limits.memory | string | `"500M"` |  |
 | components.trivy.resources.requests.cpu | string | `"100m"` |  |

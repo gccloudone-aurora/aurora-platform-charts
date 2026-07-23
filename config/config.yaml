@@ -327,8 +327,23 @@ core:
       productKey: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-kubecost-product-key>'
 
     #################################
+    #### Alloy (Grafana Group)   ####
+    #################################
+
+    alloy:
+      enabled: false
+
+      config:
+        loki:
+          write:
+            url: "https://loki.<FILLIN_INGRESS_DOMAIN>/loki/api/v1/push"
+            username: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-loki-username'
+            username: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-loki-password'
+
+    #################################
     ### Kubernetes Event Exporter ###
     #################################
+    # Should be disabled if Alloy is in use due to conflict. K.E.E requires the use of licensed Bitnami charts
     kubernetesEventExporter:
       enabled: false
 
