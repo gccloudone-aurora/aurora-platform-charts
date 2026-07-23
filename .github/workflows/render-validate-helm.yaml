@@ -9,6 +9,14 @@ on:
       - main
   workflow_dispatch:
 
+# Pinned tool versions for reproducibility. In particular, helm's YAML
+# serialization must match the version used to generate the committed
+# helm-unittest snapshots, or snapshot tests fail spuriously.
+env:
+  HELM_VERSION: v3.19.2
+  YQ_VERSION: v4.47.2
+  HELM_UNITTEST_VERSION: 1.1.1
+
 jobs:
   helm-render:
     runs-on: ubuntu-latest
@@ -21,7 +29,7 @@ jobs:
         with:
           go-version: '1.19'
       - run: |
-          curl -fsSL https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+          curl -fsSL https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | DESIRED_VERSION="${HELM_VERSION}" bash
 
       - name: Install kubeconform
         run: |
@@ -47,3 +55,59 @@ jobs:
         with:
           name: rendered-template
           path: rendered.yaml
+
+  # Outer-layer tests: validate the SHAPE of the rendered ArgoCD Applications
+  # (name, project, source coordinates, destination, syncPolicy, enable guards)
+  # plus committed snapshots of the full Application, including the inline
+  # upstream-values block. Fast and offline.
+  helm-unittest:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install Helm
+        run: curl -fsSL https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | DESIRED_VERSION="${HELM_VERSION}" bash
+
+      - name: Install helm-unittest plugin
+        run: helm plugin install https://github.com/helm-unittest/helm-unittest --version "${HELM_UNITTEST_VERSION}"
+
+      - name: Run unit tests (charts that ship a tests/ dir)
+        run: |
+          # Any chart with a tests/ directory is picked up automatically.
+          for chart in $(find stable -type d -name tests -prune -exec dirname {} \; | sort -u); do
+            echo "==> helm unittest ${chart}"
+            helm unittest -f 'tests/*_test.yaml' "${chart}"
+          done
+
+  # Inner-layer validation: extract each rendered Application's upstream chart
+  # coordinates + inline helm.values and render the REAL upstream chart with
+  # them, so mistyped keys / bad indentation / type errors are caught here
+  # instead of at ArgoCD sync time. Requires network access to chart repos.
+  helm-inner-values:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install Helm
+        run: curl -fsSL https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | DESIRED_VERSION="${HELM_VERSION}" bash
+
+      - name: Install yq (mikefarah v4)
+        run: |
+          sudo curl -fsSL https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/yq_linux_amd64 -o /usr/local/bin/yq
+          sudo chmod +x /usr/local/bin/yq
+
+      - name: Validate inner upstream values
+        env:
+          HEAD_REF: ${{ github.head_ref }}
+        run: |
+          # Renovate PRs bump chart targetRevisions, so validate the WHOLE fleet
+          # to confirm the bumped chart is still compatible with our values.
+          # Other PRs run the fast vetted subset (add names as components are triaged).
+          if [ "${HEAD_REF#renovate/}" != "${HEAD_REF}" ]; then
+            echo "Renovate PR (${HEAD_REF}) - validating ALL components"
+            bash tests/validate-inner-values.sh
+          else
+            bash tests/validate-inner-values.sh cert-manager trust-manager priority-classes
+          fi

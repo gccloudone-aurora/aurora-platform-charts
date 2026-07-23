@@ -39,5 +39,14 @@ Consequences to keep in mind at all times:
   (regenerate with `scripts/generate-readme.sh`).
 - **Versions**: `Chart.yaml` versions are bumped by CI (patch; minor for argocd-instance;
   skipped if edited manually). Don't hand-bump unless deliberately overriding CI.
-- **Validate before PR**: render the umbrella chart and validate with kubeconform, exactly
-  as CI does (see the skill for the exact commands), before pushing chart changes.
+- **Validate before PR**: chart changes must pass three checks (all documented in
+  `tests/README.md`) — the umbrella render + kubeconform (outer Application objects),
+  the helm-unittest suites (Application shape + snapshots), and the inner-values
+  validator `tests/validate-inner-values.sh` (inline `helm.values` against the real
+  upstream chart). Run them before pushing.
+- **Upgrading a chart / changing inline values**: follow the loop in `tests/README.md` —
+  validate the new values against the upstream chart with the inner-values validator,
+  update the unit-test `targetRevision` assertion, and regenerate + *review* the snapshot.
+- **Clean values whitespace**: in inline `helm.values` blocks use `{{- toYaml x | nindent N }}`
+  (leading dash) so rendered values carry no trailing whitespace — trailing whitespace makes
+  YAML serialize the block as an unreadable one-liner (breaking snapshots) and noises up ArgoCD diffs.

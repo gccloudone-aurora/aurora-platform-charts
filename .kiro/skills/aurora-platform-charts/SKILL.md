@@ -50,7 +50,9 @@ config/config.yaml              Reference values file (copied from project-auror
                                 ArgoCD Vault Plugin `<path:...>` references.
 scripts/generate-readme.sh      Regenerates the auto-managed charts section of the root README.
 scripts/run-helm-docs.sh        Runs helm-docs per chart (uses each chart's README.md.gotmpl).
-.github/workflows/              CI: render+validate, version bump, chart release.
+tests/                          Repo-level tests: validate-inner-values.sh + README.md (the test docs).
+.github/workflows/              CI: render-validate-helm (kubeconform + helm-unittest + inner-values),
+                                nightly-inner-values, version bump, chart release.
 stable/                         All published charts live here.
   aurora-platform/              THE umbrella chart. Everything flows through here.
     Chart.yaml                  Auto-bumped version; depends on core/app/mgmt (aliased).
@@ -135,6 +137,11 @@ Conventions to preserve when editing or adding components:
   hardcoded default (e.g. `v1.20.3`). Bump this to upgrade the upstream component.
 - **Inline `helm.values: |`**: this block is the upstream chart's values, not this repo's.
   Watch indentation carefully — values are injected with `nindent` at the block's indent level.
+- **No trailing whitespace in the values block**: use `{{- toYaml x | nindent N }}` (leading
+  dash trims the space after the colon) and `{{- default "{}" (include "<comp>.image" . | trim) | nindent N }}`
+  for image helpers (`| trim` drops the include's leading blank line). Any trailing-whitespace
+  line forces YAML to serialize the whole block as an escaped one-liner — which breaks
+  helm-unittest snapshots and adds noise to ArgoCD's live diffs.
 - **destination.namespace**: components install into their own `*-system` namespace by convention.
 - **syncPolicy**: automated prune + selfHeal is the default.
 - **Image helpers**: `_helpers.tpl` builds `repository`/`tag`/`pullPolicy` and honors
@@ -188,6 +195,26 @@ version manually when you specifically need to override the automatic bump.
   (publishes packaged charts to the `gh-pages`-served Helm repo at
   `https://gccloudone-aurora.github.io/aurora-platform-charts`).
 
+## Testing the inline values and Application shape
+
+kubeconform (above) only sees the outer ArgoCD `Application` objects. Two more layers
+guard what it can't. **Full how-to, including the chart-upgrade loop, is in `tests/README.md`.**
+
+- **helm-unittest** (`stable/aurora-platform/charts/<subchart>/tests/*_test.yaml`): asserts the
+  rendered Application's shape (name, project, source coords, destination, syncPolicy, enable
+  guards, and `required`-field contracts via `failedTemplate`) and snapshots the full Application.
+  Runs in the `helm-unittest` CI job, which auto-discovers any chart with a `tests/` dir. Suites
+  hoist shared inputs into a suite-level `set:`.
+- **inner-values validator** (`tests/validate-inner-values.sh`): renders the umbrella, then runs
+  `helm template` of each Application's REAL upstream chart with its inline `helm.values` (or chart
+  defaults when it ships none, shown as `(defaults)`). This is the only thing that validates the
+  YAML-in-YAML values against the upstream chart's schema/templates. Runs per-PR on a vetted subset
+  (full fleet on `renovate/*` PRs) and nightly on the full fleet (`nightly-inner-values.yaml`).
+
+Blind spots (see `tests/README.md` "Known gaps"): charts without a `values.schema.json` (only
+YAML/type errors caught, not unknown keys), values passed via `spec.source.plugin` (AVP),
+git-/OCI-sourced Applications, and Kubernetes resources embedded inside `raw`-chart values.
+
 ## Local commands (match CI before opening a PR)
 
 Render + validate the umbrella chart exactly as CI does:
@@ -198,6 +225,16 @@ helm template aurora stable/aurora-platform \
   --values config/config.yaml \
   --include-crds > /tmp/rendered.yaml
 ```
+
+Run both test layers (see `tests/README.md` for the full workflow):
+
+```bash
+helm unittest -f 'tests/*_test.yaml' stable/aurora-platform/charts/aurora-core
+tests/validate-inner-values.sh cert-manager   # one/more components, or no args for the whole fleet
+```
+
+Pinned tool versions (match CI so snapshots stay reproducible): helm `v3.19.2`,
+yq (mikefarah) `v4.47.2`, helm-unittest `1.1.1`.
 
 Lint / render a single standalone chart:
 
@@ -218,11 +255,12 @@ The root README section between `<!-- START OF CHARTS SECTION -->` and
 
 ## Common tasks — how to approach them
 
-**Upgrade an upstream component version**
+**Upgrade an upstream component version** (full loop in `tests/README.md`)
 1. Find the component's Application template: `stable/aurora-platform/charts/<subchart>/templates/<component>/<component>.yaml`.
 2. Update the `targetRevision` default (the pinned upstream chart version).
 3. If the upstream chart's values schema changed, update the inline `helm.values: |` block and the subchart `values.yaml` defaults.
-4. Render with `config/config.yaml` and confirm the Application still validates.
+4. Run `tests/validate-inner-values.sh <component>` to validate the new values against the *new* chart version (this is what catches a bad/renamed/mistyped key).
+5. If the component has a unit test, update its `targetRevision` assertion and regenerate the snapshot with `helm unittest -u`, *reviewing* the diff.
 
 **Add a new component**
 1. Decide the tier: core (`aurora-core`), app (`aurora-app`), or mgmt (`aurora-mgmt`).
@@ -231,7 +269,8 @@ The root README section between `<!-- START OF CHARTS SECTION -->` and
 4. Add defaults under `.Values.components.<name>` in that subchart's `values.yaml` (include `enabled:`, `helm: {}`, `image`, resources, etc.).
 5. Add supporting `namespace.yaml` / `netpol.yaml` / `rbac.yaml` as needed for the component's namespace.
 6. Wire an example into `config/config.yaml` under the right `core|app|mgmt.components` block.
-7. Render + kubeconform, then run helm-docs and generate-readme.
+7. Add a helm-unittest suite under the subchart's `tests/` dir (copy an existing `*_test.yaml`) and run `tests/validate-inner-values.sh <component>`.
+8. Render + kubeconform, then run helm-docs and generate-readme.
 
 **Toggle a component on/off**
 Set `<tier>.components.<name>.enabled` in the consuming values (`config.yaml`). The enable

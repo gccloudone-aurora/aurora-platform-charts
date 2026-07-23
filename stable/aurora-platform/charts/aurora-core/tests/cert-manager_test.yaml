@@ -1,0 +1,109 @@
+# helm-unittest suite for the cert-manager ArgoCD Application wrapper.
+#
+# This validates the OUTER layer: the shape of the ArgoCD Application that this
+# repo renders (name, project, source coordinates, destination, syncPolicy, the
+# enable guard, and the workloadIdentity.clientId required-field contract). It
+# complements tests/validate-inner-values.sh, which validates the INNER upstream
+# values against the real cert-manager chart.
+#
+# Run:  helm unittest -f 'tests/*_test.yaml' stable/aurora-platform/charts/aurora-core
+# (or from the chart dir:  helm unittest .)
+#
+# Shared inputs live in the suite-level `set:` below; each test overrides only
+# what it varies (deep-merged over the suite defaults).
+suite: cert-manager application wrapper
+templates:
+  - templates/cert-manager/cert-manager.yaml
+set:
+  global:
+    cluster: test-cluster
+    project: aurora-core
+    provider: azure
+  components:
+    certManager:
+      enabled: true
+      workloadIdentity:
+        enabled: true
+        clientId: 00000000-0000-0000-0000-000000000000
+      # non-empty so the rendered block scalar has no trailing-whitespace line
+      # (mirrors the real config, which always sets this)
+      dns01RecursiveNameservers: "10.0.0.10:53,10.0.0.11:53"
+tests:
+  - it: renders a single ArgoCD Application when enabled
+    asserts:
+      - hasDocuments:
+          count: 1
+      - isKind:
+          of: Application
+      - equal:
+          path: apiVersion
+          value: argoproj.io/v1alpha1
+      - equal:
+          path: metadata.name
+          value: test-cluster-cert-manager
+      - contains:
+          path: metadata.finalizers
+          content: resources-finalizer.argocd.argoproj.io
+      - equal:
+          path: spec.project
+          value: aurora-core
+
+  - it: is not rendered when disabled
+    set:
+      components:
+        certManager:
+          enabled: false
+    asserts:
+      - hasDocuments:
+          count: 0
+
+  - it: pins the upstream chart source by default
+    asserts:
+      - equal:
+          path: spec.source.chart
+          value: cert-manager
+      - equal:
+          path: spec.source.repoURL
+          value: https://charts.jetstack.io
+      - equal:
+          path: spec.source.targetRevision
+          value: v1.20.3
+      - equal:
+          path: spec.destination.namespace
+          value: cert-manager-system
+      - equal:
+          path: spec.syncPolicy.automated.prune
+          value: true
+      - equal:
+          path: spec.syncPolicy.automated.selfHeal
+          value: true
+
+  - it: honors per-component helm source overrides
+    set:
+      components:
+        certManager:
+          helm:
+            chart: cert-manager
+            repository: https://mirror.example.ca/charts
+            targetRevision: v1.19.0
+    asserts:
+      - equal:
+          path: spec.source.repoURL
+          value: https://mirror.example.ca/charts
+      - equal:
+          path: spec.source.targetRevision
+          value: v1.19.0
+
+  - it: fails to render when workloadIdentity is enabled without a clientId
+    set:
+      components:
+        certManager:
+          workloadIdentity:
+            clientId: ""
+    asserts:
+      - failedTemplate:
+          errorPattern: "certManager.workloadIdentity.clientId is required"
+
+  - it: matches the committed snapshot of the full Application
+    asserts:
+      - matchSnapshot: {}

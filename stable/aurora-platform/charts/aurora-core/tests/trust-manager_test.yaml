@@ -1,0 +1,85 @@
+# helm-unittest suite for the trust-manager ArgoCD Application wrapper.
+# Same pattern as cert-manager_test.yaml: validates the OUTER Application shape.
+# Inner upstream values are covered by tests/validate-inner-values.sh.
+#
+# Shared inputs live in the suite-level `set:`; each test overrides what it varies.
+suite: trust-manager application wrapper
+templates:
+  - templates/trust-manager/trust-manager.yaml
+set:
+  global:
+    cluster: test-cluster
+    project: aurora-core
+    provider: azure
+  components:
+    trustManager:
+      enabled: true
+tests:
+  - it: renders a single ArgoCD Application when enabled
+    asserts:
+      - hasDocuments:
+          count: 1
+      - isKind:
+          of: Application
+      - equal:
+          path: apiVersion
+          value: argoproj.io/v1alpha1
+      - equal:
+          path: metadata.name
+          value: test-cluster-trust-manager
+      - contains:
+          path: metadata.finalizers
+          content: resources-finalizer.argocd.argoproj.io
+      - equal:
+          path: spec.project
+          value: aurora-core
+
+  - it: is not rendered when disabled
+    set:
+      components:
+        trustManager:
+          enabled: false
+    asserts:
+      - hasDocuments:
+          count: 0
+
+  - it: pins the upstream chart source by default
+    asserts:
+      - equal:
+          path: spec.source.chart
+          value: trust-manager
+      - equal:
+          path: spec.source.repoURL
+          value: https://charts.jetstack.io
+      - equal:
+          path: spec.source.targetRevision
+          value: v0.23.0
+      - equal:
+          path: spec.destination.namespace
+          value: trust-manager-system
+      - equal:
+          path: spec.syncPolicy.automated.prune
+          value: true
+      - equal:
+          path: spec.syncPolicy.automated.selfHeal
+          value: true
+
+  - it: honors per-component helm source overrides
+    set:
+      components:
+        trustManager:
+          helm:
+            chart: trust-manager
+            repository: https://mirror.example.ca/charts
+            targetRevision: v0.22.0
+    asserts:
+      - equal:
+          path: spec.source.repoURL
+          value: https://mirror.example.ca/charts
+      - equal:
+          path: spec.source.targetRevision
+          value: v0.22.0
+
+  - it: matches the committed snapshot of the full Application
+    asserts:
+      - matchSnapshot: {}

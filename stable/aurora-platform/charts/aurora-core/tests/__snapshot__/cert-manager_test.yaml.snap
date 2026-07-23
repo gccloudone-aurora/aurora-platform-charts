@@ -1,0 +1,147 @@
+matches the committed snapshot of the full Application:
+  1: |
+    apiVersion: argoproj.io/v1alpha1
+    kind: Application
+    metadata:
+      finalizers:
+        - resources-finalizer.argocd.argoproj.io
+      name: test-cluster-cert-manager
+    spec:
+      destination:
+        name: test-cluster
+        namespace: cert-manager-system
+      project: aurora-core
+      source:
+        chart: cert-manager
+        helm:
+          releaseName: cert-manager
+          values: |
+            installCRDs: true
+
+            global:
+              imagePullSecrets:
+                []
+              priorityClassName: platform-cluster-medium
+
+            image:
+              repository: quay.io/jetstack/cert-manager-controller
+            replicaCount: 3
+            resources:
+              {}
+            nodeSelector:
+              kubernetes.io/os: linux
+              node.ssc-spc.gc.ca/purpose: system
+            tolerations:
+              - key: CriticalAddonsOnly
+                operator: Exists
+            affinity:
+              podAntiAffinity:
+                preferredDuringSchedulingIgnoredDuringExecution:
+                - podAffinityTerm:
+                    labelSelector:
+                      matchLabels:
+                        app.kubernetes.io/component: controller
+                    topologyKey: kubernetes.io/hostname
+                  weight: 1
+
+            webhook:
+              image:
+                repository: quay.io/jetstack/cert-manager-webhook
+              replicaCount: 3
+              resources:
+                {}
+              nodeSelector:
+                kubernetes.io/os: linux
+                node.ssc-spc.gc.ca/purpose: system
+              tolerations:
+                - key: CriticalAddonsOnly
+                  operator: Exists
+              affinity:
+                podAntiAffinity:
+                  preferredDuringSchedulingIgnoredDuringExecution:
+                  - podAffinityTerm:
+                      labelSelector:
+                        matchLabels:
+                          app.kubernetes.io/component: webhook
+                      topologyKey: kubernetes.io/hostname
+                    weight: 1
+
+            cainjector:
+              image:
+                repository: quay.io/jetstack/cert-manager-cainjector
+              replicaCount: 3
+              resources:
+                {}
+              nodeSelector:
+                kubernetes.io/os: linux
+                node.ssc-spc.gc.ca/purpose: system
+              tolerations:
+                - key: CriticalAddonsOnly
+                  operator: Exists
+              affinity:
+                podAntiAffinity:
+                  preferredDuringSchedulingIgnoredDuringExecution:
+                  - podAffinityTerm:
+                      labelSelector:
+                        matchLabels:
+                          app.kubernetes.io/component: cainjector
+                      topologyKey: kubernetes.io/hostname
+                    weight: 1
+
+            acmesolver:
+              image:
+                repository: quay.io/jetstack/cert-manager-acmesolver
+
+            startupapicheck:
+              image:
+                repository: quay.io/jetstack/cert-manager-startupapicheck
+              resources:
+                {}
+              nodeSelector:
+                kubernetes.io/os: linux
+                node.ssc-spc.gc.ca/purpose: system
+              tolerations:
+                - key: CriticalAddonsOnly
+                  operator: Exists
+              affinity:
+                podAntiAffinity:
+                  preferredDuringSchedulingIgnoredDuringExecution:
+                  - podAffinityTerm:
+                      labelSelector:
+                        matchLabels:
+                          app.kubernetes.io/component: startupapicheck
+                      topologyKey: kubernetes.io/hostname
+                    weight: 1
+            podLabels:
+              azure.workload.identity/use: "true"
+
+            dns01RecursiveNameservers: 10.0.0.10:53,10.0.0.11:53
+            dns01RecursiveNameserversOnly: false
+
+            podDnsConfig:
+              nameservers:
+                []
+
+            prometheus:
+              enabled: true
+              servicemonitor:
+                annotations: {}
+                enabled: true
+                endpointAdditionalProperties: {}
+                honorLabels: false
+                interval: 60s
+                labels: {}
+                path: /metrics
+                prometheusInstance: default
+                scrapeTimeout: 30s
+                targetPort: 9402
+
+            serviceAccount:
+              annotations:
+                azure.workload.identity/client-id: "00000000-0000-0000-0000-000000000000"
+        repoURL: https://charts.jetstack.io
+        targetRevision: v1.20.3
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true

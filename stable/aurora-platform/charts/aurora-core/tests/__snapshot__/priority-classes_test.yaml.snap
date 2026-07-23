@@ -1,0 +1,90 @@
+matches the committed snapshot of the full Application:
+  1: |
+    apiVersion: argoproj.io/v1alpha1
+    kind: Application
+    metadata:
+      finalizers:
+        - resources-finalizer.argocd.argoproj.io
+      name: test-cluster-priority-classes
+    spec:
+      destination:
+        name: test-cluster
+        namespace: platform-system
+      project: aurora-core
+      source:
+        chart: raw
+        helm:
+          releaseName: priority-classes
+          values: |
+            resources:
+              - apiVersion: scheduling.k8s.io/v1
+                kind: PriorityClass
+                metadata:
+                  name: platform-node-critical
+                  labels:
+                    app.kubernetes.io/name: "priority-classes"
+                    app.kubernetes.io/instance: "test-cluster"
+                    app.kubernetes.io/component: system
+                    app.kubernetes.io/part-of: priority-classes
+                    app.kubernetes.io/managed-by: argo
+                    helm.sh/chart: aurora-core-0.0.1
+                value: 1100000
+                globalDefault: false
+              - apiVersion: scheduling.k8s.io/v1
+                kind: PriorityClass
+                metadata:
+                  name: platform-cluster-critical
+                  labels:
+                    app.kubernetes.io/name: "priority-classes"
+                    app.kubernetes.io/instance: "test-cluster"
+                    app.kubernetes.io/component: system
+                    app.kubernetes.io/part-of: priority-classes
+                    app.kubernetes.io/managed-by: argo
+                    helm.sh/chart: aurora-core-0.0.1
+                value: 1000000
+                globalDefault: false
+              - apiVersion: scheduling.k8s.io/v1
+                kind: PriorityClass
+                metadata:
+                  name: business-value-critical
+                  labels:
+                    app.kubernetes.io/name: "priority-classes"
+                    app.kubernetes.io/instance: "test-cluster"
+                    app.kubernetes.io/component: solution
+                    app.kubernetes.io/part-of: priority-classes
+                    app.kubernetes.io/managed-by: argo
+                    helm.sh/chart: aurora-core-0.0.1
+                value: 900000
+                globalDefault: false
+              - apiVersion: scheduling.k8s.io/v1
+                kind: PriorityClass
+                metadata:
+                  name: platform-cluster-medium
+                  labels:
+                    app.kubernetes.io/name: "priority-classes"
+                    app.kubernetes.io/instance: "test-cluster"
+                    app.kubernetes.io/component: system
+                    app.kubernetes.io/part-of: priority-classes
+                    app.kubernetes.io/managed-by: argo
+                    helm.sh/chart: aurora-core-0.0.1
+                value: 800000
+                globalDefault: false
+              - apiVersion: scheduling.k8s.io/v1
+                kind: PriorityClass
+                metadata:
+                  name: business-value-medium
+                  labels:
+                    app.kubernetes.io/name: "priority-classes"
+                    app.kubernetes.io/instance: "test-cluster"
+                    app.kubernetes.io/component: solution
+                    app.kubernetes.io/part-of: priority-classes
+                    app.kubernetes.io/managed-by: argo
+                    helm.sh/chart: aurora-core-0.0.1
+                value: 700000
+                globalDefault: false
+        repoURL: https://gccloudone-aurora.github.io/aurora-platform-charts
+        targetRevision: 0.0.1
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true

@@ -1,0 +1,86 @@
+# helm-unittest suite for the priority-classes ArgoCD Application wrapper.
+#
+# priority-classes is a RAW-chart-based component: instead of an upstream chart
+# it renders the shared `raw` chart (from global.raw.helm.*) and hands it a list
+# of plain Kubernetes resources (here, PriorityClasses) via the inline values.
+# Note there is no enable guard on this component - it always renders.
+#
+# Shared inputs live in the suite-level `set:`; each test overrides what it varies.
+suite: priority-classes application wrapper (raw chart)
+templates:
+  - templates/priority-classes/manifests.yaml
+set:
+  global:
+    cluster: test-cluster
+    project: aurora-core
+    raw:
+      helm:
+        chart: raw
+        repository: https://gccloudone-aurora.github.io/aurora-platform-charts
+        targetRevision: 0.0.1
+tests:
+  - it: renders a single ArgoCD Application sourcing the raw chart
+    asserts:
+      - hasDocuments:
+          count: 1
+      - isKind:
+          of: Application
+      - equal:
+          path: apiVersion
+          value: argoproj.io/v1alpha1
+      - equal:
+          path: metadata.name
+          value: test-cluster-priority-classes
+      - contains:
+          path: metadata.finalizers
+          content: resources-finalizer.argocd.argoproj.io
+      - equal:
+          path: spec.project
+          value: aurora-core
+
+  - it: sources the raw chart coordinates from global.raw
+    asserts:
+      - equal:
+          path: spec.source.chart
+          value: raw
+      - equal:
+          path: spec.source.repoURL
+          value: https://gccloudone-aurora.github.io/aurora-platform-charts
+      - equal:
+          path: spec.source.targetRevision
+          value: "0.0.1"
+      - equal:
+          path: spec.source.helm.releaseName
+          value: priority-classes
+      - equal:
+          path: spec.destination.namespace
+          value: platform-system
+
+  - it: prefers global.helm.repository when raw.helm.repository is unset
+    set:
+      global:
+        helm:
+          repository: https://fallback.example.ca/charts
+        raw:
+          helm:
+            repository: ""
+    asserts:
+      - equal:
+          path: spec.source.repoURL
+          value: https://fallback.example.ca/charts
+
+  - it: embeds the expected PriorityClass resources in the raw values
+    asserts:
+      - matchRegex:
+          path: spec.source.helm.values
+          pattern: "kind: PriorityClass"
+      - matchRegex:
+          path: spec.source.helm.values
+          pattern: "name: platform-node-critical"
+      - matchRegex:
+          path: spec.source.helm.values
+          pattern: "name: business-value-critical"
+
+  - it: matches the committed snapshot of the full Application
+    asserts:
+      - matchSnapshot: {}

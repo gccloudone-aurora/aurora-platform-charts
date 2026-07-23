@@ -22,60 +22,60 @@ spec:
         installCRDs: true
 
         global:
-          imagePullSecrets: {{ toYaml .Values.components.certManager.imagePullSecrets | nindent 12 }}
+          imagePullSecrets: {{- toYaml .Values.components.certManager.imagePullSecrets | nindent 12 }}
           priorityClassName: {{ .Values.components.certManager.priorityClassName }}
 
-        image: {{ default "{}" (include "certManager.image" .) | nindent 10 }}
+        image: {{- default "{}" (include "certManager.image" . | trim) | nindent 10 }}
         replicaCount: {{ .Values.components.certManager.replicas }}
-        resources: {{ toYaml .Values.components.certManager.resources | nindent 10 }}
-        nodeSelector: {{ toYaml .Values.components.certManager.nodeSelector | nindent 10 }}
-        tolerations: {{ toYaml .Values.components.certManager.tolerations | nindent 10 }}
-        affinity: {{ toYaml .Values.components.certManager.affinity | nindent 10 }}
+        resources: {{- toYaml .Values.components.certManager.resources | nindent 10 }}
+        nodeSelector: {{- toYaml .Values.components.certManager.nodeSelector | nindent 10 }}
+        tolerations: {{- toYaml .Values.components.certManager.tolerations | nindent 10 }}
+        affinity: {{- toYaml .Values.components.certManager.affinity | nindent 10 }}
 
         webhook:
-          image: {{ default "{}" (include "certManager.webhook.image" .) | nindent 12 }}
+          image: {{- default "{}" (include "certManager.webhook.image" . | trim) | nindent 12 }}
           replicaCount: {{ .Values.components.certManager.webhook.replicas }}
-          resources: {{ toYaml .Values.components.certManager.webhook.resources | nindent 12 }}
-          nodeSelector: {{ toYaml .Values.components.certManager.webhook.nodeSelector | nindent 12 }}
-          tolerations: {{ toYaml .Values.components.certManager.webhook.tolerations | nindent 12 }}
-          affinity: {{ toYaml .Values.components.certManager.webhook.affinity | nindent 12 }}
+          resources: {{- toYaml .Values.components.certManager.webhook.resources | nindent 12 }}
+          nodeSelector: {{- toYaml .Values.components.certManager.webhook.nodeSelector | nindent 12 }}
+          tolerations: {{- toYaml .Values.components.certManager.webhook.tolerations | nindent 12 }}
+          affinity: {{- toYaml .Values.components.certManager.webhook.affinity | nindent 12 }}
 
         cainjector:
-          image: {{ default "{}" (include "certManager.cainjector.image" .) | nindent 12 }}
+          image: {{- default "{}" (include "certManager.cainjector.image" . | trim) | nindent 12 }}
           replicaCount: {{ .Values.components.certManager.cainjector.replicas }}
-          resources: {{ toYaml .Values.components.certManager.cainjector.resources | nindent 12 }}
-          nodeSelector: {{ toYaml .Values.components.certManager.cainjector.nodeSelector | nindent 12 }}
-          tolerations: {{ toYaml .Values.components.certManager.cainjector.tolerations | nindent 12 }}
-          affinity: {{ toYaml .Values.components.certManager.cainjector.affinity | nindent 12 }}
+          resources: {{- toYaml .Values.components.certManager.cainjector.resources | nindent 12 }}
+          nodeSelector: {{- toYaml .Values.components.certManager.cainjector.nodeSelector | nindent 12 }}
+          tolerations: {{- toYaml .Values.components.certManager.cainjector.tolerations | nindent 12 }}
+          affinity: {{- toYaml .Values.components.certManager.cainjector.affinity | nindent 12 }}
 
         acmesolver:
-          image: {{ default "{}" (include "certManager.acmesolver.image" .) | nindent 12 }}
+          image: {{- default "{}" (include "certManager.acmesolver.image" . | trim) | nindent 12 }}
 
         startupapicheck:
-          image: {{ default "{}" (include "certManager.startupapicheck.image" .) | nindent 12 }}
-          resources: {{ toYaml .Values.components.certManager.startupapicheck.resources | nindent 12 }}
-          nodeSelector: {{ toYaml .Values.components.certManager.startupapicheck.nodeSelector | nindent 12 }}
-          tolerations: {{ toYaml .Values.components.certManager.startupapicheck.tolerations | nindent 12 }}
-          affinity: {{ toYaml .Values.components.certManager.startupapicheck.affinity | nindent 12 }}
+          image: {{- default "{}" (include "certManager.startupapicheck.image" . | trim) | nindent 12 }}
+          resources: {{- toYaml .Values.components.certManager.startupapicheck.resources | nindent 12 }}
+          nodeSelector: {{- toYaml .Values.components.certManager.startupapicheck.nodeSelector | nindent 12 }}
+          tolerations: {{- toYaml .Values.components.certManager.startupapicheck.tolerations | nindent 12 }}
+          affinity: {{- toYaml .Values.components.certManager.startupapicheck.affinity | nindent 12 }}
 
         {{- if eq .Values.global.provider "azure" }}
         podLabels:
           {{- if .Values.components.certManager.workloadIdentity.enabled }}
           azure.workload.identity/use: "true"
           {{- end }}
-        {{- end }}  
+        {{- end }}
 
         dns01RecursiveNameservers: {{ .Values.components.certManager.dns01RecursiveNameservers }}
         dns01RecursiveNameserversOnly: {{ .Values.components.certManager.dns01RecursiveNameserversOnly }}
 
         podDnsConfig:
-          nameservers: {{ toYaml .Values.components.certManager.podDnsConfig.nameservers | nindent 12 }}
+          nameservers: {{- toYaml .Values.components.certManager.podDnsConfig.nameservers | nindent 12 }}
 
-        prometheus: {{ toYaml .Values.components.certManager.prometheus | nindent 10 }}
+        prometheus: {{- toYaml .Values.components.certManager.prometheus | nindent 10 }}
 
         serviceAccount:
           annotations:
-              {{- include "certManager.workloadIdentity.clientId" . | nindent 12 }}        
+              {{- include "certManager.workloadIdentity.clientId" . | nindent 12 }}
 
   destination:
     name: {{ .Values.global.cluster }}

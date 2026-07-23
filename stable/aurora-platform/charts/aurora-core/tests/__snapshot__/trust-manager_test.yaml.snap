@@ -1,0 +1,62 @@
+matches the committed snapshot of the full Application:
+  1: |
+    apiVersion: argoproj.io/v1alpha1
+    kind: Application
+    metadata:
+      finalizers:
+        - resources-finalizer.argocd.argoproj.io
+      name: test-cluster-trust-manager
+    spec:
+      destination:
+        name: test-cluster
+        namespace: trust-manager-system
+      project: aurora-core
+      source:
+        chart: trust-manager
+        helm:
+          releaseName: trust-manager
+          values: |
+            crds:
+              enabled: true
+
+            image:
+              repository: quay.io/jetstack/trust-manager
+            imagePullSecrets:
+                []
+
+            replicaCount: 1
+            resources:
+              {}
+            nodeSelector:
+              kubernetes.io/os: linux
+              node.ssc-spc.gc.ca/purpose: system
+            tolerations:
+              - key: CriticalAddonsOnly
+                operator: Exists
+            affinity:
+              podAntiAffinity:
+                preferredDuringSchedulingIgnoredDuringExecution:
+                - podAffinityTerm:
+                    labelSelector:
+                      matchLabels:
+                        app.kubernetes.io/instance: trust-manager
+                    topologyKey: kubernetes.io/hostname
+                  weight: 1
+            priorityClassName: platform-cluster-medium
+
+            app:
+              trust:
+                namespace: cert-manager-system
+
+            defaultPackage:
+              resources:
+                {}
+            defaultPackageImage:
+              repository: quay.io/jetstack/trust-pkg-debian-bookworm
+              tag: 20230311-deb12u1.0
+        repoURL: https://charts.jetstack.io
+        targetRevision: v0.23.0
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true

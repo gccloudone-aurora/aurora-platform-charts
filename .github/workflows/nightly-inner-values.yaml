@@ -1,0 +1,50 @@
+name: Nightly Inner-Values Validation
+
+# The per-PR "Render and Validate Helm Template" workflow validates the outer
+# ArgoCD Application objects (kubeconform) and runs the inner-values validator
+# against a small vetted set of components. This scheduled workflow runs the
+# inner-values validator against the ENTIRE fleet of rendered Applications:
+# every Application that sources a Helm chart is rendered against the real
+# upstream chart (with its inline values, or with chart defaults when it ships
+# none) to catch mistyped keys, bad indentation, type errors, and broken
+# chart/targetRevision references before they reach ArgoCD sync.
+#
+# It is kept separate from the per-PR workflow because it pulls ~90 upstream
+# charts over the network and takes several minutes.
+
+on:
+  schedule:
+    # 07:00 UTC daily (~02:00-03:00 ET). Adjust as needed.
+    - cron: '0 7 * * *'
+  workflow_dispatch:
+
+# Pinned tool versions for reproducibility.
+env:
+  HELM_VERSION: v3.19.2
+  YQ_VERSION: v4.47.2
+
+jobs:
+  inner-values-full:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install Helm
+        run: curl -fsSL https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | DESIRED_VERSION="${HELM_VERSION}" bash
+
+      - name: Install yq (mikefarah v4)
+        run: |
+          sudo curl -fsSL https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/yq_linux_amd64 -o /usr/local/bin/yq
+          sudo chmod +x /usr/local/bin/yq
+
+      - name: Validate inner upstream values (all Applications)
+        run: bash tests/validate-inner-values.sh 2>&1 | tee inner-values-report.txt
+
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: inner-values-report
+          path: inner-values-report.txt

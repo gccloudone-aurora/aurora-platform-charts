@@ -1,0 +1,99 @@
+# helm-unittest suite for cert-manager's ClusterIssuers (issuers.yaml).
+#
+# issuers.yaml renders an ArgoCD Application that sources the `raw` chart and
+# passes two ACME ClusterIssuers (prod + staging) via an AVP plugin env var
+# (spec.source.plugin.env HELM_VALUES). It carries real required-field contracts:
+#   - certManager.issuers.email (required)
+#   - the azure dns01 solver requires workloadIdentity.clientId and
+#     issuers.dns01.azure.{zone,resourceGroupName,subscriptionId}
+# and a conditional caBundle. This suite locks those.
+suite: cert-manager issuers (ClusterIssuers via raw chart)
+templates:
+  - templates/cert-manager/issuers.yaml
+set:
+  global:
+    cluster: test-cluster
+    project: aurora-core
+    provider: azure
+    raw:
+      helm:
+        chart: raw
+        repository: https://gccloudone-aurora.github.io/aurora-platform-charts
+        targetRevision: 0.0.1
+  components:
+    certManager:
+      enabled: true
+      workloadIdentity:
+        enabled: true
+        clientId: 00000000-0000-0000-0000-000000000000
+      issuers:
+        email: platform@example.ca
+        dns01:
+          azure:
+            zone: example.ca
+            resourceGroupName: rg-dns
+            subscriptionId: 00000000-0000-0000-0000-000000000001
+tests:
+  - it: renders a single raw-sourced Application in platform-system
+    asserts:
+      - hasDocuments:
+          count: 1
+      - isKind:
+          of: Application
+      - equal:
+          path: metadata.name
+          value: test-cluster-cert-manager-issuers
+      - equal:
+          path: spec.project
+          value: aurora-core
+      - equal:
+          path: spec.source.chart
+          value: raw
+      - equal:
+          path: spec.destination.namespace
+          value: platform-system
+
+  - it: embeds prod and staging ACME ClusterIssuers with the configured email
+    asserts:
+      - matchRegex:
+          path: spec.source.plugin.env[1].value
+          pattern: "kind: ClusterIssuer"
+      - matchRegex:
+          path: spec.source.plugin.env[1].value
+          pattern: "name: letsencrypt"
+      - matchRegex:
+          path: spec.source.plugin.env[1].value
+          pattern: "name: letsencrypt-staging"
+      - matchRegex:
+          path: spec.source.plugin.env[1].value
+          pattern: "email: platform@example.ca"
+
+  - it: includes the caBundle when provided
+    set:
+      components:
+        certManager:
+          issuers:
+            caBundle: TEST_CA_BUNDLE_BASE64
+    asserts:
+      - matchRegex:
+          path: spec.source.plugin.env[1].value
+          pattern: "caBundle: TEST_CA_BUNDLE_BASE64"
+
+  - it: fails to render when the issuer email is missing
+    set:
+      components:
+        certManager:
+          issuers:
+            email: ""
+    asserts:
+      - failedTemplate:
+          errorPattern: "certManager.issuers.email is required"
+
+  - it: is not rendered when cert-manager is disabled
+    set:
+      components:
+        certManager:
+          enabled: false
+    asserts:
+      - hasDocuments:
+          count: 0

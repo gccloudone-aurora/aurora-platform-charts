@@ -19,17 +19,17 @@ spec:
     helm:
       releaseName: trust-manager
       values: |
-        crds: 
+        crds:
           enabled: true
 
-        image: {{ default "{}" (include "trustManager.image" .) | nindent 10 }}
-        imagePullSecrets: {{ toYaml .Values.components.trustManager.imagePullSecrets | nindent 12 }}
-        
+        image: {{- default "{}" (include "trustManager.image" . | trim) | nindent 10 }}
+        imagePullSecrets: {{- toYaml .Values.components.trustManager.imagePullSecrets | nindent 12 }}
+
         replicaCount: {{ .Values.components.trustManager.replicas }}
-        resources: {{ toYaml .Values.components.trustManager.resources | nindent 10 }}
-        nodeSelector: {{ toYaml .Values.components.trustManager.nodeSelector | nindent 10 }}
-        tolerations: {{ toYaml .Values.components.trustManager.tolerations | nindent 10 }}
-        affinity: {{ toYaml .Values.components.trustManager.affinity | nindent 10 }}
+        resources: {{- toYaml .Values.components.trustManager.resources | nindent 10 }}
+        nodeSelector: {{- toYaml .Values.components.trustManager.nodeSelector | nindent 10 }}
+        tolerations: {{- toYaml .Values.components.trustManager.tolerations | nindent 10 }}
+        affinity: {{- toYaml .Values.components.trustManager.affinity | nindent 10 }}
         priorityClassName: {{ .Values.components.trustManager.priorityClassName }}
 
         app:
@@ -37,8 +37,8 @@ spec:
             namespace: cert-manager-system
 
         defaultPackage:
-          resources: {{ toYaml .Values.components.trustManager.defaultPackage.resources | nindent 12 }}
-        defaultPackageImage: {{ default "{}" (include "trustManager.defaultPackage.image" .) | nindent 10 }}
+          resources: {{- toYaml .Values.components.trustManager.defaultPackage.resources | nindent 12 }}
+        defaultPackageImage: {{- default "{}" (include "trustManager.defaultPackage.image" . | trim) | nindent 10 }}
 
   destination:
     name: {{ .Values.global.cluster }}
