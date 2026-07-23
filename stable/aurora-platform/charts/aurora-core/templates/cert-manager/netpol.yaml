@@ -128,9 +128,6 @@ spec:
                       {{- else }}
                       app: konnectivity-agent
                       {{- end }}
-              - ports:
-                  - port: 10250
-                    protocol: TCP
               podSelector:
                 matchLabels:
                   app.kubernetes.io/name: webhook
