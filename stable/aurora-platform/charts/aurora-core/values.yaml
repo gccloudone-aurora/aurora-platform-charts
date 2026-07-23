@@ -1508,61 +1508,6 @@ components:
                 operator: Exists
       priorityClassName: system-cluster-critical
 
-  #################################
-  ### Kubernetes Event Exporter ###
-  #################################
-  kubernetesEventExporter:
-    enabled: true
-
-    helm: {}
-      # chart: kubernetes-event-exporter
-      # repository: https:///registry-1.docker.io/bitnamicharts
-      # targetRevision: 3.1.2
-
-    imagePullSecrets:
-      - name: aurora-image-pull-secret
-    image:
-      # registry: docker.io
-      repository: bitnamilegacy/kubernetes-event-exporter
-      tag: 1.7.0-debian-12-r14
-      pullPolicy: IfNotPresent
-
-    pdb:
-      create: true
-      minAvailable: 1
-      # maxUnavailable: ""
-    priorityClassName: platform-node-critical
-
-    replicas: 2
-    resources: {}
-      # limits:
-      #   cpu: ""
-      #   memory: ""
-      # requests:
-      #   cpu: ""
-      #   memory: ""
-    nodeSelector:
-      kubernetes.io/os: linux
-      node.ssc-spc.gc.ca/purpose: system
-    tolerations:
-      - key: CriticalAddonsOnly
-        operator: Exists
-    affinity:
-      podAntiAffinity:
-        preferredDuringSchedulingIgnoredDuringExecution:
-        - weight: 1
-          podAffinityTerm:
-            topologyKey: kubernetes.io/hostname
-            labelSelector:
-              matchLabels:
-                app.kubernetes.io/name: kubernetes-event-exporter
-
-    config:
-      output:
-        loki:
-          # authorization: ""
-          # url: ""
-
   ###########
   ### NTP ###
   ###########
