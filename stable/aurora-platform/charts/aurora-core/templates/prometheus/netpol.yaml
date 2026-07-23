@@ -475,14 +475,9 @@ spec:
                     - namespaceSelector:
                         matchLabels:
                           kubernetes.io/metadata.name: kube-system
-                      
                       podSelector:
                         matchLabels:
-                          {{- if eq .Values.global.provider "gcp" }}
-                          k8s-app: konnectivity-agent
-                          {{- else }}
                           app: konnectivity-agent
-                          {{- end }}
                   podSelector:
                     matchLabels: {}
                   policyTypes:
@@ -687,8 +682,6 @@ spec:
                   - ports:
                     - port: 8080
                       protocol: TCP
-                    - port: 80
-                      protocol: TCP
                     to:
                     - namespaceSelector:
                         matchLabels:
@@ -746,29 +739,6 @@ spec:
                         - protocol: TCP
                           port: 10901
               {{- end }}
-              {{- if .Values.components.grafana.enabled }}
-              - apiVersion: networking.k8s.io/v1
-                kind: NetworkPolicy
-                metadata:
-                  name: allow-ingress-from-grafana-system-to-prometheus
-                  namespace: prometheus-system
-                spec:
-                  podSelector:
-                    matchLabels:
-                      app.kubernetes.io/name: prometheus
-                      prometheus: kube-prometheus-stack-prometheus
-                  policyTypes:
-                    - Ingress
-                  ingress:
-                    - from:
-                        - namespaceSelector: {}
-                          podSelector:
-                            matchLabels:
-                              app: grafana
-                      ports:
-                        - protocol: TCP
-                          port: 9090
-                {{- end}}
   destination:
     name: {{ .Values.global.cluster }}
     namespace: platform-system
