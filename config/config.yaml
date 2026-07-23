@@ -102,7 +102,48 @@ core:
         targetRevision: main
         instanceSelector:
           matchLabels:
-            dashboards: aurora 
+            dashboards: aurora
+      alerting:
+        enabled: true
+        repository: https://github.com/gccloudone-aurora/grafana-alerts.git
+        path: .
+        targetRevision: main
+        namespace: grafana-system
+        values:
+          datasourceUid: prometheus
+          instanceSelector:
+            matchLabels:
+              dashboards: aurora
+          folders:
+            trivy:
+              enabled: true
+          timeIntervals:
+            weekday-morning:
+              enabled: true
+          notificationTemplates:
+            gcNotify:
+              enabled: true
+          managedSecrets:
+            trivy-gc-notify:
+              enabled: true
+              stringData:
+                trivy-webhook-url: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-grafana-alert-webhook-url>'
+                trivy-webhook-authorization-credentials: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-grafana-alert-webhook-api-key>'
+          contactPoints:
+            trivy-gc-notify:
+              enabled: true
+              recipients:
+                - email: <FILLIN_ALERT_EMAIL1>
+                  name: <FILLIN_ALERT_NAME1>
+                - email: <FILLIN_ALERT_EMAIL2>
+                  name: <FILLIN_ALERT_NAME2>
+              gcNotify:
+                templateId: <FILLIN_GCNOTIFY_TEMPLATE>
+              authorization:
+                enabled: true
+          routes:
+            trivy:
+              enabled: true
       azure:
         clientId: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-grafana-sp-client-id>'
         clientPassword: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-grafana-sp-client-secret>'

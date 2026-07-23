@@ -1,0 +1,39 @@
+{{- $grafana := .Values.components.grafana -}}
+{{- $alerting := $grafana.alerting -}}
+{{- if and $grafana.enabled $alerting.enabled }}
+{{- $_ := required "components.grafana.alerting.repository is required" $alerting.repository -}}
+{{- $_ := required "components.grafana.alerting.path is required" $alerting.path -}}
+{{- $_ := required "components.grafana.alerting.targetRevision is required" $alerting.targetRevision -}}
+{{- $_ := required "components.grafana.alerting.namespace is required" $alerting.namespace -}}
+{{- $chartValues := mergeOverwrite (deepCopy $alerting.values) (dict "namespace" $alerting.namespace) -}}
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-grafana-alert-resources"
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+    avp.kubernetes.io/ignore: "true"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    repoURL: {{ $alerting.repository | quote }}
+    path: {{ $alerting.path | quote }}
+    targetRevision: {{ $alerting.targetRevision | quote }}
+    plugin:
+      env:
+        - name: HELM_RELEASE_NAME
+          value: grafana-alert-resources
+        - name: HELM_VALUES
+          value: |
+{{ toYaml $chartValues | nindent 12 }}
+  destination:
+    name: {{ .Values.global.cluster }}
+    namespace: {{ $alerting.namespace | quote }}
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+
+{{- end }}

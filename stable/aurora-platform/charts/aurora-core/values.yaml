@@ -1077,6 +1077,14 @@ components:
       #   matchLabels:
       #     dashboards: aurora   
 
+    alerting:
+      enabled: false
+      repository: https://github.com/gccloudone-aurora/grafana-alerts.git
+      path: .
+      targetRevision: main
+      namespace: grafana-system
+      values: {}
+
     helm: {}
       # chart: grafana-operator
       # repository: oci://ghcr.io/grafana/helm-charts/grafana-operator
