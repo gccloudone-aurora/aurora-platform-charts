@@ -428,13 +428,6 @@ core:
           devMajor: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-alertmanager-notifications-msteams-connector-dev-major>'
           devMinor: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-alertmanager-notifications-msteams-connector-dev-minor>'
 
-      jiralert:
-        config:
-          apiURL: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-alertmanager-notifications-jira-api-url>'
-          project: 'CN'
-          user: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-alertmanager-notifications-jira-user>'
-          password: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-alertmanager-notifications-jira-password>'
-
       priorityClassName: platform-cluster-critical
 
     ################################

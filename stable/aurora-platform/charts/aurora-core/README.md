@@ -694,32 +694,6 @@ Aurora Platform - Core Platform
 | components.prometheus.helm | object | `{}` |  |
 | components.prometheus.imagePullSecrets | list | `[]` |  |
 | components.prometheus.imageRegistry | string | `""` |  |
-| components.prometheus.jiralert.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].podAffinityTerm.labelSelector.matchLabels."app.kubernetes.io/name" | string | `"prometheus-jira-alert"` |  |
-| components.prometheus.jiralert.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].podAffinityTerm.topologyKey | string | `"kubernetes.io/hostname"` |  |
-| components.prometheus.jiralert.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].weight | int | `1` |  |
-| components.prometheus.jiralert.config.apiURL | string | `nil` |  |
-| components.prometheus.jiralert.config.password | string | `nil` |  |
-| components.prometheus.jiralert.config.project | string | `nil` |  |
-| components.prometheus.jiralert.config.user | string | `nil` |  |
-| components.prometheus.jiralert.helm | object | `{}` |  |
-| components.prometheus.jiralert.image.repository | string | `"jiralert/jiralert-linux-amd64"` |  |
-| components.prometheus.jiralert.imagePullSecrets | list | `[]` |  |
-| components.prometheus.jiralert.nodeSelector."kubernetes.io/os" | string | `"linux"` |  |
-| components.prometheus.jiralert.nodeSelector."node.ssc-spc.gc.ca/purpose" | string | `"system"` |  |
-| components.prometheus.jiralert.priorityClassName | string | `"platform-cluster-medium"` |  |
-| components.prometheus.jiralert.receivers.critical.components[0] | string | `"Incoming Platform Alert"` |  |
-| components.prometheus.jiralert.receivers.critical.name | string | `"jiralert_critical"` |  |
-| components.prometheus.jiralert.receivers.critical.priority | string | `"Blocker"` |  |
-| components.prometheus.jiralert.receivers.major.components[0] | string | `"Incoming Platform Alert"` |  |
-| components.prometheus.jiralert.receivers.major.name | string | `"jiralert_major"` |  |
-| components.prometheus.jiralert.receivers.major.priority | string | `"High"` |  |
-| components.prometheus.jiralert.receivers.minor.components[0] | string | `"Incoming Platform Alert"` |  |
-| components.prometheus.jiralert.receivers.minor.name | string | `"jiralert_minor"` |  |
-| components.prometheus.jiralert.receivers.minor.priority | string | `"Medium"` |  |
-| components.prometheus.jiralert.replicas | int | `1` |  |
-| components.prometheus.jiralert.resources | object | `{}` |  |
-| components.prometheus.jiralert.tolerations[0].key | string | `"CriticalAddonsOnly"` |  |
-| components.prometheus.jiralert.tolerations[0].operator | string | `"Exists"` |  |
 | components.prometheus.kubeStateMetrics.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].podAffinityTerm.labelSelector.matchLabels."app.kubernetes.io/name" | string | `"kube-state-metrics"` |  |
 | components.prometheus.kubeStateMetrics.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].podAffinityTerm.topologyKey | string | `"kubernetes.io/hostname"` |  |
 | components.prometheus.kubeStateMetrics.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].weight | int | `1` |  |

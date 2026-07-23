@@ -2057,66 +2057,6 @@ components:
     additionalModules: {}
     additionalTargets: {}
 
-    jiralert:
-      helm: {}
-        # chart: jiralert
-        # repository: https://prometheus-community.github.io/helm-charts
-        # targetRevision: 1.7.1
-
-      image:
-        # registry: docker.io
-        # registry: quay.io
-        repository: jiralert/jiralert-linux-amd64
-        # tag: "0.0.1"
-        # pullPolicy: IfNotPresent
-      imagePullSecrets: []
-
-      replicas: 1
-      resources: {}
-        # limits:
-        #   cpu: ""
-        #   memory: ""
-        # requests:
-        #   cpu: ""
-        #   memory: ""
-
-      nodeSelector:
-        kubernetes.io/os: linux
-        node.ssc-spc.gc.ca/purpose: system
-      tolerations:
-        - key: CriticalAddonsOnly
-          operator: Exists
-      affinity:
-        podAntiAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-          - weight: 1
-            podAffinityTerm:
-              topologyKey: kubernetes.io/hostname
-              labelSelector:
-                matchLabels:
-                  app.kubernetes.io/name: prometheus-jira-alert
-      priorityClassName: platform-cluster-medium
-
-      config:
-        apiURL:
-        project:
-        user:
-        password:
-
-      receivers:
-        critical:
-          name: 'jiralert_critical'
-          priority: Blocker
-          components: ['Incoming Platform Alert']
-        major:
-          name: 'jiralert_major'
-          priority: High
-          components: ['Incoming Platform Alert']
-        minor:
-          name: 'jiralert_minor'
-          priority: Medium
-          components: ['Incoming Platform Alert']
-
     msteams:
       helm: {}
         # chart: prometheus-blackbox-exporter
