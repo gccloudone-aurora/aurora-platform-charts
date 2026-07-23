@@ -17,7 +17,7 @@ spec:
     {{- else }}
     chart: {{ default "argocd-instance" .Values.components.argoFoundation.argocdInstance.helm.chart }}
     {{- end }}
-    targetRevision: {{ default "0.17.0" .Values.components.argoFoundation.argocdInstance.helm.targetRevision }}
+    targetRevision: {{ default "0.18.0" .Values.components.argoFoundation.argocdInstance.helm.targetRevision }}
     plugin:
       env:
         - name: HELM_RELEASE_NAME
