@@ -107,7 +107,7 @@ spec:
                 split_queries_by_interval: 2h
                 max_query_parallelism: 16
                 retention_stream:
-                - selector: '{source="kubernetes-event-exporter"}'
+                - selector: '{source="alloy-kubernetes-events"}'
                   priority: 1
                   period: 336h 
 

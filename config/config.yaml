@@ -327,16 +327,18 @@ core:
       productKey: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-kubecost-product-key>'
 
     #################################
-    ### Kubernetes Event Exporter ###
+    #### Alloy (Grafana Group)   ####
     #################################
-    kubernetesEventExporter:
-      enabled: false
+
+    alloy:
+      enabled: true
 
       config:
-        output:
-          loki:
+        loki:
+          write:
             url: "https://loki.<FILLIN_INGRESS_DOMAIN>/loki/api/v1/push"
-            authorization: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-loki-authorization>'
+            username: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-loki-username'
+            password: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-loki-password'
 
     ###########
     ### NTP ###

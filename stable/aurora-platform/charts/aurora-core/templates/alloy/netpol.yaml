@@ -1,9 +1,9 @@
-{{ if .Values.components.kubernetesEventExporter.enabled -}}
+{{ if .Values.components.alloy.enabled -}}
 
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: "{{ .Values.global.cluster }}-kubernetes-event-exporter-netpol"
+  name: "{{ .Values.global.cluster }}-alloy-netpol"
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
@@ -13,14 +13,14 @@ spec:
     repoURL: {{ default .Values.global.helm.repository .Values.global.raw.helm.repository }}
     targetRevision: {{ .Values.global.raw.helm.targetRevision }}
     helm:
-      releaseName: kubernetes-event-exporter-netpol
+      releaseName: alloy-netpol
       values: |
         resources:
           - apiVersion: networking.k8s.io/v1
             kind: NetworkPolicy
             metadata:
               name: allow-same-namespace
-              namespace: event-logging-system
+              namespace: alloy-system
             spec:
               podSelector: {}
               policyTypes:
@@ -35,29 +35,29 @@ spec:
           - apiVersion: networking.k8s.io/v1
             kind: NetworkPolicy
             metadata:
-              name: allow-egress-from-kubernetes-event-export-to-central-logging
-              namespace: event-logging-system
+              name: allow-egress-from-alloy-to-central-logging
+              namespace: alloy-system
             spec:
               egress:
               {{- range (required "global.loggingCidrs is required" .Values.global.loggingCidrs) }}
                 - ports:
-                    - protocol: TCP
-                      port: 443
+                  - protocol: TCP
+                    port: 443
                   to:
                     - ipBlock:
                         cidr: {{ . | quote }}
               {{- end }}
               podSelector:
                 matchLabels:
-                  app.kubernetes.io/name: kubernetes-event-exporter
+                  app.kubernetes.io/name: alloy
               policyTypes:
               - Egress
           {{ if .Values.global.clusterHasLoki }}
           - apiVersion: networking.k8s.io/v1
             kind: NetworkPolicy
             metadata:
-              name: allow-egress-to-loki-from-event-logging
-              namespace: event-logging-system
+              name: allow-egress-to-loki-from-alloy
+              namespace: alloy-system
             spec:
               egress:
               - ports:
@@ -72,7 +72,7 @@ spec:
                       app.kubernetes.io/component: gateway
               podSelector:
                 matchLabels:
-                  app.kubernetes.io/name: kubernetes-event-exporter
+                  app.kubernetes.io/name: alloy
               policyTypes:
               - Egress
           {{- end }}
