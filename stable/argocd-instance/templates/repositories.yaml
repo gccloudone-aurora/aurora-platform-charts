@@ -14,7 +14,6 @@ stringData:
 
 {{- range $name, $value := default dict .Values.register.repositoryCreds }}
 ---
-
 apiVersion: v1
 kind: Secret
 metadata:
@@ -25,6 +24,19 @@ metadata:
 stringData:
   type: {{ $value.type }}
   url: {{ $value.url }}
+  {{- if $value.githubApp }}
+  {{- $app := $value.githubApp }}
+  {{- if or (not $app.id) (not $app.installationID) (not $app.privateKey) }}
+  {{- fail (printf "register.repositoryCreds.%s.githubApp requires id, installationID, and privateKey" $name) }}
+  {{- end }}
+  githubAppID: {{ $app.id | quote }}
+  githubAppInstallationID: {{ $app.installationID | quote }}
+  githubAppPrivateKey: {{ $app.privateKey | quote }}
+  {{- if $app.enterpriseBaseUrl }}
+  githubAppEnterpriseBaseUrl: {{ $app.enterpriseBaseUrl }}
+  {{- end }}
+  {{- else }}
   username: {{ $value.username }}
   password: {{ $value.password }}
+  {{- end }}
 {{- end }}
