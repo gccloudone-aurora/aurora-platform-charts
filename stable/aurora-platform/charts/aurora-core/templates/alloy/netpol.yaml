@@ -16,7 +16,7 @@ spec:
       releaseName: alloy-netpol
       values: |
         resources:
-          -apiVersion: networking.k8s.io/v1
+          - apiVersion: networking.k8s.io/v1
             kind: NetworkPolicy
             metadata:
               name: allow-same-namespace
@@ -32,50 +32,50 @@ spec:
               egress:
                 - to:
                   - podSelector: {}
-            - apiVersion: networking.k8s.io/v1
-              kind: NetworkPolicy
-              metadata:
-                name: allow-egress-from-alloy-to-central-logging
-                namespace: alloy-system
-              spec:
-                egress:
-                {{- range (required "global.loggingCidrs is required" .Values.global.loggingCidrs) }}
-                  - ports:
-                    - protocol: TCP
-                      port: 443
-                    to:
-                      - ipBlock:
-                          cidr: {{ . | quote }}
-                {{- end }}
-                podSelector:
-                  matchLabels:
-                    app.kubernetes.io/name: alloy
-                policyTypes:
-                - Egress
-            {{ if .Values.global.clusterHasLoki }}
-            - apiVersion: networking.k8s.io/v1
-              kind: NetworkPolicy
-              metadata:
-                name: allow-egress-to-loki-from-alloy
-                namespace: alloy-system
-              spec:
-                egress:
+          - apiVersion: networking.k8s.io/v1
+            kind: NetworkPolicy
+            metadata:
+              name: allow-egress-from-alloy-to-central-logging
+              namespace: alloy-system
+            spec:
+              egress:
+              {{- range (required "global.loggingCidrs is required" .Values.global.loggingCidrs) }}
                 - ports:
-                  - port: 8080
-                    protocol: TCP
+                  - protocol: TCP
+                    port: 443
                   to:
-                  - namespaceSelector:
-                      matchLabels:
-                        kubernetes.io/metadata.name: loki-system
-                    podSelector:
-                      matchLabels:
-                        app.kubernetes.io/component: gateway
-                podSelector:
-                  matchLabels:
-                    app.kubernetes.io/name: alloy
-                policyTypes:
-                - Egress
+                    - ipBlock:
+                        cidr: {{ . | quote }}
               {{- end }}
+              podSelector:
+                matchLabels:
+                  app.kubernetes.io/name: alloy
+              policyTypes:
+              - Egress
+          {{ if .Values.global.clusterHasLoki }}
+          - apiVersion: networking.k8s.io/v1
+            kind: NetworkPolicy
+            metadata:
+              name: allow-egress-to-loki-from-alloy
+              namespace: alloy-system
+            spec:
+              egress:
+              - ports:
+                - port: 8080
+                  protocol: TCP
+                to:
+                - namespaceSelector:
+                    matchLabels:
+                      kubernetes.io/metadata.name: loki-system
+                  podSelector:
+                    matchLabels:
+                      app.kubernetes.io/component: gateway
+              podSelector:
+                matchLabels:
+                  app.kubernetes.io/name: alloy
+              policyTypes:
+              - Egress
+          {{- end }}
   destination:
     name: {{ .Values.global.cluster }}
     namespace: platform-system

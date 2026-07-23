@@ -104,6 +104,52 @@ rbac:
 ### CORE ###
 ############
 components:
+  ##############
+  ### ALLOY ###
+  #############
+  alloy:
+    enabled: false
+
+    helm: { }
+    # chart: alloy
+    # repository: https://grafana.github.io/helm-charts
+    # targetRevision: 1.11.0
+
+    imagePullSecrets: []
+      # - name: aurora-image-pull-secret
+
+    image: {}
+      # registry: docker.io
+      # repository: grafana/alloy
+      # tag: ""
+      # pullPolicy: IfNotPresent
+
+    priorityClassName: platform-cluster-medium
+
+    # loki.source.kubernetes_events reads once from cluster wide API, not per node.
+    # Therefore, additional replicas would ingest an event for every n-number of replicas
+    replicas: 1
+    resources: { }
+      # limits:
+      #   cpu: ""
+      #   memory: ""
+      # requests:
+    #   cpu: ""
+    #   memory: ""
+    nodeSelector:
+      kubernetes.io/os: linux
+      node.ssc-spc.gc.ca/purpose: system
+    tolerations:
+      - key: CriticalAddonsOnly
+        operator: Exists
+
+    config:
+      loki:
+        write: {}
+          # url: "https://loki.example.ca/loki/app/v1/push"
+          # username: ""
+          # password: ""
+
   #########################
   ### Aurora Controller ###
   #########################
