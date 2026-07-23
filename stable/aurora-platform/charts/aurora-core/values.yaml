@@ -104,13 +104,13 @@ rbac:
 ### CORE ###
 ############
 components:
-  ##############
+  #############
   ### ALLOY ###
   #############
   alloy:
-    enabled: false
+    enabled: true
 
-    helm: { }
+    helm: {}
     # chart: alloy
     # repository: https://grafana.github.io/helm-charts
     # targetRevision: 1.11.0
