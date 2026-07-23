@@ -106,17 +106,16 @@ spec:
             spec:
               podSelector:
                 matchLabels:
-                  app: grafana
+                  app.kubernetes.io/name: prometheus
+                  prometheus: kube-prometheus-stack-prometheus
               policyTypes:
                 - Ingress
               ingress:
                 - from:
-                    - namespaceSelector:
-                        matchLabels:
-                          kubernetes.io/metadata.name: istio-general-system
+                    - namespaceSelector: {}
                       podSelector:
                         matchLabels:
-                          istio: general
+                          app: grafana
                   ports:
                     - protocol: TCP
                       port: 9090
