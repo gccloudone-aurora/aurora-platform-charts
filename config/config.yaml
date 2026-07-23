@@ -331,7 +331,7 @@ core:
     #################################
 
     alloy:
-      enabled: false
+      enabled: true
 
       config:
         loki:
