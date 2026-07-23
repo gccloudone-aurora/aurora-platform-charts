@@ -123,10 +123,11 @@ spec:
                       kubernetes.io/metadata.name: kube-system
                   podSelector:
                     matchLabels:
+                      {{- if eq .Values.global.provider "gcp" }}
+                      k8s-app: konnectivity-agent
+                      {{- else }}
                       app: konnectivity-agent
-              - ports:
-                  - port: 10250
-                    protocol: TCP
+                      {{- end }}
               podSelector:
                 matchLabels:
                   app.kubernetes.io/name: webhook
