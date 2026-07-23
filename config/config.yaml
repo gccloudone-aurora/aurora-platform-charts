@@ -340,19 +340,6 @@ core:
             username: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-loki-username'
             username: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-loki-password'
 
-    #################################
-    ### Kubernetes Event Exporter ###
-    #################################
-    # Should be disabled if Alloy is in use due to conflict. K.E.E requires the use of licensed Bitnami charts
-    kubernetesEventExporter:
-      enabled: false
-
-      config:
-        output:
-          loki:
-            url: "https://loki.<FILLIN_INGRESS_DOMAIN>/loki/api/v1/push"
-            authorization: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-loki-authorization>'
-
     ###########
     ### NTP ###
     ###########
