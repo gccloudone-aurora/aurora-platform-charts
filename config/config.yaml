@@ -338,7 +338,7 @@ core:
           write:
             url: "https://loki.<FILLIN_INGRESS_DOMAIN>/loki/api/v1/push"
             username: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-loki-username'
-            username: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-loki-password'
+            password: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-loki-password'
 
     ###########
     ### NTP ###
