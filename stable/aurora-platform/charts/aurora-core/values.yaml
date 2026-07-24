@@ -1077,11 +1077,18 @@ components:
 
     alerting:
       enabled: false
-      repository: https://github.com/gccloudone-aurora/grafana-alerts.git
-      path: .
-      targetRevision: main
-      namespace: grafana-system
-      values: {}
+      # repository: https://github.com/gccloudone-aurora/grafana-alerts.git
+      # path: .
+      # targetRevision: main
+      datasourceUid: prometheus
+      instanceSelector: {}
+      notificationPolicy: {}
+      folders: {}
+      timeIntervals: {}
+      notificationTemplates: {}
+      managedSecrets: {}
+      contactPoints: {}
+      routes: {}
 
     helm: {}
       # chart: grafana-operator
