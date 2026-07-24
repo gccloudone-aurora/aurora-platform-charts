@@ -146,7 +146,7 @@ components:
     config:
       loki:
         write: {}
-          # url: "https://loki.example.ca/loki/app/v1/push"
+          # url: "https://loki.example.ca/loki/api/v1/push"
           # username: ""
           # password: ""
 
