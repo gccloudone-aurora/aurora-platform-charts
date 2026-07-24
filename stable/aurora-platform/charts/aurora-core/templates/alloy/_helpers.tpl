@@ -19,6 +19,21 @@ pullPolicy: {{ .Values.components.alloy.image.pullPolicy }}
 {{- end }}
 
 {{/*
+Loki Write Endpoint Logic.
+Unless overriden, use these values. The MGMT cluster should be the central and use svc.
+Spoke clusters should use a regular url and hop to the central logger
+*/}}
+{{- define "alloy.lokiWriteUrl" -}}
+{{- if .Values.components.alloy.config.loki.write.url -}}
+{{- .Values.components.alloy.config.loki.write.url -}}
+{{- else if .Values.global.clusterHasLoki -}}
+http://loki-gateway.loki-system.svc.cluster.local/loki/api/v1/push
+{{- else -}}
+{{- required "components.alloy.config.loki.write.url is required when global.clusterHasLoki is not true" .Values.components.alloy.config.loki.write.url -}}
+{{- end -}}
+{{- end }}
+
+{{/*
 Alloy configuration that watches Kubernetes Event Objects, then ships them out to the Loki instance using loki.write.
 */}}
 {{- define "alloy.config" -}}
