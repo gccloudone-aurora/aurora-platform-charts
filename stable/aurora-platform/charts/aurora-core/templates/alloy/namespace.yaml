@@ -15,6 +15,7 @@ spec:
     helm:
       releaseName: alloy-system
       values: |
+        # Information about the namespace.
         information:
           # Organisational information.
           division: "Aurora"
@@ -37,36 +38,36 @@ spec:
           PE: 001
           workloadID: 0000001
           productID: 00001
-        
+
         # Configurations about the namespace.
         namespace:
-          # Extra labels to add to the namespace.
+        # Extra labels to add to the namespace.
           labels: {}
           # The type of namespace.
           # Can be one of [gateway, solution, system].
           type: "system"
-        
+
         # Policy configurations on the namespace.
         policies:
           # List of host/path that can be exposed from the namespace.
           allowedHosts: []
-        
+
           # Configure the data plane mode for Istio.
           # "sidecar" Enables sidecar injection (istio-injection=enabled).
           # "ambient" Enables Ambient Mesh (istio.io/dataplane-mode=ambient).
           # istioMode: "ambient"
-        
+
           # Refer to https://kubernetes.io/docs/concepts/security/pod-security-admission/
           # podSecurityAdmission:
           #   enforce:
           #     level: restricted
           #     version: v1.35
-        
+
         # Defines the access control on the namespace.
         # Roles will be assigned based on the namespace type.
         rbac:
-          groups: { { toYaml .Values.rbac.platformOperator.groups | nindent 12 } }
-        
+          groups: {{ toYaml .Values.rbac.platformOperator.groups | nindent 12 }}
+
         # Defines resource quotas on the namespace.
         resourceQuotas:
           # The maximum number of pods that can be in the namespace.
