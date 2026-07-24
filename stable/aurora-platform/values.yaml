@@ -33,7 +33,7 @@ global:
       targetRevision: "0.0.1"
       repository: "https://gccloudone-aurora.github.io/aurora-platform-charts"
 
-  # azure or aws
+  # azure or aws or gcp
   provider: azure
 
   # Name of the Kubernetes cluster.
