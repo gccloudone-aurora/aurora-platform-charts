@@ -67,6 +67,8 @@ global:
   # subscriptionId: ""
   # tenantId: ""
 
+  defaultStorageClass: default
+
   # child values import via dependencies
   imports:
     app:
