@@ -15,7 +15,7 @@ spec:
     {{- else }}
     repoURL: {{ default "https://gccloudone-aurora.github.io/aurora-platform-charts" .Values.global.helm.repository }}
     {{- end }}
-    targetRevision: {{ default "0.0.1" .Values.components.istio.istioCustomResponses.helm.targetRevision }}
+    targetRevision: {{ .Values.components.istio.istioCustomResponses.helm.targetRevision }}
     helm:
       releaseName: custom-responses
       values: |

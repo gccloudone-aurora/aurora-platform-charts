@@ -21,15 +21,29 @@
   "customManagers": [
     {
       "customType": "regex",
-      "description": "Update Helm chart targetRevision values documented with chart/repository comments",
+      "description": "Update HTTP Helm chart targetRevision values documented with chart/repository comments",
       "managerFilePatterns": [
         "/(^|/)values\\.ya?ml$/",
         "/^config/config\\.ya?ml$/"
       ],
       "matchStrings": [
-        "#\\s*chart:\\s*(?<depName>\\S+)\\s*\\n\\s*#\\s*repository:\\s*(?<registryUrl>\\S+)\\s*\\n(?:\\s*#.*\\n)*\\s*targetRevision:\\s*[\"']?(?<currentValue>[^\"'\\s#]+)[\"']?"
+        "#\\s*chart:\\s*(?<depName>\\S+)\\s*\\n\\s*#\\s*repository:\\s*(?<registryUrl>https?://\\S+)\\s*\\n(?:\\s*#.*\\n)*\\s*targetRevision:\\s*[\"']?(?<currentValue>[^\"'\\s#]+)[\"']?"
       ],
       "datasourceTemplate": "helm"
+    },
+    {
+      "customType": "regex",
+      "description": "Update OCI Helm chart targetRevision values documented with chart/repository comments",
+      "managerFilePatterns": [
+        "/(^|/)values\\.ya?ml$/",
+        "/^config/config\\.ya?ml$/"
+      ],
+      "matchStrings": [
+        "#\\s*chart:\\s*(?<depName>\\S+)\\s*\\n\\s*#\\s*repository:\\s*oci://(?<registryHost>[^/]+)/(?<packageName>\\S+)\\s*\\n(?:\\s*#.*\\n)*\\s*targetRevision:\\s*[\"']?(?<currentValue>[^\"'\\s#]+)[\"']?"
+      ],
+      "datasourceTemplate": "docker",
+      "registryUrlTemplate": "https://{{{registryHost}}}",
+      "versioningTemplate": "helm"
     }
   ],
   "lockFileMaintenance": {
@@ -43,7 +57,8 @@
         "custom.regex"
       ],
       "matchDatasources": [
-        "helm"
+        "helm",
+        "docker"
       ],
       "groupName": "helm chart dependencies"
     },

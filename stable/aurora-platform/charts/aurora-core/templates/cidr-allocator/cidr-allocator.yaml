@@ -15,7 +15,7 @@ spec:
     {{- else }}
     repoURL: {{ default "https://gccloudone-aurora.github.io/cidr-allocator" .Values.global.helm.repository }}
     {{- end }}
-    targetRevision: {{ default "0.0.1" .Values.components.cidrAllocator.helm.targetRevision }}
+    targetRevision: {{ .Values.components.cidrAllocator.helm.targetRevision }}
     plugin:
       env:
         - name: HELM_RELEASE_NAME

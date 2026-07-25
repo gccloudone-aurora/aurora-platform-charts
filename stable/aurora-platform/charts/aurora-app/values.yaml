@@ -74,10 +74,10 @@ components:
   argoController:
     enabled: true
 
-    helm: {}
+    helm:
       # chart: argo-controller
-      # repository: https://gccloudone-aurora.github.io/aurora-platform-charts
-      # targetRevision: 0.0.2
+      # repository: https://gccloudone-aurora.github.io/argo-controller
+      targetRevision: 0.0.3
 
     imagePullSecrets: []
 
@@ -136,10 +136,10 @@ components:
     enabled: true
 
     workflow:
-      helm: {}
+      helm:
         # chart: argo-workflows
         # repository: https://argoproj.github.io/argo-helm
-        # targetRevision: 0.42.1
+        targetRevision: 0.42.1
 
       images:
         pullPolicy: IfNotPresent
@@ -239,10 +239,10 @@ components:
   elastic:
     enabled: false
 
-    helm: {}
+    helm:
       # chart: eck-operator
       # repository: https://helm.elastic.co
-      # targetRevision: 2.3.0
+      targetRevision: 2.16.1
 
     imagePullSecrets: []
     image:
@@ -286,16 +286,16 @@ components:
     imagePullSecrets: []
 
     base:
-      helm: {}
+      helm:
         # chart: base
         # repository: https://istio-release.storage.googleapis.com/charts
-        # targetRevision: 1.29.1
+        targetRevision: 1.29.1
 
     cni:
-      helm: {}
+      helm:
         # chart: cni
         # repository: https://istio-release.storage.googleapis.com/charts
-        # targetRevision: 1.29.1
+        targetRevision: 1.29.1
 
       image:
         # registry: docker.io
@@ -324,16 +324,16 @@ components:
       priorityClassName: platform-cluster-critical
 
     istioCustomResponses:
-      helm: {}
+      helm:
         # chart: istio-custom-responses
         # repository: https://gccloudone-aurora.github.io/aurora-platform-charts
-        # targetRevision: 0.0.1
+        targetRevision: 0.0.1
 
     gateway:
-      helm: {}
+      helm:
         # chart: istio-ingress-gateway
         # repository:  https://gccloudone-aurora.github.io/aurora-platform-charts
-        # targetRevision: 0.0.6
+        targetRevision: 0.0.9
 
       replicas: 3
       resources: {}
@@ -368,10 +368,10 @@ components:
       additionalGatewayHosts: []
 
     ingressIstioController:
-      helm: {}
+      helm:
         # chart: ingress-istio-controller
-        # repository: https://gccloudone-aurora.github.io/aurora-platform-charts
-        # targetRevision: 1.4.0
+        # repository: https://gccloudone-aurora.github.io/ingress-istio-controller
+        targetRevision: 0.0.2
 
       image:
         # registry: docker.io
@@ -406,10 +406,10 @@ components:
                   app.kubernetes.io/instance: ingress-istio-controller
 
     istiod:
-      helm: {}
+      helm:
         # chart: istiod
         # repository: https://istio-release.storage.googleapis.com/charts
-        # targetRevision: 1.29.1
+        targetRevision: 1.29.1
 
       image:
         # registry: docker.io
@@ -482,10 +482,10 @@ components:
     ztunnel:
       enabled: true
 
-      helm: {}
+      helm:
         # chart: ztunnel
         # repository: https://istio-release.storage.googleapis.com/charts
-        # targetRevision: 1.29.1
+        targetRevision: 1.29.1
 
       image:
         # registry: docker.io
@@ -527,10 +527,10 @@ components:
   kiali:
     enabled: true
 
-    helm: {}
+    helm:
       # chart: kiali-operator
       # repository: https://kiali.org/helm-charts
-      # targetRevision: 1.62.0
+      targetRevision: 1.62.0
 
     imagePullSecrets: []
     image:
@@ -576,10 +576,10 @@ components:
   sidecarTerminator:
     enabled: true
 
-    helm: {}
+    helm:
       # chart: sidecar-terminator
-      # repository: https://gccloudone-aurora.github.io/aurora-platform-charts
-      # targetRevision: 0.0.1
+      # repository: https://gccloudone-aurora.github.io/sidecar-terminator
+      targetRevision: 0.0.2
 
     imagePullSecrets: []
 
@@ -641,10 +641,10 @@ components:
   solr:
     enabled: false
 
-    helm: {}
+    helm:
       # chart: solr-operator
       # repository: https://solr.apache.org/charts
-      # targetRevision: 0.5.1
+      targetRevision: 0.5.1
 
     imagePullSecrets: []
     image:
@@ -722,17 +722,17 @@ components:
   strimzi:
     enabled: false
 
-    helm: {}
+    helm:
       # chart: strimzi-kafka-operator
       # repository: oci://quay.io/strimzi-helm/strimzi-kafka-operator
-      # targetRevision: 1.0.0
+      targetRevision: 0.45.2
 
     imagePullSecrets: []
     image:
       # registry: quay.io
       repository: strimzi
       name: operator
-      # tag: 1.0.0
+      # tag: 0.45.2
       # pullPolicy: IfNotPresent
 
     defaultImageRegistry: quay.io
