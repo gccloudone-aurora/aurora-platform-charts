@@ -51,7 +51,7 @@ spec:
                       adminPassword: {{ required "grafana.adminPassword is required" .Values.components.grafana.adminPassword | quote }}
                     server:
                       root_url: {{ .Values.components.grafana.serverUrl | default (printf "http://localhost:3000/login/azuread" .Values.components.grafana.serverUrl) | quote }}
-                    {{- if eq .Values.global.provider "azure" }}
+                    {{- if or (eq .Values.global.provider "azure") (and .Values.components.grafana.azure.clientId .Values.components.grafana.azure.clientPassword) }}
                     auth.azuread:
                       enabled: "true"
                       name: "Azure AD"
