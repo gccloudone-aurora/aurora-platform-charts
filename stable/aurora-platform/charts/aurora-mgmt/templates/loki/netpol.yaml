@@ -75,10 +75,10 @@ spec:
                       app.kubernetes.io/name: fluentd
                 - namespaceSelector:
                     matchLabels:
-                      kubernetes.io/metadata.name: event-logging-system
+                      kubernetes.io/metadata.name: alloy-system
                   podSelector:
                     matchLabels:
-                      app.kubernetes.io/name: kubernetes-event-exporter
+                      app.kubernetes.io/name: alloy
               podSelector:
                 matchLabels:
                   app.kubernetes.io/component: gateway
