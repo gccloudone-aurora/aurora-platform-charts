@@ -1,0 +1,83 @@
+{{ if and .Values.components.thanos.enabled .Values.components.thanos.grafana.dashboard.enabled -}}
+{{- $g := .Values.components.thanos.grafana -}}
+
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-thanos-grafana-dashboard"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    chart: {{ .Values.global.raw.helm.chart }}
+    repoURL: {{ default .Values.global.helm.repository .Values.global.raw.helm.repository }}
+    targetRevision: {{ .Values.global.raw.helm.targetRevision }}
+    helm:
+      releaseName: thanos-grafana-dashboard
+      values: |
+        resources:
+          # Thanos Dashboard
+          - apiVersion: grafana.integreatly.org/v1beta1
+            kind: GrafanaDashboard
+            metadata:
+              name: aurora-thanos-longterm
+              namespace: {{ $g.namespace }}
+            spec:
+              instanceSelector:
+                matchLabels: {{ toYaml $g.instanceSelector | nindent 18 }}
+              json: |
+                {
+                  "title": "Thanos — Metrics",
+                  "uid": "aurora-thanos-longterm",
+                  "schemaVersion": 39,
+                  "editable": true,
+                  "time": { "from": "now-90d", "to": "now" },
+                  "timezone": "",
+                  "panels": [
+                    {
+                      "id": 1,
+                      "type": "stat",
+                      "title": "Clusters reporting (long-term)",
+                      "datasource": { "type": "prometheus", "uid": "thanos" },
+                      "gridPos": { "h": 6, "w": 6, "x": 0, "y": 0 },
+                      "targets": [
+                        { "refId": "A", "datasource": { "type": "prometheus", "uid": "thanos" },
+                          "expr": "count(count by (cluster) (up))" }
+                      ]
+                    },
+                    {
+                      "id": 2,
+                      "type": "timeseries",
+                      "title": "Active series by cluster",
+                      "datasource": { "type": "prometheus", "uid": "thanos" },
+                      "gridPos": { "h": 9, "w": 18, "x": 6, "y": 0 },
+                      "targets": [
+                        { "refId": "A", "datasource": { "type": "prometheus", "uid": "thanos" },
+                          "expr": "sum by (cluster) (prometheus_tsdb_head_series)",
+                          "legendFormat": "{{`{{cluster}}`}}" }
+                      ]
+                    },
+                    {
+                      "id": 3,
+                      "type": "timeseries",
+                      "title": "Ingestion rate by cluster (5m)",
+                      "datasource": { "type": "prometheus", "uid": "thanos" },
+                      "gridPos": { "h": 9, "w": 24, "x": 0, "y": 9 },
+                      "targets": [
+                        { "refId": "A", "datasource": { "type": "prometheus", "uid": "thanos" },
+                          "expr": "sum by (cluster) (rate(prometheus_tsdb_head_samples_appended_total[5m]))",
+                          "legendFormat": "{{`{{cluster}}`}}" }
+                      ]
+                    }
+                  ]
+                }
+  destination:
+    name: {{ .Values.global.cluster }}
+    namespace: {{ $g.namespace }}
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+
+{{- end }}

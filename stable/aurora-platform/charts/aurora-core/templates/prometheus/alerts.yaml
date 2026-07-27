@@ -233,6 +233,22 @@ spec:
                   rules-definition: >-
                     https://github.com/gccloudone-aurora-platform-charts/-/blob/main/charts/aurora-platform/charts/aurora-core/conf/prometheus_rules/velero/velero_rules.yaml
               spec: {{ (.Files.Get "conf/prometheus_rules/velero/velero_rules.yaml")  | nindent 16 }}
+            - apiVersion: monitoring.coreos.com/v1
+              kind: PrometheusRule
+              metadata:
+                name: trivy-alerts
+                namespace: prometheus-system
+                labels:
+                  app.kubernetes.io/name: "prometheus-alerts"
+                  app.kubernetes.io/instance: "{{ .Values.global.cluster }}"
+                  app.kubernetes.io/component: monitoring
+                  app.kubernetes.io/part-of: prometheus-system
+                  app.kubernetes.io/managed-by: argo
+                  helm.sh/chart: {{ printf "%s-%s" .Chart.Name .Chart.Version }}
+                annotations:
+                  rules-definition: >-
+                    https://github.com/gccloudone-aurora-platform-charts/-/blob/main/charts/aurora-platform/charts/aurora-core/conf/prometheus_rules/trivy/trivy_rules.yaml
+              spec: {{ (.Files.Get "conf/prometheus_rules/trivy/trivy_rules.yaml")  | nindent 16 }}
   destination:
     name: {{ .Values.global.cluster }}
     namespace: platform-system

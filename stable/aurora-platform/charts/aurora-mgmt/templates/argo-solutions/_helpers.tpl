@@ -16,10 +16,10 @@ pullPolicy: {{ .Values.components.argoSolution.image.pullPolicy }}
 {{- end }}
 
 {{/*
-The azureWorkloadIdentity configuration.
+The workloadIdentity configuration.
 */}}
-{{- define "argoSolution.argocdInstance.azureWorkloadIdentity.clientId" -}}
-{{- if .Values.components.argoSolution.argocdInstance.azureWorkloadIdentity.enabled -}}
-azure.workload.identity/client-id: {{ required "argoSolution.argocdInstance.azureWorkloadIdentity.clientId is required" .Values.components.argoSolution.argocdInstance.azureWorkloadIdentity.clientId | quote }}
+{{- define "argoSolution.argocdInstance.workloadIdentity.clientId" -}}
+{{- if .Values.components.argoSolution.argocdInstance.workloadIdentity.enabled -}}
+azure.workload.identity/client-id: {{ required "argoSolution.argocdInstance.workloadIdentity.clientId is required" .Values.components.argoSolution.argocdInstance.workloadIdentity.clientId | quote }}
 {{- end }}
 {{- end }}

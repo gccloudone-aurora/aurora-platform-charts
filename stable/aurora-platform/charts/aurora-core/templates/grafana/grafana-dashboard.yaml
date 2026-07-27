@@ -1,0 +1,31 @@
+{{ if .Values.components.grafana.enabled -}}
+
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-grafana-dashboard-resources"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    repoURL: {{ default "https://github.com/gccloudone-aurora/grafana-dashboards.git" .Values.components.grafana.dashboard.repository }}
+    path: {{ default "." .Values.components.grafana.dashboard.path }}
+    targetRevision: {{ default "main" .Values.components.grafana.dashboard.targetRevision | quote }}
+    helm:
+      releaseName: grafana-dashboard-resources
+      values: |
+        namespace: grafana-system
+{{ with .Values.components.grafana.dashboard.instanceSelector }}
+        instanceSelector:
+{{ toYaml . | nindent 10 }}
+{{ end }}
+  destination:
+    name: {{ .Values.global.cluster }}
+    namespace: grafana-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+
+{{- end }}

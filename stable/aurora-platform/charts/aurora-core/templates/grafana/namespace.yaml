@@ -1,9 +1,9 @@
-{{ if .Values.components.kubernetesEventExporter.enabled -}}
+{{ if .Values.components.grafana.enabled -}}
 
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: "{{ .Values.global.cluster }}-event-logging-namespace"
+  name: "{{ .Values.global.cluster }}-grafana-namespace"
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
@@ -13,11 +13,11 @@ spec:
     repoURL: {{ default .Values.global.helm.repository .Values.global.namespace.helm.repository }}
     targetRevision: {{ .Values.global.namespace.helm.targetRevision }}
     helm:
-      releaseName: event-logging-system
+      releaseName: grafana-system
       values: |
         # Information about the namespace.
         information:
-          # Organisational information.
+          # Organizational information.
           division: "Aurora"
           team: "Aurora Solutions"
           projectName: "Aurora Platform"
@@ -42,7 +42,8 @@ spec:
         # Configurations about the namespace.
         namespace:
         # Extra labels to add to the namespace.
-          labels: {}
+          labels:
+            namespace.ssc-spc.gc.ca/trust-manager: active
           # The type of namespace.
           # Can be one of [gateway, solution, system].
           type: "system"
@@ -50,7 +51,8 @@ spec:
         # Policy configurations on the namespace.
         policies:
           # List of host/path that can be exposed from the namespace.
-          allowedHosts: []
+          allowedHosts:
+            - "grafana.{{ .Values.global.ingressDomain }}"
 
           # Configure the data plane mode for Istio.
           # "sidecar" Enables sidecar injection (istio-injection=enabled).
@@ -80,7 +82,7 @@ spec:
             nodeports: 0
           # The upper limit of storage that can be requested across all persistent volumes.
           # Expects a string value of a number with or without units (uses SI units).
-          storage: '0'
+          storage: '120Gi'
   destination:
     name: {{ .Values.global.cluster }}
     namespace: platform-system

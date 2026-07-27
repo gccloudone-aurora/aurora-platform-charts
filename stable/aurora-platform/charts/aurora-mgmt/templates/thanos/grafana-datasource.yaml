@@ -1,0 +1,48 @@
+{{ if and .Values.components.thanos.enabled .Values.components.thanos.grafana.datasource.enabled -}}
+{{- $g := .Values.components.thanos.grafana -}}
+
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-thanos-grafana-datasource"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    chart: {{ .Values.global.raw.helm.chart }}
+    repoURL: {{ default .Values.global.helm.repository .Values.global.raw.helm.repository }}
+    targetRevision: {{ .Values.global.raw.helm.targetRevision }}
+    helm:
+      releaseName: thanos-grafana-datasource
+      values: |
+        resources:
+          # datasource pointing at the Thanos Querier
+          # The Querier is a drop-in PromQL endpoint, can be repointed to if needed
+          - apiVersion: grafana.integreatly.org/v1beta1
+            kind: GrafanaDatasource
+            metadata:
+              name: aurora-thanos-source
+              namespace: {{ $g.namespace }}
+            spec:
+              instanceSelector:
+                matchLabels: {{ toYaml $g.instanceSelector | nindent 18 }}
+              datasource:
+                name: Thanos
+                type: prometheus
+                uid: thanos
+                url: http://thanos-query.thanos-system:9090/
+                access: proxy
+                isDefault: false
+                jsonData:
+                  httpMethod: POST
+                  timeInterval: 30s
+  destination:
+    name: {{ .Values.global.cluster }}
+    namespace: {{ $g.namespace }}
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+
+{{- end }}

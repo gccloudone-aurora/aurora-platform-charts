@@ -1,10 +1,9 @@
-{{ if .Values.components.aadPodIdentity.enabled -}}
-{{ if eq .Values.global.provider "azure" -}}
+{{ if .Values.components.alloy.enabled -}}
 
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: "{{ .Values.global.cluster }}-aad-pod-identity-namespace"
+  name: "{{ .Values.global.cluster }}-alloy-namespace"
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
@@ -14,7 +13,7 @@ spec:
     repoURL: {{ default .Values.global.helm.repository .Values.global.namespace.helm.repository }}
     targetRevision: {{ .Values.global.namespace.helm.targetRevision }}
     helm:
-      releaseName: aad-pod-identity-system
+      releaseName: alloy-system
       values: |
         # Information about the namespace.
         information:
@@ -72,7 +71,7 @@ spec:
         # Defines resource quotas on the namespace.
         resourceQuotas:
           # The maximum number of pods that can be in the namespace.
-          pods: 60
+          pods: 10
           # Quotas related to services and external traffic.
           services:
             # The maximum number of loadbalancers that can be configured.
@@ -90,5 +89,4 @@ spec:
       prune: true
       selfHeal: true
 
-{{- end }}
 {{- end }}

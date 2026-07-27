@@ -1,0 +1,23 @@
+{{ if .Values.components.tetragon.enabled -}}
+
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-tetragon-policies"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    repoURL: {{ default "https://github.com/gccloudone-aurora/tetragon-policies.git" .Values.components.tetragon.policies.repository }}
+    path: {{ default "." .Values.components.tetragon.policies.path }}
+    targetRevision: {{ default "main" .Values.components.tetragon.policies.targetRevision }}
+  destination:
+    name: {{ .Values.global.cluster }}
+    namespace: tetragon-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+
+{{- end }}
