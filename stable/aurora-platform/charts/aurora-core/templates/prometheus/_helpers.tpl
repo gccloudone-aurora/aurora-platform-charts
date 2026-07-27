@@ -295,20 +295,3 @@ tag: {{ .Values.components.prometheus.msteams.image.tag }}
 pullPolicy: {{ .Values.components.prometheus.msteams.image.pullPolicy }}
 {{- end }}
 {{- end }}
-
-{{/*
-The image section for Jira Alert.
-*/}}
-{{- define "prometheus.jiralert.image" -}}
-{{- if (and .Values.components.prometheus.jiralert.image.registry .Values.components.prometheus.jiralert.image.repository) }}
-repository: {{ printf "%s/%s" .Values.components.prometheus.jiralert.image.registry .Values.components.prometheus.jiralert.image.repository }}
-{{- else if .Values.components.prometheus.jiralert.image.repository }}
-repository: {{ printf "%s" .Values.components.prometheus.jiralert.image.repository }}
-{{- end }}
-{{- if .Values.components.prometheus.jiralert.image.tag }}
-tag: {{ .Values.components.prometheus.jiralert.image.tag }}
-{{- end }}
-{{- if .Values.components.prometheus.jiralert.image.pullPolicy }}
-pullPolicy: {{ .Values.components.prometheus.jiralert.image.pullPolicy }}
-{{- end }}
-{{- end }}
