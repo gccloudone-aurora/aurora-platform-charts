@@ -131,7 +131,7 @@ spec:
                               volumeMounts:
                                 - name: grafana-storage
                                   mountPath: /var/lib/grafana
-                               {{- if eq .Values.global.provider "azure" }}
+                               {{- if or (eq .Values.global.provider "azure") (and .Values.components.grafana.azure.clientId .Values.components.grafana.azure.clientPassword) }}
                                 - name: auth-azuread-oauth-secret-mount
                                   mountPath: /etc/secrets/auth_azuread
                                   readOnly: true
