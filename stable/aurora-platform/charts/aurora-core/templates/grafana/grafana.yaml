@@ -105,7 +105,7 @@ spec:
                             - name: grafana-storage
                               persistentVolumeClaim:
                                 claimName: grafana-pvc
-                            {{- if eq .Values.global.provider "azure" }}
+                            {{- if or (eq .Values.global.provider "azure") (and .Values.components.grafana.azure.clientId .Values.components.grafana.azure.clientPassword) }}
                             - name: auth-azuread-oauth-secret-mount
                               secret:
                                 secretName: auth-azuread-oauth-secret
