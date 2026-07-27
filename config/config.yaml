@@ -102,7 +102,46 @@ core:
         targetRevision: main
         instanceSelector:
           matchLabels:
-            dashboards: aurora 
+            dashboards: aurora
+      alerting:
+        enabled: true
+        repository: https://github.com/gccloudone-aurora/grafana-alerts.git
+        path: .
+        targetRevision: main
+        datasourceUid: prometheus
+        instanceSelector:
+          matchLabels:
+            dashboards: aurora
+        folders:
+          trivy:
+            enabled: true
+        timeIntervals:
+          weekday-morning:
+            enabled: true
+        notificationTemplates:
+          gcNotify:
+            enabled: true
+        managedSecrets:
+          trivy-gc-notify:
+            enabled: true
+            stringData:
+              trivy-webhook-url: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-grafana-alert-webhook-url>'
+              trivy-webhook-authorization-credentials: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-grafana-alert-webhook-api-key>'
+        contactPoints:
+          trivy-gc-notify:
+            enabled: true
+            recipients:
+              - email: <FILLIN_ALERT_EMAIL1>
+                name: <FILLIN_ALERT_NAME1>
+              - email: <FILLIN_ALERT_EMAIL2>
+                name: <FILLIN_ALERT_NAME2>
+            gcNotify:
+              templateId: <FILLIN_GCNOTIFY_TEMPLATE>
+            authorization:
+              enabled: true
+        routes:
+          trivy:
+            enabled: true
       azure:
         clientId: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-grafana-sp-client-id>'
         clientPassword: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-grafana-sp-client-secret>'
@@ -327,16 +366,18 @@ core:
       productKey: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-kubecost-product-key>'
 
     #################################
-    ### Kubernetes Event Exporter ###
+    #### Alloy (Grafana Group)   ####
     #################################
-    kubernetesEventExporter:
-      enabled: false
+
+    alloy:
+      enabled: true
 
       config:
-        output:
-          loki:
+        loki:
+          write:
             url: "https://loki.<FILLIN_INGRESS_DOMAIN>/loki/api/v1/push"
-            authorization: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-loki-authorization>'
+            username: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-loki-username'
+            password: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-loki-password'
 
     ###########
     ### NTP ###
@@ -427,13 +468,6 @@ core:
           devCritical: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-alertmanager-notifications-msteams-connector-dev-critical>'
           devMajor: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-alertmanager-notifications-msteams-connector-dev-major>'
           devMinor: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-alertmanager-notifications-msteams-connector-dev-minor>'
-
-      jiralert:
-        config:
-          apiURL: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-alertmanager-notifications-jira-api-url>'
-          project: 'CN'
-          user: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-alertmanager-notifications-jira-user>'
-          password: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-alertmanager-notifications-jira-password>'
 
       priorityClassName: platform-cluster-critical
 

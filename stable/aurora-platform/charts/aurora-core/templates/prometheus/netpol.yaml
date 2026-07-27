@@ -228,23 +228,6 @@ spec:
                       app: prometheus-msteams
                   policyTypes:
                   - Egress
-              - apiVersion: cilium.io/v2
-                kind: CiliumNetworkPolicy
-                metadata:
-                  name: allow-egress-to-jira-from-jiralert
-                  namespace: prometheus-system
-                spec:
-                  description: |
-                    Allows Jiralert to send Alertmanager alert notifications to Jira
-                  egress:
-                  - toFQDNs:
-                    - matchPattern: jira.ssc-spc.gc.ca
-                    toPorts:
-                    - ports:
-                      - port: "443"
-                  endpointSelector:
-                    matchLabels:
-                      app.kubernetes.io/name: jiralert
               {{- end }}
               - apiVersion: networking.k8s.io/v1
                 kind: NetworkPolicy
