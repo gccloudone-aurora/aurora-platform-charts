@@ -12,7 +12,7 @@ spec:
     chart: {{ .Values.global.raw.helm.chart }}
     repoURL: {{ default .Values.global.helm.repository .Values.global.raw.helm.repository }}
     targetRevision: {{ .Values.global.raw.helm.targetRevision }}
-    helm:
+    plugin:
       env:
         - name: HELM_RELEASE_NAME
           value: "grafana-datasource-resources"
@@ -59,7 +59,6 @@ spec:
                     secureJsonData:
                       basicAuthPassword: {{ required "grafana.lokiDataSource.password is required" .Values.components.grafana.lokiDataSource.password | quote }}
               {{- end }}
-
   destination:
     name: {{ .Values.global.cluster }}
     namespace: grafana-system
