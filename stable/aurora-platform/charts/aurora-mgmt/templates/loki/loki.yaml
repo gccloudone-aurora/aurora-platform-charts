@@ -16,7 +16,7 @@ spec:
     repoURL: {{ default "https://grafana.github.io/helm-charts" .Values.global.helm.repository }}
     {{- end }}
     # UPDATED: Target latest stable
-    targetRevision: {{ default "6.55.0" .Values.components.loki.helm.targetRevision }}
+    targetRevision: {{ .Values.components.loki.helm.targetRevision }}
     plugin:
       env:
         - name: HELM_RELEASE_NAME
