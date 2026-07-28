@@ -88,6 +88,7 @@ core:
     # securityOperations: {}
 
   components: {}
+    # alloy: {}
     # auroraController: {}
     # awsEbsCsiDriver: {}
     # awsLoadbalancerController: {}
