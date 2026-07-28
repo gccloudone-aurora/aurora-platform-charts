@@ -15,7 +15,7 @@ spec:
     {{- else }}
     repoURL: {{ default "ghcr.io/grafana/helm-charts" .Values.global.helm.repository }}
     {{- end }}
-    targetRevision: {{ default "5.24.0" .Values.components.grafana.helm.targetRevision }}
+    targetRevision: {{ .Values.components.grafana.helm.targetRevision }}
     plugin:
       env:
         - name: HELM_RELEASE_NAME
