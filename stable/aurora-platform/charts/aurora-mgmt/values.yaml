@@ -76,10 +76,10 @@ components:
   ### Argo Operator ###
   #####################
   argoOperator:
-    helm: {}
+    helm:
       # chart: argocd-operator
       # repository: https://gccloudone-aurora.github.io/aurora-platform-charts
-      # targetRevision: 0.4.1
+      targetRevision: 0.0.13
     containerSecurityContext:
       allowPrivilegeEscalation: false
       capabilities:
@@ -121,10 +121,10 @@ components:
         sourceRepos: []
 
     argocdInstance:
-      helm: {}
-      # chart: argocd-instance
-      # repository: https://gccloudone-aurora.github.io/aurora-platform-charts
-      # targetRevision: 0.13.0
+      helm:
+        # chart: argocd-instance
+        # repository: https://gccloudone-aurora.github.io/aurora-platform-charts
+        targetRevision: 0.17.0
 
       # disableAdmin: true
       # ingressDomain: ""
@@ -224,10 +224,10 @@ components:
         clusterIssuer: letsencrypt # or letsencrypt-staging
       gateway:
         enabled: false
-      helm: {}
-      # chart: argocd-instance
-      # repository: https://gccloudone-aurora.github.io/aurora-platform-charts
-      # targetRevision: 0.13.0
+      helm:
+        # chart: argocd-instance
+        # repository: https://gccloudone-aurora.github.io/aurora-platform-charts
+        targetRevision: 0.18.0
 
       # disableAdmin: true
       # ingressDomain: ""
@@ -360,10 +360,10 @@ components:
   billOfLanding:
     enabled: false
 
-    helm: {}
+    helm:
       # chart: bol
-      # repository: https://gccloudone-aurora.github.io/aurora-platform-charts
-      # targetRevision: 0.0.1
+      # repository: https://gccloudone-aurora.github.io/bol
+      targetRevision: 0.0.1
 
     image:
       # registry: docker.io
@@ -407,10 +407,10 @@ components:
   loki:
     enabled: false
 
-    helm: {}
+    helm:
       # chart: loki
-      # repository: https://grafana-community.github.io
-      # targetRevision: 6.21.0
+      # repository: https://grafana.github.io/helm-charts
+      targetRevision: 6.55.0
 
     image:
       # registry: docker.io

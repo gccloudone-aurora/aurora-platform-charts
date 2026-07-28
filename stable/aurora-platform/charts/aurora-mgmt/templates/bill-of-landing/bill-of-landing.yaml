@@ -15,7 +15,7 @@ spec:
     {{- else }}
     repoURL: {{ default "https://gccloudone-aurora.github.io/bol" .Values.components.billOfLanding.helm.repository }}
     {{- end }}
-    targetRevision: {{ default "0.0.1" .Values.components.billOfLanding.helm.targetRevision }}
+    targetRevision: {{ .Values.components.billOfLanding.helm.targetRevision }}
     plugin:
       env:
         - name: HELM_RELEASE_NAME
