@@ -1,0 +1,38 @@
+{{ if and .Values.components.grafana.enabled .Values.components.grafana.alerting.enabled -}}
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-grafana-alert-resources"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    repoURL: {{ default "https://github.com/gccloudone-aurora/grafana-alerts.git" .Values.components.grafana.alerting.repository }}
+    path: {{ default "." .Values.components.grafana.alerting.path }}
+    targetRevision: {{ default "main" .Values.components.grafana.alerting.targetRevision | quote }}
+    plugin:
+      env:
+        - name: HELM_RELEASE_NAME
+          value: "grafana-alert-resources"
+        - name: HELM_VALUES
+          value: |
+            namespace: grafana-system
+            datasourceUid: {{ default "prometheus" .Values.components.grafana.alerting.datasourceUid | quote }}
+            instanceSelector: {{ toYaml .Values.components.grafana.alerting.instanceSelector | nindent 14 }}
+            notificationPolicy: {{ toYaml .Values.components.grafana.alerting.notificationPolicy | nindent 14 }}
+            folders: {{ toYaml .Values.components.grafana.alerting.folders | nindent 14 }}
+            timeIntervals: {{ toYaml .Values.components.grafana.alerting.timeIntervals | nindent 14 }}
+            notificationTemplates: {{ toYaml .Values.components.grafana.alerting.notificationTemplates | nindent 14 }}
+            managedSecrets: {{ toYaml .Values.components.grafana.alerting.managedSecrets | nindent 14 }}
+            contactPoints: {{ toYaml .Values.components.grafana.alerting.contactPoints | nindent 14 }}
+            routes: {{ toYaml .Values.components.grafana.alerting.routes | nindent 14 }}
+  destination:
+    name: {{ .Values.global.cluster }}
+    namespace: grafana-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+
+{{- end }}
