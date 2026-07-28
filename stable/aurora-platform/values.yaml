@@ -101,7 +101,6 @@ core:
     # grafana: {}
     # kubebench: {}
     # kubecost: {}
-    # kubernetesEventExporter: {}
     # ntp: {}
     # podtracker: {}
     # prometheus: {}
