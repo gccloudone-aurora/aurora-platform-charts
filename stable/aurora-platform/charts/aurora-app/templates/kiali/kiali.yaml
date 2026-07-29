@@ -37,6 +37,22 @@ spec:
                   trafficPolicy:
                     tls:
                       mode: DISABLE
+              {{- if eq .auth.strategy "openid" }}
+              - apiVersion: v1
+                kind: Secret
+                metadata:
+                  name: kiali
+                  namespace: kiali-system
+                  labels:
+                    app.kubernetes.io/name: "kiali"
+                    app.kubernetes.io/instance: "{{ .Values.global.cluster }}"
+                    app.kubernetes.io/component: auth
+                    app.kubernetes.io/part-of: kiali-system
+                    app.kubernetes.io/managed-by: argo
+                stringData:
+                  oidc-secret: {{ required "kiali.instances[].auth.openid.client_secret is required" .auth.openid.client_secret | quote }}
+                type: Opaque
+                {{- end }}
               - apiVersion: kiali.io/v1alpha1
                 kind: Kiali
                 metadata:
@@ -55,7 +71,6 @@ spec:
                     {{- if eq .auth.strategy "openid" }}
                     openid:
                       client_id: {{ required "kiali.instances[].auth.openid.client_id is required" .auth.openid.client_id | quote }}
-                      client_secret: {{ required "kiali.instances[].auth.openid.client_secret is required" .auth.openid.client_secret | quote }}
                       issuer_uri: {{ required "kiali.instances[].auth.openid.issuer_uri is required" .auth.openid.issuer_uri | quote }}
                     {{- end }}
                     
