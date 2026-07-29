@@ -54,9 +54,9 @@ spec:
                     strategy: {{ .auth.strategy | default "anonymous" }}
                     {{- if eq .auth.strategy "openid" }}
                     openid:
-                      client_id: {{ required "kiali.instances[].auth.openid.client_id is required" .auth.openid.clientId | quote }}
-                      client_secret: {{ required "kiali.instances[].auth.openid.client_secret is required" .auth.openid.clientSecret | quote }}
-                      issuer_uri: {{ required "kiali.instances[].auth.openid.issuer_uri is required" .auth.openid.issuerUri | quote }}
+                      client_id: {{ required "kiali.instances[].auth.openid.client_id is required" .auth.openid.client_id | quote }}
+                      client_secret: {{ required "kiali.instances[].auth.openid.client_secret is required" .auth.openid.client_secret | quote }}
+                      issuer_uri: {{ required "kiali.instances[].auth.openid.issuer_uri is required" .auth.openid.issuer_uri | quote }}
                     {{- end }}
                     
                   deployment:
