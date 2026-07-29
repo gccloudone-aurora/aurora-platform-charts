@@ -1,4 +1,5 @@
 {
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "config:recommended"
   ],
@@ -40,6 +41,9 @@
   "lockFileMaintenance": {
     "enabled": true
   },
+  "minimumReleaseAge": "3 days",
+  "prHourlyLimit": 0,
+  "prConcurrentLimit": 10,
   "ignorePaths": [
     "stable/**/README.md",
     "stable/**/README.md.gotmpl",
