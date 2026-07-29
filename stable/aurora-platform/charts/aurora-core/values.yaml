@@ -1185,7 +1185,7 @@ components:
     helm:
       # chart: falco
       # repository: https://falcosecurity.github.io/charts
-      targetRevision: 6.2.5
+      targetRevision: 6.4.1
 
     resources: {}
     #   requests:
