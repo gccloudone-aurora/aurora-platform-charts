@@ -139,7 +139,7 @@ components:
       helm:
         # chart: argo-workflows
         # repository: https://argoproj.github.io/argo-helm
-        targetRevision: 0.42.1
+        targetRevision: 0.47.5
 
       images:
         pullPolicy: IfNotPresent
