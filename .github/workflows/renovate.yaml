@@ -38,5 +38,6 @@ jobs:
           RENOVATE_PLATFORM: github
           RENOVATE_REPOSITORIES: ${{ github.repository }}
           RENOVATE_REQUIRE_CONFIG: required
+          LOG_LEVEL: 'debug'
 
 
