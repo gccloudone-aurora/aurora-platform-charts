@@ -15,7 +15,7 @@ spec:
     {{- else }}
     repoURL: {{ default "https://helm.releases.hashicorp.com" .Values.global.helm.repository }}
     {{- end }}
-    targetRevision: {{ default "0.22.0" .Values.components.vaultAgent.helm.targetRevision }}
+    targetRevision: {{ .Values.components.vaultAgent.helm.targetRevision }}
     helm:
       releaseName: vault-agent
       values: |
