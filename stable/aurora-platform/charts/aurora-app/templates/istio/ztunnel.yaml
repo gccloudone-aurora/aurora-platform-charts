@@ -16,7 +16,7 @@ spec:
     {{- else }}
     repoURL: {{ default "https://istio-release.storage.googleapis.com/charts" .Values.global.helm.repository }}
     {{- end }}
-    targetRevision: {{ default "1.29.1" .Values.components.istio.ztunnel.helm.targetRevision }}
+    targetRevision: {{ .Values.components.istio.ztunnel.helm.targetRevision }}
     helm:
       releaseName: ztunnel
       values: |
