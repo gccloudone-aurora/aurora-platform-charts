@@ -40,20 +40,6 @@
   "lockFileMaintenance": {
     "enabled": true
   },
-  "packageRules": [
-    {
-      "description": "Group Helm chart dependency updates",
-      "matchManagers": [
-        "helmv3",
-        "custom.regex"
-      ],
-      "matchDatasources": [
-        "helm",
-        "docker"
-      ],
-      "groupName": "helm chart dependencies"
-    },
-  ],
   "ignorePaths": [
     "stable/**/README.md",
     "stable/**/README.md.gotmpl",
