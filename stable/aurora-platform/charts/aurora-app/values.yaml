@@ -530,7 +530,7 @@ components:
     helm:
       # chart: kiali-operator
       # repository: https://kiali.org/helm-charts
-      targetRevision: 1.62.0
+      targetRevision: 1.89.7
 
     imagePullSecrets: []
     image:
