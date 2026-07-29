@@ -6,7 +6,6 @@
     "dependencies"
   ],
   "enabledManagers": [
-    "github-actions",
     "helmv3",
     "custom.regex"
   ],
@@ -53,13 +52,6 @@
         "docker"
       ],
       "groupName": "helm chart dependencies"
-    },
-    {
-      "description": "Group GitHub Actions updates",
-      "matchManagers": [
-        "github-actions"
-      ],
-      "groupName": "github actions"
     },
   ],
   "ignorePaths": [
