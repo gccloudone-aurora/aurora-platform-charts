@@ -112,10 +112,10 @@ components:
   alloy:
     enabled: true
 
-    helm: {}
-    # chart: alloy
-    # repository: https://grafana.github.io/helm-charts
-    # targetRevision: 1.11.0
+    helm:
+      # chart: alloy
+      # repository: https://grafana.github.io/helm-charts
+      targetRevision: 1.11.0
 
     imagePullSecrets: []
       # - name: aurora-image-pull-secret
@@ -158,10 +158,10 @@ components:
   auroraController:
     enabled: true
 
-    helm: {}
+    helm:
       # chart: aurora-controller
-      # repository: https://gccloudone-aurora.github.io/aurora-platform-charts
-      # targetRevision: 0.0.1
+      # repository: https://gccloudone-aurora.github.io/aurora-controller
+      targetRevision: 0.0.1
 
     imagePullSecrets:
       - name: aurora-controller-image-pull-secret
@@ -208,10 +208,10 @@ components:
   awsEbsCsiDriver:
     enabled: true
 
-    helm: {}
+    helm:
       # chart: aws-ebs-csi-driver
       # repository: https://kubernetes-sigs.github.io/aws-ebs-csi-driver
-      # targetRevision: 2.47.0
+      targetRevision: 2.47.0
 
     image:
       # registry: public.ecr.aws
@@ -289,10 +289,10 @@ components:
   awsLoadbalancerController:
     enabled: true
 
-    helm: {}
+    helm:
       # chart: aws-load-balancer-controller
       # repository: https://aws.github.io/eks-charts
-      # targetRevision: 1.13.4
+      targetRevision: 1.13.4
 
     imagePullSecrets: []
     image:
@@ -329,10 +329,10 @@ components:
   certManager:
     enabled: true
 
-    helm: {}
+    helm:
       # chart: cert-manager
       # repository: https://charts.jetstack.io
-      # targetRevision: v1.18.1
+      targetRevision: v1.20.3
 
     imagePullSecrets: []
     image:
@@ -509,10 +509,10 @@ components:
   cidrAllocator:
     enabled: true
 
-    helm: {}
+    helm:
       # chart: cidr-allocator
       # repository: https://gccloudone-aurora.github.io/cidr-allocator
-      # targetRevision: 0.0.1
+      targetRevision: 0.0.1
 
     imagePullSecrets:
       - name: cidr-allocator-image-pull-secret
@@ -690,10 +690,10 @@ components:
   fluentOperator:
     enabled: true
 
-    helm: {}
+    helm:
       # chart: fluent-operator
-      # repository:  https://fluent.github.io/helm-charts
-      # targetRevision: 0.20.9
+      # repository: https://fluent.github.io/helm-charts
+      targetRevision: 2.5.0
 
     containerRuntime: "containerd"
     imagePullSecrets: []
@@ -854,10 +854,10 @@ components:
   gatekeeper:
     enabled: true
 
-    helm: {}
+    helm:
       # chart: gatekeeper
       # repository: https://open-policy-agent.github.io/gatekeeper/charts
-      # targetRevision:
+      targetRevision: 3.22.0
 
     imagePullSecrets: []
     image:
@@ -1140,10 +1140,10 @@ components:
       contactPoints: {}
       routes: {}
 
-    helm: {}
+    helm:
       # chart: grafana-operator
       # repository: oci://ghcr.io/grafana/helm-charts/grafana-operator
-      # targetRevision: 5.24.0
+      targetRevision: 5.24.0
 
     image:
       # registry: ghcr.io
@@ -1184,10 +1184,10 @@ components:
   falco:
     enabled: true
 
-    helm: {}
+    helm:
       # chart: falco
       # repository: https://falcosecurity.github.io/charts
-      # targetRevision: 6.2.5
+      targetRevision: 6.2.5
 
     resources: {}
     #   requests:
@@ -1329,10 +1329,10 @@ components:
   kubecost:
     enabled: false
 
-    helm: {}
-      # chart: cost-analyzer
-      # repository: https://kubecost.github.io/cost-analyzer/
-      # targetRevision:
+    helm:
+      # chart: kubecost
+      # repository: https://kubecost.github.io/kubecost/
+      targetRevision: 3.2.1
 
     kubecostProductConfigs:
       clusterProfile: production
@@ -1561,10 +1561,10 @@ components:
   podtracker:
     enabled: true
 
-    helm: {}
+    helm:
       # chart: podtracker
-      # repository: https://gccloudone-aurora.github.io/aurora-platform-charts
-      # targetRevision: 1.1.1
+      # repository: https://gccloudone-aurora.github.io/podtracker
+      targetRevision: 1.0.0
 
     image:
       # registry: ghcr.io
@@ -1644,10 +1644,10 @@ components:
   prometheus:
     enabled: true
 
-    helm: {}
+    helm:
       # chart: kube-prometheus-stack
       # repository: https://prometheus-community.github.io/helm-charts
-      # targetRevision: 1.97.0
+      targetRevision: 86.0.2
 
     imageRegistry: ""
     imagePullSecrets: []
@@ -2018,10 +2018,10 @@ components:
                   app.kubernetes.io/name: prometheus-node-exporter
 
     blackboxExporter:
-      helm: {}
+      helm:
         # chart: prometheus-blackbox-exporter
         # repository: https://prometheus-community.github.io/helm-charts
-        # targetRevision: 7.0.0
+        targetRevision: 11.8.0
       image:
         #registry: ""
         repository: prometheus/blackbox-exporter
@@ -2067,10 +2067,10 @@ components:
     additionalTargets: {}
 
     msteams:
-      helm: {}
-        # chart: prometheus-blackbox-exporter
-        # repository: https://prometheus-community.github.io/helm-charts
-        # targetRevision: 1.3.0
+      helm:
+        # chart: prometheus-msteams
+        # repository: https://prometheus-msteams.github.io/prometheus-msteams
+        targetRevision: 1.3.0
       image:
         # registry: quay.io/
         repository: prometheusmsteams/prometheus-msteams
@@ -2134,10 +2134,10 @@ components:
     enabled: false
     enableSecretRotation: false
     rotationPollInterval: "2m"
-    helm: {}
+    helm:
       # chart: secrets-store-csi-driver
       # repository: https://kubernetes-sigs.github.io/secrets-store-csi-driver/charts
-      # targetRevision: 1.5.4
+      targetRevision: 1.6.0
 
     images:
       driver:
@@ -2183,10 +2183,10 @@ components:
   #############
   trivy:
     enabled: true
-    helm: {}
+    helm:
       # chart: trivy-operator
       # repository: https://aquasecurity.github.io/helm-charts
-      # targetRevision: 0.31.0
+      targetRevision: 0.32.1
 
     imagePullSecrets: []
     image:
@@ -2348,10 +2348,10 @@ components:
   tetragon:
     enabled: false
 
-    helm: {}
+    helm:
       # chart: tetragon
       # repository: https://helm.cilium.io
-      # targetRevision: 1.4.0
+      targetRevision: 1.6.0
 
     imagePullSecrets: []
 
@@ -2413,10 +2413,10 @@ components:
   trustManager:
     enabled: true
 
-    helm: {}
+    helm:
       # chart: trust-manager
       # repository: https://charts.jetstack.io
-      # targetRevision: v0.19.0
+      targetRevision: v0.23.0
 
     imagePullSecrets: []
     image:
@@ -2475,10 +2475,10 @@ components:
   vaultAgent:
     enabled: false
 
-    helm: {}
+    helm:
       # chart: vault
       # repository: https://helm.releases.hashicorp.com
-      # targetRevision: 0.20.1
+      targetRevision: 0.22.0
 
     imagePullSecrets: []
 
@@ -2539,10 +2539,10 @@ components:
   velero:
     enabled: true
 
-    helm: {}
+    helm:
       # chart: velero
       # repository: https://vmware-tanzu.github.io/helm-charts
-      # targetRevision: 3.1.4
+      targetRevision: 12.1.0
 
     imagePullSecrets: []
     image:

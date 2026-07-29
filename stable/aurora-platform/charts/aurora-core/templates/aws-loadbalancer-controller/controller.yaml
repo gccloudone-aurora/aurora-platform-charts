@@ -16,7 +16,7 @@ spec:
     {{- else }}
     repoURL: {{ default "https://aws.github.io/eks-charts" .Values.global.helm.repository }}
     {{- end }}
-    targetRevision: {{ default "1.13.4" .Values.components.awsLoadbalancerController.helm.targetRevision }}
+    targetRevision: {{ .Values.components.awsLoadbalancerController.helm.targetRevision }}
     plugin:
       env:
         - name: HELM_RELEASE_NAME
