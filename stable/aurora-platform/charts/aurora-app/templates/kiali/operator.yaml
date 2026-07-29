@@ -15,7 +15,7 @@ spec:
     {{- else }}
     repoURL: {{ default "https://kiali.org/helm-charts" .Values.global.helm.repository }}
     {{- end }}
-    targetRevision: {{ default "1.62.0" .Values.components.kiali.helm.targetRevision }}
+    targetRevision: {{ .Values.components.kiali.helm.targetRevision }}
     helm:
       releaseName: kiali-operator
       values: |
