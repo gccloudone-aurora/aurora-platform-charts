@@ -44,8 +44,8 @@ spec:
                   name: kiali
                   namespace: kiali-system
                   labels:
-                    app.kubernetes.io/name: "kiali"
-                    app.kubernetes.io/instance: "{{ .Values.global.cluster }}"
+                    app.kubernetes.io/name: "kiali-openid-secret"
+                    app.kubernetes.io/instance: "{{ $.Values.global.cluster }}"
                     app.kubernetes.io/component: auth
                     app.kubernetes.io/part-of: kiali-system
                     app.kubernetes.io/managed-by: argo
