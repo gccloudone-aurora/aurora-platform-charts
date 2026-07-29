@@ -2067,7 +2067,7 @@ components:
       helm:
         # chart: prometheus-msteams
         # repository: https://prometheus-msteams.github.io/prometheus-msteams
-        targetRevision: 1.3.0
+        targetRevision: 1.3.6
       image:
         # registry: quay.io/
         repository: prometheusmsteams/prometheus-msteams
