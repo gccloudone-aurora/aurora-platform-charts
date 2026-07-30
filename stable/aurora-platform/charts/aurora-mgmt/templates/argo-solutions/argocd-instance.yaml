@@ -15,7 +15,7 @@ spec:
     {{- else }}
     repoURL: {{ default "https://gccloudone-aurora.github.io/aurora-platform-charts" .Values.global.helm.repository }}
     {{- end }}
-    targetRevision: {{ .Values.components.argoSolution.argocdInstance.helm.targetRevision }}
+    targetRevision: {{ default "0.17.1" .Values.components.argoSolution.argocdInstance.helm.targetRevision }}
     plugin:
       env:
         - name: HELM_RELEASE_NAME
@@ -81,6 +81,9 @@ spec:
 
               notifications:
                 enabled: {{ .Values.components.argoSolution.argocdInstance.notifications.enabled }}
+
+              prometheus:
+                enabled: {{ .Values.components.argoSolution.argocdInstance.prometheus.enabled }}
 
             netpol:
               enabled: {{ .Values.components.argoSolution.argocdInstance.netpol.enabled }}

@@ -125,16 +125,16 @@ core:
           trivy-gc-notify:
             enabled: true
             stringData:
-              trivy-webhook-url: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-grafana-alert-webhook-url>'
+              trivy-webhook-url: "https://api.notification.canada.ca/v2/notifications/email?="
               trivy-webhook-authorization-credentials: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-grafana-alert-webhook-api-key>'
         contactPoints:
           trivy-gc-notify:
             enabled: true
             recipients:
-              - email: <FILLIN_ALERT_EMAIL1>
-                name: <FILLIN_ALERT_NAME1>
-              - email: <FILLIN_ALERT_EMAIL2>
-                name: <FILLIN_ALERT_NAME2>
+              - email: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-grafana-<ID>-email>'
+                name: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-grafana-<ID>-name>'
+              - email: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-grafana-<ID2>-email>'
+                name: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-grafana-<ID2>-name>'
             gcNotify:
               templateId: <FILLIN_GCNOTIFY_TEMPLATE>
             authorization:

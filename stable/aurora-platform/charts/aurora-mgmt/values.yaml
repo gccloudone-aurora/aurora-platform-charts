@@ -167,6 +167,9 @@ components:
       notifications: {}
         # enabled: false
 
+      prometheus:
+        enabled: true
+
       server:
         service: {}
           # type: ""
@@ -271,6 +274,9 @@ components:
 
       notifications: {}
         # enabled: false
+
+      prometheus:
+        enabled: true
 
       server:
         service: {}
