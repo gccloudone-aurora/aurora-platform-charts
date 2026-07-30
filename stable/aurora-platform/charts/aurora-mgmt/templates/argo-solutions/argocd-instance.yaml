@@ -83,7 +83,7 @@ spec:
                 enabled: {{ .Values.components.argoSolution.argocdInstance.notifications.enabled }}
 
               metrics:
-                enabled: {{ toYaml .Values.components.argoFoundation.argocdInstance.metrics.serviceMonitor | nindent 18 }}
+                serviceMonitor: {{ toYaml .Values.components.argoSolution.argocdInstance.metrics.serviceMonitor | nindent 18 }}
 
             netpol:
               enabled: {{ .Values.components.argoSolution.argocdInstance.netpol.enabled }}
