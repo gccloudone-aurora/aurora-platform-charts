@@ -72,6 +72,12 @@ spec:
                     openid:
                       client_id: {{ required "kiali.instances[].auth.openid.client_id is required" .auth.openid.client_id | quote }}
                       issuer_uri: {{ required "kiali.instances[].auth.openid.issuer_uri is required" .auth.openid.issuer_uri | quote }}
+                      disable_rbac: true
+                      username_claim: preferred_username
+                      scope:
+                        - openid
+                        - profile
+                        - email
                     {{- end }}
                     
                   deployment:
