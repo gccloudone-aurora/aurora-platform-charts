@@ -11,5 +11,5 @@ spec:
       interval: {{ .Values.argocdInstance.metrics.serviceMonitor.interval | quote }}
   selector:
     matchLabels:
-        app.kubernetes.io/name: argocd-metrics
+      app.kubernetes.io/name: argocd-metrics
 {{- end }}
