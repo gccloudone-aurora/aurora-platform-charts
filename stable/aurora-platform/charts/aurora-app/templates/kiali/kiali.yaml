@@ -74,7 +74,7 @@ spec:
                       issuer_uri: {{ required "kiali.instances[].auth.openid.issuer_uri is required" .auth.openid.issuer_uri | quote }}
                       disable_rbac: true
                       username_claim: preferred_username
-                      scope:
+                      scopes:
                         - openid
                         - profile
                         - email
@@ -133,6 +133,9 @@ spec:
                   istio_namespace: istio-system
                   server:
                     web_fqdn: {{ .name }}.{{ $.Values.global.ingressDomain }}
+                    web_port: "443"
+                    web_schema: https
+                    web_root: /kiali
   destination:
     name: {{ $.Values.global.cluster }}
     namespace: platform-system
