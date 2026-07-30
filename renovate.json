@@ -42,6 +42,15 @@
     "enabled": true
   },
   "minimumReleaseAge": "3 days",
+  "packageRules": [
+    {
+      "description": "OCI/Docker registries (e.g. quay.io) do not expose release timestamps; allow those updates through instead of holding them indefinitely",
+      "matchDatasources": [
+        "docker"
+      ],
+      "minimumReleaseAgeBehaviour": "timestamp-optional"
+    }
+  ],
   "prHourlyLimit": 0,
   "prConcurrentLimit": 10,
   "ignorePaths": [
