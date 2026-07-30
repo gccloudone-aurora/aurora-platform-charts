@@ -1,0 +1,15 @@
+{{- if .Values.argocdInstance,metrics.serviceMonitor.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: argocd-platform-metrics
+  labels:
+    {{- include "argocd-foundation.labels" $ | nindent 4 }}
+spec:
+  endpoints:
+    - port: metrics
+      interval: {{ .Values.argocdInstance.metrics.serviceMonitor.interval | quote }}
+  selector:
+    matchLabels:
+        app.kubernetes.io/name: argocd-metrics
+{{- end }}

@@ -167,8 +167,10 @@ components:
       notifications: {}
         # enabled: false
 
-      prometheus:
-        enabled: true
+      metrics:
+        serviceMonitor:
+          enabled: true
+          interval: 30s
 
       server:
         service: {}
@@ -275,8 +277,10 @@ components:
       notifications: {}
         # enabled: false
 
-      prometheus:
-        enabled: true
+      metrics:
+        serviceMonitor:
+          enabled: true
+          interval: 30s
 
       server:
         service: {}

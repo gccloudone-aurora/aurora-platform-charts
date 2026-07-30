@@ -77,8 +77,10 @@ argocdInstance:
   notifications:
     enabled: false
 
-  prometheus:
-    enabled: true
+  metrics:
+    serviceMonitor:
+      enabled: true
+      interval: 30s
 
   redis:
     imageRegistry:

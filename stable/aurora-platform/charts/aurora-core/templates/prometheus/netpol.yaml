@@ -565,26 +565,11 @@ spec:
                             matchLabels:
                               namespace.ssc-spc.gc.ca/purpose: system
                           podSelector:
-                            matchExpressions:
-                              - key: app.kubernetes.io/name
-                                operator: In
-                                values:
-                                  - argocd-application-controller
-                                  - argocd-applicationset-controller
-                                  - argocd-repo-server
-                                  - argocd-server
-                                  - argocd-notifications-controller
+                            matchLabels:
+                              app.kubernetes.io/name: argocd-application-controller
                       ports:
                         - protocol: TCP
-                          port: 8080
-                        - protocol: TCP
                           port: 8082
-                        - protocol: TCP
-                          port: 8083
-                        - protocol: TCP
-                          port: 8084
-                        - protocol: TCP
-                          port: 9001
               {{- if .Values.components.prometheus.prometheus.netpol.allowFederation }}
               # Required for other Prometheus instances to request metrics from the Platform Prometheus
               - apiVersion: networking.k8s.io/v1

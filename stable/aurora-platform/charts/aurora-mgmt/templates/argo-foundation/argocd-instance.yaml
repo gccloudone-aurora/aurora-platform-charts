@@ -77,8 +77,8 @@ spec:
               notifications:
                 enabled: {{ .Values.components.argoFoundation.argocdInstance.notifications.enabled }}
 
-              prometheus:
-                enabled: {{ .Values.components.argoFoundation.argocdInstance.prometheus.enabled }}
+              metrics:
+                enabled: {{ toYaml .Values.components.argoFoundation.argocdInstance.metrics.serviceMonitor | nindent 18 }}
 
             netpol:
               enabled: {{ .Values.components.argoFoundation.argocdInstance.netpol.enabled }}
