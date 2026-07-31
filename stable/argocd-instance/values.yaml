@@ -77,6 +77,11 @@ argocdInstance:
   notifications:
     enabled: false
 
+  metrics:
+    serviceMonitor:
+      enabled: true
+      interval: 30s
+
   redis:
     imageRegistry:
       host: "docker.io"
