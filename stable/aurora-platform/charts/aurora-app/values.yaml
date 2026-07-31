@@ -568,6 +568,8 @@ components:
 
     instances:
       - name: kiali
+        auth:
+          strategy: anonymous
         grafana: {}
           # token: abcde12345
 

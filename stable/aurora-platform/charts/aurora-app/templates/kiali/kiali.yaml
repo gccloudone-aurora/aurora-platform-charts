@@ -37,6 +37,22 @@ spec:
                   trafficPolicy:
                     tls:
                       mode: DISABLE
+              {{- if eq .auth.strategy "openid" }}
+              - apiVersion: v1
+                kind: Secret
+                metadata:
+                  name: kiali
+                  namespace: kiali-system
+                  labels:
+                    app.kubernetes.io/name: "kiali-openid-secret"
+                    app.kubernetes.io/instance: "{{ $.Values.global.cluster }}"
+                    app.kubernetes.io/component: auth
+                    app.kubernetes.io/part-of: kiali-system
+                    app.kubernetes.io/managed-by: argo
+                stringData:
+                  oidc-secret: {{ required "kiali.instances[].auth.openid.client_secret is required" .auth.openid.client_secret | quote }}
+                type: Opaque
+                {{- end }}
               - apiVersion: kiali.io/v1alpha1
                 kind: Kiali
                 metadata:
@@ -51,7 +67,19 @@ spec:
                     helm.sh/chart: {{ printf "%s-%s" $.Chart.Name $.Chart.Version }}
                 spec:
                   auth:
-                    strategy: anonymous
+                    strategy: {{ .auth.strategy | default "anonymous" }}
+                    {{- if eq .auth.strategy "openid" }}
+                    openid:
+                      client_id: {{ required "kiali.instances[].auth.openid.client_id is required" .auth.openid.client_id | quote }}
+                      issuer_uri: {{ required "kiali.instances[].auth.openid.issuer_uri is required" .auth.openid.issuer_uri | quote }}
+                      disable_rbac: true
+                      username_claim: preferred_username
+                      scopes:
+                        - openid
+                        - profile
+                        - email
+                    {{- end }}
+                    
                   deployment:
                     accessible_namespaces:
                       - '**'
@@ -105,6 +133,9 @@ spec:
                   istio_namespace: istio-system
                   server:
                     web_fqdn: {{ .name }}.{{ $.Values.global.ingressDomain }}
+                    web_port: "443"
+                    web_schema: https
+                    web_root: /kiali
   destination:
     name: {{ $.Values.global.cluster }}
     namespace: platform-system
