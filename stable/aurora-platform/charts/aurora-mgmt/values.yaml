@@ -313,7 +313,12 @@ components:
           #   memory: ""
 
       redis:
+        imageRegistry: {}
+          # host: ""
+          # repository: ""
         image: {}
+          # name: ""
+          # version: ""
         
         resources: {}
           # limits:
