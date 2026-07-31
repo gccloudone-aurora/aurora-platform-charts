@@ -1,0 +1,63 @@
+# alert on loki log store
+# prometheus rules for loki's health status
+# needs the service monitor to run
+
+groups:
+  - name: loki-storage.rules
+    rules:
+      # report if write to bucket fails
+      - expr: |
+          sum by(operation) (rate(loki_azure_blob_request_duration_seconds_count{status_Code!~"2.."}[10m]))
+            /
+          sum by(operation) (rate(loki_azure_blob_request_duration_seconds_count[10m]))
+        record: loki_azure_blob_request_failure_ratio
+
+      - alert: LokiObjectStoreRequestsFailing
+        annotations:
+          message: "Loki is failing {{ $$value | humanizePercentage }} of it's {{ $$labels.operation }} requests to Azure Blob Storage."
+          runbook: "https://aurora.gccloudone.ca/en/documentation/monitoring-surveillance/prometheus/cluster-alert-runbooks/loki/"
+        expr: 'loki_azure_blob_request_failure_ratio > 0.05'
+        for: 15m
+        labels:
+          resolves: never
+          scope: cluster
+          severity: P2-Major
+
+      - alert: LokiObjectStoreUnavailable
+        annotations:
+          message: "Loki has lost access to Azure Blob Storage - {{ $$value | humanizePercentage }} of {{ $$labels.operation }} requests are failing. Investigate log ingestion."
+          runbook: "https://aurora.gccloudone.ca/en/documentation/monitoring-surveillance/prometheus/cluster-alert-runbooks/loki/"
+        expr: 'loki_azure_blob_request_failure_ratio > 0.5'
+        for: 10m
+        labels:
+          scope: cluster
+          severity: P1-Critical
+
+      - alert: LokiChunkFlushesStalled
+        annotations:
+          message: "Loki has received logs in the past 15 minutes, but it is not storing the chunk to object storage for over 60 minutes."
+          runbook: "https://aurora.gccloudone.ca/en/documentation/monitoring-surveillance/prometheus/cluster-alert-runbooks/loki/"
+        expr: |
+          (sum(increase(loki_ingester_chunks_stored_total[1h])) == 0)
+            and on()
+          (sum(rate(loki_distributor_lines_received_total[15m])) > 0)
+        for: 30m
+        labels:
+          scope: cluster
+          severity: P2-Major
+
+      - alert: LokiWritePathErrors
+        annotations:
+          message: "Loki is rejecting {{ $$value | humanizePercentage }} of log pushes with server errors. Logs are being dropped before they can be written to storage."
+          runbook: "https://aurora.gccloudone.ca/en/documentation/monitoring-surveillance/prometheus/cluster-alert-runbooks/loki/"
+        expr: |
+          (
+            sum(rate(loki_request_duration_seconds_count{route=~".*push.*", status_code=~"5.."}[10m]))
+              /
+            sum(rate(loki_request_duration_seconds_count{route=~".*push.*"}[10m]))
+          ) > 0.05
+        for: 15m
+        labels:
+          resolves: never
+          scope: cluster
+          severity: P2-Major
