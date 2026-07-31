@@ -76,7 +76,7 @@ spec:
                 imageRegistry: {{ toYaml . | nindent 18 }}
                 {{- end }}
                 {{- with .Values.components.argoFoundation.argocdInstance.redis.image }}
-                image: {{ toYaml .image | nindent 18 }}
+                image: {{ toYaml . | nindent 18 }}
                 {{- end }}
                 resources: {{ toYaml .Values.components.argoFoundation.argocdInstance.redis.resources | nindent 18 }}
 
