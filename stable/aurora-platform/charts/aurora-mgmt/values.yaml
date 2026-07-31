@@ -307,6 +307,8 @@ components:
           #   memory: ""
 
       redis:
+        image: {}
+        imageRegistry: {}
         resources: {}
           # limits:
           #   cpu: ""
