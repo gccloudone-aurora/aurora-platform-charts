@@ -290,7 +290,7 @@ components:
     helm:
       # chart: aws-load-balancer-controller
       # repository: https://aws.github.io/eks-charts
-      targetRevision: 1.13.4
+      targetRevision: 1.17.1
 
     imagePullSecrets: []
     image:
