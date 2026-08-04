@@ -53,7 +53,7 @@ spec:
                         matchLabels:
                           app.kubernetes.io/name: tetragon
                           app.kubernetes.io/instance: tetragon
-                  - ports:
+                    ports:
                     - protocol: TCP
                       port: 2112
                   policyTypes:
