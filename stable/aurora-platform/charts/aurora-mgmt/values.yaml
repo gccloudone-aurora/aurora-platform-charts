@@ -282,6 +282,10 @@ components:
           enabled: true
           interval: 30s
 
+      # scrape via ServiceMonitor (above) is a pre-req; without series, rules have nothing to evaluate
+      alerts:
+        enabled: true
+
       server:
         service: {}
           # type: ""
