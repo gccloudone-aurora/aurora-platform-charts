@@ -1523,6 +1523,76 @@ components:
                 operator: Exists
       priorityClassName: system-cluster-critical
 
+  ###############
+  ### OpenCost ###
+  ###############
+  opencost:
+    enabled: false
+
+    helm:
+      # chart: opencost
+      # repository: https://opencost.github.io/opencost-helm-chart
+      targetRevision: 2.5.28
+
+    imagePullSecrets: []
+
+    priorityClassName: system-cluster-critical
+
+    nodeSelector:
+      kubernetes.io/os: linux
+      node.ssc-spc.gc.ca/purpose: system
+    tolerations:
+      - key: CriticalAddonsOnly
+        operator: Exists
+    affinity: {}
+
+    exporter:
+      replicas: 1
+      image:
+        # registry: ghcr.io
+        repository: opencost/opencost
+        # tag: ""  # Default is to match the Chart.AppVersion
+        pullPolicy: IfNotPresent
+      resources:
+        requests:
+          cpu: 10m
+          memory: 55Mi
+        limits:
+          memory: 1Gi
+
+    ui:
+      enabled: true
+      image:
+        # registry: ghcr.io
+        repository: opencost/opencost-ui
+        # tag: ""  # Default is to match the Chart.AppVersion
+        pullPolicy: IfNotPresent
+      resources:
+        requests:
+          cpu: 10m
+          memory: 55Mi
+        limits:
+          memory: 1Gi
+
+    mcp:
+      enabled: false
+
+    cloudCost:
+      enabled: false
+
+    prometheus:
+      internal:
+        enabled: true
+        serviceName: kube-prometheus-stack-prometheus
+        namespaceName: prometheus-system
+        port: 9090
+        scheme: http
+
+    metrics:
+      serviceMonitor:
+        enabled: true
+        additionalLabels: {}
+
   ###########
   ### NTP ###
   ###########

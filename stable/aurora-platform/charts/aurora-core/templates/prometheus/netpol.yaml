@@ -136,6 +136,25 @@ spec:
               - apiVersion: networking.k8s.io/v1
                 kind: NetworkPolicy
                 metadata:
+                  name: allow-egress-to-opencost-from-prometheus
+                  namespace: prometheus-system
+                spec:
+                  egress:
+                    - to:
+                      - namespaceSelector:
+                          matchLabels:
+                            kubernetes.io/metadata.name: opencost-system
+                        podSelector:
+                          matchLabels:
+                            app.kubernetes.io/name: opencost
+                  podSelector:
+                    matchLabels:
+                      app.kubernetes.io/name: prometheus
+                  policyTypes:
+                  - Egress
+              - apiVersion: networking.k8s.io/v1
+                kind: NetworkPolicy
+                metadata:
                   name: allow-egress-to-kubecost-from-grafana
                   namespace: prometheus-system
                 spec:
