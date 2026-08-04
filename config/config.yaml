@@ -494,6 +494,10 @@ core:
     tetragon:
       enabled: true
 
+      prometheus:
+        serviceMonitor:
+          enabled: true
+
       policies:
         repository: https://github.com/gccloudone-aurora/tetragon-policies.git
         path: .

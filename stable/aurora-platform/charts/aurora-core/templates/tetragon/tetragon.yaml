@@ -25,6 +25,9 @@ spec:
             tetragon:
               enabled: true
               image: {{ default "{}" (include "tetragon.image" .) | nindent 16 }}
+              prometheus:
+                serviceMonitor:
+                  enabled: {{ .Values.components.tetragon.prometheus.serviceMonitor.enabled }}
 
             tetragonOperator:
               enabled: true

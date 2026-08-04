@@ -1,0 +1,13 @@
+groups:
+  - name: tetragon.rules
+    rules:
+      - alert: TetragonPrivilegeEscalationDetected
+        annotations:
+          message: 'Tetragon detected privilege escalation by {{ $$labels.binary }} in {{ $$labels.namespace }}/{{ $$labels.workload }} (pod {{ $$labels.pod }}, node {{ $$labels.node }}, hook {{ $$labels.hook }}).'
+          value: '{{ $$value }}'
+        expr: 'increase(tetragon_policy_events_total{policy="privileges-raise"}[5m]) > 0'
+        keep_firing_for: 15m
+        labels:
+          scope: cluster
+          severity: P2-Major
+          teams_version: v2
