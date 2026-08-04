@@ -10,4 +10,4 @@ groups:
       scope: cluster
       teams_version: v2
     annotations:
-      message: 'Argo CD application {{ $labels.name }} in namespace {{ $labels.namespace }} has sync phase {{ $labels.phase }} within the last 15 minutes.'
+      message: 'Argo CD application {{ $$labels.name }} in namespace {{ $$labels.namespace }} has sync phase {{ $$labels.phase }} within the last 15 minutes.'
