@@ -45,6 +45,14 @@ spec:
                     matchLabels:
                       app.kubernetes.io/name: prometheus
                   egress:
+                  - to:
+                    - namespaceSelector:
+                        matchLabels:
+                          kubernetes.io/metadata.name: tetragon-system
+                      podSelector:
+                        matchLabels:
+                          app.kubernetes.io/name: tetragon
+                          app.kubernetes.io/instance: tetragon
                   - ports:
                     - protocol: TCP
                       port: 2112

@@ -1,4 +1,4 @@
-{{ if .Values.components.tetragon.enabled -}}
+{{ if .Values.components.tetragon.prometheus.serviceMonitor.enabled -}}
 {{ if .Values.components.prometheus.enabled -}}
 
 apiVersion: argoproj.io/v1alpha1
