@@ -2233,6 +2233,14 @@ components:
     servicemonitor:
       enabled: true
 
+    # Grafana operator dashboard (requires components.grafana.enabled)
+    grafana:
+      dashboard:
+        enabled: true
+      instanceSelector:
+        dashboards: aurora
+      namespace: grafana-system
+
     # Ignore vulnerabilties where no fix is currently available (as there's no way to action on them)
     ignoreUnfixed: true
     operator:

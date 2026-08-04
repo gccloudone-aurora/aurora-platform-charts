@@ -1,10 +1,10 @@
-{{ if .Values.components.velero.enabled -}}
+{{ if .Values.components.trivy.enabled -}}
 {{ if .Values.components.prometheus.enabled -}}
 
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: "{{ .Values.global.cluster }}-velero-alerts"
+  name: "{{ .Values.global.cluster }}-trivy-alerts"
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
@@ -16,27 +16,27 @@ spec:
     plugin:
       env:
         - name: HELM_RELEASE_NAME
-          value: "velero-alerts"
+          value: "trivy-alerts"
         - name: HELM_VALUES
           value: |
             resources:
             - apiVersion: monitoring.coreos.com/v1
               kind: PrometheusRule
               metadata:
-                name: velero-alerts
-                namespace: velero-system
+                name: trivy-alerts
+                namespace: trivy-system
                 labels:
-                  app.kubernetes.io/name: "velero-alerts"
+                  app.kubernetes.io/name: "trivy-alerts"
                   app.kubernetes.io/instance: "{{ .Values.global.cluster }}"
                   app.kubernetes.io/component: monitoring
-                  app.kubernetes.io/part-of: velero-system
+                  app.kubernetes.io/part-of: trivy-system
                   app.kubernetes.io/managed-by: argo
                   helm.sh/chart: {{ printf "%s-%s" .Chart.Name .Chart.Version }}
                 annotations:
                   rules-definition: >-
-                    https://github.com/gccloudone-aurora-platform-charts/-/blob/main/charts/aurora-platform/charts/aurora-core/conf/prometheus_rules/velero/velero_rules.yaml
+                    https://github.com/gccloudone-aurora-platform-charts/-/blob/main/charts/aurora-platform/charts/aurora-core/conf/prometheus_rules/trivy/trivy_rules.yaml
               spec:
-              {{- (.Files.Get "conf/prometheus_rules/velero/velero_rules.yaml")  | nindent 16 }}
+              {{- (.Files.Get "conf/prometheus_rules/trivy/trivy_rules.yaml")  | nindent 16 }}
   destination:
     name: {{ .Values.global.cluster }}
     namespace: platform-system

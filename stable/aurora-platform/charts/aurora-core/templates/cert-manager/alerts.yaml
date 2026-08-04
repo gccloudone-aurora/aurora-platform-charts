@@ -1,4 +1,5 @@
 {{ if .Values.components.certManager.enabled -}}
+{{ if .Values.components.prometheus.enabled -}}
 {{ if .Values.components.certManager.prometheus.enabled -}}
 
 apiVersion: argoproj.io/v1alpha1
@@ -44,5 +45,6 @@ spec:
       prune: true
       selfHeal: true
 
+{{- end }}
 {{- end }}
 {{- end }}

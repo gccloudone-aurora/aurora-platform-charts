@@ -1,9 +1,12 @@
-{{ if .Values.components.prometheus.enabled -}}
+{{ if .Values.components.trivy.enabled -}}
+{{ if .Values.components.trivy.grafana.dashboard.enabled -}}
+{{ if .Values.components.grafana.enabled -}}
+{{- $g := .Values.components.trivy.grafana -}}
 
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: "{{ .Values.global.cluster }}-trivy-grafana-dashboard-cm"
+  name: "{{ .Values.global.cluster }}-trivy-grafana-dashboard"
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
@@ -15,18 +18,19 @@ spec:
     plugin:
       env:
         - name: HELM_RELEASE_NAME
-          value: "trivy-grafana-dashboard-cm"
+          value: "trivy-grafana-dashboard"
         - name: HELM_VALUES
           value: |
             resources:
-              - apiVersion: v1
-                kind: ConfigMap
+              - apiVersion: grafana.integreatly.org/v1beta1
+                kind: GrafanaDashboard
                 metadata:
                   name: trivy-operator-dashboard
-                  labels:
-                    grafana_dashboard: "1" # Required label for sidecar discovery
-                data:
-                  simplest-dashboard.json: |-
+                  namespace: {{ $g.namespace }}
+                spec:
+                  instanceSelector:
+                    matchLabels: {{ toYaml $g.instanceSelector | nindent 22 }}
+                  json: |
                     {
                       "annotations": {
                         "list": [
@@ -974,13 +978,14 @@ spec:
                       "version": 1,
                       "weekStart": ""
                     }
-
   destination:
     name: {{ .Values.global.cluster }}
-    namespace: prometheus-system
+    namespace: {{ $g.namespace }}
   syncPolicy:
     automated:
       prune: true
       selfHeal: true
 
+{{- end }}
+{{- end }}
 {{- end }}
