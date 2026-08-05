@@ -92,13 +92,3 @@ groups:
         labels:
           scope: cluster
           severity: P2-Major
-
-      - alert: VeleroHourlyNoRecentSuccessfulBackup
-        annotations:
-          message: 'Velero schedule {{ $$labels.schedule }} has not completed a successful backup in over 2 hours.'
-          runbook: "https://aurora.gccloudone.ca/en/documentation/monitoring-surveillance/prometheus/cluster-alert-runbooks/velero/"
-        expr: 'velero_schedule_last_success_age_seconds{schedule="velero-hourly-resources"} > 7200'
-        for: 30m
-        labels:
-          scope: cluster
-          severity: P2-Major
