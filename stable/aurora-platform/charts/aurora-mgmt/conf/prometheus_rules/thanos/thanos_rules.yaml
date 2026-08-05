@@ -1,0 +1,96 @@
+# alert on thanos metric store
+# prometheus rules for thanos's health status
+# needs the service monitor to run
+
+groups:
+  - name: thanos-objstorage.rules
+    rules:
+      # report if write to bucket fails
+      - expr: |
+          sum by(job, bucket) (rate(thanos_objstore_bucket_operation_failures_total[10m]))
+            /
+          sum by(job, bucket) (rate(thanos_objstore_bucket_operations_total[10m]))
+        record: thanos_objstore_operation_failure_ratio
+
+      - alert: ThanosObjectStoreOperationsFailing
+        annotations:
+          message: '{{ $$labels.job }} is failing {{ $$value | humanizePercentage }} of its object storage operation against bucket {{ $$labels.bucket }}.'
+          runbook: "https://aurora.gccloudone.ca/en/documentation/monitoring-surveillance/prometheus/cluster-alert-runbooks/thanos/"
+        expr: 'thanos_objstore_operation_failure_ratio > 0.05'
+        for: 15m
+        labels:
+          resolves: never
+          scope: cluster
+          severity: P2-Major
+
+      - alert: ThanosObjectStoreUnavailable
+        annotations:
+          message: "Thanos has lost access to bucket {{ $$labels.bucket }} - {{ $$labels.job }} is failing {{ $$value | humanizePercentage }} of it's object storage operations. Unable to save long term metrics."
+          runbook: "https://aurora.gccloudone.ca/en/documentation/monitoring-surveillance/prometheus/cluster-alert-runbooks/thanos/"
+        expr: 'thanos_objstore_operation_failure_ratio > 0.5'
+        for: 10m
+        labels:
+          scope: cluster
+          severity: P1-Critical
+
+  - name: thanos-compactor.rules
+    rules:
+      - alert: ThanosCompactorHalted
+        annotations:
+          message: 'Thanos Compactor {{ $$labels.job }} has halted. Compaction, down-sampling jobs, and retention have stopped. Bucket will grow unbounded until resolved.'
+          runbook: "https://aurora.gccloudone.ca/en/documentation/monitoring-surveillance/prometheus/cluster-alert-runbooks/thanos/"
+        expr: 'thanos_compact_halted == 1'
+        for: 5m
+        labels:
+          scope: cluster
+          severity: P1-Critical
+
+      - alert: ThanosCompactionFailed
+        annotations:
+          message: 'Thanos Compactor {{ $$labels.job }} has failed compaction runs in the past 60 minutes. Retention is lost until compaction resumes.'
+          runbook: "https://aurora.gccloudone.ca/en/documentation/monitoring-surveillance/prometheus/cluster-alert-runbooks/thanos/"
+        expr: 'sum by(job) (increase(thanos_compact_group_compactions_failures_total[1h])) > 0'
+        for: 30m
+        labels:
+          resolves: never
+          scope: cluster
+          severity: P2-Major
+
+      - alert: ThanosCompactorDown
+        annotations:
+          message: 'No Thanos compactor targets are up for {{ $$labels.job }}. Retention and down-sampling cannot proceed.'
+          runbook: "https://aurora.gccloudone.ca/en/documentation/monitoring-surveillance/prometheus/cluster-alert-runbooks/thanos/"
+        expr: 'sum by(job) (up{job=~"thanos-compactor.*"}) == 0'
+        for: 30m
+        labels:
+          scope: cluster
+          severity: P2-Major
+
+  - name: thanos-store-gateway.rules
+    rules:
+      - expr: |
+          sum by(job) (rate(thanos_blocks_meta_sync_failures_total[10m]))
+            /
+          sum by(job) (rate(thanos_blocks_meta_syncs_total[10m]))
+        record: thanos_blocks_meta_sync_failure_ratio
+
+      - alert: ThanosBucketBlockSyncFailing
+        annotations:
+          message: '{{ $$labels.job }} is failing to sync block metadata from its bucket. Queries on historical data may fail or be incomplete.'
+          runbook: "https://aurora.gccloudone.ca/en/documentation/monitoring-surveillance/prometheus/cluster-alert-runbooks/thanos/"
+        expr: 'thanos_blocks_meta_sync_failure_ratio > 0.1'
+        for: 15m
+        labels:
+          resolves: never
+          scope: cluster
+          severity: P2-Major
+
+      - alert: ThanosStoreGatewayDown
+        annotations:
+          message: 'No available Thanos Store Gateway targets up for {{ $$labels.job }}. Metrics older than local prometheus retention are unreadable until resolved.'
+          runbook: "https://aurora.gccloudone.ca/en/documentation/monitoring-surveillance/prometheus/cluster-alert-runbooks/thanos/"
+        expr: 'sum by(job) (up{job=~"thanos-storegateway.*"}) == 0'
+        for: 15m
+        labels:
+          scope: cluster
+          severity: P2-Major
