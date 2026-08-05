@@ -120,7 +120,7 @@ spec:
             spec:
               podSelector:
                 matchLabels:
-                  app.kubernetes.io/name:loki
+                  app.kubernetes.io/name: loki
               policyTypes:
                 - Ingress
               ingress:
@@ -128,7 +128,7 @@ spec:
                   - namespaceSelector:
                       matchLabels:
                         kubernetes.io/metadata.name: prometheus-system
-                  - podSelector:
+                    podSelector:
                       matchLabels:
                         app.kubernetes.io/name: prometheus
                   ports:
