@@ -2402,6 +2402,10 @@ components:
         tag: "v1.1.0"
         pullPolicy: IfNotPresent
 
+    prometheus:
+      serviceMonitor:
+        enabled: false
+
     policies: {}
       # repository: https://github.com/gccloudone-aurora/tetragon-policies.git
       # path: .
