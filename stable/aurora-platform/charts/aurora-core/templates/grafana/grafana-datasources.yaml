@@ -12,51 +12,53 @@ spec:
     chart: {{ .Values.global.raw.helm.chart }}
     repoURL: {{ default .Values.global.helm.repository .Values.global.raw.helm.repository }}
     targetRevision: {{ .Values.global.raw.helm.targetRevision }}
-    helm:
-      releaseName: grafana-datasource-resources
-      values: |
-        resources:
-          - apiVersion: grafana.integreatly.org/v1beta1
-            kind: GrafanaDatasource
-            metadata:
-              name: aurora-prometheus-source
-              namespace: grafana-system
-            spec:
-              instanceSelector:
-                matchLabels:
-                  dashboards: "aurora"
-              datasource:
-                name: Prometheus
-                type: prometheus
-                uid: prometheus
-                url: http://kube-prometheus-stack-prometheus.prometheus-system:9090/
-                access: proxy
-                isDefault: true
-                jsonData:
-                  httpMethod: POST
-                  timeInterval: 30s
-
-          {{- if .Values.global.clusterHasLoki }}
-          - apiVersion: grafana.integreatly.org/v1beta1
-            kind: GrafanaDatasource
-            metadata:
-              name: aurora-loki-source
-              namespace: grafana-system
-            spec:
-              instanceSelector:
-                matchLabels:
-                  dashboards: "aurora"
-              datasource:
-                name: Loki
-                type: loki
-                access: proxy
-                url: {{ required "grafana.lokiDataSource.url is required" .Values.components.grafana.lokiDataSource.url | quote }}
-                basicAuth: true
-                basicAuthUser: {{ required "grafana.lokiDataSource.user is required" .Values.components.grafana.lokiDataSource.user | quote }}
-                secureJsonData:
-                  basicAuthPassword: {{ required "grafana.lokiDataSource.password is required" .Values.components.grafana.lokiDataSource.password | quote }}
-          {{- end }}
-
+    plugin:
+      env:
+        - name: HELM_RELEASE_NAME
+          value: "grafana-datasource-resources"
+        - name: HELM_VALUES
+          value: |
+            resources:
+              - apiVersion: grafana.integreatly.org/v1beta1
+                kind: GrafanaDatasource
+                metadata:
+                  name: aurora-prometheus-source
+                  namespace: grafana-system
+                spec:
+                  instanceSelector:
+                    matchLabels:
+                      dashboards: "aurora"
+                  datasource:
+                    name: Prometheus
+                    type: prometheus
+                    uid: prometheus
+                    url: http://kube-prometheus-stack-prometheus.prometheus-system:9090/
+                    access: proxy
+                    isDefault: true
+                    jsonData:
+                      httpMethod: POST
+                      timeInterval: 30s
+    
+              {{- if .Values.global.clusterHasLoki }}
+              - apiVersion: grafana.integreatly.org/v1beta1
+                kind: GrafanaDatasource
+                metadata:
+                  name: aurora-loki-source
+                  namespace: grafana-system
+                spec:
+                  instanceSelector:
+                    matchLabels:
+                      dashboards: "aurora"
+                  datasource:
+                    name: Loki
+                    type: loki
+                    access: proxy
+                    url: {{ required "grafana.lokiDataSource.url is required" .Values.components.grafana.lokiDataSource.url | quote }}
+                    basicAuth: true
+                    basicAuthUser: {{ required "grafana.lokiDataSource.user is required" .Values.components.grafana.lokiDataSource.user | quote }}
+                    secureJsonData:
+                      basicAuthPassword: {{ required "grafana.lokiDataSource.password is required" .Values.components.grafana.lokiDataSource.password | quote }}
+              {{- end }}
   destination:
     name: {{ .Values.global.cluster }}
     namespace: grafana-system

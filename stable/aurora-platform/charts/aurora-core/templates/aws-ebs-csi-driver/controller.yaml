@@ -16,7 +16,7 @@ spec:
     {{- else }}
     repoURL: {{ default "https://kubernetes-sigs.github.io/aws-ebs-csi-driver" .Values.global.helm.repository }}
     {{- end }}
-    targetRevision: {{ default "2.47.0" .Values.components.awsEbsCsiDriver.helm.targetRevision }}
+    targetRevision: {{ .Values.components.awsEbsCsiDriver.helm.targetRevision }}
     plugin:
       env:
         - name: HELM_RELEASE_NAME

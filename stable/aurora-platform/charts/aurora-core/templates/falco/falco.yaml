@@ -15,7 +15,7 @@ spec:
     {{- else }}
     repoURL: {{ default "https://falcosecurity.github.io/charts" .Values.global.helm.repository }}
     {{- end }}
-    targetRevision: {{ default "6.2.5" .Values.components.falco.targetRevision }}
+    targetRevision: {{ .Values.components.falco.helm.targetRevision }}
     helm:
       releaseName: falco
       values: |-

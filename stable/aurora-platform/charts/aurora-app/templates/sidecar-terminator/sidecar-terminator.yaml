@@ -15,7 +15,7 @@ spec:
     {{- else }}
     repoURL: {{ default "https://gccloudone-aurora.github.io/sidecar-terminator" .Values.global.helm.repository }}
     {{- end }}
-    targetRevision: {{ default "0.0.2" .Values.components.sidecarTerminator.helm.targetRevision }}
+    targetRevision: {{ .Values.components.sidecarTerminator.helm.targetRevision }}
     helm:
       releaseName: sidecar-terminator
       values: |
