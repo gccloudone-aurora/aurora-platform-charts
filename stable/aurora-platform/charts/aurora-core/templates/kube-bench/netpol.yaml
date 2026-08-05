@@ -57,12 +57,6 @@ spec:
                   podSelector:
                     matchLabels:
                       app.kubernetes.io/name: fluentd
-                - namespaceSelector:
-                    matchLabels:
-                      kubernetes.io/metadata.name: event-logging-system
-                  podSelector:
-                    matchLabels:
-                      app.kubernetes.io/name: kubernetes-event-exporter
               podSelector:
                 matchLabels:
                   app.kubernetes.io/component: gateway

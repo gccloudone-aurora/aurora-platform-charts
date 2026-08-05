@@ -88,6 +88,7 @@ core:
     # securityOperations: {}
 
   components: {}
+    # alloy: {}
     # auroraController: {}
     # awsEbsCsiDriver: {}
     # awsLoadbalancerController: {}
@@ -100,7 +101,6 @@ core:
     # grafana: {}
     # kubebench: {}
     # kubecost: {}
-    # kubernetesEventExporter: {}
     # ntp: {}
     # podtracker: {}
     # prometheus: {}

@@ -1,0 +1,13 @@
+groups:
+- name: argocd.rules
+  rules:
+  - alert: ArgoCDApplicationSyncFailed
+    expr: '(sum by (name, namespace, project, phase) (increase(argocd_app_sync_total{phase=~"Error|Failed"}[15m])) > 0) unless (sum by (name, namespace, project, phase) (increase(argocd_app_sync_total{phase=~"Error|Failed"}[15m] offset 15m)) > 0)'
+    for: 2m
+    labels:
+      resolves: never
+      severity: P2-Major
+      scope: cluster
+      teams_version: v2
+    annotations:
+      message: 'Argo CD application {{ $$labels.name }} in namespace {{ $$labels.namespace }} has sync phase {{ $$labels.phase }} within the last 15 minutes.'

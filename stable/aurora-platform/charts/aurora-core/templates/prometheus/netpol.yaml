@@ -228,23 +228,6 @@ spec:
                       app: prometheus-msteams
                   policyTypes:
                   - Egress
-              - apiVersion: cilium.io/v2
-                kind: CiliumNetworkPolicy
-                metadata:
-                  name: allow-egress-to-jira-from-jiralert
-                  namespace: prometheus-system
-                spec:
-                  description: |
-                    Allows Jiralert to send Alertmanager alert notifications to Jira
-                  egress:
-                  - toFQDNs:
-                    - matchPattern: jira.ssc-spc.gc.ca
-                    toPorts:
-                    - ports:
-                      - port: "443"
-                  endpointSelector:
-                    matchLabels:
-                      app.kubernetes.io/name: jiralert
               {{- end }}
               - apiVersion: networking.k8s.io/v1
                 kind: NetworkPolicy
@@ -565,6 +548,28 @@ spec:
                           cidr: "{{ $val.ipAddress }}/32"
                       {{- end }}
               {{- end }}
+              - apiVersion: networking.k8s.io/v1
+                kind: NetworkPolicy
+                metadata:
+                  name: allow-egress-to-argocd-metrics-from-prometheus
+                  namespace: prometheus-system
+                spec:
+                  podSelector:
+                    matchLabels:
+                      app.kubernetes.io/name: prometheus
+                  policyTypes:
+                    - Egress
+                  egress:
+                    - to:
+                        - namespaceSelector:
+                            matchLabels:
+                              namespace.ssc-spc.gc.ca/purpose: system
+                          podSelector:
+                            matchLabels:
+                              app.kubernetes.io/name: argocd-application-controller
+                      ports:
+                        - protocol: TCP
+                          port: 8082
               {{- if .Values.components.prometheus.prometheus.netpol.allowFederation }}
               # Required for other Prometheus instances to request metrics from the Platform Prometheus
               - apiVersion: networking.k8s.io/v1

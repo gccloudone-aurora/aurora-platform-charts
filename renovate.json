@@ -1,0 +1,61 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended"
+  ],
+  "labels": [
+    "dependencies"
+  ],
+  "enabledManagers": [
+    "helmv3",
+    "custom.regex"
+  ],
+  "customManagers": [
+    {
+      "customType": "regex",
+      "description": "Update HTTP Helm chart targetRevision values documented with chart/repository comments",
+      "managerFilePatterns": [
+        "/(^|/)values\\.ya?ml$/",
+        "/^config/config\\.ya?ml$/"
+      ],
+      "matchStrings": [
+        "#\\s*chart:\\s*(?<depName>\\S+)\\s*\\n\\s*#\\s*repository:\\s*(?<registryUrl>https?://\\S+)\\s*\\n(?:\\s*#.*\\n)*\\s*targetRevision:\\s*[\"']?(?<currentValue>[^\"'\\s#]+)[\"']?"
+      ],
+      "datasourceTemplate": "helm"
+    },
+    {
+      "customType": "regex",
+      "description": "Update OCI Helm chart targetRevision values documented with chart/repository comments",
+      "managerFilePatterns": [
+        "/(^|/)values\\.ya?ml$/",
+        "/^config/config\\.ya?ml$/"
+      ],
+      "matchStrings": [
+        "#\\s*chart:\\s*(?<depName>\\S+)\\s*\\n\\s*#\\s*repository:\\s*oci://(?<registryHost>[^/]+)/(?<packageName>\\S+)\\s*\\n(?:\\s*#.*\\n)*\\s*targetRevision:\\s*[\"']?(?<currentValue>[^\"'\\s#]+)[\"']?"
+      ],
+      "datasourceTemplate": "docker",
+      "registryUrlTemplate": "https://{{{registryHost}}}",
+      "versioningTemplate": "helm"
+    }
+  ],
+  "lockFileMaintenance": {
+    "enabled": true
+  },
+  "minimumReleaseAge": "3 days",
+  "packageRules": [
+    {
+      "description": "OCI/Docker registries (e.g. quay.io) do not expose release timestamps; allow those updates through instead of holding them indefinitely",
+      "matchDatasources": [
+        "docker"
+      ],
+      "minimumReleaseAgeBehaviour": "timestamp-optional"
+    }
+  ],
+  "prHourlyLimit": 0,
+  "prConcurrentLimit": 10,
+  "ignorePaths": [
+    "stable/**/README.md",
+    "stable/**/README.md.gotmpl",
+    "stable/argocd-operator/crds/**"
+  ]
+}

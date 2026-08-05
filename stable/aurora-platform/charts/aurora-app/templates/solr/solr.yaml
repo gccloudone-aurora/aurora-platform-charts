@@ -15,7 +15,7 @@ spec:
     {{- else }}
     repoURL: {{ default "https://solr.apache.org/charts" .Values.global.helm.repository }}
     {{- end }}
-    targetRevision: {{ default "0.5.1" .Values.components.solr.helm.targetRevision }}
+    targetRevision: {{ .Values.components.solr.helm.targetRevision }}
     helm:
       releaseName: solr-operator
       values: |

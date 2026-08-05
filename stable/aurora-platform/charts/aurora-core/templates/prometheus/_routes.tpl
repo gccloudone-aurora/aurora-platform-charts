@@ -1,3 +1,13 @@
+{{/*
+Define order in this file:
+  1. alertmanager.channel.receivers
+  2. alertmanager.email.receivers
+  3. alertmanager.channel.routes
+  4. alertmanager.email.routes
+  5. alertmanager.notification.routes
+  6. alertmanager.config
+*/}}
+
 {{- define "alertmanager.channel.receivers" -}}
 {{- range $severity, $sVal := .Values.components.prometheus.alertmanager.config.severities }}
 {{- range $environment, $matchers := $.Values.components.prometheus.alertmanager.config.environments }}
@@ -14,56 +24,25 @@
       send_resolved: false
 
 # msteams v2
-{{- if $.Values.components.prometheus.msteams.webhooks }}
-{{- if hasKey $.Values.components.prometheus.msteams.webhooks $envSeverityPair }}
-{{- $webhookUrl := index $.Values.components.prometheus.msteams.webhooks $envSeverityPair }}
-{{- if $webhookUrl }}
+{{- with $.Values.components.prometheus.msteams.webhooks }}
+{{- with index . $envSeverityPair }}
 - name: aurora_{{ $environment }}_{{ $severity }}_v2
   msteamsv2_configs:
-    - webhook_url: {{ $webhookUrl | quote }}
+    - webhook_url: {{ . | quote }}
       send_resolved: true
       title: '{{`{{ template "teams.v2.title" . }}`}}'
       text: '{{`{{ template "teams.v2.text" . }}`}}'
 - name: aurora_{{ $environment }}_{{ $severity }}_v2_no_resolve
   msteamsv2_configs:
-    - webhook_url: {{ $webhookUrl | quote }}
+    - webhook_url: {{ . | quote }}
       send_resolved: false
       title: '{{`{{ template "teams.v2.title" . }}`}}'
       text: '{{`{{ template "teams.v2.text" . }}`}}'
 {{- end }}
 {{- end }}
-{{- end }}
 
 {{- end }}
 {{- end }}
-{{- end }}
-
-{{- define "alertmanager.channel.routes" -}}
-{{- $severity := index . 0 -}}
-{{- $matcher := index . 1 -}}
-{{- $environment := index . 2 -}}
-{{- $root := index . 3 -}}
-{{- $envSeverityPair := printf "%s%s" $environment (camelcase $severity) -}}
-- matchers: [{{ $matcher }}]
-  receiver: aurora_{{ $environment }}_{{ $severity }}
-  routes:
-    {{- if $root.Values.components.prometheus.msteams.webhooks }}
-    {{- if hasKey $root.Values.components.prometheus.msteams.webhooks $envSeverityPair }}
-    {{- $webhookUrl := index $root.Values.components.prometheus.msteams.webhooks $envSeverityPair }}
-    {{- if $webhookUrl }}
-    - matchers: ["teams_version = v2"]
-      receiver: aurora_{{ $environment }}_{{ $severity }}_v2
-      routes:
-        - matchers: ["alertname =~ Trivy.*Vulnerabilities.*"]
-          receiver: aurora_{{ $environment }}_{{ $severity }}_v2_no_resolve
-          repeat_interval: 24h
-        - matchers: ["resolves = never"]
-          receiver: aurora_{{ $environment }}_{{ $severity }}_v2_no_resolve
-    {{- end }}
-    {{- end }}
-    {{- end }}
-    - matchers: ["resolves = never"]
-      receiver: aurora_{{ $environment }}_{{ $severity }}_no_resolve
 {{- end }}
 
 {{- define "alertmanager.email.receivers" -}}
@@ -81,6 +60,31 @@
 {{- end }}
 {{- end }}
 
+{{- define "alertmanager.channel.routes" -}}
+{{- $severity := index . 0 -}}
+{{- $matcher := index . 1 -}}
+{{- $environment := index . 2 -}}
+{{- $root := index . 3 -}}
+{{- $envSeverityPair := printf "%s%s" $environment (camelcase $severity) -}}
+- matchers: [{{ $matcher }}]
+  receiver: aurora_{{ $environment }}_{{ $severity }}
+  routes:
+    {{- with $root.Values.components.prometheus.msteams.webhooks }}
+    {{- with index . $envSeverityPair }}
+    - matchers: ["teams_version = v2"]
+      receiver: aurora_{{ $environment }}_{{ $severity }}_v2
+      routes:
+        - matchers: ["alertname =~ Trivy.*Vulnerabilities.*"]
+          receiver: aurora_{{ $environment }}_{{ $severity }}_v2_no_resolve
+          repeat_interval: 24h
+        - matchers: ["resolves = never"]
+          receiver: aurora_{{ $environment }}_{{ $severity }}_v2_no_resolve
+    {{- end }}
+    {{- end }}
+    - matchers: ["resolves = never"]
+      receiver: aurora_{{ $environment }}_{{ $severity }}_no_resolve
+{{- end }}
+
 {{- define "alertmanager.email.routes" -}}
 {{- range $name, $config := .Values.components.prometheus.alertmanager.config.smtp.sendAddresses }}
 - matchers: [{{ $config.matchers }}]
@@ -93,22 +97,45 @@
 {{- end }}
 {{- end }}
 
-{{- define "alertmanager.jiraAlert.receivers" -}}
-{{- range $severity, $sVal := .Values.components.prometheus.jiralert.receivers }}
-- name: jiralert_{{ $severity }}
-  webhook_configs:
-    - url: 'http://prometheus-jiralert:9097/alert'
+{{/*
+Shared child routes under each parent alert scope (node-clock, cluster, namespace).
+
+Produces a list shaped like:
+
+  # email (continue: true so channel routes still run)
+  - matchers: [<smtp sendAddress matchers>]
+    receiver: <name>
+    continue: true
+    routes:
+      - matchers: ["resolves = never"]
+        receiver: <name>_no_resolve
+        continue: true
+
+  # then one block per severity × environment matcher
+  - matchers: ["severity = <P1-Critical|...>"]
+    routes:
+      - matchers: [<environment matcher>]
+        receiver: aurora_<env>_<severity>
+        routes:
+          # optional msteams v2 branch when a webhook is configured
+          - matchers: ["teams_version = v2"]
+            receiver: aurora_<env>_<severity>_v2
+            ...
+          - matchers: ["resolves = never"]
+            receiver: aurora_<env>_<severity>_no_resolve
+*/}}
+{{- define "alertmanager.notification.routes" -}}
+{{- include "alertmanager.email.routes" . }}
+{{- range $severity, $severityValue := .Values.components.prometheus.alertmanager.config.severities }}
+- matchers: ["severity = {{ $severityValue }}"]
+  routes:
+  {{- range $environment, $envRoute := $.Values.components.prometheus.alertmanager.config.environments }}
+  {{- range $matcher := $envRoute.matchers }}
+  {{- include "alertmanager.channel.routes" (list $severity $matcher $environment $) | nindent 4 }}
+  {{- end }}
+  {{- end }}
 {{- end }}
 {{- end }}
-
-
-{{- define "alertmanager.jiraAlert.routes" -}}
-{{- $severity := index . 0 -}}
-- receiver: jiralert_{{ $severity }}
-  continue: true
-{{- end }}
-
-
 
 {{/*
 The Alertmanager configuration.
@@ -126,7 +153,6 @@ receivers:
   - name: black_hole #Empty default receiver
   {{- include "alertmanager.channel.receivers" . | indent 2 }}
   {{- include "alertmanager.email.receivers" . | indent 2 }}
-  {{- include "alertmanager.jiraAlert.receivers" . | indent 2 }}
   {{- with .Values.components.prometheus.alertmanager.config.deadMansSwitchURL }}
   - name: dms
     webhook_configs:
@@ -162,55 +188,19 @@ route:
       group_interval: 1d
       group_by: ['cluster', 'alertname']
       routes:
-        {{- include "alertmanager.email.routes" . | indent 8 }}
-        {{- range $severity, $severityValue := .Values.components.prometheus.alertmanager.config.severities }}
-        - matchers: ["severity = {{ $severityValue }}"]
-          routes:
-          {{- if hasKey $.Values.components.prometheus.jiralert.receivers $severity }}
-{{ include "alertmanager.jiraAlert.routes" (list $severity)  | indent 12 }}
-          {{- end }}
-          {{- range $environment, $envRoute := $.Values.components.prometheus.alertmanager.config.environments }}
-          {{- range $matcher := $envRoute.matchers }}
-{{ include "alertmanager.channel.routes" (list $severity $matcher $environment $) | indent 12 }}
-        {{- end }}
-        {{- end }}
-        {{- end }}
+        {{- include "alertmanager.notification.routes" . | nindent 8 }}
 
     ### CLUSTER-WIDE ALERTS
     - matchers: ["scope = cluster"]
       receiver: black_hole
       routes:
-        {{- include "alertmanager.email.routes" . | indent 8 }}
-        {{- range $severity, $severityValue := .Values.components.prometheus.alertmanager.config.severities }}
-        - matchers: ["severity = {{ $severityValue }}"]
-          routes:
-          {{- if hasKey $.Values.components.prometheus.jiralert.receivers $severity }}
-{{ include "alertmanager.jiraAlert.routes" (list $severity)  | indent 12 }}
-          {{- end }}
-          {{- range $environment, $envRoute := $.Values.components.prometheus.alertmanager.config.environments }}
-          {{- range $matcher := $envRoute.matchers }}
-{{ include "alertmanager.channel.routes" (list $severity $matcher $environment $) | indent 12 }}
-        {{- end }}
-        {{- end }}
-        {{- end }}
+        {{- include "alertmanager.notification.routes" . | nindent 8 }}
 
     ### NAMESPACE-SPECIFIC ALERTS
     - matchers: ["scope = namespace", "namespace =~ (.*-system|gitlab|gitlab-runner-build-dev|gitlab-runner-build-prod|gitlab-runner-infra|jfrog|loki|trivy|vault)"]
       receiver: black_hole
       routes:
-        {{- include "alertmanager.email.routes" . | indent 8 }}
-        {{- range $severity, $severityValue := .Values.components.prometheus.alertmanager.config.severities }}
-        - matchers: ["severity = {{ $severityValue }}"]
-          routes:
-          {{- if hasKey $.Values.components.prometheus.jiralert.receivers $severity }}
-{{ include "alertmanager.jiraAlert.routes" (list $severity)  | indent 12 }}
-          {{- end }}
-          {{- range $environment, $envRoute := $.Values.components.prometheus.alertmanager.config.environments }}
-          {{- range $matcher := $envRoute.matchers }}
-{{ include "alertmanager.channel.routes" (list $severity $matcher $environment $) | indent 12 }}
-        {{- end }}
-        {{- end }}
-        {{- end }}
+        {{- include "alertmanager.notification.routes" . | nindent 8 }}
 
 inhibit_rules:
   # Don't alert generic NodeNotReady when there is a known cause

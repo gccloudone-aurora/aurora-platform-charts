@@ -6,6 +6,11 @@ on:
   push:
     branches: [main]
 
+permissions:
+  contents: write
+  pull-requests: write
+  issues: read
+
 jobs:
   helm-versioning:
     runs-on: ubuntu-latest

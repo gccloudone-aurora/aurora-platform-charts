@@ -15,7 +15,7 @@ spec:
     {{- else }}
     repoURL: {{ default "https://argoproj.github.io/argo-helm" .Values.global.helm.repository }}
     {{- end }}
-    targetRevision: {{ default "0.42.1" .Values.components.argoWorkflow.workflow.helm.targetRevision }}
+    targetRevision: {{ .Values.components.argoWorkflow.workflow.helm.targetRevision }}
     plugin:
       env:
         - name: HELM_RELEASE_NAME
