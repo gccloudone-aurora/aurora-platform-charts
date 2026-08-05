@@ -463,6 +463,15 @@ components:
       # chunks: <gcp-bucket-name>
       # ruler: <gcp-bucket-name>
 
+    # scrape the backend via a servicemonitor. Pre-req for alerts below
+    # without the service monitor, loki storage rules have no series to evaluate
+    serviceMonitor:
+      enabled: true
+
+    # prometheus alert rule enabling
+    alerts:
+      enabled: true
+
   ##############
   ### Thanos ###
   ##############
@@ -580,4 +589,8 @@ components:
 
     # Scrape Querier/Store Gateway/Compactor via ServiceMonitors
     serviceMonitor:
+      enabled: true
+
+    # prometheus alert rules for the azure blob storage that thanos ships to
+    alerts:
       enabled: true
