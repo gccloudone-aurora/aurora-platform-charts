@@ -9,7 +9,7 @@ metadata:
 spec:
   project: {{ .Values.global.project }}
   source:
-    chart: {{ .Values.global.project }}
+    chart: {{ .Values.global.raw.helm.chart }}
     repoURL: {{ default .Values.global.helm.repository .Values.global.raw.helm.repository }}
     targetRevision: {{ .Values.global.raw.helm.targetRevision }}
     plugin:
