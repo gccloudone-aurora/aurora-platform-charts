@@ -81,11 +81,13 @@ groups:
           scope: cluster
           severity: P2-Major
 
+      # 24Hour threshold (86400 seconds is 24 hours). The One Hour for effectively makes it a 25 window
+      # this is to reduce false positives on a missing backup
       - alert: VeleroNoRecentSuccessfulBackup
         annotations:
           message: 'Velero schedule {{ $$labels.schedule }} has not completed a successful backup in over 24 hours.'
           runbook: "https://aurora.gccloudone.ca/en/documentation/monitoring-surveillance/prometheus/cluster-alert-runbooks/velero/"
-        expr: 'velero_schedule_last_success_age_seconds{schedule!="velero-hourly-resources"} > 86400'
+        expr: 'velero_schedule_last_success_age_seconds{schedule!=""} > 86400'
         for: 1h
         labels:
           scope: cluster
@@ -93,9 +95,9 @@ groups:
 
       - alert: VeleroHourlyNoRecentSuccessfulBackup
         annotations:
-          message: 'Velero schedule {{ $$labels.schedule }} has not completed a successful backup in over 3 hours.'
+          message: 'Velero schedule {{ $$labels.schedule }} has not completed a successful backup in over 2 hours.'
           runbook: "https://aurora.gccloudone.ca/en/documentation/monitoring-surveillance/prometheus/cluster-alert-runbooks/velero/"
-        expr: 'velero_schedule_last_success_age_seconds{schedule!="velero-hourly-resources"} > 10800'
+        expr: 'velero_schedule_last_success_age_seconds{schedule="velero-hourly-resources"} > 7200'
         for: 30m
         labels:
           scope: cluster
