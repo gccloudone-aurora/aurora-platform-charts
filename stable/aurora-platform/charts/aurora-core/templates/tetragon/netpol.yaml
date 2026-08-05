@@ -52,6 +52,30 @@ spec:
                 matchLabels: {}
               policyTypes:
               - Ingress
+          - apiVersion: networking.k8s.io/v1
+            kind: NetworkPolicy
+            metadata:
+              name: allow-ingress-from-prometheus-to-tetragon
+              namespace: tetragon-system
+            spec:
+              ingress:
+              - from:
+                - namespaceSelector:
+                    matchLabels:
+                      kubernetes.io/metadata.name: prometheus-system
+                  podSelector:
+                    matchLabels:
+                      app.kubernetes.io/name: prometheus
+                ports:
+                  - protocol: TCP
+                    port: 2112
+              podSelector:
+                matchLabels:
+                  app.kubernetes.io/name: tetragon
+                  app.kubernetes.io/instance: tetragon
+              
+              policyTypes:
+              - Ingress
   destination:
     name: {{ .Values.global.cluster }}
     namespace: platform-system
