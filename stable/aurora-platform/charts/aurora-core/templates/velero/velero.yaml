@@ -95,6 +95,9 @@ spec:
             metrics:
               serviceMonitor:
                 enabled: true
+                # chart gates ServiceMonitor on .Capabilities.APIVersion.Has "monitoring.coreos.com/v1", so the check only resolves against a live cluster
+                # When rendering this via Argo and the plugin, the guard will fail silently and servicemonitor is skipped. So set autodetect to false
+                autodetect: false
 
             configuration:
               backupStorageLocation:

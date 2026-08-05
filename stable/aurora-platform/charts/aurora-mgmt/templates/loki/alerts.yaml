@@ -1,0 +1,47 @@
+{{ if and .Values.components.loki.enabled .Values.components.loki.alerts.enabled -}}
+
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-loki-alerts"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    chart: {{ .Values.global.project }}
+    repoURL: {{ default .Values.global.helm.repository .Values.global.raw.helm.repository }}
+    targetRevision: {{ .Values.global.raw.helm.targetRevision }}
+    plugin:
+      env:
+        - name: HELM_RELEASE_NAME
+          value: "loki-alerts"
+        - name: HELM_VALUES
+          value: |
+            resources:
+            - apiVersion: monitoring.coreos.com/v1
+              kind: PrometheusRule
+              metadata:
+                name: loki-alerts
+                namespace: loki-system
+                labels:
+                  app.kubernetes.io/name: "loki-alerts"
+                  app.kubernetes.io/instance: "{{ .Values.global.cluster }}"
+                  app.kubernetes.io/component: monitoring
+                  app.kubernetes.io/part-of: loki-system
+                  app.kubernetes.io/managed-by: argo
+                  helm.sh/chart: {{ printf "%s-%s" .Chart.Name .Chart.Version }}
+                annotations:
+                  rules-definition: >-
+                    https://github.com/gccloudone-aurora-platform-charts/-/blob/main/charts/aurora-mgmt/conf/prometheus_rules/loki/loki_rules.yaml
+              spec:
+              {{- (.Files.Get "conf/prometheus_rules/loki/loki_rules.yaml") | nindent 16 }}
+  destination:
+    name: {{ .Values.global.cluster }}
+    namespace: platform-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+
+{{- end }}
