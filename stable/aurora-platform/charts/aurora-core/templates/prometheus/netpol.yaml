@@ -38,6 +38,29 @@ spec:
               - apiVersion: networking.k8s.io/v1
                 kind: NetworkPolicy
                 metadata:
+                  name: allow-egress-to-tetragon-from-prometheus
+                  namespace: prometheus-system
+                spec:
+                  podSelector:
+                    matchLabels:
+                      app.kubernetes.io/name: prometheus
+                  egress:
+                  - to:
+                    - namespaceSelector:
+                        matchLabels:
+                          kubernetes.io/metadata.name: tetragon-system
+                      podSelector:
+                        matchLabels:
+                          app.kubernetes.io/name: tetragon
+                          app.kubernetes.io/instance: tetragon
+                    ports:
+                    - protocol: TCP
+                      port: 2112
+                  policyTypes:
+                  - Egress
+              - apiVersion: networking.k8s.io/v1
+                kind: NetworkPolicy
+                metadata:
                   name: allow-egress-to-grafana-from-prometheus
                   namespace: prometheus-system
                 spec:

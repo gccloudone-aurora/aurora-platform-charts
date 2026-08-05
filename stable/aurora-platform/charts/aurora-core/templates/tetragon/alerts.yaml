@@ -1,0 +1,48 @@
+{{ if .Values.components.tetragon.prometheus.serviceMonitor.enabled -}}
+{{ if .Values.components.prometheus.enabled -}}
+
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-tetragon-alerts"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    chart: {{ .Values.global.raw.helm.chart }}
+    repoURL: {{ default .Values.global.helm.repository .Values.global.raw.helm.repository }}
+    targetRevision: {{ .Values.global.raw.helm.targetRevision }}
+    plugin:
+      env:
+        - name: HELM_RELEASE_NAME
+          value: "tetragon-alerts"
+        - name: HELM_VALUES
+          value: |
+            resources:
+            - apiVersion: monitoring.coreos.com/v1
+              kind: PrometheusRule
+              metadata:
+                name: tetragon-alerts
+                namespace: tetragon-system
+                labels:
+                  app.kubernetes.io/name: "tetragon-alerts"
+                  app.kubernetes.io/instance: "{{ .Values.global.cluster }}"
+                  app.kubernetes.io/component: monitoring
+                  app.kubernetes.io/part-of: tetragon-system
+                  app.kubernetes.io/managed-by: argo
+                  helm.sh/chart: {{ printf "%s-%s" .Chart.Name .Chart.Version }}
+                annotations:
+                  rules-definition: >-
+                    https://github.com/gccloudone-aurora-platform-charts/-/blob/main/charts/aurora-platform/charts/aurora-core/conf/prometheus_rules/tetragon/tetragon_rules.yaml
+              spec:
+              {{- (.Files.Get "conf/prometheus_rules/tetragon/tetragon_rules.yaml")  | nindent 16 }}
+  destination:
+    name: {{ .Values.global.cluster }}
+    namespace: platform-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+{{- end }}
+{{- end }}
