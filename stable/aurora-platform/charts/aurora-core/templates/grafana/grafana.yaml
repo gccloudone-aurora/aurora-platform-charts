@@ -32,7 +32,7 @@ spec:
                     spec:
                       accessModes:
                         - ReadWriteOnce
-                      storageClassName: default
+                      storageClassName: {{ .Values.global.defaultStorageClass | default "default" }}
                       resources:
                         requests:
                           storage: 20Gi
@@ -51,7 +51,7 @@ spec:
                       adminPassword: {{ required "grafana.adminPassword is required" .Values.components.grafana.adminPassword | quote }}
                     server:
                       root_url: {{ .Values.components.grafana.serverUrl | default (printf "http://localhost:3000/login/azuread" .Values.components.grafana.serverUrl) | quote }}
-                    {{- if eq .Values.global.provider "azure" }}
+                    {{- if or (eq .Values.global.provider "azure") (and .Values.components.grafana.azure.clientId .Values.components.grafana.azure.clientPassword) }}
                     auth.azuread:
                       enabled: "true"
                       name: "Azure AD"
@@ -105,7 +105,7 @@ spec:
                             - name: grafana-storage
                               persistentVolumeClaim:
                                 claimName: grafana-pvc
-                            {{- if eq .Values.global.provider "azure" }}
+                            {{- if or (eq .Values.global.provider "azure") (and .Values.components.grafana.azure.clientId .Values.components.grafana.azure.clientPassword) }}
                             - name: auth-azuread-oauth-secret-mount
                               secret:
                                 secretName: auth-azuread-oauth-secret
@@ -131,7 +131,7 @@ spec:
                               volumeMounts:
                                 - name: grafana-storage
                                   mountPath: /var/lib/grafana
-                               {{- if eq .Values.global.provider "azure" }}
+                               {{- if or (eq .Values.global.provider "azure") (and .Values.components.grafana.azure.clientId .Values.components.grafana.azure.clientPassword) }}
                                 - name: auth-azuread-oauth-secret-mount
                                   mountPath: /etc/secrets/auth_azuread
                                   readOnly: true

@@ -67,6 +67,8 @@ global:
   # subscriptionId: ""
   # tenantId: ""
 
+  defaultStorageClass: default
+
   # child values import via dependencies
   imports:
     app:
@@ -1860,6 +1862,7 @@ components:
                     app.kubernetes.io/name: thanos
 
     grafana:
+      enabled: false
       image:
         # registry: docker.io
         repository: grafana/grafana

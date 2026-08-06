@@ -71,7 +71,6 @@ spec:
           nodeSelector: {{ toYaml .Values.components.gatekeeper.crds.nodeSelector | nindent 12 }}
           tolerations: {{ toYaml .Values.components.gatekeeper.crds.tolerations | nindent 12 }}
           affinity: {{ toYaml .Values.components.gatekeeper.crds.affinity | nindent 12 }}
-
   destination:
     name: {{ .Values.global.cluster }}
     namespace: gatekeeper-system
