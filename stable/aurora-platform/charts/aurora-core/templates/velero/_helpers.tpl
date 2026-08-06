@@ -58,6 +58,14 @@ subscriptionId: {{ required "velero.backupStorage.subscriptionId is required" .V
 region: ca-central-1
 {{- else if eq .Values.global.provider "gcp" }}
 serviceAccount: {{ required "velero.workloadIdentity.serviceAccountEmail is required" .Values.components.velero.workloadIdentity.serviceAccountEmail | quote }}
+{{- with .Values.components.velero.backupStorage.kmsKeyName }}
+kmsKeyName: {{ . | quote }}
+{{- end }}
+{{- with .Values.components.velero.backupStorage.storeEndpoint }}
+storeEndpoint: {{ . | quote }}
+{{- end }}
+{{- with .Values.components.velero.backupStorage.universeDomain }}
+universeDomain: {{ . | quote }}
 {{- end }}
 {{- end }}
 
@@ -70,6 +78,19 @@ resourceGroup: {{ required "velero.volumeSnapshot.resourceGroupName is required"
 incremental: true
 {{- else if eq .Values.global.provider "aws" }}
 region: ca-central-1
+{{- else if eq .Values.global.provider "gcp" }}
+{{- with .Values.components.velero.volumeSnapshot.snapshotLocation }}
+snapshotLocation: {{ . | quote }}
+{{- end }}
+{{- with .Values.components.velero.volumeSnapshot.project }}
+project: {{ . | quote }}
+{{- end }}
+{{- with .Values.components.velero.volumeSnapshot.volumeProject }}
+volumeProject: {{ . | quote }}
+{{- end }}
+{{- with .Values.components.velero.volumeSnapshot.snapshotType }}
+snapshotType: {{ . | quote }}
+{{- end }}
 {{- end }}
 {{- end }}
 
