@@ -68,6 +68,7 @@ storeEndpoint: {{ . | quote }}
 universeDomain: {{ . | quote }}
 {{- end }}
 {{- end }}
+{{- end }}
 
 {{/*
 The volumeSnapshotLocation configuration.
