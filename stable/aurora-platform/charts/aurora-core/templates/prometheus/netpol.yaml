@@ -730,7 +730,7 @@ spec:
                 spec:
                   podSelector:
                     matchLabels:
-                      app.kubernetes.io/name:prometheus
+                      app.kubernetes.io/name: prometheus
                   policyTypes:
                     - Egress
                   egress:
@@ -800,8 +800,8 @@ spec:
                   egress:
                     - to:
                         - namespaceSelector:
-                          matchLabels:
-                            kubernetes.io/metadata.name: velero-system
+                            matchLabels:
+                              kubernetes.io/metadata.name: velero-system
                       ports:
                         - protocol: TCP
                           port: 8085
