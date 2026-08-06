@@ -3,47 +3,54 @@ groups:
     rules:
       - alert: TetragonPrivilegeEscalationDetected
         annotations:
-          message: 'Tetragon detected privilege escalation by {{ $$labels.binary }} in {{ $$labels.namespace }}/{{ $$labels.workload }} (pod {{ $$labels.pod }}, node {{ $$labels.node }}, hook {{ $$labels.hook }}).'
-          value: '{{ $$value }}'
-        expr: 'increase(tetragon_policy_events_total{policy="privileges-raise"}[5m]) > 0'
-        keep_firing_for: 15m
+          message: 'Tetragon detected {{ printf "%.0f" $$value }} privilege escalation event(s) by {{ $$labels.binary }} in {{ $$labels.namespace }}/{{ $$labels.workload }} (pod {{ $$labels.pod }}, hook {{ $$labels.hook }}) during the last 5 minutes.'
+          value: '{{ printf "%.0f" $$value }}'
+        # TODO: Investigate anonymous/deleted executable events in
+        # Tetragon before removing the temporary /proc/self/fd exclusion.
+        expr: 'sum by (namespace, workload, pod, binary, hook) (increase(tetragon_policy_events_total{policy="privileges-raise", namespace!="kube-system", binary!~"(.*/)?(runc|containerd-shim.*|crond)|/proc/self/fd/[0-9]+"}[5m])) > 0'
+        for: 2m
         labels:
           scope: cluster
           severity: P2-Major
           teams_version: v2
+          resolves: never
 
       - alert: TetragonFileMonitoringDetected
         annotations:
-          message: 'Tetragon detected sensitive file activity by {{ $$labels.binary }} in {{ $$labels.namespace }}/{{ $$labels.workload }} (pod {{ $$labels.pod }}, node {{ $$labels.node }}, hook {{ $$labels.hook }}).'
-          value: '{{ $$value }}'
-        expr: 'increase(tetragon_policy_events_total{policy="file-monitoring-filtered"}[5m]) > 0'
-        keep_firing_for: 15m
+          message: 'Tetragon detected {{ printf "%.0f" $$value }} sensitive file event(s) in {{ $$labels.namespace }}/{{ $$labels.workload }} (pod {{ $$labels.pod }}) during the last 5 minutes.'
+          value: '{{ printf "%.0f" $$value }}'
+        expr: 'sum by (namespace, workload, pod) (increase(tetragon_policy_events_total{policy="file-monitoring-filtered", namespace!="kube-system"}[5m])) > 0'
+        for: 2m
         labels:
           scope: cluster
           severity: P2-Major
           teams_version: v2
+          resolves: never
 
       - alert: TetragonMetricsUnavailable
         annotations:
           message: 'Tetragon metrics target has been unavailable for more than 5 minutes.'
-          value: '{{ $$value }}'
-        expr: 'up{job="tetragon"} == 0 or absent(up{job="tetragon"})'
+          value: '{{ printf "%.0f" $$value }}'
+        expr: 'count(up{job="tetragon"} == 0) > 0 or absent(up{job="tetragon"})'
         for: 5m
         labels:
           scope: cluster
           severity: P2-Major
           teams_version: v2
+          resolves: never
 
       - alert: TetragonEventsDropped
         annotations:
-          message: 'Tetragon reported dropped events or internal errors during the last 5 minutes.'
-          value: '{{ $$value }}'
+          message: 'Tetragon continuously reported dropped events or internal errors for more than 10 minutes.'
+          value: '{{ printf "%.0f" $$value }}'
         expr: |
           sum(increase(tetragon_errors_total[5m])) > 0
             or sum(increase(tetragon_bpf_missed_events_total[5m])) > 0
             or sum(increase(tetragon_observer_ringbuf_events_lost_total[5m])) > 0
             or sum(increase(tetragon_observer_ringbuf_queue_events_lost_total[5m])) > 0
+        for: 10m
         labels:
           scope: cluster
           severity: P2-Major
           teams_version: v2
+          resolves: never
