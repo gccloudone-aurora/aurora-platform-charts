@@ -208,6 +208,12 @@ components:
         scmProviders: []
 
       redis:
+        imageRegistry: {}
+          # host: ""
+          # repository: ""
+        image: {}
+          # name: ""
+          # version: ""
         resources: {}
           # limits:
           #   cpu: ""
@@ -317,6 +323,13 @@ components:
           #   memory: ""
 
       redis:
+        imageRegistry: {}
+          # host: ""
+          # repository: ""
+        image: {}
+          # name: ""
+          # version: ""
+        
         resources: {}
           # limits:
           #   cpu: ""
