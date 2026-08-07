@@ -87,7 +87,11 @@ spec:
                       kubernetes.io/metadata.name: kube-system
                   podSelector:
                     matchLabels:
+                      {{- if eq .Values.global.provider "gcp" }}
+                      k8s-app: konnectivity-agent
+                      {{- else }}
                       app: konnectivity-agent
+                      {{- end }}
               podSelector: {}
               policyTypes:
               - Ingress
