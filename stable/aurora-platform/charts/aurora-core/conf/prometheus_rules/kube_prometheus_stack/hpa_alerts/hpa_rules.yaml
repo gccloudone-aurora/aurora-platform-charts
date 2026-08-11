@@ -1,0 +1,19 @@
+groups:
+  - name: hpa.rules
+    rules:
+      - alert: HPAMaxedOut
+        annotations:
+	  summary: "Horizontal pod autoscaler reached max replica count."
+	  message: "Horizontal pod autoscaler in {{ $$labels.namespace }} specifically {{ $labels.horizontalpodautoscaler }} has hit the limit of {{ $value }} in replica for 15 or more minutes. "
+	  expr: |
+	    (
+	      kube_horizontalpodautoscaler_status_desired_replicas{job="kube-state-metrics"}
+	        >= kube_horizontalpodautoscaler_spec_max_replicas{job="kube-state-metrics"}
+	    )
+	    and on (namespace, horizontalpodautoscaler)
+	    kube_horizontalpodautoscaler_spec_max_replicas{job="kube-state-metrics"} > 0
+	  for: 15m
+	  labels:
+	    scope: namespace
+	    severity: P3-Minor
+	    teams_version: v2
