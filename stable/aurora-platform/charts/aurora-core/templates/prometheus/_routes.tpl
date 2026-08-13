@@ -247,6 +247,9 @@ inhibit_rules:
   - target_matchers: [alertname="ManyContainerRestarts"]
     source_matchers: [alertname="ContainerCrashLooping"]
     equal: ['cluster', 'namespace', 'pod', 'container']
+  - target_matchers: [alertname="GatekeeperMetricsUnavailable"]
+    source_matchers: [alertname=~"(ContainerCrashLooping|ContainerWaiting|ContainerImagePullProblem|ManyContainerRestarts|PodNotReady)", namespace="gatekeeper-system"]
+    equal: ['cluster']
 
 templates:
   - '/etc/alertmanager/config/*.tmpl'
