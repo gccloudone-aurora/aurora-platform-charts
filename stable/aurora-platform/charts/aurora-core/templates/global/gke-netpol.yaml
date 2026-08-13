@@ -91,13 +91,13 @@ spec:
               name: allow-egress-to-tetragon-host-network-from-prometheus
             spec:
               egress:
-              - toEntities:
-                - remote-node
-                - host
-              toPorts:
-                - ports:
-                    - port: "2112"
-                      protocol: TCP
+                - toEntities:
+                    - remote-node
+                    - host
+                  toPorts:
+                    - ports:
+                        - port: "2112"
+                          protocol: TCP
               endpointSelector:
                 matchExpressions:
                 - key: k8s:io.kubernetes.pod.namespace
