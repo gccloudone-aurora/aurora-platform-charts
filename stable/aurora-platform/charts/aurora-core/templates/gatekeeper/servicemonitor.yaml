@@ -1,0 +1,92 @@
+{{ if and .Values.components.gatekeeper.enabled .Values.components.gatekeeper.serviceMonitor.enabled -}}
+{{ if .Values.components.prometheus.enabled -}}
+
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-gatekeeper-servicemonitor"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    chart: {{ .Values.global.raw.helm.chart }}
+    repoURL: {{ default .Values.global.helm.repository .Values.global.raw.helm.repository }}
+    targetRevision: {{ .Values.global.raw.helm.targetRevision }}
+    helm:
+      releaseName: gatekeeper-servicemonitor
+      values: |
+        resources:
+          - apiVersion: v1
+            kind: Service
+            metadata:
+              name: gatekeeper-controller-manager-metrics
+              namespace: gatekeeper-system
+              labels:
+                app.kubernetes.io/name: gatekeeper
+                app.kubernetes.io/component: controller-manager
+                app.kubernetes.io/part-of: gatekeeper-system
+                app.kubernetes.io/managed-by: argo
+            spec:
+              clusterIP: None
+              selector:
+                control-plane: controller-manager
+                gatekeeper.sh/operation: webhook
+                gatekeeper.sh/system: "yes"
+              ports:
+                - name: metrics
+                  port: 8888
+                  targetPort: metrics
+                  protocol: TCP
+          # Audit Deployment can product gatekeeper_violations, therefore it needs to be scrapped separately
+          - apiVersion: v1
+            kind: Service
+            metadata:
+              name: gatekeeper-audit-metrics
+              namespace: gatekeeper-system
+              labels:
+                app.kubernetes.io/name: gatekeeper
+                app.kubernetes.io/component: audit
+                app.kubernetes.io/part-of: gatekeeper-system
+                app.kubernetes.io/managed-by: argo
+            spec:
+              clusterIP: None
+              selector:
+                control-plane: audit-controller
+                gatekeeper.sh/operation: audit
+                gatekeeper.sh/system: "yes"
+              ports:
+                - name: metrics
+                  port: 8888
+                  targetPort: metrics
+                  protocol: TCP
+          # Single Service Monitor covers the above services via shared label. Use component-label to differentiate.
+          - apiVersion: monitoring.coreos.com/v1
+            kind: ServiceMonitor
+            metadata:
+              name: gatekeeper
+              namespace: gatekeeper-system
+              labels:
+                app.kubernetes.io/name: gatekeeper
+                app.kubernetes.io/part-of: gatekeeper-system
+                app.kubernetes.io/managed-by: argo
+            spec:
+              jobLabel: app.kuberneties.io/name
+              targetLabels:
+                - app.kubernetes.io/component
+              selector:
+                matchLabels:
+                  app.kubernetes.io/name: gatekeeper
+              endpoints:
+                - port: metrics
+                  interval: 30s
+  destination:
+    name: {{ .Values.global.cluster }}
+    namespace: platform-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+
+{{- end }}
+{{- end }}

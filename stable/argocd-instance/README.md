@@ -1,6 +1,6 @@
 # argocd-instance
 
-![Version: 0.17.0](https://img.shields.io/badge/Version-0.17.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v3.1.9](https://img.shields.io/badge/AppVersion-v3.1.9-informational?style=flat-square)
+![Version: 0.19.0](https://img.shields.io/badge/Version-0.19.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v3.1.9](https://img.shields.io/badge/AppVersion-v3.1.9-informational?style=flat-square)
 
 A Helm chart that configures Argo CD.
 
@@ -25,8 +25,17 @@ A Helm chart that configures Argo CD.
 | argocdInstance.argocdVaultPlugin.image.version | string | `"main"` |  |
 | argocdInstance.argocdVaultPlugin.imageRegistry.host | string | `"ghcr.io"` |  |
 | argocdInstance.argocdVaultPlugin.imageRegistry.repository | string | `"gccloudone-aurora"` |  |
+| argocdInstance.certificate.clusterIssuer | string | `"letsencrypt"` |  |
+| argocdInstance.certificate.selfSigned | bool | `false` |  |
 | argocdInstance.controller.resources | object | `{}` |  |
+| argocdInstance.dex.google.clientID | string | `""` |  |
+| argocdInstance.dex.google.clientSecret | string | `""` |  |
 | argocdInstance.disableAdmin | bool | `false` |  |
+| argocdInstance.gateway.class | string | `""` |  |
+| argocdInstance.gateway.enabled | bool | `false` |  |
+| argocdInstance.gateway.iapClientID | string | `""` |  |
+| argocdInstance.gateway.iapClientSecret | string | `""` |  |
+| argocdInstance.gateway.ipName | string | `""` |  |
 | argocdInstance.globalProjects | list | `[]` |  |
 | argocdInstance.image.name | string | `"argoproj/argocd"` |  |
 | argocdInstance.image.version | string | `"v3.1.9"` |  |
@@ -34,6 +43,8 @@ A Helm chart that configures Argo CD.
 | argocdInstance.imageRegistry.repository | string | `""` |  |
 | argocdInstance.ingressDomain | string | `""` |  |
 | argocdInstance.logLevel | string | `"info"` |  |
+| argocdInstance.metrics.serviceMonitor.enabled | bool | `true` |  |
+| argocdInstance.metrics.serviceMonitor.interval | string | `"30s"` |  |
 | argocdInstance.nodeSelector | object | `{}` |  |
 | argocdInstance.notifications.enabled | bool | `false` |  |
 | argocdInstance.oidcAuthSP.clientID | string | `""` |  |
@@ -53,6 +64,7 @@ A Helm chart that configures Argo CD.
 | argocdInstance.sourceNamespaces | list | `[]` |  |
 | argocdInstance.tolerations | list | `[]` |  |
 | netpol.enabled | bool | `false` |  |
+| provider | string | `"azure"` |  |
 | register.clusters | object | `{}` |  |
 | register.repositories | object | `{}` |  |
 | register.repositoryCreds | object | `{}` |  |
