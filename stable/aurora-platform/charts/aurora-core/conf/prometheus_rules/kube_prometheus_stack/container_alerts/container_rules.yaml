@@ -67,7 +67,7 @@ groups:
           (
             increase(
               kube_pod_container_status_restarts_total{
-                job+"kube-state-metrics"
+                job="kube-state-metrics"
               }[15m]
             ) > 0
           )
