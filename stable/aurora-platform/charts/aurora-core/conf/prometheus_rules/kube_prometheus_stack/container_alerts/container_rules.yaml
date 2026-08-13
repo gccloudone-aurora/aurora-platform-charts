@@ -52,3 +52,27 @@ groups:
         labels:
           scope: namespace
           severity: P3-Minor
+      - alert: OOMKilled
+        annotations:
+          message: 'Container {{ $$labels.namespace }}/{{ $$labels.pod }}/{{ $$labels.container}} was OOMKilled and restarted in the last 15 mins.'
+          summary: "Container exceeded its memory limit, terminated"
+        expr: |
+          (
+            kube_pod_container_status_last_terminated_reason{
+              job="kube-state-metrics",
+              reason="OOMKilled"
+            } == 1
+          )
+          and on (cluster, namespace, pod, container)
+          (
+            increase(
+              kube_pod_container_status_restarts_total{
+                job+"kube-state-metrics"
+              }[15m]
+            ) > 0
+          )
+        labels:
+          scope: namespace
+          severity: P2-Major
+          teams_version: v2
+          resolves: never

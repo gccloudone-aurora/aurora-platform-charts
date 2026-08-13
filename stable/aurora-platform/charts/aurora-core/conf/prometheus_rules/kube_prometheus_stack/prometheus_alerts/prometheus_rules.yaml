@@ -12,7 +12,6 @@ groups:
         labels:
           scope: cluster
           severity: P2-Major
-
       - alert: PrometheusDiskMayFillIn60Hours
         annotations:
           message: 'Prometheus storage is predicted to have {{ printf "%.2f" $$value }}% capacity remaining 60 hours from now and will run out of space soon.'
@@ -22,4 +21,29 @@ groups:
         labels:
             scope: cluster
             severity: P1-Critical
+      - alert: AlertmanagerFailedNotification
+        annotations:
+          summary: 'Alertmanager is failing to send notification.'
+          message: 'Alertmanager {{ $$labels.namespace }}/{{ $$labels.pod }} failed to send {{ $value | humanizePercentage }} of notifications to the {{ $labels.integration }} integration'
+        expr: |
+          (
+            rate(
+              alertmanager_notifications_failed_total{
+                namespace="prometheus-system"
+              }[5m]
+            )
+            /
+            ignoring (reason) group_left
+            rate(
+              alertmanager_notifications_total{
+                namespace="prometheus-system"
+              }[5m]
+            )
+          ) > 0.01
+        for: 5m
+          labels:
+          scope: cluster
+          severity: P2-Critical
+	  teams_version: v2
+#
 # pint ignore/end

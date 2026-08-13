@@ -3,17 +3,17 @@ groups:
     rules:
       - alert: DeploymentReplicasMismatch
         annotations:
-	  summary: 'Deployment replicas mismatch detected.'
-	  message: 'Deployment {{ $$labels.namespace }}/{{ $$labels.deployment }} has less replicas than configured for more than 15 minutes.'
-        expr: |
-	  (
-	    kube_deployment_status_replicas_available{job="kube-state-metrics"}
-	      < kube_deployment_spec_replicas{job="kube-state-metrics"}
-	  )
-	  and on (namespace, deployment)
-	  kube_deployment_spec_replicas{job="kube-state-metrics"} > 0
-	for: 15m
-	labels:
-	  scope: namespace
-	  severity: P2-Major
-	  teams_version: v2
+        summary: 'Deployment replicas mismatch detected.'
+        message: 'Deployment {{ $$labels.namespace }}/{{ $$labels.deployment }} has less replicas than configured for more than 15 minutes.'
+      expr: |
+        (
+          kube_deployment_status_replicas_available{job="kube-state-metrics"}
+          < kube_deployment_spec_replicas{job="kube-state-metrics"}
+        )
+        and on (namespace, deployment)
+        kube_deployment_spec_replicas{job="kube-state-metrics"} > 0
+      for: 15m
+      labels:
+        scope: namespace
+        severity: P2-Major
+        teams_version: v2
