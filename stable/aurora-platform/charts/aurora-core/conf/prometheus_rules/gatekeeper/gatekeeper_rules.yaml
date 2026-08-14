@@ -20,7 +20,7 @@ groups:
         for: 15m
         labels:
           scope: cluster
-          severity: P3-Major
+          severity: P2-Major
           teams_version: v2
 
       - alert: GatekeeperMetricsUnavailable
