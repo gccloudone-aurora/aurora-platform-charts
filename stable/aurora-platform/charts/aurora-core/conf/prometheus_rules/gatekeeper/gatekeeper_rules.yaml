@@ -5,7 +5,7 @@ groups:
         annotations:
           message: 'Gatekeeper audit is reporting {{ printf "%.0f" $$value }} deny-level polciy violation(s) on the cluster. This metric is not broken down by constraint. Check Gatekeeper-audit logs to identify the offending resources.'
           value: '{{ printf "%.0f" $$value }}'
-        expr: 'sum(gatekeeper_violations{enforcement_action="deny"}) >0'
+        expr: 'sum(gatekeeper_violations{enforcement_action="deny"}) > 0'
         for: 5m
         labels:
           scope: cluster
