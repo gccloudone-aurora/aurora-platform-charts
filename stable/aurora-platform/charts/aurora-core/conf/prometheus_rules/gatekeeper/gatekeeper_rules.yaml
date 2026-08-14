@@ -14,7 +14,7 @@ groups:
 
       - alert: GatekeeperAuditStale
         annotations:
-          message: 'Gatekeeper has not completed an audit run in over 1 hour. Policy Violation Data is now stale, thus GatekeeperPolicyViolationsDetected is not reiable.'
+          message: 'Gatekeeper has not completed an audit run in over 1 hour. Policy Violation Data is now stale, thus GatekeeperPolicyViolationsDetected is not reliable.'
           value: '{{ printf "%.0f" $$value }}'
         expr: 'time() - gatekeeper_audit_last_run_end_time > 3600'
         for: 15m
