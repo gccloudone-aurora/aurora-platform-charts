@@ -8,6 +8,7 @@ groups:
         expr: 'sum(gatekeeper_violations{enforcement_action="deny"}) >0'
         for: 5m
         labels:
+          resolves: never
           scope: cluster
           severity: P2-Major
           teams_version: v2
@@ -19,6 +20,7 @@ groups:
         expr: 'time() - gatekeeper_audit_last_run_end_time > 3600'
         for: 15m
         labels:
+          resolves: never
           scope: cluster
           severity: P3-Major
           teams_version: v2
@@ -30,6 +32,7 @@ groups:
         expr: 'count(up{job="gatekeeper"} == 0) > 0 or absent(up{job="gatekeeper"})'
         for: 5m
         labels:
+          resolves: never
           scope: cluster
           severity: P2-Major
           teams_version: v2
