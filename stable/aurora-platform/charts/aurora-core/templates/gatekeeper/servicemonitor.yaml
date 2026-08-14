@@ -71,7 +71,7 @@ spec:
                 app.kubernetes.io/part-of: gatekeeper-system
                 app.kubernetes.io/managed-by: argo
             spec:
-              jobLabel: app.kuberneties.io/name
+              jobLabel: app.kubernetes.io/name
               targetLabels:
                 - app.kubernetes.io/component
               selector:
