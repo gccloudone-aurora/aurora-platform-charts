@@ -5,7 +5,7 @@ groups:
         annotations:
           message: 'Gatekeeper audit is reporting {{ printf "%.0f" $$value }} deny-level polciy violation(s) on the cluster. This metric is not broken down by constraint. Check Gatekeeper-audit logs to identify the offending resources.'
           value: '{{ printf "%.0f" $$value }}'
-        expr: 'sum(gatekeeper_violations{enforcement_action="deny"}) >0'
+        expr: 'sum(gatekeeper_violations{enforcement_action="deny"}) > 0'
         for: 5m
         labels:
           resolves: never
@@ -15,14 +15,14 @@ groups:
 
       - alert: GatekeeperAuditStale
         annotations:
-          message: 'Gatekeeper has not completed an audit run in over 1 hour. Policy Violation Data is now stale, thus GatekeeperPolicyViolationsDetected is not reiable.'
+          message: 'Gatekeeper has not completed an audit run in over 1 hour. Policy Violation Data is now stale, thus GatekeeperPolicyViolationsDetected is not reliable.'
           value: '{{ printf "%.0f" $$value }}'
         expr: 'time() - gatekeeper_audit_last_run_end_time > 3600'
         for: 15m
         labels:
           resolves: never
           scope: cluster
-          severity: P3-Major
+          severity: P2-Major
           teams_version: v2
 
       - alert: GatekeeperMetricsUnavailable
