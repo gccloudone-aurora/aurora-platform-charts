@@ -65,7 +65,7 @@ spec:
                       kubernetes.io/metadata.name: prometheus-system
                   podSelector:
                     matchLabels:
-                      app: prometheus
+                      app: app.kubernetes.io/name: prometheus
                 ports:
                   - protocol: TCP
                     port: 8888
