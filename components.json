@@ -2,7 +2,7 @@
   "platform": "Aurora Platform",
   "metadata": {
     "compliance_standard": "SA-12 Supply Chain Integrity",
-    "generated": "2026-08-17T15:58:55.009979Z",
+    "generated": "2026-08-17T16:03:05.603774Z",
     "exported_for": "CCCS Review",
     "all_opensource": true,
     "data_classification": "Secret",
@@ -278,17 +278,11 @@
     }
   ],
   "compliance_notes": {
-    "sa12_supply_chain_integrity": {
-      "requirement": "All platform tools must be protected against supply chain threats and sourced from trusted CNCF ecosystem.",
+    "cncf_sourcing": {
+      "requirement": "All platform tools must be sourced from trusted CNCF ecosystem.",
       "approach": "All components are CNCF Graduated, Incubating, or Sandbox projects with transparent governance, independent audits, and active security maintenance.",
       "additional_hardening": "Core application workloads utilize secure, minimal Chainguard base images to eliminate unnecessary packages, shells, and package managers, reducing vulnerability footprint."
-    },
-    "removed_components": [
-      {
-        "name": "Falco",
-        "reason": "Replaced by Tetragon for superior runtime security observability with tighter Cilium integration and lower performance overhead"
-      }
-    ]
+    }
   },
   "categories": {
     "Core": "Foundational platform components for networking, security, observability, and operations",

@@ -119,7 +119,6 @@ md_lines.extend([
     "",
     "## Compliance Notes",
     "",
-    "**SA-12 Supply Chain Integrity:**",
     "All components listed above are sourced from the Cloud Native Computing Foundation (CNCF) ecosystem:",
     "- **Graduated Projects:** Industry-standard, widely adopted, rigorous governance",
     "- **Incubating Projects:** Actively developed, under CNCF oversight, community-driven",
@@ -130,9 +129,6 @@ md_lines.extend([
     "- Transparent governance and release processes",
     "- Active security maintenance and patching",
     "- Public vulnerability disclosure policies",
-    "",
-    "**Falco Removal:**",
-    "Falco (runtime security monitoring) has been removed from the platform in favor of **Tetragon**, which provides superior runtime security observability with tighter Cilium integration and lower performance overhead.",
     "",
     "---",
     "",
@@ -180,17 +176,11 @@ json_data = {
         for comp in components_list
     ],
     "compliance_notes": {
-        "sa12_supply_chain_integrity": {
-            "requirement": "All platform tools must be protected against supply chain threats and sourced from trusted CNCF ecosystem.",
+        "cncf_sourcing": {
+            "requirement": "All platform tools must be sourced from trusted CNCF ecosystem.",
             "approach": "All components are CNCF Graduated, Incubating, or Sandbox projects with transparent governance, independent audits, and active security maintenance.",
             "additional_hardening": "Core application workloads utilize secure, minimal Chainguard base images to eliminate unnecessary packages, shells, and package managers, reducing vulnerability footprint."
-        },
-        "removed_components": [
-            {
-                "name": "Falco",
-                "reason": "Replaced by Tetragon for superior runtime security observability with tighter Cilium integration and lower performance overhead"
-            }
-        ]
+        }
     },
     "categories": {
         "Core": "Foundational platform components for networking, security, observability, and operations",

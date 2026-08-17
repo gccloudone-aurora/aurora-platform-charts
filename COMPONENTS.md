@@ -225,7 +225,6 @@ This document lists all components deployed in the Aurora Platform with their ve
 
 ## Compliance Notes
 
-**SA-12 Supply Chain Integrity:**
 All components listed above are sourced from the Cloud Native Computing Foundation (CNCF) ecosystem:
 - **Graduated Projects:** Industry-standard, widely adopted, rigorous governance
 - **Incubating Projects:** Actively developed, under CNCF oversight, community-driven
@@ -236,9 +235,6 @@ Each project undergoes:
 - Transparent governance and release processes
 - Active security maintenance and patching
 - Public vulnerability disclosure policies
-
-**Falco Removal:**
-Falco (runtime security monitoring) has been removed from the platform in favor of **Tetragon**, which provides superior runtime security observability with tighter Cilium integration and lower performance overhead.
 
 ---
 
