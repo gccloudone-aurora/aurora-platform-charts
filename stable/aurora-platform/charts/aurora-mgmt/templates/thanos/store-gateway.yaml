@@ -129,7 +129,7 @@ spec:
                         name: data
                       spec:
                         accessModes: ["ReadWriteOnce"]
-                        storageClassName: {{ default $.values.global.defaultStorageClass $t.storeGateway.persistence.storageClassName }}
+                        storageClassName: {{ default .Values.global.defaultStorageClass $t.storeGateway.persistence.storageClassName }}
                         resources:
                           requests:
                             storage: {{ $t.storeGateway.persistence.size }}
