@@ -2,7 +2,7 @@ name: Deploy Components to GitHub Pages
 
 on:
   push:
-    branches: [main]
+    branches: [missing-components, main]
   workflow_dispatch:
 
 permissions:
