@@ -26,11 +26,14 @@ spec:
                 metadata:
                   name: thanos-storegateway-{{ $b.name }}
                   namespace: thanos-system
-                  {{- if eq $t.objectStorage.auth "workloadIdentity" }}
+                  {{- if and (eq $t.objectStorage.auth "workloadIdentity") (eq $t.objectStorage.provider "azure") }}
                   annotations:
                     azure.workload.identity/client-id: {{ required "components.thanos.objectStorage.buckets[].clientId is required for workloadIdentity" $b.clientId | quote }}
-                  {{- else if ne $t.objectStorage.auth "workloadIdentity" }}
-                  {{- fail (printf "objectStorage.auth must be 'workloadIdentity' or 'accountKey', got %q" $t.objectStorage.auth) }}
+                  {{- else if and (eq $t.objectStorage.auth "workloadIdentity") (eq $t.objectStorage.provider "gcp") $b.serviceAccountEmail }}
+                  annotations:
+                    iam.gke.io/gcp-service-account: {{ $b.serviceAccountEmail | quote }}
+                  # {{- else if ne $t.objectStorage.auth "workloadIdentity" }}
+                  # {{- fail (printf "objectStorage.auth must be 'workloadIdentity' or 'accountKey', got %q" $t.objectStorage.auth) }}
                   {{- end }}
                   labels:
                     app.kubernetes.io/name: thanos-storegateway
@@ -63,7 +66,7 @@ spec:
                         app.kubernetes.io/component: store-gateway
                         app.kubernetes.io/part-of: thanos
                         thanos.io/bucket: {{ $b.name }}
-                        {{- if eq $t.objectStorage.auth "workloadIdentity" }}
+                        {{- if and (eq $t.objectStorage.auth "workloadIdentity") (eq $t.objectStorage.provider "azure") }}
                         azure.workload.identity/use: "true"
                         {{- end }}
                     spec:
@@ -126,7 +129,7 @@ spec:
                         name: data
                       spec:
                         accessModes: ["ReadWriteOnce"]
-                        storageClassName: {{ $t.storeGateway.persistence.storageClassName }}
+                        storageClassName: {{ default $.values.global.defaultStorageClass $t.storeGateway.persistence.storageClassName }}
                         resources:
                           requests:
                             storage: {{ $t.storeGateway.persistence.size }}

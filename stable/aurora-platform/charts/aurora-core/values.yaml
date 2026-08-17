@@ -29,7 +29,7 @@ global:
       targetRevision:
       repository:
 
-  # azure or aws
+  # azure or aws or gcp
   provider: azure
 
   # Cluster name for the Application targets.
@@ -1806,14 +1806,19 @@ components:
           logLevel: info
           blockSize: 2h
           objectStorage:
+              auth: workloadIdentity
+              # Azure Blob Storage
               provider: azure
               storageAccountName: ""
               containerName: thanos
               createContainer: false # let TF Infra layer deal with the creation
               endpoint: blob.core.windows.net
-              auth: workloadIdentity
               clientId: ""
               storageAccountKey: ""
+
+              # Google Cloud Storage
+              bucketName: ""
+              serviceAccountEmail: ""
           sidecar:
             ## side-car image inherited from prometheusOperator.thanosImage
             ## components.prometheus.operator.thanos.image
