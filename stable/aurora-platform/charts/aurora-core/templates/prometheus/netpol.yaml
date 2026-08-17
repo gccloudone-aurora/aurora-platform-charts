@@ -823,7 +823,7 @@ spec:
                               kubernetes.io/metadata.name: gatekeeper-system
                           podSelector:
                             matchLabels:
-                              gatekeeper.sh/system: "yes
+                              gatekeeper.sh/system: "yes"
                       ports:
                         - protocol: TCP
                           port: 8888
