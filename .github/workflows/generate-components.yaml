@@ -68,4 +68,3 @@ jobs:
           echo "Generated files:"
           echo "  - COMPONENTS.md (Markdown for documentation site)"
           echo "  - components.json (JSON export for CCCS review)"
-``
