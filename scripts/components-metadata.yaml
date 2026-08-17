@@ -1,0 +1,215 @@
+# Component metadata for documentation generation
+# Versions are read from values.yaml files via productVersion fields
+# Format: Maps component names to their metadata for documentation generation
+components:
+  # Core Platform Components
+  alloy:
+    chart: alloy
+    values_path: stable/aurora-platform/charts/aurora-core/values.yaml
+    values_key: .components.alloy.productVersion
+    category: Core
+    cncf_status: Incubating
+    documentation: https://grafana.com/docs/alloy/latest/
+    repository: https://github.com/grafana/alloy
+    cncf_landscape: N/A
+    purpose: Observability data collection and pipeline
+
+  cert-manager:
+    chart: cert-manager
+    values_path: stable/aurora-platform/charts/aurora-core/values.yaml
+    values_key: .components.certManager.productVersion
+    category: Core
+    cncf_status: Incubating
+    documentation: https://cert-manager.io/docs/
+    repository: https://github.com/cert-manager/cert-manager
+    cncf_landscape: https://landscape.cncf.io/?item=provisioning--security-compliance--cert-manager
+    purpose: Automated TLS certificate management
+
+  cilium:
+    chart: cilium
+    values_path: stable/aurora-platform/charts/aurora-core/values.yaml
+    values_key: .components.cilium.productVersion
+    category: Core
+    cncf_status: Graduated
+    documentation: https://docs.cilium.io/
+    repository: https://github.com/cilium/cilium
+    cncf_landscape: https://landscape.cncf.io/?item=runtime--cloud-native-network--cilium
+    purpose: Cloud-native networking and security
+
+  fluent-operator:
+    chart: fluent-operator
+    values_path: stable/aurora-platform/charts/aurora-core/values.yaml
+    values_key: .components.fluentOperator.productVersion
+    category: Core
+    cncf_status: Incubating
+    documentation: https://github.com/fluent/fluent-operator
+    repository: https://github.com/fluent/fluent-operator
+    cncf_landscape: https://landscape.cncf.io/?item=observability-and-analysis--observability--fluentd
+    purpose: Log collection and processing
+
+  gatekeeper:
+    chart: gatekeeper
+    values_path: stable/aurora-platform/charts/aurora-core/values.yaml
+    values_key: .components.gatekeeper.productVersion
+    category: Core
+    cncf_status: Incubating
+    documentation: https://open-policy-agent.github.io/gatekeeper/website/docs/
+    repository: https://github.com/open-policy-agent/gatekeeper
+    cncf_landscape: https://landscape.cncf.io/?item=cnai--governance-policy-security--opa-gatekeeper
+    purpose: Policy enforcement and governance
+
+  kube-bench:
+    chart: kube-bench
+    values_path: stable/aurora-platform/charts/aurora-core/values.yaml
+    values_key: .components.kubebench.productVersion
+    category: Core
+    cncf_status: Sandbox
+    documentation: https://github.com/aquasecurity/kube-bench
+    repository: https://github.com/aquasecurity/kube-bench
+    cncf_landscape: https://landscape.cncf.io/?item=provisioning--security-compliance--kube-bench
+    purpose: Kubernetes security benchmark auditing
+
+  prometheus-operator:
+    chart: prometheus-operator
+    values_path: stable/aurora-platform/charts/aurora-core/values.yaml
+    values_key: .components.prometheus.productVersion
+    category: Core
+    cncf_status: Graduated
+    documentation: https://prometheus-operator.dev/
+    repository: https://github.com/prometheus-operator/prometheus-operator
+    cncf_landscape: https://landscape.cncf.io/?item=observability-and-analysis--observability--prometheus
+    purpose: Metrics collection and monitoring
+
+  tetragon:
+    chart: tetragon
+    values_path: stable/aurora-platform/charts/aurora-core/values.yaml
+    values_key: .components.tetragon.productVersion
+    category: Core
+    cncf_status: Incubating
+    documentation: https://docs.cilium.io/en/stable/observability/tetragon/
+    repository: https://github.com/cilium/tetragon
+    cncf_landscape: https://landscape.cncf.io/?item=provisioning--security-compliance--tetragon
+    purpose: Runtime security observability
+
+  trivy-operator:
+    chart: trivy-operator
+    values_path: stable/aurora-platform/charts/aurora-core/values.yaml
+    values_key: .components.trivy.productVersion
+    category: Core
+    cncf_status: Sandbox
+    documentation: https://aquasecurity.github.io/trivy-operator/
+    repository: https://github.com/aquasecurity/trivy-operator
+    cncf_landscape: https://landscape.cncf.io/?item=provisioning--security-compliance--trivy
+    purpose: Container and Kubernetes vulnerability scanning
+
+  trust-manager:
+    chart: trust-manager
+    values_path: stable/aurora-platform/charts/aurora-core/values.yaml
+    values_key: .components.trustManager.productVersion
+    category: Core
+    cncf_status: Incubating
+    documentation: https://cert-manager.io/docs/projects/trust-manager/
+    repository: https://github.com/cert-manager/trust-manager
+    cncf_landscape: N/A
+    purpose: Certificate and trust infrastructure management
+
+  velero:
+    chart: velero
+    values_path: stable/aurora-platform/charts/aurora-core/values.yaml
+    values_key: .components.velero.productVersion
+    category: Core
+    cncf_status: Graduated
+    documentation: https://velero.io/docs/
+    repository: https://github.com/velero-io/velero
+    cncf_landscape: https://landscape.cncf.io/?item=runtime--cloud-native-storage--velero
+    purpose: Kubernetes backup and disaster recovery
+
+  # Application Components
+  argocd:
+    chart: argocd
+    values_path: stable/argocd-instance/values.yaml
+    values_key: .argocdInstance.productVersion
+    category: Application
+    cncf_status: Graduated
+    documentation: https://argo-cd.readthedocs.io/
+    repository: https://github.com/argoproj/argo-cd
+    cncf_landscape: https://landscape.cncf.io/?item=app-definition-and-development--continuous-integration-delivery--argo
+    purpose: Continuous deployment and GitOps
+
+  argo-workflows:
+    chart: argo-workflows
+    values_path: stable/aurora-platform/charts/aurora-app/values.yaml
+    values_key: .components.argoWorkflow.productVersion
+    category: Application
+    cncf_status: Incubating
+    documentation: https://argoproj.github.io/workflows/
+    repository: https://github.com/argoproj/argo-workflows
+    cncf_landscape: https://landscape.cncf.io/?item=app-definition-and-development--continuous-integration-delivery--argo
+    purpose: Kubernetes-native workflow automation
+
+  grafana-operator:
+    chart: grafana-operator
+    values_path: stable/aurora-platform/charts/aurora-core/values.yaml
+    values_key: .components.grafana.productVersion
+    category: Application
+    cncf_status: Sandbox
+    documentation: https://grafana.github.io/grafana-operator/docs/
+    repository: https://github.com/grafana/grafana-operator
+    cncf_landscape: https://landscape.cncf.io/?item=observability-and-analysis--observability--grafana
+    purpose: Kubernetes-native Grafana operator
+
+  istio:
+    chart: istio
+    values_path: stable/aurora-platform/charts/aurora-app/values.yaml
+    values_key: .components.istio.productVersion
+    category: Application
+    cncf_status: Graduated
+    documentation: https://istio.io/latest/docs/
+    repository: https://github.com/istio/istio
+    cncf_landscape: N/A
+    purpose: Service mesh and traffic management
+
+  kiali:
+    chart: kiali
+    values_path: stable/aurora-platform/charts/aurora-app/values.yaml
+    values_key: .components.kiali.productVersion
+    category: Application
+    cncf_status: Sandbox
+    documentation: https://github.com/kiali/kiali
+    repository: https://github.com/kiali/kiali
+    cncf_landscape: https://landscape.cncf.io/?item=observability-and-analysis--observability--kiali
+    purpose: Service mesh observability and visualization
+
+  strimzi-kafka-operator:
+    chart: strimzi-kafka-operator
+    values_path: stable/aurora-platform/charts/aurora-app/values.yaml
+    values_key: .components.strimzi.productVersion
+    category: Application
+    cncf_status: Sandbox
+    documentation: https://github.com/strimzi/strimzi-kafka-operator
+    repository: https://github.com/strimzi/strimzi-kafka-operator
+    cncf_landscape: https://landscape.cncf.io/?item=app-definition-and-development--streaming-messaging--strimzi
+    purpose: Kubernetes Kafka operator and cluster management
+
+  # Management Components
+  loki:
+    chart: loki
+    values_path: stable/aurora-platform/charts/aurora-mgmt/values.yaml
+    values_key: .components.loki.productVersion
+    category: Management
+    cncf_status: Graduated
+    documentation: https://grafana.com/docs/loki/
+    repository: https://github.com/grafana/loki
+    cncf_landscape: https://landscape.cncf.io/?item=observability-and-analysis--observability--grafana-loki
+    purpose: Log aggregation and querying
+
+  opencost:
+    chart: opencost
+    values_path: stable/aurora-platform/charts/aurora-mgmt/values.yaml
+    values_key: .components.opencost.productVersion
+    category: Management
+    cncf_status: Incubating
+    documentation: https://www.opencost.io/docs/
+    repository: https://github.com/opencost/opencost
+    cncf_landscape: https://landscape.cncf.io/?item=observability-and-analysis--continuous-optimization--opencost
+    purpose: Kubernetes cost visibility and optimization

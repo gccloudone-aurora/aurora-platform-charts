@@ -1,0 +1,71 @@
+name: Generate Component Documentation
+
+on:
+  # Run when component versions change
+  push:
+    branches: [main]
+    paths:
+      - 'stable/aurora-platform/charts/aurora-core/values.yaml'
+      - 'stable/aurora-platform/charts/aurora-app/values.yaml'
+      - 'stable/aurora-platform/charts/aurora-mgmt/values.yaml'
+      - 'scripts/generate-components.sh'
+  # Manual trigger
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+jobs:
+  generate-docs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Generate Component Documentation
+        run: bash scripts/generate-components.sh
+
+      - name: Check for changes
+        id: verify
+        run: |
+          if git diff --quiet COMPONENTS.md components.json; then
+            echo "changed=false" >> $GITHUB_OUTPUT
+          else
+            echo "changed=true" >> $GITHUB_OUTPUT
+            echo "## Component documentation updated" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            git diff --stat COMPONENTS.md components.json >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: Commit and push changes
+        if: steps.verify.outputs.changed == 'true'
+        run: |
+          git config --global user.name "component-doc-bot"
+          git config --global user.email "component-doc-bot@users.noreply.github.com"
+          git add COMPONENTS.md components.json
+          git commit -m "ci: Auto-update component documentation"
+          git push origin main
+
+      - name: Upload components.json to website
+        if: steps.verify.outputs.changed == 'true'
+        run: |
+          # This step would upload components.json to your website
+          # Example for S3:
+          # aws s3 cp components.json s3://your-website-bucket/components.json
+          # Example for GitHub Pages (if you have a docs folder):
+          echo "TODO: Configure website deployment (S3, GitHub Pages, etc.)"
+          echo "Component export ready at: $(pwd)/components.json"
+
+      - name: Summary
+        if: always()
+        run: |
+          echo "✓ Component documentation generation complete"
+          echo ""
+          echo "Generated files:"
+          echo "  - COMPONENTS.md (Markdown for documentation site)"
+          echo "  - components.json (JSON export for CCCS review)"
+``
