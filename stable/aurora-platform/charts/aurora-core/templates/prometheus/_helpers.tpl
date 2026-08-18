@@ -143,7 +143,7 @@ The image section for Thanos Object Storage.
 */}}
 {{- define "prometheus.thanos.objstoreConfig" -}}
 {{- $os := .Values.components.prometheus.prometheus.prometheusSpec.thanos.objectStorage -}}
-{{- $provider := .Values.global.provider $os.provider -}}
+{{- $provider := default .Values.global.provider $os.provider -}}
 {{- if eq $provider "azure" }}
 type: AZURE
 config:
@@ -159,7 +159,7 @@ config:
 {{- else if eq $provider "gcp" }}
 type: GCS
 config:
-  bucket: {{ required "prometheus.prometheusSpec.thanos.objectStorage.bucketName is required for GCP" $os.bucketName | $os.bucketName | quote }}
+  bucket: {{ required "prometheus.prometheusSpec.thanos.objectStorage.bucketName is required for GCP" $os.bucketName | quote }}
 {{- else }}
 {{- fail (printf "unsupported Thanos object storage provider %q" $provider) }}
 {{- end }}
