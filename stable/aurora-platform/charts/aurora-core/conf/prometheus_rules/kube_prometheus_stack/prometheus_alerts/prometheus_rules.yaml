@@ -26,17 +26,20 @@ groups:
           summary: 'Alertmanager is failing to send notification.'
           message: 'Alertmanager {{ $$labels.namespace }}/{{ $$labels.pod }} failed to send {{ $$value | humanizePercentage }} of notifications to the {{ $$labels.integration }} integration'
         expr: |
+          # Added exclusion for email and webhook due to them being to noisy, should be added back when alerts are fixed
           (
             rate(
               alertmanager_notifications_failed_total{
-                namespace="prometheus-system"
+                namespace="prometheus-system",
+                integration!~"email|webhook"
               }[5m]
             )
             /
             ignoring (reason) group_left
             rate(
               alertmanager_notifications_total{
-                namespace="prometheus-system"
+                namespace="prometheus-system",
+                integration!~"email|webhook"
               }[5m]
             )
           ) > 0.01
