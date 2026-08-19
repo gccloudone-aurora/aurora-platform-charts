@@ -691,7 +691,7 @@ components:
     helm:
       # chart: fluent-operator
       # repository: https://fluent.github.io/helm-charts
-      targetRevision: 2.5.0
+      targetRevision: 2.9.0
 
     containerRuntime: "containerd"
     imagePullSecrets: []
