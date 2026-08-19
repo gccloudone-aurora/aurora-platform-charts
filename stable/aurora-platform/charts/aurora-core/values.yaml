@@ -1808,7 +1808,7 @@ components:
           objectStorage:
               auth: workloadIdentity
               # Azure Blob Storage
-              provider: azure
+              provider: "" # Defaults to global provider if not specified. azure, gcp or aws
               storageAccountName: ""
               containerName: thanos
               createContainer: false # let TF Infra layer deal with the creation

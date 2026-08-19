@@ -1,5 +1,6 @@
 {{ if .Values.components.thanos.enabled -}}
 {{- $t := .Values.components.thanos -}}
+{{- $thanosProvider := default .Values.global.provider $t.objectStorage.provider -}}
 
 apiVersion: argoproj.io/v1alpha1
 kind: Application
@@ -26,10 +27,10 @@ spec:
                 metadata:
                   name: thanos-storegateway-{{ $b.name }}
                   namespace: thanos-system
-                  {{- if and (eq $t.objectStorage.auth "workloadIdentity") (eq $t.objectStorage.provider "azure") }}
+                  {{- if and (eq $t.objectStorage.auth "workloadIdentity") (eq $thanosProvider "azure") }}
                   annotations:
                     azure.workload.identity/client-id: {{ required "components.thanos.objectStorage.buckets[].clientId is required for workloadIdentity" $b.clientId | quote }}
-                  {{- else if and (eq $t.objectStorage.auth "workloadIdentity") (eq $t.objectStorage.provider "gcp") $b.serviceAccountEmail }}
+                  {{- else if and (eq $t.objectStorage.auth "workloadIdentity") (eq $thanosProvider "gcp") $b.serviceAccountEmail }}
                   annotations:
                     iam.gke.io/gcp-service-account: {{ $b.serviceAccountEmail | quote }}
                   # {{- else if ne $t.objectStorage.auth "workloadIdentity" }}
@@ -66,7 +67,7 @@ spec:
                         app.kubernetes.io/component: store-gateway
                         app.kubernetes.io/part-of: thanos
                         thanos.io/bucket: {{ $b.name }}
-                        {{- if and (eq $t.objectStorage.auth "workloadIdentity") (eq $t.objectStorage.provider "azure") }}
+                        {{- if and (eq $t.objectStorage.auth "workloadIdentity") (eq $thanosProvider "azure") }}
                         azure.workload.identity/use: "true"
                         {{- end }}
                     spec:
