@@ -480,7 +480,7 @@ components:
   # Takes 2 hour TDSB blocks from spokes and sends to object store
   # Allows for querable blocks as well (querier and the store gateway)
   # Compactor is data management
-  # Query mode is blob-only - no cross-cluster gRPC
+  # Query mode is object-store-only - no cross-cluster gRPC
   thanos:
     enabled: false
 
@@ -495,6 +495,7 @@ components:
     logLevel: info
 
     objectStorage:
+      provider: "" # defaults to global.provider if not set
       auth: workloadIdentity
       # List of buckets for querying. Intentionally single bucket but additonal buckets can be added
       # if a single shared bucket is not possible.
@@ -503,10 +504,16 @@ components:
       #   clientId - workload-identity UAMI federated to this bucket's store/compactor SAs
       buckets:
         - name: default
+          # Azure Blob Storage
           storageAccountName: ""
           containerName: thanos
           endpoint: blob.core.windows.net
           clientId: ""
+          # Google Cloud Storage
+          bucketName: ""
+          # Service account email for GCP Workload Identity KSA-GSA binding.
+          # Leave empty when granting IAM roles to KSA directly
+          serviceAccountEmail: ""
 
     priorityClassName: platform-cluster-medium
 
@@ -533,13 +540,14 @@ components:
                 matchLabels:
                   app.kubernetes.io/name: thanos-query
 
-    ### Store Gateway — serves historical blocks from Blob (one deployed per bucket) ###
+    ### Store Gateway — serves historical blocks from object storage (one deployed per bucket) ###
     storeGateway:
       # Replicas per bucket. Store Gateway is read-only, so >1 is safe (HA)
       replicas: 1
       persistence:
         size: 20Gi
-        storageClassName: default
+        # Defaults to global.defaultStorageClass if not set
+        storageClassName: ""
       resources: {}
       nodeSelector:
         kubernetes.io/os: linux
@@ -560,14 +568,15 @@ components:
     ### Compactor — compaction, downsampling, retention. Singleton per bucket (replicas fixed at 1) ###
     compactor:
       # retention per resolution (Prometheus/Thanos durations, e.g. 30d/90d/1y).
-      # until compactor runs, blob grows unbounded
+      # until compactor runs, the bucket grows unbounded
       retention:
         raw: 30d
         fiveMin: 90d
         oneHour: 1y
       persistence:
         size: 50Gi
-        storageClassName: default
+        # Defaults to global.defaultStorageClass if not set
+        storageClassName: ""
       resources: {}
       nodeSelector:
         kubernetes.io/os: linux
@@ -591,6 +600,7 @@ components:
     serviceMonitor:
       enabled: true
 
-    # prometheus alert rules for the azure blob storage that thanos ships to
+    # prometheus alert rules for the object storage that Thanos uses (e.g. Azure Blob Storage, GCP Cloud Storage)
     alerts:
       enabled: true
+      
