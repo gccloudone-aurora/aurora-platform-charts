@@ -1,0 +1,33 @@
+groups:
+  - name: resourcequota.rules
+    rules:
+      - alert: ResourceQuotaNearLimit
+        annotations:
+          summary: 'Resource quota is near limit for given namespace'
+          message: 'Namespace {{ $$labels.namespace }} has a high resource quota usage of {{ value | humanizePercentage }}'
+        expr: |
+          topk by (cluster, namespace, resource, resourcequota) (
+            1, 
+            max without (instance, job, type) (
+              kube_resourcequota{
+                job="kube-state-metrics",
+                type="used"
+              }
+            )
+          )
+          / on (cluster, namespace, resource, resourcequota) group_left()
+          topk by (cluster, namespace, resource, resourcequota) (
+            1, 
+            max without (instance, job, type) (
+              kube_resourcequota{
+                job="kube-state-metrics",
+                type="hard"
+              }
+            ) > 0
+          )
+          > 0.85 < 1
+        for: 15m
+        labels:
+          scope: namespace
+          severity: P3-Minor
+          teams_version: v2

@@ -574,6 +574,28 @@ spec:
               - apiVersion: networking.k8s.io/v1
                 kind: NetworkPolicy
                 metadata:
+                  name: allow-egress-to-istio-gateway-metrics-from-prometheus
+                  namespace: prometheus-system
+                spec:
+                  podSelector:
+                    matchLabels:
+                      app.kubernetes.io/name: prometheus
+                  policyTypes:
+                    - Egress
+                  egress:
+                    - to:
+                        - namespaceSelector:
+                            matchLabels:
+                              kubernetes.io/metadata.name: ingress-general-system
+                          podSelector:
+                            matchLabels:
+                              istio: general
+                      ports:
+                        - protocol: TCP
+                          port: 15090
+              - apiVersion: networking.k8s.io/v1
+                kind: NetworkPolicy
+                metadata:
                   name: allow-egress-to-argocd-metrics-from-prometheus
                   namespace: prometheus-system
                 spec:

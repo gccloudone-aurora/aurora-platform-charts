@@ -44,6 +44,8 @@ groups:
         labels:
           scope: cluster
           severity: P1-Critical
+          # only adding missing msg routing
+          teams_version: v2
 
       - alert: ThanosCompactionFailed
         annotations:

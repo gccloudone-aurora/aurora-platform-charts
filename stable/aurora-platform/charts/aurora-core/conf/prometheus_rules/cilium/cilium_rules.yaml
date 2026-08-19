@@ -1,0 +1,18 @@
+groups:
+  - name: cilium.rules
+    rules:
+      - alert: CiliumAgentDown
+        annotations:
+          summary: 'Cilium agent is down'
+          message: 'Cilium agent target is down for node {{ $$labels.node }}'
+        expr: | 
+          max by (node) (kube_node_info)
+          unless on (node)
+          max by (node) (
+            up{job=~".*cilium-agent.*"} == 1
+          )
+        for: 5m
+        labels:
+          scope: cluster
+          severity: P1-Critical
+          teams_version: v2
