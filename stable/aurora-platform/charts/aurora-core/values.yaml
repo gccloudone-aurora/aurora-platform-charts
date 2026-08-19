@@ -209,7 +209,7 @@ components:
     helm:
       # chart: aws-ebs-csi-driver
       # repository: https://kubernetes-sigs.github.io/aws-ebs-csi-driver
-      targetRevision: 2.47.0
+      targetRevision: 2.63.1
 
     image:
       # registry: public.ecr.aws
