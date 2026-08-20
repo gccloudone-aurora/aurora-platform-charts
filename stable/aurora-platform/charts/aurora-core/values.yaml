@@ -109,6 +109,7 @@ components:
   #############
   alloy:
     enabled: true
+    productVersion: "1.11.0"
 
     helm:
       # chart: alloy
@@ -326,6 +327,7 @@ components:
   ####################
   certManager:
     enabled: true
+    productVersion: v1.20.3
 
     helm:
       # chart: cert-manager
@@ -562,6 +564,7 @@ components:
   ##############
   cilium:
     enabled: true
+    productVersion: 1.19.2
 
     helm:
       # chart: cilium
@@ -687,6 +690,7 @@ components:
   #######################
   fluentOperator:
     enabled: true
+    productVersion: 2.5.0
 
     helm:
       # chart: fluent-operator
@@ -851,6 +855,7 @@ components:
   ##################
   gatekeeper:
     enabled: true
+    productVersion: 3.22.0
 
     helm:
       # chart: gatekeeper
@@ -1122,6 +1127,7 @@ components:
   #########################
   grafana:
     enabled: false
+    productVersion: v5.24.0
 
     dashboard: {}
       # repository: https://github.com/gccloudone-aurora/grafana-dashboards.git
@@ -1184,91 +1190,12 @@ components:
                 app.kubernetes.io/instance: grafana-operator
     allowedGroups: ""
 
-  #############
-  ### Falco ###
-  #############
-  falco:
-    enabled: true
-
-    helm:
-      # chart: falco
-      # repository: https://falcosecurity.github.io/charts
-      targetRevision: 6.2.5
-
-    resources: {}
-    #   requests:
-    #     cpu: 100m
-    #     memory: 512Mi
-    #   limits:
-    #     cpu: 1000m
-    #     memory: 1024Mi
-
-    tolerations:
-      - key: CriticalAddonsOnly
-        operator: Exists
-      - effect: NoSchedule
-        key: node-role.kubernetes.io/master
-      - effect: NoSchedule
-        key: node-role.kubernetes.io/control-plane
-    priorityClassName: system-cluster-critical
-
-    falcoctl:
-      artifact:
-        follow:
-          enabled: false
-        install:
-          enabled: true
-          mounts:
-            # volumeMounts specifically for the falcoctl containers
-            volumeMounts: []
-
-    images:
-      falco:
-        image:
-          # registry: docker.io
-          repository: falcosecurity/falco
-          tag: "0.41.3"
-          # pullPolicy: IfNotPresent
-
-      falcoDriverLoader:
-        image:
-          # registry: docker.io
-          repository: falcosecurity/falco-driver-loader
-          tag: "0.41.3"
-          # pullPolicy: IfNotPresent
-
-      falcoctl:
-        image:
-          # registry: docker.io
-          repository: falcosecurity/falcoctl
-          tag: "0.11.2"
-          # pullPolicy: IfNotPresent
-
-      falcoSideKick:
-        image:
-          # registry: docker.io
-          repository: falcosecurity/falcosidekick
-          tag: "2.31.1"
-          # pullPolicy: IfNotPresent
-
-      k8sMetacollector:
-        image:
-          # registry: docker.io
-          repository: falcosecurity/k8s-metacollector
-          tag: "0.1.1"
-          # pullPolicy: IfNotPresent
-
-    mounts:
-      # -- A list of volumes you want to add to the Falco pods.
-      volumes: []
-      # -- A list of volumes you want to add to the Falco pods.
-      volumeMounts: []
-
   #################
   ### KubeBench ###
   #################
   kubebench:
     enabled: true
+    productVersion: v0.15.5
     # cronjob:
       # schedule: "0 0 1 * *"
 
@@ -1649,6 +1576,7 @@ components:
   ##################
   prometheus:
     enabled: true
+    productVersion: v0.62.0
 
     helm:
       # chart: kube-prometheus-stack
@@ -2188,6 +2116,7 @@ components:
   #############
   trivy:
     enabled: true
+    productVersion: 0.29.0
     helm:
       # chart: trivy-operator
       # repository: https://aquasecurity.github.io/helm-charts
@@ -2352,6 +2281,7 @@ components:
   ################
   tetragon:
     enabled: false
+    productVersion: 1.6.0
 
     helm:
       # chart: tetragon
@@ -2421,6 +2351,7 @@ components:
   #####################
   trustManager:
     enabled: true
+    productVersion: v0.23.0
 
     helm:
       # chart: trust-manager
@@ -2547,6 +2478,7 @@ components:
   ##############
   velero:
     enabled: true
+    productVersion: 12.1.0
 
     helm:
       # chart: velero

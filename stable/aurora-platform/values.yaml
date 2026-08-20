@@ -92,7 +92,6 @@ core:
     # certManager: {}
     # cidrAllocator: {}
     # cilium: {}
-    # falco: {}
     # fluentOperator: {}
     # gatekeeper: {}
     # grafana: {}
