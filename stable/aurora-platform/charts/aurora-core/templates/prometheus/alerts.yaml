@@ -164,7 +164,7 @@ spec:
                   rules-definition: >-
                     https://github.com/gccloudone-aurora-platform-charts/-/blob/main/charts/aurora-platform/charts/aurora-core/conf/prometheus_rules/kube_prometheus_stack/resourcequota_alerts/resourcequota_rules.yaml
               spec: {{ (.Files.Get "conf/prometheus_rules/kube_prometheus_stack/resourcequota_alerts/resourcequota_rules.yaml")  | nindent 16 }}
- 
+
             - apiVersion: monitoring.coreos.com/v1
               kind: PrometheusRule
               metadata:
@@ -331,7 +331,7 @@ spec:
                   rules-definition: >-
                     https://github.com/gccloudone-aurora-platform-charts/-/blob/main/charts/aurora-platform/charts/aurora-core/conf/prometheus_rules/istio/istio_rules.yaml
               spec: {{ (.Files.Get "conf/prometheus_rules/istio/istio_rules.yaml")  | nindent 16 }}
- 
+
   destination:
     name: {{ .Values.global.cluster }}
     namespace: platform-system

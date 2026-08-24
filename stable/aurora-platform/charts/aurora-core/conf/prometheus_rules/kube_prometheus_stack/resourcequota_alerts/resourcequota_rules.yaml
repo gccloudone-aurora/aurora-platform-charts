@@ -7,7 +7,7 @@ groups:
           message: 'Namespace {{ $$labels.namespace }} has a high resource quota usage of {{ $$value | humanizePercentage }}'
         expr: |
           topk by (cluster, namespace, resource, resourcequota) (
-            1, 
+            1,
             max without (instance, job, type) (
               kube_resourcequota{
                 job="kube-state-metrics",
@@ -17,7 +17,7 @@ groups:
           )
           / on (cluster, namespace, resource, resourcequota) group_left()
           topk by (cluster, namespace, resource, resourcequota) (
-            1, 
+            1,
             max without (instance, job, type) (
               kube_resourcequota{
                 job="kube-state-metrics",

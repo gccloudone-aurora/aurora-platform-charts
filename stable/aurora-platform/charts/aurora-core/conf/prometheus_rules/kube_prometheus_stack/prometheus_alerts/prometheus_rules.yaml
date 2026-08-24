@@ -57,7 +57,7 @@ groups:
             prometheus_rule_evaluation_failures_total{
               namespace="prometheus-system"
               }[5m]
-          ) > 0 
+          ) > 0
         for: 15m
         labels:
           scope: cluster
