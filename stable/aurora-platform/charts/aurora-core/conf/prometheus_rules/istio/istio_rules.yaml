@@ -12,7 +12,7 @@ groups:
               rate(
                 istio_requests_total{
                   reporter="source",
-                  namespace+"ingress-general-system",
+                  namespace="ingress-general-system",
                   response_code=~"5.."
                 }[5m]
               )

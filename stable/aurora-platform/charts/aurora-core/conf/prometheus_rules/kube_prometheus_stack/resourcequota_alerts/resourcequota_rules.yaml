@@ -4,7 +4,7 @@ groups:
       - alert: ResourceQuotaNearLimit
         annotations:
           summary: 'Resource quota is near limit for given namespace'
-          message: 'Namespace {{ $$labels.namespace }} has a high resource quota usage of {{ value | humanizePercentage }}'
+          message: 'Namespace {{ $$labels.namespace }} has a high resource quota usage of {{ $$value | humanizePercentage }}'
         expr: |
           topk by (cluster, namespace, resource, resourcequota) (
             1, 
