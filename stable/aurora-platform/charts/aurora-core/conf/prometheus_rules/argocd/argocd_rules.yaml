@@ -22,7 +22,6 @@ groups:
       ) == 1
     for: 15m
     labels:
-      resolves: never
       severity: P2-Major
       scope: cluster
       teams_version: v2

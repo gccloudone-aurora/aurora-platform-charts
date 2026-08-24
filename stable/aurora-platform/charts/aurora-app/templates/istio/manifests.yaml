@@ -28,7 +28,7 @@ spec:
             kind: PodMonitor
             metadata:
               name: istio-ingress-gateway
-              namespace: istio-general-system
+              namespace: ingress-general-system
               labels:
                 app.kubernetes.io/name: istio-ingress-gateway
                 app.kubernetes.io/component: monitoring

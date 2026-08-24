@@ -106,7 +106,7 @@ spec:
             kind: NetworkPolicy
             metadata:
               name: allow-prometheus-to-istio-gateway-metrics
-              namespace: istio-general-system
+              namespace: ingress-general-system
             spec:
               ingress:
                 - from:
