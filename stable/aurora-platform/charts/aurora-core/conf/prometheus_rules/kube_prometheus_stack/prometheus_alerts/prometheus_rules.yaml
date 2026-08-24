@@ -48,7 +48,7 @@ groups:
           scope: cluster
           severity: P2-Major
           teams_version: v2
-      - alert: PrometheusRuleFailure
+      - alert: PrometheusRuleFailures
         annotations:
           summary: 'Prometheus is failing rule evaluation.'
           message: 'Prometheus {{ $$labels.namespace }}/{{ $$labels.pod }} failed to evaluate {{ printf "%.0f" $$value }} rules in the last 5 mins'
