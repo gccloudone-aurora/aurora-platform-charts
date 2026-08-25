@@ -26,6 +26,7 @@ spec:
           value: "argocd-instance"
         - name: HELM_VALUES
           value: |
+            provider: {{ toYaml .Values.global.provider | nindent 16 }}
             argocdInstance:
               ingressDomain: "{{ .Values.components.argoSolution.argocdInstance.ingressDomain }}"
 

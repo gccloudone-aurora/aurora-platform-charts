@@ -115,6 +115,9 @@ components:
         operator: Exists
     affinity: {}
 
+  #####################
+  ### Argo Solution ###
+  #####################
   argoSolution:
     enabled: true
 
