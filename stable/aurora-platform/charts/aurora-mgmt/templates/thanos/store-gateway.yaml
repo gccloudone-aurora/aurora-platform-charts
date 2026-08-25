@@ -1,5 +1,6 @@
 {{ if .Values.components.thanos.enabled -}}
 {{- $t := .Values.components.thanos -}}
+{{- $thanosProvider := default .Values.global.provider $t.objectStorage.provider -}}
 
 apiVersion: argoproj.io/v1alpha1
 kind: Application
@@ -26,11 +27,14 @@ spec:
                 metadata:
                   name: thanos-storegateway-{{ $b.name }}
                   namespace: thanos-system
-                  {{- if eq $t.objectStorage.auth "workloadIdentity" }}
+                  {{- if and (eq $t.objectStorage.auth "workloadIdentity") (eq $thanosProvider "azure") }}
                   annotations:
                     azure.workload.identity/client-id: {{ required "components.thanos.objectStorage.buckets[].clientId is required for workloadIdentity" $b.clientId | quote }}
-                  {{- else if ne $t.objectStorage.auth "workloadIdentity" }}
-                  {{- fail (printf "objectStorage.auth must be 'workloadIdentity' or 'accountKey', got %q" $t.objectStorage.auth) }}
+                  {{- else if and (eq $t.objectStorage.auth "workloadIdentity") (eq $thanosProvider "gcp") $b.serviceAccountEmail }}
+                  annotations:
+                    iam.gke.io/gcp-service-account: {{ $b.serviceAccountEmail | quote }}
+                  # {{- else if ne $t.objectStorage.auth "workloadIdentity" }}
+                  # {{- fail (printf "objectStorage.auth must be 'workloadIdentity' or 'accountKey', got %q" $t.objectStorage.auth) }}
                   {{- end }}
                   labels:
                     app.kubernetes.io/name: thanos-storegateway
@@ -63,7 +67,7 @@ spec:
                         app.kubernetes.io/component: store-gateway
                         app.kubernetes.io/part-of: thanos
                         thanos.io/bucket: {{ $b.name }}
-                        {{- if eq $t.objectStorage.auth "workloadIdentity" }}
+                        {{- if and (eq $t.objectStorage.auth "workloadIdentity") (eq $thanosProvider "azure") }}
                         azure.workload.identity/use: "true"
                         {{- end }}
                     spec:
@@ -126,7 +130,7 @@ spec:
                         name: data
                       spec:
                         accessModes: ["ReadWriteOnce"]
-                        storageClassName: {{ $t.storeGateway.persistence.storageClassName }}
+                        storageClassName: {{ default $.Values.global.defaultStorageClass $t.storeGateway.persistence.storageClassName }}
                         resources:
                           requests:
                             storage: {{ $t.storeGateway.persistence.size }}
