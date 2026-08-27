@@ -63,6 +63,7 @@ groups:
           scope: cluster
           severity: P2-Major
           teams_version: v2
+          resolves: never
       - alert: PrometheusTargetsDown
         annotations:
           summary: 'Prometheus scrape targets down'
