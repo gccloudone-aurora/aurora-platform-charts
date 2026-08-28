@@ -85,6 +85,26 @@ spec:
                     - ports:
                         - port: "443"
                           protocol: TCP
+          # Network policy for prometheus to scrap Cilium agent metrics on gke nodes
+          - apiVersion: cilium.io/v2
+            kind: CiliumClusterwideNetworkPolicy
+            metadata:
+              name: allow-prometheus-to-cilium-agent-metrics
+            spec:
+              endpointSelector:
+                matchExpressions:
+                  - key: k8s:io.kubernetes.pod.namespace
+                    operator: In
+                    values:
+                      - prometheus-system
+              egress:
+                - toEntities:
+                    - host
+                    - remote-node
+                  toPorts:
+                    - ports:
+                        - port: "9962"
+                          protocol: TCP
   destination:
     name: {{ .Values.global.cluster }}
     namespace: platform-system
