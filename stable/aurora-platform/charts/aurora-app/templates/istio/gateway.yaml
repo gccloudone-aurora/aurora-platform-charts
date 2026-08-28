@@ -31,7 +31,15 @@ spec:
               nodeSelector: {{ toYaml .Values.components.istio.gateway.nodeSelector | nindent 16 }}
               tolerations: {{ toYaml .Values.components.istio.gateway.tolerations | nindent 16 }}
               affinity: {{ toYaml .Values.components.istio.gateway.affinity | nindent 16 }}
-
+              
+              {{- if and .Values.global.container .Values.global.container.registry }}
+              # WORKAROUND: The chart hardcodes 'image: auto' which ignores helm global.hub / image tags.
+              # Passing the registry path via env forces the chart engine to overwrite the repository 
+              # to JFrog while letting the control plane automatically append the correct version tag.
+              env:
+                gcr.io/istio-release/gateway: "{{ .Values.global.container.registry }}/ssc-aurora-docker/istio/proxyv2"
+              {{- end }}
+              
               autoscaling:
                 enabled: true
                 minReplicas: 3
