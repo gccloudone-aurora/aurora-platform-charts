@@ -37,7 +37,7 @@ spec:
               # Passing the registry path via env forces the chart engine to overwrite the repository 
               # to JFrog while letting the control plane automatically append the correct version tag.
               env:
-                gcr.io/istio-release/gateway: "{{ .Values.global.container.registry }}/ssc-aurora-docker/istio/proxyv2"
+                gcr.io/istio-release/gateway: "{{ .Values.global.container.registry }}/istio/proxyv2"
               {{- end }}
               
               autoscaling:
