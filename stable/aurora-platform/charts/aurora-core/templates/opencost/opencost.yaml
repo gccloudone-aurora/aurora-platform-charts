@@ -1,0 +1,73 @@
+{{ if .Values.components.opencost.enabled -}}
+
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-opencost"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    chart: {{ default "opencost" .Values.components.opencost.helm.chart }}
+    {{- if .Values.components.opencost.helm.repository }}
+    repoURL: {{ .Values.components.opencost.helm.repository }}
+    {{- else }}
+    repoURL: {{ default "https://opencost.github.io/opencost-helm-chart" .Values.global.helm.repository }}
+    {{- end }}
+    targetRevision: {{ .Values.components.opencost.helm.targetRevision }}
+    plugin:
+      env:
+        - name: HELM_RELEASE_NAME
+          value: "opencost"
+        - name: HELM_VALUES
+          value: |
+            clusterName: {{ .Values.global.cluster | quote }}
+
+            imagePullSecrets: {{ toYaml .Values.components.opencost.imagePullSecrets | nindent 14 }}
+
+            priorityClassName: {{ .Values.components.opencost.priorityClassName | quote }}
+
+            opencost:
+              exporter:
+                defaultClusterId: {{ .Values.global.cluster | quote }}
+                image: {{ include "opencost.exporter.image" . | nindent 18 }}
+                resources: {{ toYaml .Values.components.opencost.exporter.resources | nindent 18 }}
+                replicas: {{ .Values.components.opencost.exporter.replicas }}
+
+              ui:
+                enabled: {{ hasKey .Values.components.opencost.ui "enabled" | ternary .Values.components.opencost.ui.enabled true }}
+                image: {{ include "opencost.ui.image" . | nindent 18 }}
+                resources: {{ toYaml .Values.components.opencost.ui.resources | nindent 18 }}
+
+              mcp:
+                enabled: {{ hasKey .Values.components.opencost.mcp "enabled" | ternary .Values.components.opencost.mcp.enabled false }}
+
+              prometheus:
+                internal:
+                  enabled: {{ hasKey .Values.components.opencost.prometheus.internal "enabled" | ternary .Values.components.opencost.prometheus.internal.enabled true }}
+                  serviceName: {{ .Values.components.opencost.prometheus.internal.serviceName | quote }}
+                  namespaceName: {{ .Values.components.opencost.prometheus.internal.namespaceName | quote }}
+                  port: {{ .Values.components.opencost.prometheus.internal.port }}
+                  scheme: {{ .Values.components.opencost.prometheus.internal.scheme | quote }}
+
+              metrics:
+                serviceMonitor:
+                  enabled: {{ .Values.components.opencost.metrics.serviceMonitor.enabled }}
+                  additionalLabels: {{ toYaml .Values.components.opencost.metrics.serviceMonitor.additionalLabels | nindent 20 }}
+
+              nodeSelector: {{ toYaml .Values.components.opencost.nodeSelector | nindent 16 }}
+              tolerations: {{ toYaml .Values.components.opencost.tolerations | nindent 16 }}
+              affinity: {{ toYaml .Values.components.opencost.affinity | nindent 16 }}
+
+              cloudCost:
+                enabled: {{ hasKey .Values.components.opencost.cloudCost "enabled" | ternary .Values.components.opencost.cloudCost.enabled false }}
+  destination:
+    name: {{ .Values.global.cluster }}
+    namespace: opencost-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+
+{{- end }}
