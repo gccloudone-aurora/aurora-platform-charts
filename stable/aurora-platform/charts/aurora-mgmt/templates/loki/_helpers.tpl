@@ -27,3 +27,11 @@ accountKey: {{ required "loki.logStorageLocation.storageAccountKey is required" 
 requestTimeout: 0
 {{- end }}
 {{- end }}
+
+
+{{/*
+The image section for cache
+*/}}
+{{- define "loki.cache.registry" -}}
+registry: {{ .Values.global.container.registry | default "docker.io" | quote }}
+{{- end -}}
