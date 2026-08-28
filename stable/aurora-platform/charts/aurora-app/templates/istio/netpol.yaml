@@ -105,6 +105,28 @@ spec:
           - apiVersion: networking.k8s.io/v1
             kind: NetworkPolicy
             metadata:
+              name: allow-prometheus-to-istio-gateway-metrics
+              namespace: ingress-general-system
+            spec:
+              ingress:
+                - from:
+                  - namespaceSelector:
+                      matchLabels:
+                        kubernetes.io/metadata.name: prometheus-system
+                    podSelector:
+                      matchLabels:
+                        app.kubernetes.io/name: prometheus
+                  ports:
+                    - protocol: TCP
+                      port: 15090
+              podSelector:
+                matchLabels:
+                  istio: general
+              policyTypes:
+              - Ingress
+          - apiVersion: networking.k8s.io/v1
+            kind: NetworkPolicy
+            metadata:
               name: allow-ingress-from-apiserver-to-general
               namespace: istio-system
             spec:

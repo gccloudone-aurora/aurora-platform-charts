@@ -138,6 +138,11 @@ spec:
                       type: RuntimeDefault
                   image: {{ default "{}" (include "cilium.hubble.ui.frontend.image" .) | nindent 20 }}
 
+            prometheus: # Add cilium agent metrics for alerting purposes
+              enabled: {{ .Values.components.cilium.prometheus.enabled }}
+              serviceMonitor:
+                enabled: {{ .Values.components.cilium.prometheus.serviceMonitor.enabled }}
+
             operator:
               enabled: true
               image: {{ default "{}" (include "cilium.operator.image" .) | nindent 16 }}

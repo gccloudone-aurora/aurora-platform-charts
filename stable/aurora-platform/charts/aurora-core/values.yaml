@@ -563,6 +563,10 @@ components:
   cilium:
     enabled: true
 
+    prometheus:
+      enabled: true
+      serviceMonitor:
+        enabled: true
     helm:
       # chart: cilium
       # repository: https://helm.cilium.io

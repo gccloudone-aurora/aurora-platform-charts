@@ -48,5 +48,38 @@ groups:
           scope: cluster
           severity: P2-Major
           teams_version: v2
+      - alert: PrometheusRuleFailures
+        annotations:
+          summary: 'Prometheus is failing rule evaluation.'
+          message: 'Prometheus {{ $$labels.namespace }}/{{ $$labels.pod }} failed to evaluate {{ printf "%.0f" $$value }} rules in the last 5 mins'
+        expr: |
+          increase(
+            prometheus_rule_evaluation_failures_total{
+              namespace="prometheus-system"
+              }[5m]
+          ) > 0
+        for: 15m
+        labels:
+          scope: cluster
+          severity: P2-Major
+          teams_version: v2
+          resolves: never
+      - alert: PrometheusTargetsDown
+        annotations:
+          summary: 'Prometheus scrape targets down'
+          message: '{{ printf "%.1f" $$value }}% of targets for job {{ $$labels.job }} down in the last 15 mins'
+        expr: |
+          100 *
+          (
+            count by (job, namespace, service) (up == 0)
+            /
+            count by (job, namespace, service) (up)
+          ) > 10
+        for: 15m
+        labels:
+          scope: cluster
+          severity: P2-Major
+          teams_version: v2
+#
 #
 # pint ignore/end

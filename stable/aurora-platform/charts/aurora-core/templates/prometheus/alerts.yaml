@@ -147,7 +147,24 @@ spec:
                   rules-definition: >-
                     https://github.com/gccloudone-aurora-platform-charts/-/blob/main/charts/aurora-platform/charts/aurora-core/conf/prometheus_rules/kube_prometheus_stack/hpa_alerts/hpa_rules.yaml
               spec: {{ (.Files.Get "conf/prometheus_rules/kube_prometheus_stack/hpa_alerts/hpa_rules.yaml")  | nindent 16 }}
- 
+
+            - apiVersion: monitoring.coreos.com/v1
+              kind: PrometheusRule
+              metadata:
+                name: kube-prometheus-stack-resourcequota-alerts
+                namespace: prometheus-system
+                labels:
+                  app.kubernetes.io/name: "prometheus-alerts"
+                  app.kubernetes.io/instance: "{{ .Values.global.cluster }}"
+                  app.kubernetes.io/component: monitoring
+                  app.kubernetes.io/part-of: prometheus-system
+                  app.kubernetes.io/managed-by: argo
+                  helm.sh/chart: {{ printf "%s-%s" .Chart.Name .Chart.Version }}
+                annotations:
+                  rules-definition: >-
+                    https://github.com/gccloudone-aurora-platform-charts/-/blob/main/charts/aurora-platform/charts/aurora-core/conf/prometheus_rules/kube_prometheus_stack/resourcequota_alerts/resourcequota_rules.yaml
+              spec: {{ (.Files.Get "conf/prometheus_rules/kube_prometheus_stack/resourcequota_alerts/resourcequota_rules.yaml")  | nindent 16 }}
+
             - apiVersion: monitoring.coreos.com/v1
               kind: PrometheusRule
               metadata:
@@ -282,6 +299,41 @@ spec:
                   rules-definition: >-
                     https://github.com/gccloudone-aurora-platform-charts/-/blob/main/charts/aurora-platform/charts/aurora-core/conf/prometheus_rules/trivy/trivy_rules.yaml
               spec: {{ (.Files.Get "conf/prometheus_rules/trivy/trivy_rules.yaml")  | nindent 16 }}
+            {{- if and .Values.components.cilium.enabled .Values.components.cilium.prometheus.enabled .Values.components.cilium.prometheus.serviceMonitor.enabled }}
+            - apiVersion: monitoring.coreos.com/v1
+              kind: PrometheusRule
+              metadata:
+                name: cilium-alerts
+                namespace: prometheus-system
+                labels:
+                  app.kubernetes.io/name: "prometheus-alerts"
+                  app.kubernetes.io/instance: "{{ .Values.global.cluster }}"
+                  app.kubernetes.io/component: monitoring
+                  app.kubernetes.io/part-of: prometheus-system
+                  app.kubernetes.io/managed-by: argo
+                  helm.sh/chart: {{ printf "%s-%s" .Chart.Name .Chart.Version }}
+                annotations:
+                  rules-definition: >-
+                    https://github.com/gccloudone-aurora-platform-charts/-/blob/main/charts/aurora-platform/charts/aurora-core/conf/prometheus_rules/cilium/cilium_rules.yaml
+              spec: {{ (.Files.Get "conf/prometheus_rules/cilium/cilium_rules.yaml")  | nindent 16 }}
+            {{- end }}
+            - apiVersion: monitoring.coreos.com/v1
+              kind: PrometheusRule
+              metadata:
+                name: istio-alerts
+                namespace: prometheus-system
+                labels:
+                  app.kubernetes.io/name: "prometheus-alerts"
+                  app.kubernetes.io/instance: "{{ .Values.global.cluster }}"
+                  app.kubernetes.io/component: monitoring
+                  app.kubernetes.io/part-of: prometheus-system
+                  app.kubernetes.io/managed-by: argo
+                  helm.sh/chart: {{ printf "%s-%s" .Chart.Name .Chart.Version }}
+                annotations:
+                  rules-definition: >-
+                    https://github.com/gccloudone-aurora-platform-charts/-/blob/main/charts/aurora-platform/charts/aurora-core/conf/prometheus_rules/istio/istio_rules.yaml
+              spec: {{ (.Files.Get "conf/prometheus_rules/istio/istio_rules.yaml")  | nindent 16 }}
+
   destination:
     name: {{ .Values.global.cluster }}
     namespace: platform-system

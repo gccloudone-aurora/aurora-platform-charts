@@ -24,6 +24,23 @@ spec:
             spec:
               mtls:
                 mode: STRICT
+          - apiVersion: monitoring.coreos.com/v1
+            kind: PodMonitor
+            metadata:
+              name: istio-ingress-gateway
+              namespace: ingress-general-system
+              labels:
+                app.kubernetes.io/name: istio-ingress-gateway
+                app.kubernetes.io/component: monitoring
+            spec:
+              selector:
+                matchLabels:
+                  istio: general
+              podMetricsEndpoints:
+                - port: http-envoy-prom
+                  path: /stats/prometheus
+                  interval: 30s
+                  scrapeTimeout: 10s
   destination:
     name: {{ .Values.global.cluster }}
     namespace: platform-system
