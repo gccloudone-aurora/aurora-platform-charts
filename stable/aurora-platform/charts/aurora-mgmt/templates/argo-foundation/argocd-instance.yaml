@@ -26,6 +26,16 @@ spec:
           value: |
             provider: {{ toYaml .Values.global.provider | nindent 16 }}
             argocdInstance:
+
+              {{- if and .Values.global.container .Values.global.container.registry }}
+              # NOTE: Swaps out public endpoints to use our central private JFrog virtual registry path context.
+              imageRegistry:
+                host: {{ .Values.global.container.registry | quote }}
+              argocdVaultPlugin:
+                imageRegistry:
+                  host: {{ .Values.global.container.registry | quote }}
+              {{- end }}
+              
               gateway: {{ toYaml .Values.components.argoFoundation.argocdInstance.gateway | nindent 16 }}
               nodeSelector: {{ toYaml .Values.components.argoFoundation.argocdInstance.nodeSelector | nindent 16 }}
               tolerations: {{ toYaml .Values.components.argoFoundation.argocdInstance.tolerations | nindent 16 }}
@@ -72,6 +82,11 @@ spec:
                 resources: {{ toYaml .Values.components.argoFoundation.argocdInstance.applicationSet.resources | nindent 18 }}
 
               redis:
+                {{- if and .Values.global.container .Values.global.container.registry }}
+                # NOTE: Embedded inside the existing redis key block to fix the operator sub-chart layout scope.
+                imageRegistry:
+                  host: {{ .Values.global.container.registry | quote }}
+                {{- end }}
                 resources: {{ toYaml .Values.components.argoFoundation.argocdInstance.redis.resources | nindent 18 }}
 
               notifications:
