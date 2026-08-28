@@ -30,14 +30,17 @@ groups:
                 )
               ) > 0.05
               # Only alert when the request frequency is greater than 1/sec
-              and on (destination_service_namespace, destination_service_name) (
-                rate(
-                  istio_requests_total{
-                    reporter="source",
-                    namespace="ingress-general-system"
-                  }[5m]
-                )
-              ) > 1
+              and on (destination_service_namespace, destination_service_name)
+              (
+                sum by (destination_service_namespace, destination_service_name) (
+                  rate(
+                    istio_requests_total{
+                      reporter="source",
+                      namespace="ingress-general-system"
+                    }[5m]
+                  )
+                ) > 1
+              )
             ),
             "namespace",
             "$1",
