@@ -36,7 +36,8 @@ spec:
               tolerations: {{ toYaml .Values.components.tetragon.operator.tolerations | nindent 16 }}
 
             export:
-              image: {{ default "{}" (include "tetragon.export.image" .) | nindent 16 }}
+              stdout:
+                image: {{ default "{}" (include "tetragon.export.image" .) | nindent 16 }}
   destination:
     name: {{ .Values.global.cluster }}
     namespace: tetragon-system
