@@ -37,7 +37,7 @@ spec:
 
             export:
               stdout:
-                image: {{ default "{}" (include "tetragon.export.image" .) | nindent 16 }}
+                image: {{ default "{}" (include "tetragon.export.image" .) | nindent 18 }}
   destination:
     name: {{ .Values.global.cluster }}
     namespace: tetragon-system
