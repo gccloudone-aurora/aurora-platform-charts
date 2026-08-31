@@ -31,9 +31,6 @@ spec:
               argocdVaultPlugin:
                 imageRegistry:
                   host: {{ .Values.global.container.registry | quote }}
-              repo:
-                imageRegistry:
-                  host: {{ .Values.global.container.registry | quote }}
               {{- end }}
 
               ingressDomain: "{{ .Values.components.argoSolution.argocdInstance.ingressDomain }}"
