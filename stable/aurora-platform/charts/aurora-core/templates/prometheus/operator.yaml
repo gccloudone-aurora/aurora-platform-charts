@@ -162,12 +162,8 @@ spec:
                 ## See https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentation/api.md#namespaceselector for usage
                 ##
                 probeNamespaceSelector:
-                  matchExpressions:
-                    - key: namespace.ssc-spc.gc.ca/purpose
-                      operator: In
-                      values:
-                        - system
-                        - solution
+                  matchLabels:
+                    namespace.ssc-spc.gc.ca/purpose: system
 
                 ## Namespaces to be selected for PrometheusRules discovery.
                 ## If nil, select own namespace. Namespaces to be selected for ServiceMonitor discovery.
