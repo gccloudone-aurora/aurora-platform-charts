@@ -197,8 +197,9 @@ spec:
   ignoreDifferences:
     # Ignoring the CA cert secret due to how Cilium determines when to render the secret.
     # Currently it attempts to look up the secret deployed when rendering to determine if 
-    # it needs to be recreated. But as Cilium can't see ArgoCD (hence why these ignore items
-    # are in place), it's treated as missing and needs to be recreated.
+    # it needs to be recreated. But as Cilium can't use helm lookup on the cluster 
+    # (hence why these ignore items are in place), it's treated as missing and needs to 
+    # be recreated. This only fixes recreation issues so the CA isn't recreated on each change.
     - group: ""
       kind: Secret
       name: cilium-ca
