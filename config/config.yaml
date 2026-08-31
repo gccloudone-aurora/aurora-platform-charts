@@ -218,6 +218,11 @@ core:
 
       secretDockerConfigJson: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-image-pull-secret>'
 
+      prometheus:
+        enabled: true
+        serviceMonitor:
+          enabled: true
+
       enableIPv4Masquerade: true
 
       bgpControlPlane:
