@@ -16,7 +16,7 @@ Aurora Platform - Application Components
 | components.argoController.controllers.syncAppProjects.enabled | bool | `false` |  |
 | components.argoController.controllers.workflows.emabled | bool | `false` |  |
 | components.argoController.enabled | bool | `true` |  |
-| components.argoController.helm | object | `{}` |  |
+| components.argoController.helm.targetRevision | string | `"0.0.3"` |  |
 | components.argoController.image.repository | string | `"gccloudone-aurora/argo-controller"` |  |
 | components.argoController.imagePullSecrets | list | `[]` |  |
 | components.argoController.nodeSelector."kubernetes.io/os" | string | `"linux"` |  |
@@ -39,7 +39,7 @@ Aurora Platform - Application Components
 | components.argoWorkflow.workflow.controller.tolerations[0].operator | string | `"Exists"` |  |
 | components.argoWorkflow.workflow.executor.image.repository | string | `"argoproj/argoexec"` |  |
 | components.argoWorkflow.workflow.executor.resources | object | `{}` |  |
-| components.argoWorkflow.workflow.helm | object | `{}` |  |
+| components.argoWorkflow.workflow.helm.targetRevision | string | `"0.42.1"` |  |
 | components.argoWorkflow.workflow.images.pullPolicy | string | `"IfNotPresent"` |  |
 | components.argoWorkflow.workflow.images.pullSecrets | list | `[]` |  |
 | components.argoWorkflow.workflow.priorityClassName | string | `"platform-cluster-critical"` |  |
@@ -57,7 +57,7 @@ Aurora Platform - Application Components
 | components.elastic.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].podAffinityTerm.topologyKey | string | `"kubernetes.io/hostname"` |  |
 | components.elastic.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].weight | int | `1` |  |
 | components.elastic.enabled | bool | `false` |  |
-| components.elastic.helm | object | `{}` |  |
+| components.elastic.helm.targetRevision | string | `"2.16.1"` |  |
 | components.elastic.image.repository | string | `"eck/eck-operator"` |  |
 | components.elastic.imagePullSecrets | list | `[]` |  |
 | components.elastic.nodeSelector."kubernetes.io/os" | string | `"linux"` |  |
@@ -70,8 +70,8 @@ Aurora Platform - Application Components
 | components.elastic.resources.requests.memory | string | `"150Mi"` |  |
 | components.elastic.tolerations[0].key | string | `"CriticalAddonsOnly"` |  |
 | components.elastic.tolerations[0].operator | string | `"Exists"` |  |
-| components.istio.base.helm | object | `{}` |  |
-| components.istio.cni.helm | object | `{}` |  |
+| components.istio.base.helm.targetRevision | string | `"1.29.1"` |  |
+| components.istio.cni.helm.targetRevision | string | `"1.29.1"` |  |
 | components.istio.cni.image.repository | string | `"istio"` |  |
 | components.istio.cni.nodeSelector."kubernetes.io/os" | string | `"linux"` |  |
 | components.istio.cni.priorityClassName | string | `"platform-cluster-critical"` |  |
@@ -88,7 +88,7 @@ Aurora Platform - Application Components
 | components.istio.gateway.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].podAffinityTerm.labelSelector.matchLabels.istio | string | `"general"` |  |
 | components.istio.gateway.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].podAffinityTerm.topologyKey | string | `"kubernetes.io/hostname"` |  |
 | components.istio.gateway.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].weight | int | `1` |  |
-| components.istio.gateway.helm | object | `{}` |  |
+| components.istio.gateway.helm.targetRevision | string | `"0.0.9"` |  |
 | components.istio.gateway.nodeSelector."kubernetes.io/os" | string | `"linux"` |  |
 | components.istio.gateway.nodeSelector."node.ssc-spc.gc.ca/purpose" | string | `"gateway"` |  |
 | components.istio.gateway.replicas | int | `3` |  |
@@ -101,7 +101,7 @@ Aurora Platform - Application Components
 | components.istio.ingressIstioController.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].podAffinityTerm.labelSelector.matchLabels."app.kubernetes.io/instance" | string | `"ingress-istio-controller"` |  |
 | components.istio.ingressIstioController.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].podAffinityTerm.topologyKey | string | `"kubernetes.io/hostname"` |  |
 | components.istio.ingressIstioController.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].weight | int | `1` |  |
-| components.istio.ingressIstioController.helm | object | `{}` |  |
+| components.istio.ingressIstioController.helm.targetRevision | string | `"0.0.2"` |  |
 | components.istio.ingressIstioController.image.repository | string | `"gccloudone-aurora/ingress-istio-controller"` |  |
 | components.istio.ingressIstioController.nodeSelector."kubernetes.io/os" | string | `"linux"` |  |
 | components.istio.ingressIstioController.nodeSelector."node.ssc-spc.gc.ca/purpose" | string | `"system"` |  |
@@ -110,8 +110,8 @@ Aurora Platform - Application Components
 | components.istio.ingressIstioController.resources | object | `{}` |  |
 | components.istio.ingressIstioController.tolerations[0].key | string | `"CriticalAddonsOnly"` |  |
 | components.istio.ingressIstioController.tolerations[0].operator | string | `"Exists"` |  |
-| components.istio.istioCustomResponses.helm | object | `{}` |  |
-| components.istio.istiod.helm | object | `{}` |  |
+| components.istio.istioCustomResponses.helm.targetRevision | string | `"0.0.1"` |  |
+| components.istio.istiod.helm.targetRevision | string | `"1.29.1"` |  |
 | components.istio.istiod.image.repository | string | `"istio"` |  |
 | components.istio.istiod.oauth2.enabled | bool | `false` |  |
 | components.istio.istiod.pilot.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].podAffinityTerm.labelSelector.matchLabels.istio | string | `"pilot"` |  |
@@ -130,7 +130,7 @@ Aurora Platform - Application Components
 | components.istio.istiod.resources | object | `{}` |  |
 | components.istio.networkPolicy.ingressGeneral.extraIngressPorts | list | `[]` |  |
 | components.istio.ztunnel.enabled | bool | `true` |  |
-| components.istio.ztunnel.helm | object | `{}` |  |
+| components.istio.ztunnel.helm.targetRevision | string | `"1.29.1"` |  |
 | components.istio.ztunnel.image.repository | string | `"istio"` |  |
 | components.istio.ztunnel.nodeSelector."kubernetes.io/os" | string | `"linux"` |  |
 | components.istio.ztunnel.priorityClassName | string | `"platform-cluster-critical"` |  |
@@ -144,7 +144,7 @@ Aurora Platform - Application Components
 | components.kiali.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].podAffinityTerm.topologyKey | string | `"kubernetes.io/hostname"` |  |
 | components.kiali.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].weight | int | `1` |  |
 | components.kiali.enabled | bool | `true` |  |
-| components.kiali.helm | object | `{}` |  |
+| components.kiali.helm.targetRevision | string | `"1.62.0"` |  |
 | components.kiali.image.repository | string | `"kiali/kiali-operator"` |  |
 | components.kiali.imagePullSecrets | list | `[]` |  |
 | components.kiali.instances[0].grafana | object | `{}` |  |
@@ -160,7 +160,7 @@ Aurora Platform - Application Components
 | components.sidecarTerminator.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].podAffinityTerm.topologyKey | string | `"kubernetes.io/hostname"` |  |
 | components.sidecarTerminator.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].weight | int | `1` |  |
 | components.sidecarTerminator.enabled | bool | `true` |  |
-| components.sidecarTerminator.helm | object | `{}` |  |
+| components.sidecarTerminator.helm.targetRevision | string | `"0.0.2"` |  |
 | components.sidecarTerminator.image.repository | string | `"gccloudone-aurora/sidecar-terminator"` |  |
 | components.sidecarTerminator.imagePullSecrets | list | `[]` |  |
 | components.sidecarTerminator.nodeSelector."kubernetes.io/os" | string | `"linux"` |  |
@@ -182,7 +182,7 @@ Aurora Platform - Application Components
 | components.solr.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].podAffinityTerm.topologyKey | string | `"kubernetes.io/hostname"` |  |
 | components.solr.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].weight | int | `1` |  |
 | components.solr.enabled | bool | `false` |  |
-| components.solr.helm | object | `{}` |  |
+| components.solr.helm.targetRevision | string | `"0.5.1"` |  |
 | components.solr.image.repository | string | `"apache/solr-operator"` |  |
 | components.solr.imagePullSecrets | list | `[]` |  |
 | components.solr.nodeSelector."kubernetes.io/os" | string | `"linux"` |  |
@@ -208,7 +208,7 @@ Aurora Platform - Application Components
 | components.strimzi.defaultImageRegistry | string | `"quay.io"` |  |
 | components.strimzi.defaultImageRepository | string | `"strimzi"` |  |
 | components.strimzi.enabled | bool | `false` |  |
-| components.strimzi.helm | object | `{}` |  |
+| components.strimzi.helm.targetRevision | string | `"1.0.0"` |  |
 | components.strimzi.image.name | string | `"operator"` |  |
 | components.strimzi.image.repository | string | `"strimzi"` |  |
 | components.strimzi.imagePullSecrets | list | `[]` |  |

@@ -565,6 +565,10 @@ components:
   cilium:
     enabled: true
 
+    prometheus:
+      enabled: true
+      serviceMonitor:
+        enabled: true
     helm:
       # chart: cilium
       # repository: https://helm.cilium.io
@@ -1110,6 +1114,14 @@ components:
         - topology.istio.io/network
         - sidecar.istio.io/inject
         - topology.istio.io/subzone
+
+    # Scrape controller-manager and audit metrics endpoints. Upstream chart does not have a metrics service, so this is required to create the service itself.
+    serviceMonitor:
+      enabled: true
+
+    # Prometheus Alert Rules for policy violations and audit health, also required serviceMonitor.enabled to be true.
+    alerts:
+      enabled: true
 
   #########################
   ### Grafana Operator ###

@@ -30,3 +30,11 @@ chunks: {{ required "loki.logStorageLocation.chunkBucket is required" .Values.co
 ruler: {{ required "loki.logStorageLocation.rulerBucket is required" .Values.components.loki.logStorageLocation.rulerBucket | quote }}
 {{- end }}
 {{- end }}
+
+
+{{/*
+The image section for cache
+*/}}
+{{- define "loki.cache.registry" -}}
+registry: {{ .Values.global.container.registry | default "docker.io" | quote }}
+{{- end -}}
