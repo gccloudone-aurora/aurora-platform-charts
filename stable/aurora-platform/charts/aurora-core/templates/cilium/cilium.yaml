@@ -195,6 +195,10 @@ spec:
       - RespectIgnoreDifferences=true
   # Fixed ignoreDifferences structure based on ArgoCD UI diff
   ignoreDifferences:
+    # Ignoring the CA cert secret due to how Cilium determines when to render the secret.
+    # Currently it attempts to look up the secret deployed when rendering to determine if 
+    # it needs to be recreated. But as Cilium can't see ArgoCD (hence why these ignore items
+    # are in place), it's treated as missing and needs to be recreated.
     - group: ""
       kind: Secret
       name: cilium-ca
