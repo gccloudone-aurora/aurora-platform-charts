@@ -1,4 +1,5 @@
 {{ if .Values.components.cilium.enabled -}}
+{{- $ciliumServiceMonitorEnabled := and .Values.components.prometheus.enabled .Values.components.cilium.prometheus.enabled .Values.components.cilium.prometheus.serviceMonitor.enabled -}}
 
 apiVersion: argoproj.io/v1alpha1
 kind: Application
@@ -138,11 +139,11 @@ spec:
                       type: RuntimeDefault
                   image: {{ default "{}" (include "cilium.hubble.ui.frontend.image" .) | nindent 20 }}
 
-            # TODO: For some reason having serviceMonitor enabled breaks Cilium
-            # prometheus:
-            #   enabled: {{ .Values.components.cilium.prometheus.enabled }}
-            #   serviceMonitor:
-            #     enabled: {{ .Values.components.cilium.prometheus.serviceMonitor.enabled }}
+            prometheus:
+              enabled: {{ .Values.components.cilium.prometheus.enabled }}
+              serviceMonitor:
+                enabled: {{ $ciliumServiceMonitorEnabled }}
+                trustCRDsExist: {{ $ciliumServiceMonitorEnabled }}
 
             operator:
               enabled: true
