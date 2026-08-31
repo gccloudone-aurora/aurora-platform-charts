@@ -138,11 +138,11 @@ spec:
                       type: RuntimeDefault
                   image: {{ default "{}" (include "cilium.hubble.ui.frontend.image" .) | nindent 20 }}
 
-            # TODO: For some reason having serviceMonitor enabled breaks Cilium
-            # prometheus:
-            #   enabled: {{ .Values.components.cilium.prometheus.enabled }}
-            #   serviceMonitor:
-            #     enabled: {{ .Values.components.cilium.prometheus.serviceMonitor.enabled }}
+            prometheus:
+              enabled: {{ .Values.components.cilium.prometheus.enabled }}
+              serviceMonitor:
+                enabled: {{ .Values.components.cilium.prometheus.serviceMonitor.enabled }}
+                trustCRDsExist: {{ .Values.components.cilium.prometheus.serviceMonitor.enabled }}
 
             operator:
               enabled: true
