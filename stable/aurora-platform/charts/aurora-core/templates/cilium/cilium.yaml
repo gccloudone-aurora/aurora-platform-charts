@@ -1,4 +1,5 @@
 {{ if .Values.components.cilium.enabled -}}
+{{- $ciliumServiceMonitorEnabled := and .Values.components.prometheus.enabled .Values.components.cilium.prometheus.enabled .Values.components.cilium.prometheus.serviceMonitor.enabled -}}
 
 apiVersion: argoproj.io/v1alpha1
 kind: Application
@@ -141,8 +142,8 @@ spec:
             prometheus:
               enabled: {{ .Values.components.cilium.prometheus.enabled }}
               serviceMonitor:
-                enabled: {{ .Values.components.cilium.prometheus.serviceMonitor.enabled }}
-                trustCRDsExist: {{ .Values.components.cilium.prometheus.serviceMonitor.enabled }}
+                enabled: {{ $ciliumServiceMonitorEnabled }}
+                trustCRDsExist: {{ $ciliumServiceMonitorEnabled }}
 
             operator:
               enabled: true
