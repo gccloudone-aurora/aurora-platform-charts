@@ -25,7 +25,14 @@ spec:
             image:
               {{- include "alloy.image" . | nindent 14 }}
               pullSecrets: {{ toYaml .Values.components.alloy.imagePullSecrets | nindent 16 }}
-            
+
+            # DYNAMIC FIX: Points the automatic config reloader to virtual JFrog registry
+            {{- if and .Values.global.container .Values.global.container.registry }}
+            configReloader:
+              image:
+                registry: {{ .Values.global.container.registry | quote }}
+            {{- end }}
+
             serviceAccount:
               create: true
             # the following is the requirements for loki.source.kubernetes_events
