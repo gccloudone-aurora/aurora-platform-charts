@@ -34,6 +34,9 @@ spec:
               argocdVaultPlugin:
                 imageRegistry:
                   host: {{ .Values.global.container.registry | quote }}
+              repo:
+                imageRegistry:
+                  host: {{ .Values.global.container.registry | quote }}
               {{- end }}
               
               gateway: {{ toYaml .Values.components.argoFoundation.argocdInstance.gateway | nindent 16 }}
