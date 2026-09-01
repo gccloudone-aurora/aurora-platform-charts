@@ -49,15 +49,6 @@ Shared child routes under each parent alert scope (node-clock, cluster, namespac
 
 Produces a list shaped like:
 
-  # email (continue: true so channel routes still run)
-  - matchers: [<smtp sendAddress matchers>]
-    receiver: <name>
-    continue: true
-    routes:
-      - matchers: ["resolves = never"]
-        receiver: <name>_no_resolve
-        continue: true
-
   # then one block per configured MS Teams severity × environment matcher.
   # Alerts opt in to MS Teams delivery with the teams_version="v2" label.
   - matchers: ["severity = <P1-Critical|...>"]
