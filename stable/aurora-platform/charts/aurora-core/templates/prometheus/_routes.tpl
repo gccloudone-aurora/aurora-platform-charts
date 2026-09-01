@@ -51,7 +51,7 @@ Define order in this file:
 {{- $severity := index . 0 -}}
 {{- $matcher := index . 1 -}}
 {{- $environment := index . 2 -}}
-- matchers: [{{ $matcher }}]
+- matchers: [{{ $matcher }}, "teams_version = v2"]
   receiver: aurora_{{ $environment }}_{{ $severity }}
   routes:
     - matchers: ["alertname =~ Trivy.*Vulnerabilities.*"]
@@ -87,10 +87,11 @@ Produces a list shaped like:
         receiver: <name>_no_resolve
         continue: true
 
-  # then one block per configured MS Teams severity × environment matcher
+  # then one block per configured MS Teams severity × environment matcher.
+  # Alerts opt in to MS Teams delivery with the teams_version="v2" label.
   - matchers: ["severity = <P1-Critical|...>"]
     routes:
-      - matchers: [<environment matcher>]
+      - matchers: [<environment matcher>, "teams_version = v2"]
         receiver: aurora_<env>_<severity>
         routes:
           - matchers: ["alertname =~ Trivy.*Vulnerabilities.*"]
