@@ -52,3 +52,28 @@ groups:
           scope: namespace
           severity: P1-Critical
           teams_version: v2
+      - alert: IstioIngressGateway5xxErrors
+        annotations:
+          summary: 'Istio ingress gateway is returning a significant amount of 5XX responses.'
+          message: 'Service {{ $$labels.destination_service_namespace }}/{{ $$labels.destination_service_name }} returned {{ $$value }} HTTP 5xx responses in the last 5 minutes via the Istio Ingress.'
+        expr: |
+          label_replace(
+            sum by (destination_service_namespace, destination_service_name) (
+              increase(
+                istio_requests_total{
+                  reporter="source",
+                  namespace="ingress-general-system",
+                  response_code=~"5.."
+                }[5m]
+              )
+            ) > 10,
+            "namespace",
+            "$1",
+            "destination_service_namespace",
+            "(.+)"
+          )
+        for: 2m
+        labels:
+          scope: namespace
+          severity: P2-Major
+          teams_version: v2
