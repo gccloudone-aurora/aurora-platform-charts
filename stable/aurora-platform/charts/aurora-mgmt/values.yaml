@@ -416,6 +416,7 @@ components:
   ############
   loki:
     enabled: false
+    productVersion: 6.55.0
 
     helm:
       # chart: loki
@@ -575,3 +576,15 @@ components:
     # prometheus alert rules for the azure blob storage that thanos ships to
     alerts:
       enabled: true
+
+  ##############
+  ### Opencost ###
+  ##############
+  opencost:
+    enabled: false
+    productVersion: UNKNOWN
+
+    helm:
+      # chart: opencost
+      # repository: https://opencost.github.io/opencost-helm-chart
+      targetRevision: 2.1.3

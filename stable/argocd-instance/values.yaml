@@ -1,6 +1,8 @@
 provider: azure # or gcp or aws
 argocdInstance:
 
+  productVersion: v3.1.9
+
   applicationInstanceLabelKey: "platform.ssc-spc.gc.ca/application-name"
 
   disableAdmin: false

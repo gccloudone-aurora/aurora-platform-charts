@@ -237,29 +237,6 @@ core:
             peerAddress: <FILL_IN_PEER_ADDRESS>/32
             name: peer-<FILL_IN_PEER_ADDRESS>
 
-    #############
-    ### Falco ###
-    #############
-    falco:
-      enabled: true
-
-      falcoctl:
-        artifact:
-          install:
-            enabled: true
-            # mounts:
-            #   volumeMounts:
-            #   - name: ca-certificates
-            #     readOnly: true
-            #     mountPath: "/etc/ssl/certs/ca-certificates.pem"
-            #     subPath: "ca-certificates.crt"
-
-      # mounts:
-      #   volumes:
-      #   - name: ca-certificates
-      #     configMap:
-      #       name: trust-manager-propagated-custom-ca
-
     #######################
     ### Fluent Operator ###
     #######################
