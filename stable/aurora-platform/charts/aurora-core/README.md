@@ -671,12 +671,6 @@ Aurora Platform - Core Platform
 | components.prometheus.alertmanager.config.severities.critical | string | `"P1-Critical"` |  |
 | components.prometheus.alertmanager.config.severities.major | string | `"P2-Major"` |  |
 | components.prometheus.alertmanager.config.severities.minor | string | `"P3-Minor"` |  |
-| components.prometheus.alertmanager.config.smtp.auth_password | string | `"none"` |  |
-| components.prometheus.alertmanager.config.smtp.auth_username | string | `"none"` |  |
-| components.prometheus.alertmanager.config.smtp.from | string | `"alertmanager@example.com"` |  |
-| components.prometheus.alertmanager.config.smtp.sendAddresses.email.matchers | string | `"severity =~ P2-Major|P1-Critical"` |  |
-| components.prometheus.alertmanager.config.smtp.sendAddresses.email.to | string | `nil` |  |
-| components.prometheus.alertmanager.config.smtp.smarthost | string | `"localhost:25"` |  |
 | components.prometheus.alertmanager.enabled | bool | `false` |  |
 | components.prometheus.blackboxExporter.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].podAffinityTerm.labelSelector.matchLabels."app.kubernetes.io/name" | string | `"prometheus-blackbox-exporter"` |  |
 | components.prometheus.blackboxExporter.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].podAffinityTerm.topologyKey | string | `"kubernetes.io/hostname"` |  |
