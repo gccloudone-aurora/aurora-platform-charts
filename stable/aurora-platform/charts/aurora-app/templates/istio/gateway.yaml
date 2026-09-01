@@ -34,10 +34,10 @@ spec:
               
               {{- if and .Values.global.container .Values.global.container.registry }}
               # WORKAROUND: The chart hardcodes 'image: auto' which ignores helm global.hub / image tags.
-              # Passing the registry path via env forces the chart engine to overwrite the repository 
+              # Passing the registry path via annotation forces the chart engine to overwrite the repository 
               # to JFrog while letting the control plane automatically append the correct version tag.
-              env:
-                gcr.io/istio-release/gateway: "{{ .Values.global.container.registry }}/istio/proxyv2"
+              annotations:
+                sidecar.istio.io/proxyImage: "{{ .Values.global.container.registry }}/istio/proxyv2"
               {{- end }}
               
               autoscaling:
