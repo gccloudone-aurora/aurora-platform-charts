@@ -59,15 +59,6 @@ spec:
       prune: true
       selfHeal: true
 
-{{- range $sKey, $sVal := .Values.components.prometheus.alertmanager.config.severities }}
-{{- range $environment, $matchers := $.Values.components.prometheus.alertmanager.config.environments }}
-{{- $envSeverityPair := printf "%s%s" $environment (camelcase $sKey) }}
-{{- if not (hasKey $.Values.components.prometheus.msteams.connectors $envSeverityPair) }}
-{{- fail (printf "A valid .Values.components.prometheus.msteams.connectors.%s entry required!" $envSeverityPair) }}
-{{- end }}
-{{- end }}
-{{- end }}
-
 {{- end }}
 
 {{- end }}
