@@ -11,9 +11,16 @@ Define order in this file:
 {{- define "alertmanager.channel.receivers" -}}
 {{- $webhooks := .Values.components.prometheus.msteams.webhooks | default dict }}
 {{- range $severity, $sVal := .Values.components.prometheus.alertmanager.config.severities }}
-{{- range $environment, $matchers := $.Values.components.prometheus.alertmanager.config.environments }}
+{{- range $environment, $envRoute := $.Values.components.prometheus.alertmanager.config.environments }}
 {{- $envSeverityPair := printf "%s%s" $environment (camelcase $severity) }}
 {{- with $webhookURL := get $webhooks $envSeverityPair }}
+{{- /*
+    Receivers are reachable if alertmanager.notification.routes emits a route for it. Therefore, it requires a non-empty watcher list for the env.
+    Without this block, the scenario where a webhook with an empty matcher will render a receiver that nothing can route to it. Notifications will silently go no where.
+*/}}
+{{- if not $envRoute.matchers }}
+{{- fail (printf "components.prometheus.msteams.webhooks.%s is set, but components.prometheus.alertmanager.config.environments.%s.matchers is empty. No route will reach receiver aurora_%s_%s. These notifications would otherwise be silently dropped. One valid matcher is required" $envSeverityPair $environment $environment $severity) }}
+{{- end }}
 - name: aurora_{{ $environment }}_{{ $severity }}
   msteamsv2_configs:
     - webhook_url: {{ $webhookURL | quote }}
