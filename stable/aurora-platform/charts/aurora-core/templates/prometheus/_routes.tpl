@@ -83,6 +83,8 @@ Produces a list shaped like:
   {{- end }}
   {{- end }}
   {{- end }}
+  {{- end }}
+{{- end }}
 {{- end }}
 {{- end }}
 {{- end }}
