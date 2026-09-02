@@ -284,26 +284,3 @@ imagePullSecrets:
   {{- toYaml .Values.components.prometheus.blackboxExporter.imagePullSecrets | nindent 2 }}
 {{- end }}
 {{- end }}
-
-
-{{/*
-The image section for Prometheus MSTeams.
-*/}}
-{{- define "prometheus.msteams.image" -}}
-{{- if .Values.components.prometheus.msteams.image.registry }}
-registry: {{ .Values.components.prometheus.msteams.image.registry | quote }}
-{{- else if and .Values.global.container .Values.global.container.registry }}
-registry: {{ .Values.global.container.registry | quote }}
-{{- else }}
-registry: "docker.io"
-{{- end }}
-{{- if .Values.components.prometheus.msteams.image.repository }}
-repository: {{ .Values.components.prometheus.msteams.image.repository | quote }}
-{{- end }}
-{{- if .Values.components.prometheus.msteams.image.tag }}
-tag: {{ .Values.components.prometheus.msteams.image.tag | quote }}
-{{- end }}
-{{- if .Values.components.prometheus.msteams.image.pullPolicy }}
-pullPolicy: {{ .Values.components.prometheus.msteams.image.pullPolicy | quote }}
-{{- end }}
-{{- end }}

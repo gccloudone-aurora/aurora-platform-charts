@@ -2076,55 +2076,6 @@ components:
     additionalTargets: {}
 
     msteams:
-      helm:
-        # chart: prometheus-msteams
-        # repository: https://prometheus-msteams.github.io/prometheus-msteams
-        targetRevision: 1.3.0
-      image:
-        # registry: quay.io/
-        repository: prometheusmsteams/prometheus-msteams
-        tag: "master"
-        # pullPolicy: IfNotPresent
-      imagePullSecrets: []
-
-      replicas: 1
-
-      resources: {}
-        # limits:
-        #   cpu: ""
-        #   memory: ""
-        # requests:
-        #   cpu: ""
-        #   memory: ""
-
-      nodeSelector:
-        kubernetes.io/os: linux
-        node.ssc-spc.gc.ca/purpose: system
-      tolerations:
-        - key: CriticalAddonsOnly
-          operator: Exists
-      affinity:
-        podAntiAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-          - weight: 1
-            podAffinityTerm:
-              topologyKey: kubernetes.io/hostname
-              labelSelector:
-                matchLabels:
-                  app: prometheus-msteams
-
-      connectors: {}
-      #  testing: ""
-      #  devCritical: ""
-      #  devMajor: ""
-      #  devMinor: ""
-      #  nonProdCritical: ""
-      #  nonProdMajor: ""
-      #  nonProdMinor: ""
-      #  prodCritical: ""
-      #  prodMajor: ""
-      #  prodMinor: ""
-
       webhooks: {}
       #  devCritical: ""
       #  devMajor: ""
