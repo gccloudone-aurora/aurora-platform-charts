@@ -306,7 +306,8 @@ components:
         # tag: "1.29.1"
         # pullPolicy: IfNotPresent
         # variant: distroless
-      cniBinDir: /opt/cni/bin # Needs to be /home/kubernetes/bin for GKE
+      # Defaults by provider in istio-cni.yaml. Sets to /opt/cni/bin for azure/aws and /home/kubernetes/bin for gcp
+      # cniBinDir: ""
       resources: {}
         # limits:
         #  cpu: ""
