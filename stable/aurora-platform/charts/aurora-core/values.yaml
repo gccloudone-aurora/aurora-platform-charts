@@ -1342,7 +1342,7 @@ components:
     helm:
       # chart: kubecost
       # repository: https://kubecost.github.io/kubecost/
-      targetRevision: 3.2.1
+      targetRevision: 3.2.4
 
     kubecostProductConfigs:
       clusterProfile: production
