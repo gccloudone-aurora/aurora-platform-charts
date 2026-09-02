@@ -86,8 +86,6 @@ Produces a list shaped like:
   {{- end }}
 {{- end }}
 {{- end }}
-{{- end }}
-{{- end }}
 
 {{/*
 The Alertmanager configuration.
