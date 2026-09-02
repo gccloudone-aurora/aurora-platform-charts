@@ -859,7 +859,7 @@ components:
     helm:
       # chart: gatekeeper
       # repository: https://open-policy-agent.github.io/gatekeeper/charts
-      targetRevision: 3.22.0
+      targetRevision: 3.23.1
 
     imagePullSecrets: []
     image:
