@@ -31,7 +31,15 @@ spec:
               nodeSelector: {{ toYaml .Values.components.istio.gateway.nodeSelector | nindent 16 }}
               tolerations: {{ toYaml .Values.components.istio.gateway.tolerations | nindent 16 }}
               affinity: {{ toYaml .Values.components.istio.gateway.affinity | nindent 16 }}
-
+              
+              {{- if and .Values.global.container .Values.global.container.registry }}
+              # WORKAROUND: The chart hardcodes 'image: auto' which ignores helm global.hub / image tags.
+              # Passing the registry path via annotation forces the chart engine to overwrite the repository 
+              # to JFrog while letting the control plane automatically append the correct version tag.
+              annotations:
+                sidecar.istio.io/proxyImage: "{{ .Values.global.container.registry }}/istio/proxyv2"
+              {{- end }}
+              
               autoscaling:
                 enabled: true
                 minReplicas: 3
@@ -41,17 +49,18 @@ spec:
               service:
                 # Defines the type of Service to deploy
                 type: LoadBalancer
+                {{- if eq .Values.global.provider "azure" }}
                 annotations:
-                  {{- if eq .Values.global.provider "azure" }}
                   # Defines if an "internal" or "external" Azure load-balancer is deployed for the service.
                   service.beta.kubernetes.io/azure-load-balancer-internal: "true"
                   service.beta.kubernetes.io/azure-load-balancer-internal-subnet: "{{ required ".Values.global.load_balancer_subnet_name is required" .Values.global.load_balancer_subnet_name }}"
-                  {{- else if eq .Values.global.provider "aws" }}
+                {{- else if eq .Values.global.provider "aws" }}
+                annotations:
                   service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
                   service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: "ip"
-                  {{- else }}
-                  {}
-                  {{- end}}
+                {{- else }}
+                annotations: {}
+                {{- end}}
                 {{- if hasKey .Values.components.istio.gateway "loadBalancerClass" }}
                 loadBalancerClass: {{ .Values.components.istio.gateway.loadBalancerClass | quote }}
                 {{- end }}

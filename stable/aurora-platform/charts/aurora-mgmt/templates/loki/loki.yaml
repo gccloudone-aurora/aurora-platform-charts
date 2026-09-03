@@ -25,7 +25,7 @@ spec:
           value: |
             global:
               image:
-                registry: docker.io # Changed from null to ensure registry resolution
+                registry: {{ .Values.global.container.registry | default "docker.io" | quote }}
 
             imagePullSecrets: {{ toYaml .Values.components.loki.imagePullSecrets | nindent 14 }}
             deploymentMode: SimpleScalable
@@ -152,16 +152,29 @@ spec:
               enabled: true
               nodeSelector: {{ toYaml .Values.components.loki.nodeSelector | nindent 16 }}
               tolerations: {{ toYaml .Values.components.loki.tolerations | nindent 16 }}
+              memcached:
+                image:
+                  {{- include "loki.cache.registry" . | nindent 18 }}
+              memcachedExporter:
+                image:
+                  {{- include "loki.cache.registry" . | nindent 18 }}
+
             resultsCache:
               enabled: true
               nodeSelector: {{ toYaml .Values.components.loki.nodeSelector | nindent 16 }}
               tolerations: {{ toYaml .Values.components.loki.tolerations | nindent 16 }}
-              
+              memcached:
+                image:
+                  {{- include "loki.cache.registry" . | nindent 18 }}
+              memcachedExporter:
+                image:
+                  {{- include "loki.cache.registry" . | nindent 18 }}
+
             test:
               enabled: false
             memcached:
               image:
-                repository: docker.io/memcached
+                {{- include "loki.cache.registry" . | nindent 16 }}
               podSecurityContext:
                 runAsNonRoot: true
                 seccompProfile:
@@ -175,7 +188,7 @@ spec:
                   type: RuntimeDefault
             memcachedExporter:
               image:
-                repository: docker.io/prom/memcached-exporter
+                {{- include "loki.cache.registry" . | nindent 16 }}
               containerSecurityContext:
                 allowPrivilegeEscalation: false
                 capabilities:

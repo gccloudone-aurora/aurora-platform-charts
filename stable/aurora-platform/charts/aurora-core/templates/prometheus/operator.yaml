@@ -125,8 +125,13 @@ spec:
                 ## Namespaces to be selected for ServiceMonitor discovery.
                 ##
                 serviceMonitorNamespaceSelector:
-                  matchLabels:
-                    namespace.ssc-spc.gc.ca/purpose: system
+                  matchExpressions:
+                    - key: namespace.ssc-spc.gc.ca/purpose
+                      operator: In
+                      values:
+                        - system
+                        - solution
+                        - gateway
 
                 ## If true, a nil or {} value for prometheus.prometheusSpec.podMonitorSelector will cause the
                 ## prometheus resource to be created with selectors based on values in the helm deployment,
@@ -143,8 +148,13 @@ spec:
                 ## See https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentation/api.md#namespaceselector for usage
                 ##
                 podMonitorNamespaceSelector:
-                  matchLabels:
-                    namespace.ssc-spc.gc.ca/purpose: system
+                  matchExpressions:
+                    - key: namespace.ssc-spc.gc.ca/purpose
+                      operator: In
+                      values:
+                        - system
+                        - solution
+                        - gateway
 
                 ## If true, a nil or {} value for prometheus.prometheusSpec.probeSelector will cause the
                 ## prometheus resource to be created with selectors based on values in the helm deployment,

@@ -267,40 +267,29 @@ pullPolicy: {{ .Values.components.prometheus.prometheusNodeExporter.image.pullPo
 {{- end }}
 {{- end }}
 
+
 {{/*
 The image section for Prometheus Blackbox Exporter.
 */}}
 {{- define "prometheus.blackboxExporter.image" -}}
-{{- if (and .Values.components.prometheus.blackboxExporter.image.registry .Values.components.prometheus.blackboxExporter.image.repository) }}
-repository: {{ printf "%s/%s" .Values.components.prometheus.blackboxExporter.image.registry .Values.components.prometheus.blackboxExporter.image.repository }}
-{{- else if .Values.components.prometheus.blackboxExporter.image.repository }}
-repository: {{ printf "%s" .Values.components.prometheus.blackboxExporter.image.repository }}
+{{- if .Values.components.prometheus.blackboxExporter.image.registry }}
+registry: {{ .Values.components.prometheus.blackboxExporter.image.registry | quote }}
+{{- else if and .Values.global.container .Values.global.container.registry }}
+registry: {{ .Values.global.container.registry | quote }}
+{{- else }}
+registry: "quay.io"
+{{- end }}
+{{- if .Values.components.prometheus.blackboxExporter.image.repository }}
+repository: {{ .Values.components.prometheus.blackboxExporter.image.repository | quote }}
 {{- end }}
 {{- if .Values.components.prometheus.blackboxExporter.image.tag }}
-tag: {{ .Values.components.prometheus.blackboxExporter.image.tag }}
+tag: {{ .Values.components.prometheus.blackboxExporter.image.tag | quote }}
 {{- end }}
 {{- if .Values.components.prometheus.blackboxExporter.image.pullPolicy }}
-pullPolicy: {{ .Values.components.prometheus.blackboxExporter.image.pullPolicy }}
+pullPolicy: {{ .Values.components.prometheus.blackboxExporter.image.pullPolicy | quote }}
 {{- end }}
 {{- if .Values.components.prometheus.blackboxExporter.imagePullSecrets }}
 imagePullSecrets:
   {{- toYaml .Values.components.prometheus.blackboxExporter.imagePullSecrets | nindent 2 }}
-{{- end }}
-{{- end }}
-
-{{/*
-The image section for Prometheus MSTeams.
-*/}}
-{{- define "prometheus.msteams.image" -}}
-{{- if (and .Values.components.prometheus.msteams.image.registry .Values.components.prometheus.msteams.image.repository) }}
-repository: {{ printf "%s/%s" .Values.components.prometheus.msteams.image.registry .Values.components.prometheus.msteams.image.repository }}
-{{- else if .Values.components.prometheus.msteams.image.repository }}
-repository: {{ printf "%s" .Values.components.prometheus.msteams.image.repository }}
-{{- end }}
-{{- if .Values.components.prometheus.msteams.image.tag }}
-tag: {{ .Values.components.prometheus.msteams.image.tag }}
-{{- end }}
-{{- if .Values.components.prometheus.msteams.image.pullPolicy }}
-pullPolicy: {{ .Values.components.prometheus.msteams.image.pullPolicy }}
 {{- end }}
 {{- end }}

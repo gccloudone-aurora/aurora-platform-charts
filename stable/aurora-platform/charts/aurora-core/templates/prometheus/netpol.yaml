@@ -233,24 +233,6 @@ spec:
                       app.kubernetes.io/name: alertmanager
                   policyTypes:
                   - Egress
-              - apiVersion: networking.k8s.io/v1
-                kind: NetworkPolicy
-                metadata:
-                  name: allow-egress-to-msteams-from-prometheus-msteams
-                  namespace: prometheus-system
-                spec:
-                  egress:
-                    - ports:
-                        - port: 443
-                          protocol: TCP
-                      to:
-                        - ipBlock:
-                            cidr: 0.0.0.0/0
-                  podSelector:
-                    matchLabels:
-                      app: prometheus-msteams
-                  policyTypes:
-                  - Egress
               {{- end }}
               - apiVersion: networking.k8s.io/v1
                 kind: NetworkPolicy
@@ -578,6 +560,28 @@ spec:
               - apiVersion: networking.k8s.io/v1
                 kind: NetworkPolicy
                 metadata:
+                  name: allow-egress-to-istio-gateway-metrics-from-prometheus
+                  namespace: prometheus-system
+                spec:
+                  podSelector:
+                    matchLabels:
+                      app.kubernetes.io/name: prometheus
+                  policyTypes:
+                    - Egress
+                  egress:
+                    - to:
+                        - namespaceSelector:
+                            matchLabels:
+                              kubernetes.io/metadata.name: ingress-general-system
+                          podSelector:
+                            matchLabels:
+                              istio: general
+                      ports:
+                        - protocol: TCP
+                          port: 15090
+              - apiVersion: networking.k8s.io/v1
+                kind: NetworkPolicy
+                metadata:
                   name: allow-egress-to-argocd-metrics-from-prometheus
                   namespace: prometheus-system
                 spec:
@@ -654,6 +658,7 @@ spec:
                   endpointSelector:
                     matchLabels:
                       k8s:app.kubernetes.io/name: prometheus
+              {{- end }} 
               - apiVersion: cilium.io/v2
                 kind: CiliumClusterwideNetworkPolicy
                 metadata:
@@ -673,36 +678,24 @@ spec:
               - apiVersion: cilium.io/v2
                 kind: CiliumClusterwideNetworkPolicy
                 metadata:
-                  name: allow-egress-to-msteams-from-prometheus-msteams
-                spec:
-                  description: |
-                    Allows Prometheus-MSTeams to send Alertmanager alert notifications to MS Teams
-                  egress:
-                  - toFQDNs:
-                    - matchPattern: "054gc.webhook.office.com"
-                    toPorts:
-                    - ports:
-                      - port: "443"
-                  endpointSelector:
-                    matchLabels:
-                      k8s:app: prometheus-msteams
-              - apiVersion: cilium.io/v2
-                kind: CiliumClusterwideNetworkPolicy
-                metadata:
                   name: allow-egress-to-msteams-from-alertmanager
                 spec:
                   description: |
                     Allows Alertmanager to send alert notifications to MS Teams
                   egress:
                   - toFQDNs:
-                    - matchPattern: "**.api.powerplatform.com"
+                    # Power Automate workflows are in this glob pattern: 
+                    # <env>.<region>.environment.api.powerplatform.com
+                    # Cilium expands "*" to [-a-zA-Z0-9_]*, which includes "." 
+                    # So single "*" spans across one label. ** is * essentially
+                    # Need three separate globs
+                    - matchPattern: "*.*.environment.api.powerplatform.com"
                     toPorts:
                     - ports:
                       - port: "443"
                   endpointSelector:
                     matchLabels:
                       k8s:app.kubernetes.io/name: alertmanager
-              {{- end }}
               {{ if .Values.global.clusterHasLoki }}
               - apiVersion: networking.k8s.io/v1
                 kind: NetworkPolicy
@@ -809,6 +802,28 @@ spec:
                       ports:
                         - protocol: TCP
                           port: 8085
+              - apiVersion: networking.k8s.io/v1
+                kind: NetworkPolicy
+                metadata:
+                  name: allow-egress-to-gatekeeper-from-prometheus
+                  namespace: prometheus-system
+                spec:
+                  podSelector:
+                    matchLabels:
+                      app.kubernetes.io/name: prometheus
+                  policyTypes:
+                    - Egress
+                  egress:
+                    - to:
+                        - namespaceSelector:
+                            matchLabels:
+                              kubernetes.io/metadata.name: gatekeeper-system
+                          podSelector:
+                            matchLabels:
+                              gatekeeper.sh/system: "yes"
+                      ports:
+                        - protocol: TCP
+                          port: 8888
   destination:
     name: {{ .Values.global.cluster }}
     namespace: platform-system

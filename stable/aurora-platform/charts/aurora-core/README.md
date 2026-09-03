@@ -10,7 +10,7 @@ Aurora Platform - Core Platform
 |-----|------|---------|-------------|
 | components.alloy.config.loki.write | object | `{}` |  |
 | components.alloy.enabled | bool | `true` |  |
-| components.alloy.helm | object | `{}` |  |
+| components.alloy.helm.targetRevision | string | `"1.11.0"` |  |
 | components.alloy.image | object | `{}` |  |
 | components.alloy.imagePullSecrets | list | `[]` |  |
 | components.alloy.nodeSelector."kubernetes.io/os" | string | `"linux"` |  |
@@ -25,7 +25,7 @@ Aurora Platform - Core Platform
 | components.auroraController.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].weight | int | `1` |  |
 | components.auroraController.aurora.secretName | string | `"aurora-image-pull-secret"` |  |
 | components.auroraController.enabled | bool | `true` |  |
-| components.auroraController.helm | object | `{}` |  |
+| components.auroraController.helm.targetRevision | string | `"0.0.1"` |  |
 | components.auroraController.image.repository | string | `"gccloudone-aurora/aurora-controller"` |  |
 | components.auroraController.imagePullSecrets[0].name | string | `"aurora-controller-image-pull-secret"` |  |
 | components.auroraController.nodeSelector."kubernetes.io/os" | string | `"linux"` |  |
@@ -43,7 +43,7 @@ Aurora Platform - Core Platform
 | components.awsEbsCsiDriver.controller.resources.requests.cpu | string | `"10m"` |  |
 | components.awsEbsCsiDriver.controller.resources.requests.memory | string | `"40Mi"` |  |
 | components.awsEbsCsiDriver.enabled | bool | `true` |  |
-| components.awsEbsCsiDriver.helm | object | `{}` |  |
+| components.awsEbsCsiDriver.helm.targetRevision | string | `"2.47.0"` |  |
 | components.awsEbsCsiDriver.image.repository | string | `"ebs-csi-driver/aws-ebs-csi-driver"` |  |
 | components.awsEbsCsiDriver.node.nodeSelector | object | `{}` |  |
 | components.awsEbsCsiDriver.node.resources.limits.memory | string | `"256Mi"` |  |
@@ -62,7 +62,7 @@ Aurora Platform - Core Platform
 | components.awsLoadbalancerController.enableCertManager | bool | `true` |  |
 | components.awsLoadbalancerController.enableServiceMinitor | bool | `true` |  |
 | components.awsLoadbalancerController.enabled | bool | `true` |  |
-| components.awsLoadbalancerController.helm | object | `{}` |  |
+| components.awsLoadbalancerController.helm.targetRevision | string | `"1.13.4"` |  |
 | components.awsLoadbalancerController.image.repository | string | `"eks/aws-load-balancer-controller"` |  |
 | components.awsLoadbalancerController.imagePullSecrets | list | `[]` |  |
 | components.awsLoadbalancerController.nodeSelector."kubernetes.io/os" | string | `"linux"` |  |
@@ -92,7 +92,7 @@ Aurora Platform - Core Platform
 | components.certManager.dns01RecursiveNameservers | string | `""` |  |
 | components.certManager.dns01RecursiveNameserversOnly | bool | `false` |  |
 | components.certManager.enabled | bool | `true` |  |
-| components.certManager.helm | object | `{}` |  |
+| components.certManager.helm.targetRevision | string | `"v1.20.3"` |  |
 | components.certManager.image.repository | string | `"jetstack/cert-manager-controller"` |  |
 | components.certManager.imagePullSecrets | list | `[]` |  |
 | components.certManager.issuers.dns01 | object | `{}` |  |
@@ -141,7 +141,7 @@ Aurora Platform - Core Platform
 | components.cidrAllocator.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].podAffinityTerm.topologyKey | string | `"kubernetes.io/hostname"` |  |
 | components.cidrAllocator.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].weight | int | `1` |  |
 | components.cidrAllocator.enabled | bool | `true` |  |
-| components.cidrAllocator.helm | object | `{}` |  |
+| components.cidrAllocator.helm.targetRevision | string | `"0.0.1"` |  |
 | components.cidrAllocator.image.repository | string | `"gccloudone-aurora/cidr-allocator"` |  |
 | components.cidrAllocator.imagePullSecrets[0].name | string | `"cidr-allocator-image-pull-secret"` |  |
 | components.cidrAllocator.nodeSelector."kubernetes.io/os" | string | `"linux"` |  |
@@ -184,6 +184,8 @@ Aurora Platform - Core Platform
 | components.cilium.operator.image.repository | string | `"cilium/operator"` |  |
 | components.cilium.preflight.image.repository | string | `"cilium/cilium"` |  |
 | components.cilium.priorityClassName | string | `"system-cluster-critical"` |  |
+| components.cilium.prometheus.enabled | bool | `false` |  |
+| components.cilium.prometheus.serviceMonitor.enabled | bool | `false` |  |
 | components.cilium.replicas | int | `2` |  |
 | components.cilium.resources | object | `{}` |  |
 | components.cilium.tolerations[0].key | string | `"CriticalAddonsOnly"` |  |
@@ -194,7 +196,7 @@ Aurora Platform - Core Platform
 | components.falco.falcoctl.artifact.follow.enabled | bool | `false` |  |
 | components.falco.falcoctl.artifact.install.enabled | bool | `true` |  |
 | components.falco.falcoctl.artifact.install.mounts.volumeMounts | list | `[]` |  |
-| components.falco.helm | object | `{}` |  |
+| components.falco.helm.targetRevision | string | `"6.2.5"` |  |
 | components.falco.images.falco.image.repository | string | `"falcosecurity/falco"` |  |
 | components.falco.images.falco.image.tag | string | `"0.41.3"` |  |
 | components.falco.images.falcoDriverLoader.image.repository | string | `"falcosecurity/falco-driver-loader"` |  |
@@ -278,7 +280,7 @@ Aurora Platform - Core Platform
 | components.fluentOperator.fluentd.tolerations[0].operator | string | `"Exists"` |  |
 | components.fluentOperator.fluentd.watchedNamespaces | list | `[]` |  |
 | components.fluentOperator.fluentd.workers | int | `2` |  |
-| components.fluentOperator.helm | object | `{}` |  |
+| components.fluentOperator.helm.targetRevision | string | `"2.5.0"` |  |
 | components.fluentOperator.imagePullSecrets | list | `[]` |  |
 | components.fluentOperator.operator.image.repository | string | `"kubesphere/fluent-operator"` |  |
 | components.fluentOperator.operator.initContainer.image.repository | string | `"docker"` |  |
@@ -291,6 +293,7 @@ Aurora Platform - Core Platform
 | components.fluentOperator.operator.resources.requests.memory | string | `"128Mi"` |  |
 | components.fluentOperator.operator.tolerations[0].key | string | `"CriticalAddonsOnly"` |  |
 | components.fluentOperator.operator.tolerations[0].operator | string | `"Exists"` |  |
+| components.gatekeeper.alerts.enabled | bool | `true` |  |
 | components.gatekeeper.audit.affinity | object | `{}` |  |
 | components.gatekeeper.audit.nodeSelector."kubernetes.io/os" | string | `"linux"` |  |
 | components.gatekeeper.audit.nodeSelector."node.ssc-spc.gc.ca/purpose" | string | `"system"` |  |
@@ -390,7 +393,7 @@ Aurora Platform - Core Platform
 | components.gatekeeper.crds.tolerations[0].key | string | `"CriticalAddonsOnly"` |  |
 | components.gatekeeper.crds.tolerations[0].operator | string | `"Exists"` |  |
 | components.gatekeeper.enabled | bool | `true` |  |
-| components.gatekeeper.helm | object | `{}` |  |
+| components.gatekeeper.helm.targetRevision | string | `"3.22.0"` |  |
 | components.gatekeeper.image.crdRepository | string | `"openpolicyagent/gatekeeper-crds"` |  |
 | components.gatekeeper.image.repository | string | `"openpolicyagent/gatekeeper"` |  |
 | components.gatekeeper.imagePullSecrets | list | `[]` |  |
@@ -421,14 +424,25 @@ Aurora Platform - Core Platform
 | components.gatekeeper.preUninstall.tolerations[0].operator | string | `"Exists"` |  |
 | components.gatekeeper.priorityClassName | string | `"system-cluster-critical"` |  |
 | components.gatekeeper.replicas | int | `3` |  |
+| components.gatekeeper.serviceMonitor.enabled | bool | `true` |  |
 | components.gatekeeper.templates | object | `{}` |  |
 | components.grafana.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].podAffinityTerm.labelSelector.matchLabels."app.kubernetes.io/instance" | string | `"grafana-operator"` |  |
 | components.grafana.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].podAffinityTerm.topologyKey | string | `"kubernetes.io/hostname"` |  |
 | components.grafana.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].weight | int | `1` |  |
+| components.grafana.alerting.contactPoints | object | `{}` |  |
+| components.grafana.alerting.datasourceUid | string | `"prometheus"` |  |
+| components.grafana.alerting.enabled | bool | `false` |  |
+| components.grafana.alerting.folders | object | `{}` |  |
+| components.grafana.alerting.instanceSelector | object | `{}` |  |
+| components.grafana.alerting.managedSecrets | object | `{}` |  |
+| components.grafana.alerting.notificationPolicy | object | `{}` |  |
+| components.grafana.alerting.notificationTemplates | object | `{}` |  |
+| components.grafana.alerting.routes | object | `{}` |  |
+| components.grafana.alerting.timeIntervals | object | `{}` |  |
 | components.grafana.allowedGroups | string | `""` |  |
 | components.grafana.dashboard | object | `{}` |  |
 | components.grafana.enabled | bool | `false` |  |
-| components.grafana.helm | object | `{}` |  |
+| components.grafana.helm.targetRevision | string | `"5.24.0"` |  |
 | components.grafana.image.repository | string | `"grafana/grafana-operator"` |  |
 | components.grafana.nodeSelector."kubernetes.io/os" | string | `"linux"` |  |
 | components.grafana.nodeSelector."node.ssc-spc.gc.ca/purpose" | string | `"system"` |  |
@@ -549,7 +563,7 @@ Aurora Platform - Core Platform
 | components.kubecost.frontend.resources.requests.memory | string | `"55Mi"` |  |
 | components.kubecost.frontend.tolerations[0].key | string | `"CriticalAddonsOnly"` |  |
 | components.kubecost.frontend.tolerations[0].operator | string | `"Exists"` |  |
-| components.kubecost.helm | object | `{}` |  |
+| components.kubecost.helm.targetRevision | string | `"3.2.1"` |  |
 | components.kubecost.kubecostProductConfigs.clusterProfile | string | `"production"` |  |
 | components.kubecost.kubecostProductConfigs.labelMappingConfigs.department_label | string | `"project.ssc-spc.gc.ca/division"` |  |
 | components.kubecost.kubecostProductConfigs.labelMappingConfigs.environment_label | string | `"project.ssc-spc.gc.ca/environment"` |  |
@@ -604,7 +618,7 @@ Aurora Platform - Core Platform
 | components.podtracker.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].podAffinityTerm.topologyKey | string | `"kubernetes.io/hostname"` |  |
 | components.podtracker.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].weight | int | `1` |  |
 | components.podtracker.enabled | bool | `true` |  |
-| components.podtracker.helm | object | `{}` |  |
+| components.podtracker.helm.targetRevision | string | `"1.0.0"` |  |
 | components.podtracker.image.repository | string | `"gccloudone-aurora/podtracker"` |  |
 | components.podtracker.imagePullSecrets | list | `[]` |  |
 | components.podtracker.leaderElectionEnabled | bool | `true` |  |
@@ -668,7 +682,7 @@ Aurora Platform - Core Platform
 | components.prometheus.blackboxExporter.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].podAffinityTerm.topologyKey | string | `"kubernetes.io/hostname"` |  |
 | components.prometheus.blackboxExporter.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].weight | int | `1` |  |
 | components.prometheus.blackboxExporter.controlPlaneProbes | list | `[]` |  |
-| components.prometheus.blackboxExporter.helm | object | `{}` |  |
+| components.prometheus.blackboxExporter.helm.targetRevision | string | `"11.8.0"` |  |
 | components.prometheus.blackboxExporter.image.repository | string | `"prometheus/blackbox-exporter"` |  |
 | components.prometheus.blackboxExporter.imagePullSecrets | list | `[]` |  |
 | components.prometheus.blackboxExporter.istioIngressGatewayProbes | list | `[]` |  |
@@ -698,7 +712,7 @@ Aurora Platform - Core Platform
 | components.prometheus.grafana.sidecar.resources | object | `{}` |  |
 | components.prometheus.grafana.tolerations[0].key | string | `"CriticalAddonsOnly"` |  |
 | components.prometheus.grafana.tolerations[0].operator | string | `"Exists"` |  |
-| components.prometheus.helm | object | `{}` |  |
+| components.prometheus.helm.targetRevision | string | `"86.0.2"` |  |
 | components.prometheus.imagePullSecrets | list | `[]` |  |
 | components.prometheus.imageRegistry | string | `""` |  |
 | components.prometheus.kubeStateMetrics.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].podAffinityTerm.labelSelector.matchLabels."app.kubernetes.io/name" | string | `"kube-state-metrics"` |  |
@@ -712,20 +726,6 @@ Aurora Platform - Core Platform
 | components.prometheus.kubeStateMetrics.resources | object | `{}` |  |
 | components.prometheus.kubeStateMetrics.tolerations[0].key | string | `"CriticalAddonsOnly"` |  |
 | components.prometheus.kubeStateMetrics.tolerations[0].operator | string | `"Exists"` |  |
-| components.prometheus.msteams.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].podAffinityTerm.labelSelector.matchLabels.app | string | `"prometheus-msteams"` |  |
-| components.prometheus.msteams.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].podAffinityTerm.topologyKey | string | `"kubernetes.io/hostname"` |  |
-| components.prometheus.msteams.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].weight | int | `1` |  |
-| components.prometheus.msteams.connectors | object | `{}` |  |
-| components.prometheus.msteams.helm | object | `{}` |  |
-| components.prometheus.msteams.image.repository | string | `"prometheusmsteams/prometheus-msteams"` |  |
-| components.prometheus.msteams.image.tag | string | `"master"` |  |
-| components.prometheus.msteams.imagePullSecrets | list | `[]` |  |
-| components.prometheus.msteams.nodeSelector."kubernetes.io/os" | string | `"linux"` |  |
-| components.prometheus.msteams.nodeSelector."node.ssc-spc.gc.ca/purpose" | string | `"system"` |  |
-| components.prometheus.msteams.replicas | int | `1` |  |
-| components.prometheus.msteams.resources | object | `{}` |  |
-| components.prometheus.msteams.tolerations[0].key | string | `"CriticalAddonsOnly"` |  |
-| components.prometheus.msteams.tolerations[0].operator | string | `"Exists"` |  |
 | components.prometheus.msteams.webhooks | object | `{}` |  |
 | components.prometheus.operator.admissionWebhooks.image.repository | string | `"jkroepke/kube-webhook-certgen"` |  |
 | components.prometheus.operator.admissionWebhooks.resources | object | `{}` |  |
@@ -782,7 +782,7 @@ Aurora Platform - Core Platform
 | components.prometheus.thanosRuler.thanosRulerSpec.tolerations[0].operator | string | `"Exists"` |  |
 | components.secretsStoreCSIDriver.enableSecretRotation | bool | `false` |  |
 | components.secretsStoreCSIDriver.enabled | bool | `false` |  |
-| components.secretsStoreCSIDriver.helm | object | `{}` |  |
+| components.secretsStoreCSIDriver.helm.targetRevision | string | `"1.6.0"` |  |
 | components.secretsStoreCSIDriver.images.crds.image.repository | string | `"csi-secrets-store/driver-crds"` |  |
 | components.secretsStoreCSIDriver.images.driver.image.repository | string | `"csi-secrets-store/driver"` |  |
 | components.secretsStoreCSIDriver.images.registrar.image.repository | string | `"sig-storage/csi-node-driver-registrar"` |  |
@@ -800,7 +800,7 @@ Aurora Platform - Core Platform
 | components.tetragon.export.image.pullPolicy | string | `"IfNotPresent"` |  |
 | components.tetragon.export.image.repository | string | `"cilium/hubble-export-stdout"` |  |
 | components.tetragon.export.image.tag | string | `"v1.1.0"` |  |
-| components.tetragon.helm | object | `{}` |  |
+| components.tetragon.helm.targetRevision | string | `"1.6.0"` |  |
 | components.tetragon.image.pullPolicy | string | `"IfNotPresent"` |  |
 | components.tetragon.image.repository | string | `"cilium/tetragon"` |  |
 | components.tetragon.image.tag | string | `"v1.6.0"` |  |
@@ -819,12 +819,13 @@ Aurora Platform - Core Platform
 | components.tetragon.operator.tolerations[0].key | string | `"CriticalAddonsOnly"` |  |
 | components.tetragon.operator.tolerations[0].operator | string | `"Exists"` |  |
 | components.tetragon.policies | object | `{}` |  |
+| components.tetragon.prometheus.serviceMonitor.enabled | bool | `false` |  |
 | components.trivy.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].podAffinityTerm.labelSelector.matchLabels."app.kubernetes.io/instance" | string | `"trivy-operator"` |  |
 | components.trivy.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].podAffinityTerm.topologyKey | string | `"kubernetes.io/hostname"` |  |
 | components.trivy.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].weight | int | `1` |  |
 | components.trivy.enabled | bool | `true` |  |
 | components.trivy.excludeNamespaces | string | `""` |  |
-| components.trivy.helm | object | `{}` |  |
+| components.trivy.helm.targetRevision | string | `"0.32.1"` |  |
 | components.trivy.ignoreUnfixed | bool | `true` |  |
 | components.trivy.image.pullPolicy | string | `"IfNotPresent"` |  |
 | components.trivy.image.repository | string | `"aquasec/trivy-operator"` |  |
@@ -905,7 +906,7 @@ Aurora Platform - Core Platform
 | components.trustManager.defaultPackage.image.tag | string | `"20230311-deb12u1.0"` |  |
 | components.trustManager.defaultPackage.resources | object | `{}` |  |
 | components.trustManager.enabled | bool | `true` |  |
-| components.trustManager.helm | object | `{}` |  |
+| components.trustManager.helm.targetRevision | string | `"v0.23.0"` |  |
 | components.trustManager.image.repository | string | `"jetstack/trust-manager"` |  |
 | components.trustManager.imagePullSecrets | list | `[]` |  |
 | components.trustManager.nodeSelector."kubernetes.io/os" | string | `"linux"` |  |
@@ -916,7 +917,7 @@ Aurora Platform - Core Platform
 | components.trustManager.tolerations[0].key | string | `"CriticalAddonsOnly"` |  |
 | components.trustManager.tolerations[0].operator | string | `"Exists"` |  |
 | components.vaultAgent.enabled | bool | `false` |  |
-| components.vaultAgent.helm | object | `{}` |  |
+| components.vaultAgent.helm.targetRevision | string | `"0.22.0"` |  |
 | components.vaultAgent.imagePullSecrets | list | `[]` |  |
 | components.vaultAgent.injector.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].podAffinityTerm.labelSelector.matchLabels."app.kubernetes.io/instance" | string | `"vault-agent"` |  |
 | components.vaultAgent.injector.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].podAffinityTerm.topologyKey | string | `"kubernetes.io/hostname"` |  |
@@ -937,7 +938,7 @@ Aurora Platform - Core Platform
 | components.velero.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].weight | int | `1` |  |
 | components.velero.backupStorage | object | `{}` |  |
 | components.velero.enabled | bool | `true` |  |
-| components.velero.helm | object | `{}` |  |
+| components.velero.helm.targetRevision | string | `"12.1.0"` |  |
 | components.velero.image.repository | string | `"velero/velero"` |  |
 | components.velero.imagePullSecrets | list | `[]` |  |
 | components.velero.kubectl.image.repository | string | `"bitnamilegacy/kubectl"` |  |

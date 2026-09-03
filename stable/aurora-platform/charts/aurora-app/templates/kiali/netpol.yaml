@@ -32,6 +32,25 @@ spec:
               egress:
                 - to:
                   - podSelector: {}
+          # Allow kiali pods outbound HTTPS for OpenID Connect
+          - apiVersion: networking.k8s.io/v1
+            kind: NetworkPolicy
+            metadata:
+              name: allow-egress-to-internet
+              namespace: kiali-system
+            spec:
+              podSelector:
+                matchLabels:
+                  app.kubernetes.io/part-of: kiali
+              policyTypes:
+                - Egress
+              egress:
+                - ports:
+                    - port: 443
+                      protocol: TCP
+                  to:
+                    - ipBlock:
+                        cidr: 0.0.0.0/0
           - apiVersion: networking.k8s.io/v1
             kind: NetworkPolicy
             metadata:

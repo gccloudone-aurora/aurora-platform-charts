@@ -220,6 +220,11 @@ core:
 
       secretDockerConfigJson: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-image-pull-secret>'
 
+      prometheus:
+        enabled: true
+        serviceMonitor:
+          enabled: true
+
       enableIPv4Masquerade: true
 
       bgpControlPlane:
@@ -460,17 +465,16 @@ core:
             ipAddress: <FILLIN_ISTIO_INGRESS_GATEWAY>
 
       msteams:
-        connectors:
-          alertTesting: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-alertmanager-notifications-msteams-connector-testing>'
-          prodCritical: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-alertmanager-notifications-msteams-connector-prod-critical>'
-          prodMajor: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-alertmanager-notifications-msteams-connector-prod-major>'
-          prodMinor: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-alertmanager-notifications-msteams-connector-prod-minor>'
-          nonProdCritical: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-alertmanager-notifications-msteams-connector-non-prod-critical>'
-          nonProdMajor: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-alertmanager-notifications-msteams-connector-non-prod-major>'
-          nonProdMinor: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-alertmanager-notifications-msteams-connector-non-prod-minor>'
-          devCritical: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-alertmanager-notifications-msteams-connector-dev-critical>'
-          devMajor: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-alertmanager-notifications-msteams-connector-dev-major>'
-          devMinor: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-alertmanager-notifications-msteams-connector-dev-minor>'
+        webhooks:
+          prodCritical: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-alertmanager-notifications-msteams-webhook-prod-critical>'
+          prodMajor: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-alertmanager-notifications-msteams-webhook-prod-major>'
+          prodMinor: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-alertmanager-notifications-msteams-webhook-prod-minor>'
+          nonProdCritical: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-alertmanager-notifications-msteams-webhook-non-prod-critical>'
+          nonProdMajor: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-alertmanager-notifications-msteams-webhook-non-prod-major>'
+          nonProdMinor: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-alertmanager-notifications-msteams-webhook-non-prod-minor>'
+          devCritical: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-alertmanager-notifications-msteams-webhook-dev-critical>'
+          devMajor: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-alertmanager-notifications-msteams-webhook-dev-major>'
+          devMinor: '<path:<FILLIN_ARGO_KV>#<FILLIN_ARGO_KV_PREFIX>-alertmanager-notifications-msteams-webhook-dev-minor>'
 
       priorityClassName: platform-cluster-critical
 
