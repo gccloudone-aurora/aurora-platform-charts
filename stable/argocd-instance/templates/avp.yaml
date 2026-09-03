@@ -25,7 +25,7 @@ data:
         command:
           - bash
           - "-c"
-          - 'set -o pipefail; helm template --include-crds "$ARGOCD_ENV_HELM_RELEASE_NAME" -n "$ARGOCD_APP_NAMESPACE" -f <(echo "$ARGOCD_ENV_HELM_VALUES") . | argocd-vault-plugin generate -'
+          - 'helm template --include-crds "$ARGOCD_ENV_HELM_RELEASE_NAME" -n "$ARGOCD_APP_NAMESPACE" -f <(echo "$ARGOCD_ENV_HELM_VALUES") . | argocd-vault-plugin generate -'
       lockRepo: false
   avp.yaml: |
     ---

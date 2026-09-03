@@ -110,7 +110,7 @@ components:
   ### ALLOY ###
   #############
   alloy:
-    enabled: false
+    enabled: true
 
     helm:
       # chart: alloy
