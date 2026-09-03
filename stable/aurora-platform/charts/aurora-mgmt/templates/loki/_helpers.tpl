@@ -25,6 +25,9 @@ The logStorageLocation configuration.
 accountName: {{ required "loki.logStorageLocation.storageAccountName is required" .Values.components.loki.logStorageLocation.storageAccountName | quote }}
 accountKey: {{ required "loki.logStorageLocation.storageAccountKey is required" .Values.components.loki.logStorageLocation.storageAccountKey | quote }}
 requestTimeout: 0
+{{- else if eq .Values.global.provider "gcp" }}
+chunks: {{ required "loki.logStorageLocation.chunkBucket is required" .Values.components.loki.logStorageLocation.chunkBucket | quote }}
+ruler: {{ required "loki.logStorageLocation.rulerBucket is required" .Values.components.loki.logStorageLocation.rulerBucket | quote }}
 {{- end }}
 {{- end }}
 

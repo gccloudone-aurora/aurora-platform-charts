@@ -61,7 +61,7 @@ spec:
               dbRegistry: {{ $platformRegistry }}
               javaDbRegistry: {{ $platformRegistry }}
               severity: {{ .Values.components.trivy.severity }}
-              storageClassName: default
+              storageClassName: {{ .Values.global.defaultStorageClass }}
               resources: {{ toYaml .Values.components.trivy.scanJobResources | nindent 16 }}
               ignoreUnfixed: {{ default "false" .Values.components.trivy.ignoreUnfixed }}
               server: {{ toYaml .Values.components.trivy.server | nindent 16 }}

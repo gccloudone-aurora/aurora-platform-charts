@@ -101,7 +101,7 @@ spec:
     kind: Service
     name: argocd-server
 ---
-{{- if eq .Values.argocdInstance.gateway.class "gke-l7-global-external-managed" }}
+{{- if or (eq .Values.argocdInstance.gateway.class "gke-l7-global-external-managed") (eq .Values.argocdInstance.gateway.class "gke-l7-regional-external-managed") }}
 apiVersion: v1
 kind: Secret
 metadata:
