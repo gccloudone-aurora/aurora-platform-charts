@@ -1,4 +1,4 @@
-{{- if and .Values.components.istio.enabled }}
+{{- if .Values.components.istio.enabled }}
 
 apiVersion: argoproj.io/v1alpha1
 kind: Application
@@ -33,7 +33,7 @@ spec:
                   helm.sh/chart: {{ printf "%s-%s" .Chart.Name .Chart.Version }}
                 annotations:
                   rules-definition: >-
-                    https://github.com/gccloudone-aurora-platform-charts/-/blob/main/charts/aurora-platform/charts/aurora-core/conf/prometheus_rules/istio/istio_rules.yaml
+                    https://github.com/gccloudone-aurora-platform-charts/-/blob/main/charts/aurora-platform/charts/aurora-app/conf/prometheus_rules/istio/istio_rules.yaml
               spec: {{ (.Files.Get "conf/prometheus_rules/istio/istio_rules.yaml")  | nindent 18 }}
 
   destination:
