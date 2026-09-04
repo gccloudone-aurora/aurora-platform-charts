@@ -62,6 +62,7 @@ Define order in this file:
 {{- end }}
 
 {{- define "alertmanager.email.routes" -}}
+{{- range $name, $config := .Values.components.prometheus.alertmanager.config.smtp.sendAddresses }}
 - matchers: [{{ $config.matchers }}]
   receiver: {{ $name }}
   continue: true
@@ -123,7 +124,7 @@ Produces a list shaped like:
   {{- end }}
   {{- end }}
   {{- end }}
-  {{- end }}
+{{- end }}
 {{- end }}
 {{- end }}
 
