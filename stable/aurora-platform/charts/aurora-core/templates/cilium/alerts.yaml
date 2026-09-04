@@ -17,7 +17,7 @@ spec:
         - name: HELM_RELEASE_NAME
           value: "cilium-alerts"
         - name: HELM_VALUES
-          values: |
+          value: |
             resources:
               - apiVersion: monitoring.coreos.com/v1
                 kind: PrometheusRule
@@ -34,7 +34,7 @@ spec:
                   annotations:
                     rules-definition: >-
                       https://github.com/gccloudone-aurora-platform-charts/-/blob/main/charts/aurora-platform/charts/aurora-core/conf/prometheus_rules/cilium/cilium_rules.yaml
-                spec: {{ (.Files.Get "conf/prometheus_rules/cilium/cilium_rules.yaml")  | nindent 16 }}
+                spec: {{ (.Files.Get "conf/prometheus_rules/cilium/cilium_rules.yaml")  | nindent 18 }}
   destination:
     name: {{ .Values.global.cluster }}
     namespace: platform-system
