@@ -40,6 +40,9 @@ global:
 
   # Ingress Class Name
   # ingressClassName: ingress-istio-controller
+  # iap:
+  #   clientID: ""
+  #   clientSecret: ""
 
   # Azure-specific settings.
   # load_balancer_subnet_name: ""
@@ -303,7 +306,8 @@ components:
         # tag: "1.29.1"
         # pullPolicy: IfNotPresent
         # variant: distroless
-
+      # Defaults by provider in istio-cni.yaml. Sets to /opt/cni/bin for azure/aws and /home/kubernetes/bin for gcp
+      # cniBinDir: ""
       resources: {}
         # limits:
         #  cpu: ""
@@ -360,7 +364,7 @@ components:
               labelSelector:
                 matchLabels:
                   istio: general
-
+      # loadBalancerClass: ""
       # loadBalancerIP: XXX.XX.XX.XX
 
       additionalDnsNames: []
@@ -565,6 +569,8 @@ components:
 
     instances:
       - name: kiali
+        auth:
+          strategy: anonymous
         grafana: {}
           # token: abcde12345
 

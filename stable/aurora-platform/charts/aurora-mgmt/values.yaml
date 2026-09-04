@@ -49,6 +49,8 @@ global:
   # subscriptionId: ""
   # tenantId: ""
 
+  defaultStorageClass: default
+
 data:
   mgmt:
     enabled: true
@@ -124,7 +126,7 @@ components:
       helm:
         # chart: argocd-instance
         # repository: https://gccloudone-aurora.github.io/aurora-platform-charts
-        targetRevision: 0.19.0
+        targetRevision: 0.20.0
 
       # disableAdmin: true
       # ingressDomain: ""
@@ -232,7 +234,7 @@ components:
       helm:
         # chart: argocd-instance
         # repository: https://gccloudone-aurora.github.io/aurora-platform-charts
-        targetRevision: 0.19.0
+        targetRevision: 0.20.0
 
       # disableAdmin: true
       # ingressDomain: ""
@@ -426,7 +428,7 @@ components:
       # registry: docker.io
       repository: grafana/loki
       # tag: v3.3.0
-
+    imagePullSecrets: []
     nodeSelector:
       kubernetes.io/os: linux
       node.ssc-spc.gc.ca/purpose: system
@@ -441,8 +443,12 @@ components:
       # existingSecret:
 
     logStorageLocation: {}
+      # azure configuration
       # storageAccountName: <storage-account-name>
       # storageAccountKey: <storage-account-key>
+      # gcp configuration
+      # chunkBucket: <gcp-bucket-name>
+      # rulerBucket: <gcp-bucket-name>
 
     # scrape the backend via a servicemonitor. Pre-req for alerts below
     # without the service monitor, loki storage rules have no series to evaluate

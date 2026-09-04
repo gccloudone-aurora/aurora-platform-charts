@@ -465,7 +465,11 @@ spec:
                           kubernetes.io/metadata.name: kube-system
                       podSelector:
                         matchLabels:
+                          {{- if eq .Values.global.provider "gcp" }}
+                          k8s-app: konnectivity-agent
+                          {{- else }}
                           app: konnectivity-agent
+                          {{- end }}
                   podSelector:
                     matchLabels: {}
                   policyTypes:
@@ -654,6 +658,7 @@ spec:
                   endpointSelector:
                     matchLabels:
                       k8s:app.kubernetes.io/name: prometheus
+              {{- end }} 
               - apiVersion: cilium.io/v2
                 kind: CiliumClusterwideNetworkPolicy
                 metadata:
@@ -679,14 +684,18 @@ spec:
                     Allows Alertmanager to send alert notifications to MS Teams
                   egress:
                   - toFQDNs:
-                    - matchPattern: "**.api.powerplatform.com"
+                    # Power Automate workflows are in this glob pattern: 
+                    # <env>.<region>.environment.api.powerplatform.com
+                    # Cilium expands "*" to [-a-zA-Z0-9_]*, which includes "." 
+                    # So single "*" spans across one label. ** is * essentially
+                    # Need three separate globs
+                    - matchPattern: "*.*.environment.api.powerplatform.com"
                     toPorts:
                     - ports:
                       - port: "443"
                   endpointSelector:
                     matchLabels:
                       k8s:app.kubernetes.io/name: alertmanager
-              {{- end }}
               {{ if .Values.global.clusterHasLoki }}
               - apiVersion: networking.k8s.io/v1
                 kind: NetworkPolicy
