@@ -1,4 +1,4 @@
-{{- if and .Values.components.prometheus.enabled .Values.components.trivy.enabled .Values.components.trivy.serviceMonitor.enabled }}
+{{- if and .Values.components.prometheus.enabled .Values.components.trivy.enabled .Values.components.trivy.servicemonitor.enabled }}
 
 apiVersion: argoproj.io/v1alpha1
 kind: Application
