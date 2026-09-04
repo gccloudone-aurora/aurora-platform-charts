@@ -19,35 +19,8 @@ groups:
         expr: 'sum by (persistentvolumeclaim, namespace, node) ((predict_linear(kubelet_volume_stats_available_bytes{persistentvolumeclaim="prometheus-kube-prometheus-stack-prometheus-db-prometheus-kube-prometheus-stack-prometheus-0"}[7d], 60 * 3600)) / kubelet_volume_stats_capacity_bytes{persistentvolumeclaim="prometheus-kube-prometheus-stack-prometheus-db-prometheus-kube-prometheus-stack-prometheus-0"} * 100 < 10)'
         for: 30m
         labels:
-            scope: cluster
-            severity: P1-Critical
-      - alert: AlertmanagerFailedNotification
-        annotations:
-          summary: 'Alertmanager is failing to send notification.'
-          message: 'Alertmanager {{ $$labels.namespace }}/{{ $$labels.pod }} failed to send {{ $$value | humanizePercentage }} of notifications to the {{ $$labels.integration }} integration'
-        expr: |
-          # Added exclusion for email and webhook due to them being to noisy, should be added back when alerts are fixed
-          (
-            rate(
-              alertmanager_notifications_failed_total{
-                namespace="prometheus-system",
-                integration!~"email|webhook"
-              }[5m]
-            )
-            /
-            ignoring (reason) group_left
-            rate(
-              alertmanager_notifications_total{
-                namespace="prometheus-system",
-                integration!~"email|webhook"
-              }[5m]
-            )
-          ) > 0.01
-        for: 5m
-        labels:
           scope: cluster
-          severity: P2-Major
-          teams_version: v2
+          severity: P1-Critical
       - alert: PrometheusRuleFailures
         annotations:
           summary: 'Prometheus is failing rule evaluation.'
