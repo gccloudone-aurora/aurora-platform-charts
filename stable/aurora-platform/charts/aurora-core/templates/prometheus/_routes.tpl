@@ -61,8 +61,7 @@ Define order in this file:
       receiver: aurora_{{ $environment }}_{{ $severity }}_no_resolve
 {{- end }}
 
-{{- define "alertmanager.email.routes" -}}Add a comment on  line L64Add diff commentMarkdown input:  edit mode selected.WritePreviewHeadingBold(control b) control⌃ bBItalic(control i) control⌃ iIQuote(control shift right angle bracket) control⌃ shift⇧ right angle bracket>Code(control e) control⌃ eELink(control k) control⌃ kKUnordered list(control 8) control⌃ 88Numbered list(control shift ampersand) control⌃ shift⇧ ampersand&Task list(control shift l) control⌃ shift⇧ lLMentionReferenceMore itemsSaved repliesAdd FilesPaste, drop, or click to add filesCancelCommentStart a review
-{{- range $name, $config := .Values.components.prometheus.alertmanager.config.smtp.sendAddresses }}
+{{- define "alertmanager.email.routes" -}}
 - matchers: [{{ $config.matchers }}]
   receiver: {{ $name }}
   continue: true
