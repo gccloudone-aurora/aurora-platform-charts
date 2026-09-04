@@ -1753,6 +1753,21 @@ components:
           dev:
             matchers: []
 
+        smtp:
+          smarthost: 'localhost:25'
+          from: 'alertmanager@example.com'
+          auth_username: 'none'
+          auth_password: 'none'
+          routing:
+            enabled: false
+          sendAddresses:
+            email:
+              to:
+              matchers: "severity =~ P2-Major|P1-Critical"
+            # test_email:
+            #   to:
+            #   matchers: "severity =~ Testing-Major"
+
         deadMansSwitchURL:
 
         additionalConfig:

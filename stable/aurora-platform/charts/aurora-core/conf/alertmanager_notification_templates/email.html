@@ -1,0 +1,109 @@
+{{ define "email.email.html" }}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--
+REF https://github.com/prometheus/alertmanager/blob/master/template/default.tmpl
+REF https://github.com/prometheus/alertmanager/blob/master/template/email.html
+
+
+Style and HTML derived from https://github.com/mailgun/transactional-email-templates
+
+
+The MIT License (MIT)
+
+Copyright (c) 2014 Mailgun
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+-->
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns="http://www.w3.org/1999/xhtml" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
+  <head style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
+    <meta name="viewport" content="width=device-width" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;" />
+    <title style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">{{ template "__subject" . }}</title>
+  </head>
+  <body itemscope="" itemtype="http://schema.org/EmailMessage" style="line-height: 1.6em; width: 100% !important; background-color: #f6f6f6; margin: 0; padding: 0;" bgcolor="#f6f6f6">
+    <table style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; box-sizing: border-box; font-size: 14px; width: 100%; background-color: #f6f6f6; margin: 0;" bgcolor="#f6f6f6">
+      <tr>
+        <td></td>
+        <td width="600" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; display: block !important; max-width: 600px !important; clear: both !important; width: 100% !important; margin: 0 auto; padding: 0;" valign="top">
+          <table width="100%" cellpadding="0" cellspacing="0" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; box-sizing: border-box; font-size: 14px; border-radius: 3px; background-color: #fff; margin: 0; border: 1px solid #e9e9e9;" bgcolor="#fff">
+            <tr>
+              {{ if eq .Status "resolved" -}}<td style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; box-sizing: border-box; font-size: 16px; vertical-align: top; color: #fff; font-weight: 500; text-align: center; border-radius: 3px 3px 0 0; background-color: #68B90F; margin: 0; padding: 20px;" align="center" bgcolor="#68B90F" valign="top">
+              {{- else if eq .CommonLabels.severity "P1-Critical" "testing_major" -}}<td style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; box-sizing: border-box; font-size: 16px; vertical-align: top; color: #fff; font-weight: 500; text-align: center; border-radius: 3px 3px 0 0; background-color: #D0021B; margin: 0; padding: 20px;" align="center" bgcolor="#D0021B" valign="top">
+              {{- else if eq .CommonLabels.severity "P2-Major" -}} <td style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; box-sizing: border-box; font-size: 16px; vertical-align: top; color: #fff; font-weight: 500; text-align: center; border-radius: 3px 3px 0 0; background-color: #E6522C; margin: 0; padding: 20px;" align="center" bgcolor="#D0021B" valign="top">
+              {{- else if eq .CommonLabels.severity "P3-Minor" -}} <td style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; box-sizing: border-box; font-size: 16px; vertical-align: top; color: #fff; font-weight: 500; text-align: center; border-radius: 3px 3px 0 0; background-color: #E6D22C; margin: 0; padding: 20px;" align="center" bgcolor="#D0021B" valign="top">
+              {{- else }}<td style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; box-sizing: border-box; font-size: 16px; vertical-align: top; color: #fff; font-weight: 500; text-align: center; border-radius: 3px 3px 0 0; background-color: #E6522C; margin: 0; padding: 20px;" align="center" bgcolor="#E6522C" valign="top">{{ end }}
+                {{ .Alerts | len }} alert{{ if gt (len .Alerts) 1 }}s{{ end }} for {{ range .GroupLabels.SortedPairs }}
+                  {{ .Name }}={{ .Value }}
+                {{ end }}
+              </td>
+            </tr>
+            <tr>
+              <td style="font-size: 14px; padding: 10px;">
+                <table width="100%" cellpadding="0" cellspacing="0" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
+                  <tr>
+                    <td style="font-size: 14px; padding: 0 0 15px;">
+                      <a href="{{ template "__alertmanagerURL" . }}" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; box-sizing: border-box; font-size: 14px; color: #FFF; text-decoration: none; line-height: 2em; font-weight: bold; text-align: center; cursor: pointer; display: inline-block; border-radius: 5px; text-transform: capitalize; background-color: #348eda; margin-right: 8px; margin-bottom: 5px; border-color: #348eda; border-style: solid; border-width: 10px 20px;">{{ template "__alertmanager" . }}</a>
+
+                      <a href="{{ (index .Alerts 0).GeneratorURL }}" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; box-sizing: border-box; font-size: 14px; color: #FFF; text-decoration: none; line-height: 2em; font-weight: bold; text-align: center; cursor: pointer; display: inline-block; border-radius: 5px; text-transform: capitalize; background-color: #348eda; margin-right: 8px; margin-bottom: 5px; border-color: #348eda; border-style: solid; border-width: 10px 20px;">Graph</a>
+
+                      {{ if (index .Alerts 0).Annotations.runbook -}}
+                        <a href="{{ (index .Alerts 0).Annotations.runbook }}" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; box-sizing: border-box; font-size: 14px; color: #FFF; text-decoration: none; line-height: 2em; font-weight: bold; text-align: center; cursor: pointer; display: inline-block; border-radius: 5px; text-transform: capitalize; background-color: #348eda; margin-right: 8px; margin-bottom: 5px; border-color: #348eda; border-style: solid; border-width: 10px 20px;">Runbook</a>
+                      {{ end }}
+
+                      {{ if (index .Alerts 0).Annotations.grafanaDashboard -}}
+                        <a href="{{ (index .Alerts 0).Annotations.grafanaDashboard }}" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; box-sizing: border-box; font-size: 14px; color: #FFF; text-decoration: none; line-height: 2em; font-weight: bold; text-align: center; cursor: pointer; display: inline-block; border-radius: 5px; text-transform: capitalize; background-color: #348eda; margin-right: 8px; margin-bottom: 5px; border-color: #348eda; border-style: solid; border-width: 10px 20px;">Grafana Dashboard</a>
+                      {{ end }}
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td style="font-size: 14px; padding: 0 0 20px;">
+                      <strong style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">{{ if eq .Status "resolved" }}[{{ .Alerts.Resolved | len }}] Resolved{{ else }}[{{ .Alerts.Firing | len }}] Firing{{ end }}</strong>
+                    </td>
+                  </tr>
+
+                  {{ range .Alerts }}
+                  <tr>
+                    <td style="font-size: 14px; padding: 0 0 20px;">
+                      {{ .Annotations.message }} </br>
+                      </br>
+                      {{ if eq .Status "firing" }}<strong>Firing since: </strong>{{ .StartsAt.Format "02 Jan 15:04 UTC" }}{{ else }}<strong>Resolved at: </strong>{{ .EndsAt.Format "02 Jan 15:04 UTC" }}{{ end }}<br /><br />
+                      {{ range .Labels.SortedPairs }}{{ if eq .Name "alertname" }}{{ else if eq .Name "prometheus" }}{{ else if eq .Name "severity" }}{{ else }} <strong>{{ .Name }}:</strong> {{ .Value }}<br />{{ end }}{{ end }}<br />
+                    </td>
+                  </tr>
+                  {{ end }}
+                </table>
+              </td>
+            </tr>
+          </table>
+
+          <table width="100%">
+            <tr>
+              <td style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; box-sizing: border-box; font-size: 12px; vertical-align: top; text-align: center; color: #999; margin: 0; padding: 20px;" align="center" valign="top"><a href="{{ .ExternalURL }}" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; box-sizing: border-box; font-size: 12px; color: #999; text-decoration: underline; margin: 0;">Sent by {{ template "__alertmanager" . }}</a></td>
+            </tr>
+          </table>
+
+        </td>
+        <td></td>
+      </tr>
+    </table>
+  </body>
+</html>
+
+{{ end }}

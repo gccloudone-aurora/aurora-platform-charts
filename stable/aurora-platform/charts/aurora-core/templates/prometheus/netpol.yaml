@@ -196,6 +196,25 @@ spec:
                   policyTypes:
                   - Egress
               {{- if .Values.components.prometheus.alertmanager.enabled }}
+              # Email relay service
+              - apiVersion: networking.k8s.io/v1
+                kind: NetworkPolicy
+                metadata:
+                  name: allow-egress-to-ceres-from-alertmanager
+                  namespace: prometheus-system
+                spec:
+                  egress:
+                    - ports:
+                        - port: 25
+                          protocol: TCP
+                      to:
+                        - ipBlock:
+                            cidr: 0.0.0.0/0
+                  podSelector:
+                    matchLabels:
+                      app.kubernetes.io/name: alertmanager
+                  policyTypes:
+                  - Egress
               - apiVersion: networking.k8s.io/v1
                 kind: NetworkPolicy
                 metadata:
@@ -635,6 +654,22 @@ spec:
                   endpointSelector:
                     matchLabels:
                       k8s:app.kubernetes.io/name: prometheus
+              - apiVersion: cilium.io/v2
+                kind: CiliumClusterwideNetworkPolicy
+                metadata:
+                  name: allow-egress-to-ceres-from-alertmanager
+                spec:
+                  description: |
+                    Allows Alertmanagers to send email notifications
+                  egress:
+                  - toFQDNs:
+                    - matchPattern: "email-smtp.ca-central-1.amazonaws.com"
+                    toPorts:
+                    - ports:
+                      - port: "25"
+                  endpointSelector:
+                    matchLabels:
+                      k8s:app.kubernetes.io/name: alertmanager
               - apiVersion: cilium.io/v2
                 kind: CiliumClusterwideNetworkPolicy
                 metadata:

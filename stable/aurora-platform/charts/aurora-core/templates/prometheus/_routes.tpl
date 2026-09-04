@@ -1,9 +1,11 @@
 {{/*
 Define order in this file:
   1. alertmanager.channel.receivers
-  2. alertmanager.channel.routes
-  3. alertmanager.notification.routes
-  4. alertmanager.config
+  2. alertmanager.email.receivers
+  3. alertmanager.channel.routes
+  4. alertmanager.email.routes
+  5. alertmanager.notification.routes
+  6. alertmanager.config
 */}}
 
 {{- define "alertmanager.channel.receivers" -}}
@@ -30,6 +32,21 @@ Define order in this file:
 {{- end }}
 {{- end }}
 
+{{- define "alertmanager.email.receivers" -}}
+{{- range $name, $config := .Values.components.prometheus.alertmanager.config.smtp.sendAddresses }}
+- name: {{ $name }}
+  email_configs:
+    - to: {{ $config.to }}
+      send_resolved: true
+      html: '{{`{{ template "email.email.html" . }}`}}'
+- name: {{ $name }}_no_resolve
+  email_configs:
+    - to: {{ $config.to }}
+      send_resolved: false
+      html: '{{`{{ template "email.email.html" . }}`}}'
+{{- end }}
+{{- end }}
+
 {{- define "alertmanager.channel.routes" -}}
 {{- $severity := index . 0 -}}
 {{- $matcher := index . 1 -}}
@@ -44,10 +61,31 @@ Define order in this file:
       receiver: aurora_{{ $environment }}_{{ $severity }}_no_resolve
 {{- end }}
 
+{{- define "alertmanager.email.routes" -}}Add a comment on  line L64Add diff commentMarkdown input:  edit mode selected.WritePreviewHeadingBold(control b) control⌃ bBItalic(control i) control⌃ iIQuote(control shift right angle bracket) control⌃ shift⇧ right angle bracket>Code(control e) control⌃ eELink(control k) control⌃ kKUnordered list(control 8) control⌃ 88Numbered list(control shift ampersand) control⌃ shift⇧ ampersand&Task list(control shift l) control⌃ shift⇧ lLMentionReferenceMore itemsSaved repliesAdd FilesPaste, drop, or click to add filesCancelCommentStart a review
+{{- range $name, $config := .Values.components.prometheus.alertmanager.config.smtp.sendAddresses }}
+- matchers: [{{ $config.matchers }}]
+  receiver: {{ $name }}
+  continue: true
+  routes:
+    - matchers: ["resolves = never"]
+      receiver: {{ $name }}_no_resolve
+      continue: true
+{{- end }}
+{{- end }}
+
 {{/*
 Shared child routes under each parent alert scope (node-clock, cluster, namespace).
 
 Produces a list shaped like:
+
+  # email (continue: true so channel routes still run)
+  - matchers: [<smtp sendAddress matchers>]
+    receiver: <name>
+    continue: true
+    routes:
+      - matchers: ["resolves = never"]
+        receiver: <name>_no_resolve
+        continue: true
 
   # then one block per configured MS Teams severity × environment matcher.
   # Alerts opt in to MS Teams delivery with the teams_version="v2" label.
@@ -63,6 +101,9 @@ Produces a list shaped like:
             receiver: aurora_<env>_<severity>_no_resolve
 */}}
 {{- define "alertmanager.notification.routes" -}}
+{{- if and .Values.components.prometheus.alertmanager.config.smtp .Values.components.prometheus.alertmanager.config.smtp.routing .Values.components.prometheus.alertmanager.config.smtp.routing.enabled }}
+{{- include "alertmanager.email.routes" . }}
+{{- end }}
 {{- $webhooks := .Values.components.prometheus.msteams.webhooks | default dict }}
 {{- range $severity, $severityValue := .Values.components.prometheus.alertmanager.config.severities }}
 {{- $hasChannelRoute := false }}
@@ -93,10 +134,16 @@ The Alertmanager configuration.
 {{- define "alertmanager.config" -}}
 global:
   resolve_timeout: 6m
+  smtp_smarthost: {{ .Values.components.prometheus.alertmanager.config.smtp.smarthost }}
+  smtp_from: {{ .Values.components.prometheus.alertmanager.config.smtp.from }}
+  smtp_auth_username: {{ .Values.components.prometheus.alertmanager.config.smtp.auth_username }}
+  smtp_auth_password: {{ .Values.components.prometheus.alertmanager.config.smtp.auth_password }}
+  smtp_require_tls: true
 
 receivers:
   - name: black_hole #Empty default receiver
   {{- include "alertmanager.channel.receivers" . | indent 2 }}
+  {{- include "alertmanager.email.receivers" . | indent 2 }}
   {{- with .Values.components.prometheus.alertmanager.config.deadMansSwitchURL }}
   - name: dms
     webhook_configs:
@@ -197,4 +244,5 @@ inhibit_rules:
 
 templates:
   - '/etc/alertmanager/config/*.tmpl'
+  - '/etc/alertmanager/config/*.html'
 {{- end }}
