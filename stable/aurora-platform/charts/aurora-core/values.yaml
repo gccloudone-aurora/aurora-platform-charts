@@ -1760,6 +1760,8 @@ components:
           from: 'alertmanager@example.com'
           auth_username: 'none'
           auth_password: 'none'
+          routing:
+            enabled: false
           sendAddresses:
             email:
               to:
