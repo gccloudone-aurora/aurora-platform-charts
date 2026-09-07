@@ -137,6 +137,7 @@ components:
   #####################
   argoWorkflow:
     enabled: true
+    productVersion: v4.1.1
 
     workflow:
       helm:
@@ -285,6 +286,7 @@ components:
   #############
   istio:
     enabled: true
+    productVersion: 1.29.1
 
     imagePullSecrets: []
 
@@ -530,6 +532,7 @@ components:
   #############
   kiali:
     enabled: true
+    productVersion: v2.30.0
 
     helm:
       # chart: kiali-operator
@@ -727,6 +730,7 @@ components:
   ###############
   strimzi:
     enabled: false
+    productVersion: 1.0.0
 
     helm:
       # chart: strimzi-kafka-operator
