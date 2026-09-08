@@ -129,7 +129,7 @@ spec:
                   helm.sh/chart: {{ printf "%s-%s" .Chart.Name .Chart.Version }}
                 annotations:
                   rules-definition: >-
-                    https://github.com/gccloudone-aurora-platform-charts/-/blob/main/charts/aurora-platform/charts/aurora-core/conf/kubernetes/workloads/deployment_rules.yaml
+                    https://github.com/gccloudone-aurora-platform-charts/-/blob/main/charts/aurora-platform/charts/aurora-core/conf/prometheus_rules/kubernetes/workloads/deployment_rules.yaml
               spec: {{ (.Files.Get "conf/prometheus_rules/kubernetes/workloads/deployment_rules.yaml")  | nindent 16 }}
             - apiVersion: monitoring.coreos.com/v1
               kind: PrometheusRule
