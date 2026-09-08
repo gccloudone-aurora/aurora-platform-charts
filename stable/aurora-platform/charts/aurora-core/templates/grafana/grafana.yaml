@@ -48,7 +48,7 @@ spec:
                     plugins:
                       plugins_update_checker: "false"
                     security:
-                      adminPassword: {{ required "grafana.adminPassword is required" .Values.components.grafana.adminPassword | quote }}
+                      admin_password: {{ required "grafana.adminPassword is required" .Values.components.grafana.adminPassword | quote }}
                     server:
                       root_url: {{ .Values.components.grafana.serverUrl | default (printf "http://localhost:3000/login/azuread" .Values.components.grafana.serverUrl) | quote }}
                     {{- if or (eq .Values.global.provider "azure") (and .Values.components.grafana.azure.clientId .Values.components.grafana.azure.clientPassword) }}
