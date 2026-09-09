@@ -337,7 +337,7 @@ components:
     imagePullSecrets: []
     image:
       # registry: quay.io
-      repository: jetstack/cert-manager-controller
+      repository: ssc-spc.gc.ca/cert-manager-controller
       # tag: "v1.18.1"
       # pullPolicy: IfNotPresent
 
@@ -382,7 +382,7 @@ components:
     webhook:
       image:
         # registry: quay.io
-        repository: jetstack/cert-manager-webhook
+        repository: ssc-spc.gc.ca/cert-manager-webhook
         # tag: "v1.18.1"
         # pullPolicy: IfNotPresent
 
@@ -413,7 +413,7 @@ components:
     cainjector:
       image:
         # registry: quay.io
-        repository: jetstack/cert-manager-cainjector
+        repository: ssc-spc.gc.ca/cert-manager-cainjector
         # tag: "v1.18.1"
         # pullPolicy: IfNotPresent
 
@@ -444,7 +444,7 @@ components:
     acmesolver:
       image:
         # registry: quay.io
-        repository: jetstack/cert-manager-acmesolver
+        repository: ssc-spc.gc.ca/cert-manager-acmesolver
         # tag: "v1.18.1"
         # pullPolicy: IfNotPresent
 
@@ -2515,7 +2515,7 @@ components:
     imagePullSecrets: []
     image:
       # registry: docker.io
-      repository: velero/velero
+      repository: ssc-spc.gc.ca/velero
       # tag: "v1.10.2"
       # pullPolicy: IfNotPresent
 
@@ -2563,8 +2563,8 @@ components:
       azure:
         image:
           # registry: docker.io
-          repository: velero/velero-plugin-for-microsoft-azure
-          tag: "v1.13.1"
+          repository: ssc-spc.gc.ca/velero-plugin-for-microsoft-azure
+          tag: "v1.14.2"
       aws:
         image:
           # registry: docker.io
