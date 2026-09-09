@@ -2152,6 +2152,9 @@ components:
       # repository: https://aquasecurity.github.io/helm-charts
       targetRevision: 0.32.1
 
+    # This enables Trivy to use the global secret distributed by Aurora Controller for scanning
+    useAuroraImagePullSecret: false
+
     imagePullSecrets: []
     image:
       # registry: docker.io
@@ -2200,13 +2203,18 @@ components:
     servicemonitor:
       enabled: true
 
-    # Ignore vulnerabilties where no fix is currently available (as there's no way to action on them)
+    # Ignore vulnerabilities where no fix is currently available (as there's no way to action on them)
     ignoreUnfixed: true
     operator:
       # enable builtin server mode
       builtInTrivyServer: true
       # Disable Trivy from using global secrets/service accounts to improve security
       accessGlobalSecretsAndServiceAccount: false
+      # Defines the secrets set for scanning. Automatically uses the image pull secret from
+      # the Aurora Controller when enabled and when useAuroraImagePullSecret is set to true
+      # When accessGlobalSecretsAndServiceAccount is set to false, this only uses entries
+      # for the trivy-system namespace for the namespace-secretName mapping required
+      privateRegistryScanSecretNames: {}
       # -- the flag to enable vulnerability scanner
       vulnerabilityScannerEnabled: true
       # -- configAuditScannerEnabled the flag to enable configuration audit scanner

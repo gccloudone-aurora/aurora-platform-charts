@@ -4,6 +4,16 @@
 {{- if .Values.components.trivy.image.registry -}}
 {{- $upstreamGlobalRegistry = "" -}}
 {{- end }}
+{{- $operator := deepCopy .Values.components.trivy.operator -}}
+{{- if .Values.components.trivy.useAuroraImagePullSecret -}}
+{{- if not .Values.components.auroraController.enabled -}}
+{{- fail "trivy.useAuroraImagePullSecret requires auroraController.enabled" -}}
+{{- end -}}
+{{- $secretName := required "trivy.useAuroraImagePullSecret requires auroraController.aurora.secretName" .Values.components.auroraController.aurora.secretName -}}
+{{- $scanSecrets := default (dict) $operator.privateRegistryScanSecretNames -}}
+{{- $_ := set $scanSecrets "trivy-system" $secretName -}}
+{{- $_ := set $operator "privateRegistryScanSecretNames" $scanSecrets -}}
+{{- end }}
 
 apiVersion: argoproj.io/v1alpha1
 kind: Application
@@ -45,7 +55,7 @@ spec:
             targetWorkloads: {{ .Values.components.trivy.targetWorkloads }}
             excludeNamespaces: {{ .Values.components.trivy.excludeNamespaces | quote }}
             
-            operator: {{ toYaml .Values.components.trivy.operator | nindent 14 }}
+            operator: {{ toYaml $operator | nindent 14 }}
 
             trivyOperator: {{ toYaml .Values.components.trivy.trivyOperator | nindent 14 }}
 
