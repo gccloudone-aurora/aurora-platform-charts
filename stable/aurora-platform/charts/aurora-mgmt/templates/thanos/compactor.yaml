@@ -32,7 +32,7 @@ spec:
                     azure.workload.identity/client-id: {{ required "components.thanos.objectStorage.buckets[].clientId is required for workloadIdentity" $b.clientId | quote }}
                   {{- else if and (eq $t.objectStorage.auth "workloadIdentity") (eq $thanosProvider "gcp") $b.serviceAccountEmail }}
                   annotations:
-                    iam.gke.io/gcp-service-account: {{ $b.serviceAccountEmail | quote}}
+                    iam.gke.io/gcp-service-account: {{ $b.serviceAccountEmail | quote }}
                   {{- end }}
                   labels:
                     app.kubernetes.io/name: thanos-compactor
