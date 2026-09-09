@@ -2214,7 +2214,7 @@ components:
       # the Aurora Controller when enabled and when useAuroraImagePullSecret is set to true
       # When accessGlobalSecretsAndServiceAccount is set to false, this only uses entries
       # for the trivy-system namespace for the namespace-secretName mapping required
-      privateRegistryScanSecretNames: {}
+      privateRegistryScanSecretsNames: {}
       # -- the flag to enable vulnerability scanner
       vulnerabilityScannerEnabled: true
       # -- configAuditScannerEnabled the flag to enable configuration audit scanner

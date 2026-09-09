@@ -10,9 +10,9 @@
 {{- fail "trivy.useAuroraImagePullSecret requires auroraController.enabled" -}}
 {{- end -}}
 {{- $secretName := required "trivy.useAuroraImagePullSecret requires auroraController.aurora.secretName" .Values.components.auroraController.aurora.secretName -}}
-{{- $scanSecrets := default (dict) $operator.privateRegistryScanSecretNames -}}
+{{- $scanSecrets := default (dict) $operator.privateRegistryScanSecretsNames -}}
 {{- $_ := set $scanSecrets "trivy-system" $secretName -}}
-{{- $_ := set $operator "privateRegistryScanSecretNames" $scanSecrets -}}
+{{- $_ := set $operator "privateRegistryScanSecretsNames" $scanSecrets -}}
 {{- end }}
 
 apiVersion: argoproj.io/v1alpha1
