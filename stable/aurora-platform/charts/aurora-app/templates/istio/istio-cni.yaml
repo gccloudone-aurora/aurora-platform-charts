@@ -29,7 +29,7 @@ spec:
         tolerations: {{ toYaml .Values.components.istio.cni.tolerations | nindent 10 }}
 
         {{- $defaultCniBinDir := ternary "/home/kubernetes/bin" "/opt/cni/bin" (eq .Values.global.provider "gcp") }}
-        cniBinDir: {{ toYaml .Values.components.istio.cni.cniBinDir | default $defaultCniBinDir | quote }}
+        cniBinDir: {{ default $defaultCniBinDir .Values.components.istio.cni.cniBinDir | quote }}
         
         global:
           priorityClassName: {{ .Values.components.istio.cni.priorityClassName }}
