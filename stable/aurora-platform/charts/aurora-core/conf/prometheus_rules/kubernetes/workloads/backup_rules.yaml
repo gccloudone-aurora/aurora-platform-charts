@@ -1,0 +1,12 @@
+groups:
+  - name: backup.rules
+    rules:
+      - alert: BackupJobFailed
+        expr: sum by (job_name,namespace) (kube_job_failed{job_name=~".*backup.*"}) == 1
+        for: 2m
+        labels:
+          severity: P2-Major
+          scope: cluster
+          resolves: never
+        annotations:
+          message: 'Job {{ $$labels.namespace }}/{{ $$labels.job_name }} failed to complete.  Removing the failed job after investigation should clear this alert.'

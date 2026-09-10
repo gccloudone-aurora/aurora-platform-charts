@@ -108,7 +108,9 @@ Produces a list shaped like:
             receiver: aurora_<env>_<severity>_no_resolve
 */}}
 {{- define "alertmanager.notification.routes" -}}
+{{- if and .Values.components.prometheus.alertmanager.config.smtp .Values.components.prometheus.alertmanager.config.smtp.routing .Values.components.prometheus.alertmanager.config.smtp.routing.enabled }}
 {{- include "alertmanager.email.routes" . }}
+{{- end }}
 {{- $webhooks := .Values.components.prometheus.msteams.webhooks | default dict }}
 {{- range $severity, $severityValue := .Values.components.prometheus.alertmanager.config.severities }}
 {{- $hasChannelRoute := false }}
