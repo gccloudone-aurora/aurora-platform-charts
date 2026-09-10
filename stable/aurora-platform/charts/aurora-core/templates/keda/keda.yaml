@@ -1,0 +1,72 @@
+{{ if .Values.components.keda.enabled -}}
+
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-keda"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    chart: {{ default "keda" .Values.components.keda.helm.chart }}
+    {{- if .Values.components.keda.helm.repository }}
+    repoURL: {{ .Values.components.keda.helm.repository }}
+    {{- else }}
+    repoURL: {{ default "https://kedacore.github.io/charts" .Values.global.helm.repository }}
+    {{- end }}
+    targetRevision: {{ .Values.components.keda.helm.targetRevision }}
+    helm:
+      releaseName: keda
+      values: |-
+        image:
+          keda: {{- default "{}" (include "keda.image" .) | nindent 12 }}
+          metricsApiServer: {{- default "{}" (include "keda.metricsApiServer.image" .) | nindent 12 }}
+          webhooks: {{- default "{}" (include "keda.webhooks.image" .) | nindent 12 }}
+
+        {{ if .Values.components.keda.priorityClassName -}}
+        podPriorityClassName: {{ .Values.components.keda.priorityClassName }}
+        {{- end }}
+
+        {{ if .Values.components.keda.resources -}}
+        resources:
+          operator: {{ toYaml .Values.components.keda.resources | nindent 12 }}
+          metricServer: {{ toYaml .Values.components.keda.resources | nindent 12 }}
+          webhooks: {{ toYaml .Values.components.keda.resources | nindent 12 }}
+        {{- end }}
+
+        {{ if .Values.components.keda.nodeSelector -}}
+        nodeSelector: {{ toYaml .Values.components.keda.nodeSelector | nindent 10 }}
+        {{- end }}
+
+        {{ if .Values.components.keda.tolerations -}}
+        tolerations: {{ toYaml .Values.components.keda.tolerations | nindent 10 }}
+        {{- end }}
+
+        {{ if .Values.components.keda.affinity -}}
+        affinity: {{ toYaml .Values.components.keda.affinity | nindent 10 }}
+        {{- end }}
+
+        prometheus:
+          metricServer:
+            enabled: {{ .Values.components.keda.prometheus.enabled }}
+            serviceMonitor:
+              enabled: {{ .Values.components.keda.prometheus.servicemonitor.enabled }}
+          operator:
+            enabled: {{ .Values.components.keda.prometheus.enabled }}
+            serviceMonitor:
+              enabled: {{ .Values.components.keda.prometheus.servicemonitor.enabled }}
+          webhooks:
+            enabled: {{ .Values.components.keda.prometheus.enabled }}
+            serviceMonitor:
+              enabled: {{ .Values.components.keda.prometheus.servicemonitor.enabled }}
+
+  destination:
+    name: {{ .Values.global.cluster }}
+    namespace: keda-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+
+{{- end }}

@@ -1270,6 +1270,64 @@ components:
       # -- A list of volumes you want to add to the Falco pods.
       volumeMounts: []
 
+  ############
+  ### KEDA ###
+  ############
+  keda:
+    # Disabled by default. Enable per cluster via the GitOps config.yaml.
+    enabled: false
+
+    helm:
+      # chart: keda
+      # repository: https://kedacore.github.io/charts
+      targetRevision: 2.20.2
+
+    # Prometheus metrics / ServiceMonitor for the operator, metrics server and webhooks.
+    prometheus:
+      enabled: false
+      servicemonitor:
+        enabled: false
+
+    resources: {}
+    #   requests:
+    #     cpu: 100m
+    #     memory: 128Mi
+    #   limits:
+    #     cpu: 1000m
+    #     memory: 512Mi
+
+    nodeSelector: {}
+
+    tolerations: []
+
+    affinity: {}
+
+    priorityClassName: ""
+
+    # Image tags are left empty so the KEDA chart uses its packaged appVersion
+    # (matching the pinned chart targetRevision above). Override to pin explicitly.
+    images:
+      keda:
+        image:
+          registry: ghcr.io
+          repository: kedacore/keda
+          tag: ""
+          # pullPolicy: IfNotPresent
+
+      metricsApiServer:
+        image:
+          registry: ghcr.io
+          repository: kedacore/keda-metrics-apiserver
+          tag: ""
+          # pullPolicy: IfNotPresent
+
+      webhooks:
+        image:
+          registry: ghcr.io
+          repository: kedacore/keda-admission-webhooks
+          tag: ""
+          # pullPolicy: IfNotPresent
+
   #################
   ### KubeBench ###
   #################
