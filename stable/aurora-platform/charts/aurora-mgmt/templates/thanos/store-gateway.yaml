@@ -33,8 +33,8 @@ spec:
                   {{- else if and (eq $t.objectStorage.auth "workloadIdentity") (eq $thanosProvider "gcp") $b.serviceAccountEmail }}
                   annotations:
                     iam.gke.io/gcp-service-account: {{ $b.serviceAccountEmail | quote }}
-                  # {{- else if ne $t.objectStorage.auth "workloadIdentity" }}
-                  # {{- fail (printf "objectStorage.auth must be 'workloadIdentity' or 'accountKey', got %q" $t.objectStorage.auth) }}
+                  {{- else if ne $t.objectStorage.auth "workloadIdentity" }}
+                  {{- fail (printf "objectStorage.auth must be 'workloadIdentity' or 'accountKey', got %q" $t.objectStorage.auth) }}
                   {{- end }}
                   labels:
                     app.kubernetes.io/name: thanos-storegateway
