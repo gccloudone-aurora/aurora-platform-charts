@@ -109,3 +109,33 @@ argocd:
     sourceRepos: []       # Merges with deploymentRepoURL to form the list of source repositories
     developerGroups: []   # defaults to rbac.groups if empty
     adminGroups: []       # defaults to rbac.groups if empty
+
+# Off-hours autoscaling via KEDA. Opt-in per namespace.
+# When enabled, listed workloads scale down to minReplicas outside business
+# hours and scale up during their business-hours window.
+# Requires the KEDA operator to be installed on the cluster.
+offHoursScaling:
+  # Enable off-hours scaling for this namespace. Disabled by default.
+  enabled: false                       # @schema type:[boolean]
+  # Namespace-wide default business-hours window. Applied to any workload
+  # that does not define its own schedule.
+  defaultSchedule:
+    # Cron expression marking the START of business hours (workload scales up).
+    start: "0 7 * * 1-5"               # @schema type:[string]
+    # Cron expression marking the END of business hours (workload scales down).
+    end: "0 19 * * 1-5"                # @schema type:[string]
+    # IANA timezone the schedule is evaluated in.
+    timezone: "America/Toronto"        # @schema type:[string]
+  # Replica floor outside business hours. 1 keeps a single replica warm;
+  # set to 0 for a full off-hours shutdown.
+  minReplicas: 1                       # @schema type:[integer];minimum:0
+  # The workloads to place under off-hours scaling.
+  workloads: []                        # @schema type:[array]
+    # - name: my-api                   # metadata.name of the target workload (required)
+    #   kind: Deployment               # Deployment | StatefulSet (default Deployment)
+    #   businessHoursReplicas: 2       # replicas during business hours (default 1)
+    #   # Optional per-workload window. Falls back to defaultSchedule if omitted.
+    #   schedule:
+    #     start: "0 6 * * 1-5"
+    #     end: "0 20 * * 1-5"
+    #     timezone: "America/Toronto"
