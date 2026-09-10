@@ -331,6 +331,20 @@ core:
             - registry.k8s.io/
             - cgr.dev/
 
+    ############
+    ### KEDA ###
+    ############
+    keda:
+      enabled: false
+
+      # helm:
+      #   targetRevision: 2.20.2
+
+      prometheus:
+        enabled: false
+        servicemonitor:
+          enabled: false
+
     #################
     ### KubeBench ###
     #################
