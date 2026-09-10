@@ -1,4 +1,6 @@
 {{ if .Values.components.prometheus.enabled -}}
+{{- $thanos := .Values.components.prometheus.prometheus.prometheusSpec.thanos }}
+{{- $thanosProvider := default .Values.global.provider $thanos.objectStorage.provider }}
 
 apiVersion: argoproj.io/v1alpha1
 kind: Application
@@ -65,11 +67,16 @@ spec:
                 enabled: true
               thanosServiceMonitor:
                 enabled: true
-              {{- if and .Values.components.prometheus.prometheus.prometheusSpec.thanos.enabled (eq .Values.components.prometheus.prometheus.prometheusSpec.thanos.objectStorage.auth "workloadIdentity") }}
+              {{- if and $thanos.enabled (eq $thanos.objectStorage.auth "workloadIdentity") (eq $thanosProvider "azure") }}
               ## Federate Prometheus ServiceAccount to Azure workload identity in order for Thanos to auth into blob storage
               serviceAccount:
                 annotations:
                   azure.workload.identity/client-id: {{ required "prometheus..prometheusSpec.thanos.objectStorage.clientId is required when auth=workloadIdentity" .Values.components.prometheus.prometheus.prometheusSpec.thanos.objectStorage.clientId | quote }}
+              {{- else if and $thanos.enabled (eq $thanos.objectStorage.auth "workloadIdentity") (eq $thanosProvider "gcp") $thanos.objectStorage.serviceAccountEmail }}
+              ## Optional KSA-GSA binding. Leave serviceAccountEmail empty to use KSA principal directly with WIF for GKE
+              serviceAccount:
+                annotations:
+                  iam.gke.io/gcp-service-account: {{ $thanos.objectStorage.serviceAccountEmail | quote }}
               {{- end }}
               prometheusSpec:
                 image: {{ default "{}" (include "prometheus.prometheus.prometheusSpec.image" .) | nindent 18 }}
@@ -183,7 +190,7 @@ spec:
                 priorityClassName: {{ .Values.components.prometheus.priorityClassName }}
                 {{- $thanos := .Values.components.prometheus.prometheus.prometheusSpec.thanos }}
                 {{- if $thanos.enabled }}
-                {{- if eq $thanos.objectStorage.auth "workloadIdentity" }}
+                {{- if and (eq $thanos.objectStorage.auth "workloadIdentity") (eq $thanosProvider "azure") }}
                 podMetadata:
                   labels:
                     azure.workload.identity/use: "true"

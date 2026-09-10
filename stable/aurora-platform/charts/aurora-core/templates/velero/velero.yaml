@@ -110,7 +110,10 @@ spec:
               - name: {{ .Values.global.cluster }}
                 provider: {{ .Values.global.provider }}
                 config: {{ include "velero.volumeSnapshotLocation.config" . | nindent 18 }}
-
+            {{- if eq .Values.global.provider "gcp" }}
+            credentials:
+              useSecret: false
+            {{- else }}
             credentials:
               secretContents:
                 {{- if eq .Values.global.provider "azure" }}
@@ -121,6 +124,7 @@ spec:
                   AZURE_SUBSCRIPTION_ID: {{ .Values.global.subscriptionId }}
                   AZURE_RESOURCE_GROUP: {{ printf "%s-aks-managed-rg" .Values.global.cluster }}
                 {{- end }}
+            {{- end}}
 
             schedules:
               hourly-resources:
@@ -138,7 +142,7 @@ spec:
             serviceAccount:
               server:
                 annotations:
-                  {{- include "velero.workloadIdentity.clientId" . | nindent 18 }}
+                  {{- include "velero.workloadIdentity.annotations" . | nindent 18 }}
 
             priorityClassName: {{ .Values.components.velero.priorityClassName }}
   destination:
