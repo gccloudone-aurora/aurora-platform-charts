@@ -122,6 +122,47 @@
             },
             "type": "object"
         },
+        "offHoursScaling": {
+            "properties": {
+                "enabled": {
+                    "type": [
+                        "boolean"
+                    ]
+                },
+                "defaultSchedule": {
+                    "properties": {
+                        "start": {
+                            "type": [
+                                "string"
+                            ]
+                        },
+                        "end": {
+                            "type": [
+                                "string"
+                            ]
+                        },
+                        "timezone": {
+                            "type": [
+                                "string"
+                            ]
+                        }
+                    },
+                    "type": "object"
+                },
+                "minReplicas": {
+                    "minimum": 0,
+                    "type": [
+                        "integer"
+                    ]
+                },
+                "workloads": {
+                    "type": [
+                        "array"
+                    ]
+                }
+            },
+            "type": "object"
+        },
         "policies": {
             "properties": {
                 "allowedHosts": {
