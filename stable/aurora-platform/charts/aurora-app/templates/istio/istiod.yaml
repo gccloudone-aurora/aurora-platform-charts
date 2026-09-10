@@ -21,22 +21,21 @@ spec:
       values: |
 
         profile: ambient
-        pilot:
-          {{- default "{}" (include "istiod.pilot.image" .) | nindent 10 }}
-          replicaCount: {{ .Values.components.istio.istiod.pilot.replicas }}
-          resources: {{ toYaml .Values.components.istio.istiod.pilot.resources | nindent 12 }}
-          nodeSelector: {{ toYaml .Values.components.istio.istiod.pilot.nodeSelector | nindent 12 }}
-          tolerations: {{ toYaml .Values.components.istio.istiod.pilot.tolerations | nindent 12 }}
-          affinity: {{ toYaml .Values.components.istio.istiod.pilot.affinity | nindent 12 }}
-          autoscaleEnabled: true
-          autoscaleMin: 2
-          autoscaleMax: 5
-          enableProtocolSniffingForInbound: false
-          enableProtocolSniffingForOutbound: false
-          env:
-            PILOT_HTTP10: 'true'
-            PILOT_JWT_ENABLE_REMOTE_JWKS: 'envoy'
-            PILOT_ENABLE_AMBIENT: 'true'
+        {{- default "{}" (include "istiod.pilot.image" .) | nindent 8 }}
+        replicaCount: {{ .Values.components.istio.istiod.pilot.replicas }}
+        resources: {{ toYaml .Values.components.istio.istiod.pilot.resources | nindent 10 }}
+        nodeSelector: {{ toYaml .Values.components.istio.istiod.pilot.nodeSelector | nindent 10 }}
+        tolerations: {{ toYaml .Values.components.istio.istiod.pilot.tolerations | nindent 10 }}
+        affinity: {{ toYaml .Values.components.istio.istiod.pilot.affinity | nindent 10 }}
+        autoscaleEnabled: true
+        autoscaleMin: 2
+        autoscaleMax: 5
+        enableProtocolSniffingForInbound: false
+        enableProtocolSniffingForOutbound: false
+        env:
+          PILOT_HTTP10: 'true'
+          PILOT_JWT_ENABLE_REMOTE_JWKS: 'envoy'
+          PILOT_ENABLE_AMBIENT: 'true'
 
         global:
           {{- default "{}" (include "istiod.image" .) | nindent 10 }}

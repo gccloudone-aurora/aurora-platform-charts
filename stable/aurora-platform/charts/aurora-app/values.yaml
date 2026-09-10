@@ -298,11 +298,12 @@ components:
       helm:
         # chart: cni
         # repository: https://istio-release.storage.googleapis.com/charts
-        targetRevision: 1.29.1
+        targetRevision: 1.29.7
 
       image:
         # registry: docker.io
-        repository: istio
+        repository: ssc-spc.gc.ca
+        name: istio-install-cni
         # tag: "1.29.1"
         # pullPolicy: IfNotPresent
         # variant: distroless
@@ -413,14 +414,14 @@ components:
       helm:
         # chart: istiod
         # repository: https://istio-release.storage.googleapis.com/charts
-        targetRevision: 1.29.1
+        targetRevision: 1.29.7
 
       image:
         # registry: docker.io
-        repository: istio
+        repository: ssc-spc.gc.ca
         # tag: "1.29.1"
         # pullPolicy: IfNotPresent
-        # variant: distroless
+        variant: distroless
 
       resources: {}
         # limits:
@@ -433,7 +434,8 @@ components:
       pilot:
         image:
           # registry: docker.io
-          repository: istio
+          repository: ssc-spc.gc.ca
+          name: istiod-pilot
           # tag: "1.29.1"
           # pullPolicy: IfNotPresent
           # variant: distroless
@@ -465,7 +467,7 @@ components:
       proxy:
         image:
           # registry: docker.io
-          repository: istio
+          repository: ssc-spc.gc.ca
           # tag: "1.29.1"
           # pullPolicy: IfNotPresent
           # variant: distroless
