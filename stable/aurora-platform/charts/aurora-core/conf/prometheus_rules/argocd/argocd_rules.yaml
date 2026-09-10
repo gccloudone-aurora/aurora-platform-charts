@@ -11,3 +11,18 @@ groups:
       teams_version: v2
     annotations:
       message: 'Argo CD application {{ $$labels.name }} in namespace {{ $$labels.namespace }} has sync phase {{ $$labels.phase }} within the last 15 minutes.'
+  - alert: ArgoCDOutOfSync
+    # TODO look into noisiness of this alert and decide on frequency and exception
+    annotations:
+      message: 'Argo CD application {{ $$labels.name }} in project {{ $$labels.project }} is out of sync for the last 15 minutes.'
+      summary: 'Argo CD is out of sync.'
+    expr: |
+      max by (name, namespace, project, dest_namespace) (
+        argocd_app_info{sync_status="OutOfSync"}
+      ) == 1
+    for: 15m
+    labels:
+      severity: P2-Major
+      scope: cluster
+      teams_version: v2
+      resolves: never

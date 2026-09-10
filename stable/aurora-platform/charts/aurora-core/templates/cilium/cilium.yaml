@@ -1,4 +1,5 @@
 {{ if .Values.components.cilium.enabled -}}
+{{- $ciliumServiceMonitorEnabled := and .Values.components.prometheus.enabled .Values.components.cilium.prometheus.enabled .Values.components.cilium.prometheus.serviceMonitor.enabled -}}
 
 apiVersion: argoproj.io/v1alpha1
 kind: Application
@@ -138,6 +139,12 @@ spec:
                       type: RuntimeDefault
                   image: {{ default "{}" (include "cilium.hubble.ui.frontend.image" .) | nindent 20 }}
 
+            prometheus:
+              enabled: {{ .Values.components.cilium.prometheus.enabled }}
+              serviceMonitor:
+                enabled: {{ $ciliumServiceMonitorEnabled }}
+                trustCRDsExist: {{ $ciliumServiceMonitorEnabled }}
+
             operator:
               enabled: true
               image: {{ default "{}" (include "cilium.operator.image" .) | nindent 16 }}
@@ -184,8 +191,21 @@ spec:
     automated:
       prune: true
       selfHeal: true
+    syncOptions:
+      - RespectIgnoreDifferences=true
   # Fixed ignoreDifferences structure based on ArgoCD UI diff
   ignoreDifferences:
+    # Ignoring the CA cert secret due to how Cilium determines when to render the secret.
+    # Currently Cilium attempts to look up the secret deployed when rendering to determine if
+    # it needs to be recreated. But since ArgoCD renders client-side, Cilium can't use helm
+    # lookup on the cluster to find the existing secret, so it's treated as missing and needs to
+    # be recreated. This only fixes recreation issues so the CA isn't recreated on each change.
+    - group: ""
+      kind: Secret
+      name: cilium-ca
+      jsonPointers:
+        - /data/ca.crt
+        - /data/ca.key
     - group: ""
       kind: ConfigMap
       name: hubble-ca-cert

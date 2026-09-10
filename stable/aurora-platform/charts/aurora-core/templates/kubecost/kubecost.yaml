@@ -25,7 +25,11 @@ spec:
             global:
               defaultStorageClass: default
               clusterId: {{ .Values.global.cluster }}
-
+              {{- if and .Values.global.container .Values.global.container.registry }}
+              # NOTE: The finops-agent sub-chart relies on global.imageRegistry for repository prefix resolution.
+              # This overrides the default public registry to our private virtual JFrog registry path context.
+              imageRegistry: {{ .Values.global.container.registry | quote }}
+              {{- end }}
             kubecostProductConfigs:
               clusterProfile: {{ .Values.components.kubecost.kubecostProductConfigs.clusterProfile | default "production" | quote }}
               currencyCode: "CAD"

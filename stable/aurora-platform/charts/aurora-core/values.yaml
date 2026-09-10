@@ -67,6 +67,8 @@ global:
   # subscriptionId: ""
   # tenantId: ""
 
+  defaultStorageClass: default
+
   # child values import via dependencies
   imports:
     app:
@@ -335,7 +337,7 @@ components:
     imagePullSecrets: []
     image:
       # registry: quay.io
-      repository: jetstack/cert-manager-controller
+      repository: ssc-spc.gc.ca/cert-manager-controller
       # tag: "v1.18.1"
       # pullPolicy: IfNotPresent
 
@@ -380,7 +382,7 @@ components:
     webhook:
       image:
         # registry: quay.io
-        repository: jetstack/cert-manager-webhook
+        repository: ssc-spc.gc.ca/cert-manager-webhook
         # tag: "v1.18.1"
         # pullPolicy: IfNotPresent
 
@@ -411,7 +413,7 @@ components:
     cainjector:
       image:
         # registry: quay.io
-        repository: jetstack/cert-manager-cainjector
+        repository: ssc-spc.gc.ca/cert-manager-cainjector
         # tag: "v1.18.1"
         # pullPolicy: IfNotPresent
 
@@ -442,7 +444,7 @@ components:
     acmesolver:
       image:
         # registry: quay.io
-        repository: jetstack/cert-manager-acmesolver
+        repository: ssc-spc.gc.ca/cert-manager-acmesolver
         # tag: "v1.18.1"
         # pullPolicy: IfNotPresent
 
@@ -563,6 +565,10 @@ components:
   cilium:
     enabled: true
 
+    prometheus:
+      enabled: false
+      serviceMonitor:
+        enabled: false
     helm:
       # chart: cilium
       # repository: https://helm.cilium.io
@@ -1812,6 +1818,8 @@ components:
           from: 'alertmanager@example.com'
           auth_username: 'none'
           auth_password: 'none'
+          routing:
+            enabled: false
           sendAddresses:
             email:
               to:
@@ -2130,55 +2138,6 @@ components:
     additionalTargets: {}
 
     msteams:
-      helm:
-        # chart: prometheus-msteams
-        # repository: https://prometheus-msteams.github.io/prometheus-msteams
-        targetRevision: 1.3.0
-      image:
-        # registry: quay.io/
-        repository: prometheusmsteams/prometheus-msteams
-        tag: "master"
-        # pullPolicy: IfNotPresent
-      imagePullSecrets: []
-
-      replicas: 1
-
-      resources: {}
-        # limits:
-        #   cpu: ""
-        #   memory: ""
-        # requests:
-        #   cpu: ""
-        #   memory: ""
-
-      nodeSelector:
-        kubernetes.io/os: linux
-        node.ssc-spc.gc.ca/purpose: system
-      tolerations:
-        - key: CriticalAddonsOnly
-          operator: Exists
-      affinity:
-        podAntiAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-          - weight: 1
-            podAffinityTerm:
-              topologyKey: kubernetes.io/hostname
-              labelSelector:
-                matchLabels:
-                  app: prometheus-msteams
-
-      connectors: {}
-      #  testing: ""
-      #  devCritical: ""
-      #  devMajor: ""
-      #  devMinor: ""
-      #  nonProdCritical: ""
-      #  nonProdMajor: ""
-      #  nonProdMinor: ""
-      #  prodCritical: ""
-      #  prodMajor: ""
-      #  prodMinor: ""
-
       webhooks: {}
       #  devCritical: ""
       #  devMajor: ""
@@ -2251,6 +2210,9 @@ components:
       # repository: https://aquasecurity.github.io/helm-charts
       targetRevision: 0.32.1
 
+    # This enables Trivy to use the global secret distributed by Aurora Controller for scanning
+    useAuroraImagePullSecret: false
+
     imagePullSecrets: []
     image:
       # registry: docker.io
@@ -2299,13 +2261,18 @@ components:
     servicemonitor:
       enabled: true
 
-    # Ignore vulnerabilties where no fix is currently available (as there's no way to action on them)
+    # Ignore vulnerabilities where no fix is currently available (as there's no way to action on them)
     ignoreUnfixed: true
     operator:
       # enable builtin server mode
       builtInTrivyServer: true
       # Disable Trivy from using global secrets/service accounts to improve security
       accessGlobalSecretsAndServiceAccount: false
+      # Defines the secrets set for scanning. Automatically uses the image pull secret from
+      # the Aurora Controller when enabled and when useAuroraImagePullSecret is set to true
+      # When accessGlobalSecretsAndServiceAccount is set to false, this only uses entries
+      # for the trivy-system namespace for the namespace-secretName mapping required
+      privateRegistryScanSecretsNames: {}
       # -- the flag to enable vulnerability scanner
       vulnerabilityScannerEnabled: true
       # -- configAuditScannerEnabled the flag to enable configuration audit scanner
@@ -2614,7 +2581,7 @@ components:
     imagePullSecrets: []
     image:
       # registry: docker.io
-      repository: velero/velero
+      repository: ssc-spc.gc.ca/velero
       # tag: "v1.10.2"
       # pullPolicy: IfNotPresent
 
@@ -2662,8 +2629,8 @@ components:
       azure:
         image:
           # registry: docker.io
-          repository: velero/velero-plugin-for-microsoft-azure
-          tag: "v1.13.1"
+          repository: ssc-spc.gc.ca/velero-plugin-for-microsoft-azure
+          tag: "v1.14.2"
       aws:
         image:
           # registry: docker.io

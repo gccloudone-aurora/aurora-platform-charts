@@ -12,7 +12,6 @@ groups:
         labels:
           scope: cluster
           severity: P2-Major
-
       - alert: PrometheusDiskMayFillIn60Hours
         annotations:
           message: 'Prometheus storage is predicted to have {{ printf "%.2f" $$value }}% capacity remaining 60 hours from now and will run out of space soon.'
@@ -20,6 +19,40 @@ groups:
         expr: 'sum by (persistentvolumeclaim, namespace, node) ((predict_linear(kubelet_volume_stats_available_bytes{persistentvolumeclaim="prometheus-kube-prometheus-stack-prometheus-db-prometheus-kube-prometheus-stack-prometheus-0"}[7d], 60 * 3600)) / kubelet_volume_stats_capacity_bytes{persistentvolumeclaim="prometheus-kube-prometheus-stack-prometheus-db-prometheus-kube-prometheus-stack-prometheus-0"} * 100 < 10)'
         for: 30m
         labels:
-            scope: cluster
-            severity: P1-Critical
+          scope: cluster
+          severity: P1-Critical
+      - alert: PrometheusRuleFailures
+        annotations:
+          summary: 'Prometheus is failing rule evaluation.'
+          message: 'Prometheus {{ $$labels.namespace }}/{{ $$labels.pod }} failed to evaluate {{ printf "%.0f" $$value }} rules in the last 5 mins'
+        expr: |
+          increase(
+            prometheus_rule_evaluation_failures_total{
+              namespace="prometheus-system"
+              }[5m]
+          ) > 0
+        for: 15m
+        labels:
+          scope: cluster
+          severity: P2-Major
+          teams_version: v2
+          resolves: never
+      - alert: PrometheusTargetsDown
+        annotations:
+          summary: 'Prometheus scrape targets down'
+          message: '{{ printf "%.1f" $$value }}% of targets for job {{ $$labels.job }} down in the last 15 mins'
+        expr: |
+          100 *
+          (
+            count by (job, namespace, service) (up == 0)
+            /
+            count by (job, namespace, service) (up)
+          ) > 10
+        for: 15m
+        labels:
+          scope: cluster
+          severity: P2-Major
+          teams_version: v2
+#
+#
 # pint ignore/end

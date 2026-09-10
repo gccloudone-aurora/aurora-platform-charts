@@ -1,0 +1,79 @@
+groups:
+  - name: istio-metrics-rules
+    rules:
+      - alert: IstioHighErrorRate
+        annotations:
+          summary: 'Istio service has a high error rate'
+          message: 'Service {{ $$labels.destination_service_namespace }}/{{ $$labels.destination_service_name }} is returning {{ $$value | humanizePercentage }} HTTP 5xx response via Istio Ingress'
+        # calculate the 5xx ratio compare to normal HTTP request
+        expr: |
+          label_replace(
+            (
+              (
+                sum by (destination_service_namespace, destination_service_name) (
+                  rate(
+                    istio_requests_total{
+                      reporter="source",
+                      namespace="ingress-general-system",
+                      response_code=~"5.."
+                    }[5m]
+                  )
+                )
+                /
+                sum by (destination_service_namespace, destination_service_name) (
+                  rate(
+                    istio_requests_total{
+                      reporter="source",
+                      namespace="ingress-general-system"
+                    }[5m]
+                  )
+                )
+              ) > 0.05
+              # Only alert when the request frequency is greater than 1/sec
+              and on (destination_service_namespace, destination_service_name)
+              (
+                sum by (destination_service_namespace, destination_service_name) (
+                  rate(
+                    istio_requests_total{
+                      reporter="source",
+                      namespace="ingress-general-system"
+                    }[5m]
+                  )
+                ) > 1
+              )
+            ),
+            "namespace",
+            "$1",
+            "destination_service_namespace",
+            "(.+)"
+          )
+        for: 10m
+        labels:
+          scope: namespace
+          severity: P1-Critical
+          teams_version: v2
+      - alert: IstioIngressGateway5xxErrors
+        annotations:
+          summary: 'Istio ingress gateway is returning a significant amount of 5XX responses.'
+          message: 'Service {{ $$labels.destination_service_namespace }}/{{ $$labels.destination_service_name }} returned {{ $$value }} HTTP 5xx responses in the last 5 minutes via the Istio Ingress.'
+        expr: |
+          label_replace(
+            sum by (destination_service_namespace, destination_service_name) (
+              increase(
+                istio_requests_total{
+                  reporter="source",
+                  namespace="ingress-general-system",
+                  response_code=~"5.."
+                }[5m]
+              )
+            ) > 10,
+            "namespace",
+            "$1",
+            "destination_service_namespace",
+            "(.+)"
+          )
+        for: 2m
+        labels:
+          scope: namespace
+          severity: P2-Major
+          teams_version: v2

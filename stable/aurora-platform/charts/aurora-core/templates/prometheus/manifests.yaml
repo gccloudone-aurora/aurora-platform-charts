@@ -19,6 +19,7 @@ spec:
         - name: HELM_VALUES
           value: |
             resources:
+              {{- if eq .Values.global.provider "azure" }}
               - apiVersion: v1
                 kind: Secret
                 metadata:
@@ -35,6 +36,7 @@ spec:
                   client_id: {{ required "prometheus.azure.clientId is required" .Values.components.prometheus.azure.clientId | b64enc }}
                   client_secret: {{ required "prometheus.azure.clientPassword is required" .Values.components.prometheus.azure.clientPassword | b64enc }}
                 type: Opaque
+              {{- end }}
               {{- if .Values.components.prometheus.alertmanager.enabled }}
               - apiVersion: v1
                 kind: Secret

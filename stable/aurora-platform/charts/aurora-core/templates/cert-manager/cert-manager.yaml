@@ -72,9 +72,11 @@ spec:
           nameservers: {{ toYaml .Values.components.certManager.podDnsConfig.nameservers | nindent 12 }}
 
         prometheus: {{ toYaml .Values.components.certManager.prometheus | nindent 10 }}
+        {{- if eq .Values.global.provider "azure" }}
         serviceAccount:
           annotations:
-              {{- include "certManager.workloadIdentity.clientId" . | nindent 12 }}     
+              {{- include "certManager.workloadIdentity.clientId" . | nindent 12 }}
+        {{- end}}
 
   destination:
     name: {{ .Values.global.cluster }}
