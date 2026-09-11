@@ -33,8 +33,8 @@ imagePullPolicy: {{ .Values.components.istio.istiod.image.pullPolicy }}
 {{- if .Values.components.istio.imagePullSecrets }}
 imagePullSecrets: {{ .Values.components.istio.imagePullSecrets }}
 {{- end }}
-{{- if .Values.components.istio.istiod.image.variant }}
-variant: {{ .Values.components.istio.istiod.image.variant }}
+{{- if hasKey .Values.components.istio.istiod.image "variant" }}
+variant: {{ .Values.components.istio.istiod.image.variant | quote }}
 {{- end }}
 {{- end }}
 
