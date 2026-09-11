@@ -95,14 +95,22 @@ jobs:
               continue
             fi
 
-            # Build vendored dependencies only when the chart declares any.
-            # All dependency charts here ship a Chart.lock and vendored charts/,
-            # so this resolves offline. A genuine dependency failure should stop
-            # the run (it runs outside the `if !` guards, so `set -e` applies).
+            # Dependencies are vendored and committed (charts/*.tgz or
+            # unpacked subchart directories), so lint/template resolve them
+            # offline. Only run `helm dependency build` if the chart declares
+            # dependencies but none are vendored yet; that build reaches the
+            # network, so the required repos are added first.
             if grep -q '^dependencies:' "${chart_dir}/Chart.yaml"; then
-              echo "::group::${chart_name} :: dependency build"
-              helm dependency build "${chart_dir}"
-              echo "::endgroup::"
+              if [ -z "$(find "${chart_dir}/charts" -mindepth 1 -maxdepth 1 \
+                          \( -name '*.tgz' -o -type d \) 2>/dev/null)" ]; then
+                echo "::group::${chart_name} :: dependency build"
+                helm repo add istio https://istio-release.storage.googleapis.com/charts >/dev/null 2>&1 || true
+                helm repo update >/dev/null
+                helm dependency build "${chart_dir}"
+                echo "::endgroup::"
+              else
+                echo "${chart_name}: using vendored dependencies (skipping build)"
+              fi
             fi
 
             # Collect value files (may be empty -> render with defaults).
