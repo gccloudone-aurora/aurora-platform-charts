@@ -124,6 +124,9 @@ hub: {{ printf "%s/%s" .Values.components.istio.ztunnel.image.registry .Values.c
 {{- else if .Values.components.istio.ztunnel.image.repository }}
 hub: {{ printf "%s/%s" (default "docker.io" .Values.global.container.registry) .Values.components.istio.ztunnel.image.repository }}
 {{- end }}
+{{- if .Values.components.istio.ztunnel.image.name }}
+image: {{ .Values.components.istio.ztunnel.image.name | quote }}
+{{- end }}
 {{- if .Values.components.istio.ztunnel.image.tag }}
 tag: {{ .Values.components.istio.ztunnel.image.tag }}
 {{- end }}

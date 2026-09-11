@@ -491,11 +491,11 @@ components:
       helm:
         # chart: ztunnel
         # repository: https://istio-release.storage.googleapis.com/charts
-        targetRevision: 1.29.1
+        targetRevision: 1.29.7
 
       image:
         # registry: docker.io
-        repository: istio
+        repository: ssc-spc.gc.ca
         # tag: "1.29.1"
         # pullPolicy: IfNotPresent
         # variant: distroless
