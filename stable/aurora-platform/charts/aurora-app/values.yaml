@@ -468,6 +468,7 @@ components:
         image:
           # registry: docker.io
           repository: ssc-spc.gc.ca
+          name: istio-proxy
           # tag: "1.29.1"
           # pullPolicy: IfNotPresent
           # variant: distroless
