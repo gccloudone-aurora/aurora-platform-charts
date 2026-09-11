@@ -421,7 +421,7 @@ components:
         repository: ssc-spc.gc.ca
         # tag: "1.29.1"
         # pullPolicy: IfNotPresent
-        variant: distroless
+        variant: ""
 
       resources: {}
         # limits:
@@ -435,7 +435,7 @@ components:
         image:
           # registry: docker.io
           repository: ssc-spc.gc.ca
-          name: istiod-pilot
+          name: istio-pilot
           # tag: "1.29.1"
           # pullPolicy: IfNotPresent
           # variant: distroless
