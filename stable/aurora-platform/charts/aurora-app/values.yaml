@@ -496,7 +496,7 @@ components:
       image:
         # registry: docker.io
         repository: ssc-spc.gc.ca
-        name: istio-ztunnel
+        name: ztunnel
         # tag: "1.29.1"
         # pullPolicy: IfNotPresent
         # variant: distroless
