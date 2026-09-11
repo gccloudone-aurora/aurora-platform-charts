@@ -47,6 +47,9 @@ hub: {{ printf "%s/%s" .Values.components.istio.istiod.pilot.image.registry .Val
 {{- else if .Values.components.istio.istiod.pilot.image.repository }}
 hub: {{ printf "%s/%s" (default "docker.io" .Values.global.container.registry) .Values.components.istio.istiod.pilot.image.repository }}
 {{- end }}
+{{- if .Values.components.istio.istiod.pilot.image.name }}
+image: {{ .Values.components.istio.istiod.pilot.image.name | quote }}
+{{- end }}
 {{- if .Values.components.istio.istiod.pilot.image.tag }}
 tag: {{ .Values.components.istio.istiod.pilot.image.tag }}
 {{- end }}
@@ -94,6 +97,9 @@ hub: {{ printf "%s/%s" .Values.components.istio.cni.image.registry .Values.compo
 {{- else if .Values.components.istio.cni.image.repository }}
 hub: {{ printf "%s/%s" (default "docker.io" .Values.global.container.registry) .Values.components.istio.cni.image.repository }}
 {{- end }}
+{{- if .Values.components.istio.cni.image.name }}
+image: {{ .Values.components.istio.cni.image.name | quote }}
+{{- end }}
 {{- if .Values.components.istio.cni.image.tag }}
 tag: {{ .Values.components.istio.cni.image.tag }}
 {{- end }}
@@ -117,6 +123,9 @@ The image section for ztunnel.
 hub: {{ printf "%s/%s" .Values.components.istio.ztunnel.image.registry .Values.components.istio.ztunnel.image.repository }}
 {{- else if .Values.components.istio.ztunnel.image.repository }}
 hub: {{ printf "%s/%s" (default "docker.io" .Values.global.container.registry) .Values.components.istio.ztunnel.image.repository }}
+{{- end }}
+{{- if .Values.components.istio.ztunnel.image.name }}
+image: {{ .Values.components.istio.ztunnel.image.name | quote }}
 {{- end }}
 {{- if .Values.components.istio.ztunnel.image.tag }}
 tag: {{ .Values.components.istio.ztunnel.image.tag }}
