@@ -706,8 +706,8 @@ components:
       initContainer:
         image:
           # registry: docker.io
-          repository: docker
-          # tag: "20.10"
+          repository: "ssc-spc.gc.ca/docker-dind"
+          tag: "28.5.2"
           # pullPolicy: IfNotPresent
 
       image:
@@ -1841,8 +1841,8 @@ components:
       prometheusSpec:
         image:
           # registry: quay.io
-          repository: prometheus/prometheus
-          # tag: "v2.36.1"
+          repository: ssc-spc.gc.ca/prometheus
+          tag: "v3.14.0"
           # pullPolicy: IfNotPresent
 
         replicas: 1
