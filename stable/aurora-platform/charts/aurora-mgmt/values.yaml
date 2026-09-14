@@ -208,6 +208,11 @@ components:
         scmProviders: []
 
       redis:
+        imageRegistry:
+          repository: ssc-spc.gc.ca
+        image:
+          name: redis
+          version: 6.2.24
         resources: {}
           # limits:
           #   cpu: ""
@@ -317,6 +322,11 @@ components:
           #   memory: ""
 
       redis:
+        imageRegistry:
+          repository: ssc-spc.gc.ca
+        image:
+          name: redis
+          version: 6.2.24
         resources: {}
           # limits:
           #   cpu: ""
