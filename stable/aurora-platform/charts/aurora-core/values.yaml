@@ -2158,7 +2158,7 @@ components:
     imagePullSecrets: []
     image:
       # registry: docker.io
-      repository: aquasec/trivy-operator
+      repository: ssc-spc.gc.ca/trivy-operator
       tag: "0.34.0"
       pullPolicy: IfNotPresent
 
@@ -2285,6 +2285,8 @@ components:
 
     severity: "HIGH,CRITICAL"
     server:
+      image:
+        repository: ssc-spc.gc.ca/trivy
       podSecurityContext:
         runAsNonRoot: true
         seccompProfile:

@@ -68,6 +68,7 @@ spec:
             trivy:
               image:
                 registry: {{ $platformRegistry }}
+                repository: {{ .Values.components.trivy.server.image.repository }}
               dbRegistry: {{ $platformRegistry }}
               javaDbRegistry: {{ $platformRegistry }}
               severity: {{ .Values.components.trivy.severity }}
