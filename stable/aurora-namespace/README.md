@@ -34,7 +34,8 @@ Enable it under `offHoursScaling`:
 - `defaultSchedule` sets the namespace-wide business-hours window (`start`,
   `end`, `timezone`). Defaults to Mon-Fri 07:00-19:00 `America/Toronto`.
 - `minReplicas` is the floor outside business hours. `1` keeps a single replica
-  warm; set to `0` for a full off-hours shutdown.
+  warm; set to `0` for a full off-hours shutdown. This floor is namespace-wide
+  and applies to every listed workload; it cannot be overridden per workload.
 - `workloads` lists the targets. Each entry takes a `name`, an optional `kind`
   (`Deployment` or `StatefulSet`, default `Deployment`), an optional
   `businessHoursReplicas` (default `1`), and an optional `schedule` that
