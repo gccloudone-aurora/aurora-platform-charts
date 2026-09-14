@@ -2150,7 +2150,7 @@ components:
     helm:
       # chart: trivy-operator
       # repository: https://aquasecurity.github.io/helm-charts
-      targetRevision: 0.32.1
+      targetRevision: 0.36.0
 
     # This enables Trivy to use the global secret distributed by Aurora Controller for scanning
     useAuroraImagePullSecret: false
@@ -2159,7 +2159,7 @@ components:
     image:
       # registry: docker.io
       repository: aquasec/trivy-operator
-      tag: "0.29.0"
+      tag: "0.34.0"
       pullPolicy: IfNotPresent
 
     # This enables creating the secret for pulling the image
