@@ -119,8 +119,10 @@ spec:
                             - name: grafana
                               image: "{{ default "docker.io" .Values.global.container.registry }}/ssc-spc.gc.ca/grafana:13.2.1"
                               env:
-                                - name: GF_PLUGINS_PREINSTALL
-                                  value: ""
+                              - name: GF_PLUGINS_PREINSTALL_AUTO_UPDATE
+                                value: "false"
+                              - name: GF_PLUGINS_PREINSTALL
+                                value: ""
                               resources:
                                 limits:
                                   cpu: 500m
