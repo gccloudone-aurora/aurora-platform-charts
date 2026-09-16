@@ -72,7 +72,7 @@ spec:
                 tag: {{ .Values.components.trivy.server.image.tag }}
               dbRegistry: {{ $platformRegistry }}
               javaDbRegistry: {{ $platformRegistry }}
-              javaDbRepository: {{ .Values.components.trivy.server.javaDbRepository }}
+              dbRepository: {{ .Values.components.trivy.server.dbRepository }}
               severity: {{ .Values.components.trivy.severity }}
               storageClassName: {{ .Values.global.defaultStorageClass }}
               resources: {{ toYaml .Values.components.trivy.scanJobResources | nindent 16 }}
