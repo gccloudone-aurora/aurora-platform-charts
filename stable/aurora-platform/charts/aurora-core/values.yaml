@@ -2346,7 +2346,8 @@ components:
       image:
         repository: ssc-spc.gc.ca/trivy
         tag: "0.74.0-dev"
-      dbRepository: "aquasecurity/trivy-db"
+      dbRegistry: "docker.io"
+      javaDbRegistry: "docker.io"
       podSecurityContext:
         runAsNonRoot: true
         seccompProfile:
