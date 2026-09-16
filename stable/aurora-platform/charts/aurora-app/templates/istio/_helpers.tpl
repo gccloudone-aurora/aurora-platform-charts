@@ -73,6 +73,9 @@ hub: {{ printf "%s/%s" .Values.components.istio.istiod.proxy.image.registry .Val
 {{- else if .Values.components.istio.istiod.proxy.image.repository }}
 hub: {{ printf "%s/%s" (default "docker.io" .Values.global.container.registry) .Values.components.istio.istiod.proxy.image.repository }}
 {{- end }}
+{{- if .Values.components.istio.istiod.proxy.image.name }}
+image: {{ .Values.components.istio.istiod.proxy.image.name | quote }}
+{{- end }}
 {{- if .Values.components.istio.istiod.proxy.image.tag }}
 tag: {{ .Values.components.istio.istiod.proxy.image.tag }}
 {{- end }}
