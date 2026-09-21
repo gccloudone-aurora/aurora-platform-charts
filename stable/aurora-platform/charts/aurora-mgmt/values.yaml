@@ -129,7 +129,7 @@ components:
       helm:
         # chart: argocd-instance
         # repository: https://gccloudone-aurora.github.io/aurora-platform-charts
-        targetRevision: 0.21.0
+        targetRevision: 0.22.0
 
       # disableAdmin: true
       # ingressDomain: ""
@@ -211,12 +211,11 @@ components:
         scmProviders: []
 
       redis:
-        imageRegistry: {}
-          # host: ""
-          # repository: ""
-        image: {}
-          # name: ""
-          # version: ""
+        imageRegistry:
+          repository: ssc-spc.gc.ca
+        image:
+          name: redis
+          version: 6.2.24
         resources: {}
           # limits:
           #   cpu: ""
@@ -243,7 +242,7 @@ components:
       helm:
         # chart: argocd-instance
         # repository: https://gccloudone-aurora.github.io/aurora-platform-charts
-        targetRevision: 0.21.0
+        targetRevision: 0.22.0
 
       # disableAdmin: true
       # ingressDomain: ""
@@ -326,13 +325,11 @@ components:
           #   memory: ""
 
       redis:
-        imageRegistry: {}
-          # host: ""
-          # repository: ""
-        image: {}
-          # name: ""
-          # version: ""
-        
+        imageRegistry:
+          repository: ssc-spc.gc.ca
+        image:
+          name: redis
+          version: 6.2.24
         resources: {}
           # limits:
           #   cpu: ""

@@ -706,8 +706,8 @@ components:
       initContainer:
         image:
           # registry: docker.io
-          repository: docker
-          # tag: "20.10"
+          repository: "ssc-spc.gc.ca/docker-dind"
+          tag: "28.5.2"
           # pullPolicy: IfNotPresent
 
       image:
@@ -1155,11 +1155,11 @@ components:
     helm:
       # chart: grafana-operator
       # repository: oci://ghcr.io/grafana/helm-charts/grafana-operator
-      targetRevision: 5.24.0
+      targetRevision: 5.25.0
 
     image:
       # registry: ghcr.io
-      repository: grafana/grafana-operator
+      repository: ssc-spc.gc.ca/grafana-operator
       # tag: "v5.24.0"
       # pullPolicy: IfNotPresent
 
@@ -1269,6 +1269,64 @@ components:
       volumes: []
       # -- A list of volumes you want to add to the Falco pods.
       volumeMounts: []
+
+  ############
+  ### KEDA ###
+  ############
+  keda:
+    # Disabled by default. Enable per cluster via the GitOps config.yaml.
+    enabled: false
+
+    helm:
+      # chart: keda
+      # repository: https://kedacore.github.io/charts
+      targetRevision: 2.20.2
+
+    # Prometheus metrics / ServiceMonitor for the operator, metrics server and webhooks.
+    prometheus:
+      enabled: false
+      servicemonitor:
+        enabled: false
+
+    resources: {}
+    #   requests:
+    #     cpu: 100m
+    #     memory: 128Mi
+    #   limits:
+    #     cpu: 1000m
+    #     memory: 512Mi
+
+    nodeSelector: {}
+
+    tolerations: []
+
+    affinity: {}
+
+    priorityClassName: ""
+
+    # Image tags are left empty so the KEDA chart uses its packaged appVersion
+    # (matching the pinned chart targetRevision above). Override to pin explicitly.
+    images:
+      keda:
+        image:
+          registry: ghcr.io
+          repository: kedacore/keda
+          tag: ""
+          # pullPolicy: IfNotPresent
+
+      metricsApiServer:
+        image:
+          registry: ghcr.io
+          repository: kedacore/keda-metrics-apiserver
+          tag: ""
+          # pullPolicy: IfNotPresent
+
+      webhooks:
+        image:
+          registry: ghcr.io
+          repository: kedacore/keda-admission-webhooks
+          tag: ""
+          # pullPolicy: IfNotPresent
 
   #################
   ### KubeBench ###
@@ -1659,7 +1717,7 @@ components:
     helm:
       # chart: kube-prometheus-stack
       # repository: https://prometheus-community.github.io/helm-charts
-      targetRevision: 86.0.2
+      targetRevision: 91.3.0
 
     imageRegistry: ""
     imagePullSecrets: []
@@ -1783,8 +1841,8 @@ components:
       prometheusSpec:
         image:
           # registry: quay.io
-          repository: prometheus/prometheus
-          # tag: "v2.36.1"
+          repository: ssc-spc.gc.ca/prometheus
+          tag: "v3.14.0"
           # pullPolicy: IfNotPresent
 
         replicas: 1
@@ -2155,7 +2213,7 @@ components:
     helm:
       # chart: trivy-operator
       # repository: https://aquasecurity.github.io/helm-charts
-      targetRevision: 0.32.1
+      targetRevision: 0.36.0
 
     # This enables Trivy to use the global secret distributed by Aurora Controller for scanning
     useAuroraImagePullSecret: false
@@ -2163,8 +2221,8 @@ components:
     imagePullSecrets: []
     image:
       # registry: docker.io
-      repository: aquasec/trivy-operator
-      tag: "0.29.0"
+      repository: ssc-spc.gc.ca/trivy-operator
+      tag: "0.34.0-dev"
       pullPolicy: IfNotPresent
 
     # This enables creating the secret for pulling the image
@@ -2290,6 +2348,11 @@ components:
 
     severity: "HIGH,CRITICAL"
     server:
+      image:
+        repository: ssc-spc.gc.ca/trivy
+        tag: "0.74.0-dev"
+      dbRegistry: "docker.io"
+      javaDbRegistry: "docker.io"
       podSecurityContext:
         runAsNonRoot: true
         seccompProfile:

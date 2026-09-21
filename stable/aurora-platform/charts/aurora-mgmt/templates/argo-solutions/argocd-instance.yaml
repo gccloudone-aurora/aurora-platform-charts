@@ -93,9 +93,13 @@ spec:
 
               redis:
                 {{- if and .Values.global.container .Values.global.container.registry }}
-                # NOTE: Embedded inside the existing redis key block to fix the operator sub-chart layout scope.
+                # NOTE: Enforces full path configuration dynamically via values only when a global registry is defined.
                 imageRegistry:
                   host: {{ .Values.global.container.registry | quote }}
+                  repository: {{ .Values.components.argoSolution.argocdInstance.redis.imageRegistry.repository | quote }}
+                image:
+                  name: {{ .Values.components.argoSolution.argocdInstance.redis.image.name | quote }}
+                  version: {{ .Values.components.argoSolution.argocdInstance.redis.image.version | quote }}
                 {{- end }}
                 resources: {{ toYaml .Values.components.argoSolution.argocdInstance.redis.resources | nindent 18 }}
 
