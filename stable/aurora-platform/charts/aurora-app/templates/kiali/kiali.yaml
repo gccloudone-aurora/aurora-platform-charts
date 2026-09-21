@@ -83,8 +83,7 @@ spec:
                   deployment:
                     accessible_namespaces:
                       - '**'
-                    # Current implementation does not work as intended. Using upstream default image versions, to revisit when using GCSA to make it compatible both ways
-                    # image_name: {{ include "kiali.instance.image" (dict "instance" . "values" $.Values) | quote }}
+                    image_name: {{ include "kiali.instance.image" (dict "instance" . "values" $.Values) | quote }}
                     # image_version: operator_version
                     image_pull_secrets: {{ toYaml $.Values.components.kiali.imagePullSecrets | nindent 22 }}
                     ingress:
@@ -111,7 +110,6 @@ spec:
                   external_services:
                     grafana:
                       auth:
-                        token: {{ required "kiali.instances[].grafana.token is required" .grafana.token | quote }}
                         type: bearer
                       in_cluster_url: http://grafana-service.grafana-system:3000
                       url: https://grafana.{{ $.Values.global.ingressDomain }}

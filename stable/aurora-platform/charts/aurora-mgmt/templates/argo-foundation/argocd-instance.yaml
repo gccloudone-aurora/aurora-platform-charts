@@ -56,7 +56,9 @@ spec:
 
               argocdVaultPlugin:
                 enabled: true
-
+                # NOTE: Enforces full path configuration dynamically via values only when a global registry is defined.
+                imageRegistry:
+                  host: {{ .Values.global.container.registry | quote }}
                 env: {{ toYaml .Values.components.argoFoundation.argocdInstance.argocdVaultPlugin.env | nindent 18 }}
 
               server:
