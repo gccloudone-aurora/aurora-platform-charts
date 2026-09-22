@@ -110,7 +110,10 @@ spec:
                   external_services:
                     grafana:
                       auth:
-                        type: bearer
+                        type: basic
+                        use_kiali_token: false
+                        username: "admin"
+                        password: {{ .grafana.adminPassword | quote }}
                       in_cluster_url: http://grafana-service.grafana-system:3000
                       url: https://grafana.{{ $.Values.global.ingressDomain }}
                     istio:
