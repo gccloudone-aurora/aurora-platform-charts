@@ -2649,3 +2649,91 @@ components:
         # tag: "1.16.15"
 
     priorityClassName: platform-cluster-medium
+  ###########
+  ### VPA ###
+  ###########
+  vpa:
+    # Disabled by default. Enable per cluster via the GitOps config.yaml.
+    enabled: false
+
+    # Metrics Server is required for VPA to collect resource usage metrics.
+    # If not configured, VPA will not function properly.
+    metricsServer:
+      enabled: true
+      helm:
+        # chart: metrics-server
+        # repository: https://kubernetes-sigs.github.io/metrics-server
+        targetRevision: 3.12.0
+      image:
+        registry: registry.k8s.io
+        repository: metrics-server/metrics-server
+        tag: "v0.7.0"
+      resources:
+        requests:
+          cpu: 100m
+          memory: 128Mi
+        limits:
+          cpu: 500m
+          memory: 512Mi
+      nodeSelector:
+        kubernetes.io/os: linux
+        node.ssc-spc.gc.ca/purpose: system
+      tolerations:
+        - key: CriticalAddonsOnly
+          operator: Exists
+      args:
+        - --kubelet-insecure-tls=true
+        - --kubelet-preferred-address-types=InternalIP,ExternalIP,Hostname
+        - --metric-resolution=15s
+      priorityClassName: platform-cluster-medium
+
+    helm:
+      # chart: vertical-pod-autoscaler
+      # repository: https://kubernetes.github.io/autoscaler
+      targetRevision: 1.7.1
+
+    # Prometheus metrics / ServiceMonitor for the recommender, updater and admission controller.
+    prometheus:
+      enabled: false
+      servicemonitor:
+        enabled: false
+
+    resources: {}
+    #   requests:
+    #     cpu: 100m
+    #     memory: 128Mi
+    #   limits:
+    #     cpu: 1000m
+    #     memory: 512Mi
+
+    nodeSelector: {}
+
+    tolerations: []
+
+    affinity: {}
+
+    priorityClassName: ""
+
+    # Image tags are left empty so the VPA chart uses its packaged appVersion
+    # (matching the pinned chart targetRevision above). Override to pin explicitly.
+    images:
+      recommender:
+        image:
+          registry: registry.k8s.io
+          repository: autoscaling/vpa-recommender
+          tag: "1.7.1"
+          # pullPolicy: IfNotPresent
+
+      updater:
+        image:
+          registry: registry.k8s.io
+          repository: autoscaling/vpa-updater
+          tag: "1.7.1"
+          # pullPolicy: IfNotPresent
+
+      admissionController:
+        image:
+          registry: registry.k8s.io
+          repository: autoscaling/vpa-admission-controller
+          tag: "1.7.1"
+          # pullPolicy: IfNotPresent
