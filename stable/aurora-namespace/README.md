@@ -1,6 +1,6 @@
 # aurora-namespace
 
-![Version: 0.0.22](https://img.shields.io/badge/Version-0.0.22-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.0.0](https://img.shields.io/badge/AppVersion-2.0.0-informational?style=flat-square)
+![Version: 0.0.23](https://img.shields.io/badge/Version-0.0.23-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.0.0](https://img.shields.io/badge/AppVersion-2.0.0-informational?style=flat-square)
 
 Aurora Namespace
 
@@ -14,6 +14,37 @@ Aurora Namespace
 
 - Kubernetes 1.28+
 - Helm v3.19.0+
+
+## Off-hours scaling
+
+The chart can place selected workloads under a KEDA-driven off-hours scaling
+policy. It is opt-in and disabled by default. When enabled, each listed
+workload scales down to a replica floor outside business hours and scales back
+up during a Mon-Fri business-hours window.
+
+This relies on the [KEDA](https://keda.sh/) `cron` scaler, which raises replicas
+during the configured window and lets them fall back to `minReplicas` outside
+it. The KEDA operator must be installed on the target cluster (see the `keda`
+component in `aurora-core`); without it the generated `ScaledObject` resources
+will not reconcile.
+
+Enable it under `offHoursScaling`:
+
+- `enabled` turns the policy on for the namespace.
+- `defaultSchedule` sets the namespace-wide business-hours window (`start`,
+  `end`, `timezone`). Defaults to Mon-Fri 07:00-19:00 `America/Toronto`.
+- `minReplicas` is the floor outside business hours. `1` keeps a single replica
+  warm; set to `0` for a full off-hours shutdown.
+- `workloads` lists the targets. Each entry takes a `name`, an optional `kind`
+  (`Deployment` or `StatefulSet`, default `Deployment`), an optional
+  `businessHoursReplicas` (default `1`), and an optional `schedule` that
+  overrides `defaultSchedule` for that workload. Partial overrides merge with
+  the default, so a workload can change only `end` and inherit the rest.
+
+Generated `ScaledObject` resources are named `off-hours-<workload>` and carry
+the `scaling.ssc-spc.gc.ca/policy: off-hours` label for identification. Note
+that once a `ScaledObject` binds a workload, KEDA manages its replica count; a
+static `replicas` value on the workload is superseded.
 
 ## Values
 
@@ -41,6 +72,12 @@ Aurora Namespace
 | namespace.labels | object | `{}` |  |
 | namespace.type | string | `nil` |  |
 | netpol.allowSameNamespace | bool | `true` |  |
+| offHoursScaling.defaultSchedule.end | string | `"0 19 * * 1-5"` |  |
+| offHoursScaling.defaultSchedule.start | string | `"0 7 * * 1-5"` |  |
+| offHoursScaling.defaultSchedule.timezone | string | `"America/Toronto"` |  |
+| offHoursScaling.enabled | bool | `false` |  |
+| offHoursScaling.minReplicas | int | `1` |  |
+| offHoursScaling.workloads | list | `[]` |  |
 | policies.allowedHosts | list | `[]` |  |
 | policies.podSecurityAdmission.audit.level | string | `"restricted"` |  |
 | policies.podSecurityAdmission.audit.version | string | `"v1.35"` |  |

@@ -1,0 +1,55 @@
+# Solution namespace with KEDA off-hours scaling enabled.
+# Standalone CI fixture: exercises the offHoursScaling ScaledObject template
+# (default-schedule inheritance, per-workload schedule/kind/replica overrides,
+# minReplicas floor, and scaling.ssc-spc.gc.ca policy/target labels).
+# Mirrors solution-values.yaml plus an offHoursScaling block.
+
+# Information about the namespace.
+information:
+  division: "TEST"
+  team: "The Test Team"
+  projectName: "TestingSolutions"
+  projectLead: "Test Tester"
+  priority: "critical"
+  technicalLead: "Tester Test"
+  onboardingEpic: "TEST-1234"
+  authorityToOperate: "gcdocs.gc.ca/ssc-spc/example"
+  gitGroupURL: "gitlab.example/test"
+  FRC: 0001
+  PE: 001
+  workloadID: 0000001
+  productID: 00001
+
+# Configurations about the namespace.
+namespace:
+  labels: {}
+  type: "solution"
+
+# Defines the access control on the namespace.
+rbac:
+  groups: ["testers"]
+
+# Defines resource quotas on the namespace.
+resourceQuotas:
+  pods: 60
+  services:
+    loadbalancers: 0
+    nodeports: 0
+  storage: '0'
+
+# Off-hours autoscaling via KEDA. Opt-in per namespace.
+offHoursScaling:
+  enabled: true
+  # Full off-hours shutdown for this fixture.
+  minReplicas: 0
+  workloads:
+    # Inherits the namespace-wide default Mon-Fri business-hours window.
+    - name: my-api
+      businessHoursReplicas: 3
+    # Overrides schedule and kind; falls back to default only for unset fields.
+    - name: my-worker
+      kind: StatefulSet
+      schedule:
+        start: "0 6 * * 1-5"
+        end: "0 22 * * 1-5"
+        timezone: "America/Toronto"

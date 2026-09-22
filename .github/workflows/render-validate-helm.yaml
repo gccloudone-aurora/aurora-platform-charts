@@ -1,5 +1,22 @@
 name: Render and Validate Helm Template
 
+# Lints, renders, and schema-validates every chart under stable/.
+#
+# Value-selection rule (per chart):
+#   - aurora-platform         -> rendered with the repo-level config/config.yaml
+#                                (umbrella chart; requires real platform config)
+#   - chart has ci/*.yaml      -> rendered/linted once per ci values file
+#   - chart has no ci/ values  -> rendered/linted with its default values.yaml
+#
+# Charts such as aurora-namespace and aurora-platform intentionally mark fields
+# as required in values.schema.json, so they are only meaningful with real
+# input. The ci/*.yaml fixtures (and config/config.yaml) provide that input.
+#
+# Rendered output is validated with kubeconform against the Kubernetes schemas
+# plus the datreeio CRDs-catalog (covers KEDA, Argo CD, Istio, cert-manager,
+# etc.). Unknown CRDs warn rather than fail (-ignore-missing-schemas); every
+# resource with a known schema is validated strictly.
+
 on:
   pull_request:
     branches:
@@ -9,41 +26,164 @@ on:
       - main
   workflow_dispatch:
 
+env:
+  # v0.8.0 supports the {{.ResourceAPIVersion}} schema-location variable used
+  # below and was the version verified against these charts locally.
+  KUBECONFORM_VERSION: v0.8.0
+  # Kubernetes API version rendered/validated against.
+  KUBE_VERSION: "1.31.0"
+  CRD_CATALOG: 'https://raw.githubusercontent.com/datreeio/CRDs-catalog/main/{{.Group}}/{{.ResourceKind}}_{{.ResourceAPIVersion}}.json'
+
 jobs:
-  helm-render:
+  render-validate:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
 
       - name: Install Helm
-        uses: actions/setup-go@v5
+        uses: azure/setup-helm@v4
         with:
-          go-version: '1.19'
-      - run: |
-          curl -fsSL https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+          version: v3.16.2
 
       - name: Install kubeconform
         run: |
-          curl -LO https://github.com/yannh/kubeconform/releases/download/v0.6.0/kubeconform-linux-amd64.tar.gz
-          tar -xzf kubeconform-linux-amd64.tar.gz kubeconform
+          curl -fsSL -o kubeconform.tar.gz \
+            "https://github.com/yannh/kubeconform/releases/download/${KUBECONFORM_VERSION}/kubeconform-linux-amd64.tar.gz"
+          tar -xzf kubeconform.tar.gz kubeconform
           sudo mv kubeconform /usr/local/bin/
+          kubeconform -v
 
-      - name: Render Helm template
+      - name: Lint and render all charts
         run: |
-          helm template aurora stable/aurora-platform \
-            --namespace platform-management-system \
-            --values config/config.yaml \
-            --include-crds > rendered.yaml
+          set -euo pipefail
 
-      - name: Validate rendered YAML with kubeconform
+          # Note on error handling: lint/template run inside `if ! ...` guards so
+          # a failure is recorded in `fail` and reporting continues to the end
+          # (giving a full picture of every broken chart in one run). `set -e`
+          # still aborts on unexpected errors such as a failed dependency build.
+
+          RENDER_DIR="rendered"
+          mkdir -p "${RENDER_DIR}"
+
+          fail=0
+
+          # Emit the list of values files to use for a chart, one per line.
+          # Prints nothing when the chart should be rendered with defaults.
+          values_files_for() {
+            local chart_dir="$1"
+            local chart_name
+            chart_name="$(basename "${chart_dir}")"
+
+            if [ "${chart_name}" = "aurora-platform" ]; then
+              echo "config/config.yaml"
+              return
+            fi
+
+            if [ -d "${chart_dir}/ci" ]; then
+              # All *.yaml / *.yml fixtures in the chart's ci/ folder.
+              find "${chart_dir}/ci" -maxdepth 1 -type f \
+                \( -name '*.yaml' -o -name '*.yml' \) | sort
+            fi
+          }
+
+          for chart_dir in stable/*/; do
+            chart_dir="${chart_dir%/}"
+            chart_name="$(basename "${chart_dir}")"
+
+            if [ ! -f "${chart_dir}/Chart.yaml" ]; then
+              continue
+            fi
+
+            # Dependencies are vendored and committed (charts/*.tgz or
+            # unpacked subchart directories), so lint/template resolve them
+            # offline. Only run `helm dependency build` if the chart declares
+            # dependencies but none are vendored yet; that build reaches the
+            # network, so the required repos are added first.
+            if grep -q '^dependencies:' "${chart_dir}/Chart.yaml"; then
+              if [ -z "$(find "${chart_dir}/charts" -mindepth 1 -maxdepth 1 \
+                          \( -name '*.tgz' -o -type d \) 2>/dev/null)" ]; then
+                echo "::group::${chart_name} :: dependency build"
+                helm repo add istio https://istio-release.storage.googleapis.com/charts >/dev/null 2>&1 || true
+                helm repo update >/dev/null
+                helm dependency build "${chart_dir}"
+                echo "::endgroup::"
+              else
+                echo "${chart_name}: using vendored dependencies (skipping build)"
+              fi
+            fi
+
+            # Collect value files (may be empty -> render with defaults).
+            mapfile -t vfiles < <(values_files_for "${chart_dir}")
+
+            if [ "${#vfiles[@]}" -eq 0 ]; then
+              vfiles=("")
+            fi
+
+            for vfile in "${vfiles[@]}"; do
+              if [ -n "${vfile}" ]; then
+                label="$(basename "${vfile}" | sed 's/\.[^.]*$//')"
+                value_args=(--values "${vfile}")
+                desc="${chart_name} [${label}]"
+              else
+                label="default"
+                value_args=()
+                desc="${chart_name} [default values]"
+              fi
+
+              # Derive a release name that satisfies chart naming conventions.
+              # aurora-namespace requires the release name (used as the
+              # namespace name) to end in "-system" for system/gateway types.
+              release="${chart_name}"
+              if [ -n "${vfile}" ]; then
+                ns_type="$(grep -E '^\s*type:\s*' "${vfile}" | head -1 | sed -E 's/.*type:\s*"?([a-z-]+)"?.*/\1/')"
+                if [ "${ns_type}" = "system" ] || [ "${ns_type}" = "gateway" ]; then
+                  release="${chart_name}-system"
+                fi
+              fi
+
+              echo "::group::lint ${desc}"
+              if ! helm lint "${chart_dir}" "${value_args[@]}"; then
+                echo "::error::helm lint failed for ${desc}"
+                fail=1
+              fi
+              echo "::endgroup::"
+
+              out="${RENDER_DIR}/${chart_name}__${label}.yaml"
+              echo "::group::template ${desc} -> ${out}"
+              if ! helm template "${release}" "${chart_dir}" \
+                    "${value_args[@]}" \
+                    --kube-version "${KUBE_VERSION}" \
+                    --include-crds \
+                    > "${out}"; then
+                echo "::error::helm template failed for ${desc}"
+                fail=1
+              fi
+              echo "::endgroup::"
+            done
+          done
+
+          if [ "${fail}" -ne 0 ]; then
+            echo "One or more charts failed lint/template."
+            exit 1
+          fi
+
+      - name: Validate rendered manifests with kubeconform
         run: |
-          kubeconform -strict -summary \
-                      -schema-location default \
-                      -schema-location https://raw.githubusercontent.com/datreeio/CRDs-catalog/main/argoproj.io/application_v1alpha1.json rendered.yaml
+          set -euo pipefail
+          kubeconform \
+            -strict \
+            -summary \
+            -verbose \
+            -ignore-missing-schemas \
+            -kubernetes-version "${KUBE_VERSION}" \
+            -schema-location default \
+            -schema-location "${CRD_CATALOG}" \
+            rendered/
 
-      - name: Upload rendered.yaml as artifact
+      - name: Upload rendered manifests
+        if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: rendered-template
-          path: rendered.yaml
+          name: rendered-templates
+          path: rendered/
