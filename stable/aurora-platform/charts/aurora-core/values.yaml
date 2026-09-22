@@ -1757,8 +1757,8 @@ components:
       prometheusConfigReloader:
         image:
           # registry: quay.io
-          repository: prometheus-operator/prometheus-config-reloader
-          # tag: "v0.62.0"
+          repository: ssc-spc.gc.ca/prometheus-config-reloader
+          tag: "v0.94.0"
           # pullPolicy: IfNotPresent
 
         resources: {}
@@ -1781,8 +1781,8 @@ components:
       alertmanagerSpec:
         image:
           # registry: quay.io
-          repository: prometheus/alertmanager
-          # tag: "v0.24.0"
+          repository: ssc-spc.gc.ca/prometheus-alertmanager
+          tag: "v0.34.1"
           # pullPolicy: IfNotPresent
 
         replicas: 1
