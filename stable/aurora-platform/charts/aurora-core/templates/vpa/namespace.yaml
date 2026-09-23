@@ -32,6 +32,12 @@ spec:
 
           # Information about tooling.
           gitGroupURL: "https://github.com/gccloudone-aurora"
+          # VPA Components:
+          # - recommender: Analyzes resource usage and generates recommendations
+          # - updater: Applies recommendations to existing pods (controlled update)
+          # - admissionController: Applies recommendations on pod creation
+          # All components have PDBs with minAvailable: 1 for HA
+          # Failure mode: admissionController fail-open (pods create without VPA if component down)
 
           # Financial and organizational identifiers.
           FRC: 0001

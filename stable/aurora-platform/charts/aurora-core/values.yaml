@@ -2681,16 +2681,16 @@ components:
       tolerations:
         - key: CriticalAddonsOnly
           operator: Exists
-      args:
-        - --kubelet-insecure-tls=true
-        - --kubelet-preferred-address-types=InternalIP,ExternalIP,Hostname
-        - --metric-resolution=15s
+      args: {}
+        # - --kubelet-insecure-tls=true
+        # - --kubelet-preferred-address-types=InternalIP,ExternalIP,Hostname
+        # - --metric-resolution=15s
       priorityClassName: platform-cluster-medium
 
     helm:
-      # chart: vertical-pod-autoscaler
-      # repository: https://kubernetes.github.io/autoscaler
-      targetRevision: 1.7.1
+      chart: vertical-pod-autoscaler
+      repository: https://kubernetes.github.io/autoscaler
+      targetRevision: 0.12.0
 
     # Prometheus metrics / ServiceMonitor for the recommender, updater and admission controller.
     prometheus:
