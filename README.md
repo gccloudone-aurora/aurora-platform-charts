@@ -104,6 +104,20 @@ let Argo CD synchronize the generated `Application` resources. `aurora-platform`
 repositories and target revisions through its `global.namespace.helm`, `global.raw.helm`, and
 component-specific values.
 
+## Release and promotion workflow
+
+Chart changes follow a single release unit:
+
+1. Bump the parent chart version.
+2. Test the new chart immediately on MGMT (DEV).
+3. After the DEV test succeeds, plan and trigger the rollout to all clusters.
+4. Argo CD automated sync runs from 07:00 to 09:00 on Tuesdays and Thursdays.
+
+The `aurora-platform` subcharts are intentionally coupled to the parent chart. They are included
+and released with the parent rather than bumped independently. This keeps the platform versioning
+and rollout process simple and avoids the maintenance overhead of managing disjoint subchart
+releases. Treat a subchart change as part of the next parent chart bump.
+
 ## Dependency Updates
 
 Renovate is configured in [`renovate.json`](./renovate.json) to update the dependency surfaces that can be safely detected in this repository:
