@@ -1,0 +1,45 @@
+{{ if .Values.components.vpa.enabled -}}
+{{ if .Values.components.vpa.metricsServer.enabled -}}
+
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-vpa-metrics-server"
+  finalizers:
+    - resources-finalizer.argoproj.io
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    chart: {{ default "metrics-server" .Values.components.vpa.metricsServer.helm.chart }}
+    {{- if .Values.components.vpa.metricsServer.helm.repository }}
+    repoURL: {{ .Values.components.vpa.metricsServer.helm.repository }}
+    {{- else }}
+    repoURL: {{ default "https://kubernetes-sigs.github.io/metrics-server" .Values.global.helm.repository }}
+    {{- end }}
+    targetRevision: {{ .Values.components.vpa.metricsServer.helm.targetRevision }}
+    helm:
+      releaseName: metrics-server
+      values: |-
+        image:
+          repository: {{- default "{}" (include "vpa.metricsServer.image" .) | nindent 12 }}
+
+        resources: {{ toYaml .Values.components.vpa.metricsServer.resources | nindent 12 }}
+
+        nodeSelector: {{ toYaml .Values.components.vpa.metricsServer.nodeSelector | nindent 12 }}
+
+        tolerations: {{ toYaml .Values.components.vpa.metricsServer.tolerations | nindent 12 }}
+
+        priorityClassName: {{ .Values.components.vpa.metricsServer.priorityClassName }}
+
+        args: {{ toYaml .Values.components.vpa.metricsServer.args | nindent 12 }}
+
+  destination:
+    name: {{ .Values.global.cluster }}
+    namespace: kube-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+
+{{- end }}
+{{- end }}

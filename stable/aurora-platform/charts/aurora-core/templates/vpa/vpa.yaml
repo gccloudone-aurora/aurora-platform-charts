@@ -1,0 +1,72 @@
+{{ if .Values.components.vpa.enabled -}}
+
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-vpa"
+  finalizers:
+    - resources-finalizer.argoproj.io
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    chart: {{ default "vertical-pod-autoscaler" .Values.components.vpa.helm.chart }}
+    {{- if .Values.components.vpa.helm.repository }}
+    repoURL: {{ .Values.components.vpa.helm.repository }}
+    {{- else }}
+    repoURL: {{ default "https://kubernetes.github.io/autoscaler" .Values.global.helm.repository }}
+    {{- end }}
+    targetRevision: {{ .Values.components.vpa.helm.targetRevision }}
+    helm:
+      releaseName: vpa
+      values: |-
+        recommender:
+          image: {{- default "{}" (include "vpa.recommender.image" .) | nindent 12 }}
+          resources: {{ toYaml .Values.components.vpa.resources | nindent 12 }}
+          nodeSelector: {{ toYaml .Values.components.vpa.nodeSelector | nindent 12 }}
+          tolerations: {{ toYaml .Values.components.vpa.tolerations | nindent 12 }}
+          affinity: {{ toYaml .Values.components.vpa.affinity | nindent 12 }}
+
+        updater:
+          image: {{- default "{}" (include "vpa.updater.image" .) | nindent 12 }}
+          resources: {{ toYaml .Values.components.vpa.resources | nindent 12 }}
+          nodeSelector: {{ toYaml .Values.components.vpa.nodeSelector | nindent 12 }}
+          tolerations: {{ toYaml .Values.components.vpa.tolerations | nindent 12 }}
+          affinity: {{ toYaml .Values.components.vpa.affinity | nindent 12 }}
+
+        admissionController:
+          image: {{- default "{}" (include "vpa.admissionController.image" .) | nindent 12 }}
+          resources: {{ toYaml .Values.components.vpa.resources | nindent 12 }}
+          nodeSelector: {{ toYaml .Values.components.vpa.nodeSelector | nindent 12 }}
+          tolerations: {{ toYaml .Values.components.vpa.tolerations | nindent 12 }}
+          affinity: {{ toYaml .Values.components.vpa.affinity | nindent 12 }}
+
+        {{ if .Values.components.vpa.priorityClassName -}}
+        priorityClassName: {{ .Values.components.vpa.priorityClassName }}
+        {{- end }}
+
+        prometheus:
+          enabled: {{ .Values.components.vpa.prometheus.enabled }}
+          serviceMonitor:
+            enabled: {{ .Values.components.vpa.prometheus.servicemonitor.enabled }}
+
+        # Metrics Server is required for VPA to function
+        {{ if .Values.components.vpa.metricsServer.enabled -}}
+        metricsServer:
+          enabled: true
+          image: {{- default "{}" (include "vpa.metricsServer.image" .) | nindent 12 }}
+          resources: {{ toYaml .Values.components.vpa.metricsServer.resources | nindent 12 }}
+          nodeSelector: {{ toYaml .Values.components.vpa.metricsServer.nodeSelector | nindent 12 }}
+          tolerations: {{ toYaml .Values.components.vpa.metricsServer.tolerations | nindent 12 }}
+          priorityClassName: {{ .Values.components.vpa.metricsServer.priorityClassName }}
+          args: {{ toYaml .Values.components.vpa.metricsServer.args | nindent 12 }}
+        {{- end }}
+
+  destination:
+    name: {{ .Values.global.cluster }}
+    namespace: vpa-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+
+{{- end }}
