@@ -24,6 +24,8 @@ data:
       generate:
         command:
           - bash
+          - "-o"
+          - "pipefail"
           - "-c"
           - 'helm template --include-crds "$ARGOCD_ENV_HELM_RELEASE_NAME" -n "$ARGOCD_APP_NAMESPACE" -f <(echo "$ARGOCD_ENV_HELM_VALUES") . | argocd-vault-plugin generate -'
       lockRepo: false
