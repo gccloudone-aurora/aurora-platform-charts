@@ -9,11 +9,15 @@ metadata:
 spec:
   project: {{ .Values.global.project }}
   source:
-    chart: {{ default "argocd-instance" .Values.components.argoSolution.argocdInstance.helm.chart }}
     {{- if .Values.components.argoSolution.argocdInstance.helm.repository }}
     repoURL: {{ .Values.components.argoSolution.argocdInstance.helm.repository }}
     {{- else }}
     repoURL: {{ default "https://gccloudone-aurora.github.io/aurora-platform-charts" .Values.global.helm.repository }}
+    {{- end }}
+    {{- if .Values.components.argoSolution.argocdInstance.helm.path }}
+    path: {{ .Values.components.argoSolution.argocdInstance.helm.path }}
+    {{- else }}
+    chart: {{ default "argocd-instance" .Values.components.argoSolution.argocdInstance.helm.chart }}
     {{- end }}
     targetRevision: {{ .Values.components.argoSolution.argocdInstance.helm.targetRevision }}
     plugin:
@@ -22,6 +26,7 @@ spec:
           value: "argocd-instance"
         - name: HELM_VALUES
           value: |
+            provider: {{ toYaml .Values.global.provider | nindent 16 }}
             argocdInstance:
 
               {{- if and .Values.global.container .Values.global.container.registry }}

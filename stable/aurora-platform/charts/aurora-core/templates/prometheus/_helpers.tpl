@@ -143,6 +143,8 @@ The image section for Thanos Object Storage.
 */}}
 {{- define "prometheus.thanos.objstoreConfig" -}}
 {{- $os := .Values.components.prometheus.prometheus.prometheusSpec.thanos.objectStorage -}}
+{{- $provider := default .Values.global.provider $os.provider -}}
+{{- if eq $provider "azure" }}
 type: AZURE
 config:
     storage_account: {{ required "prometheus..prometheusSpec.thanos.objectStorage.storageAccountName is required!" $os.storageAccountName | quote }}
@@ -154,7 +156,14 @@ config:
     {{- else }}
     storage_account_key: ""
     {{- end }}
-{{- end}}
+{{- else if eq $provider "gcp" }}
+type: GCS
+config:
+  bucket: {{ required "prometheus.prometheusSpec.thanos.objectStorage.bucketName is required for GCP" $os.bucketName | quote }}
+{{- else }}
+{{- fail (printf "unsupported Thanos object storage provider %q" $provider) }}
+{{- end }}
+{{- end }}
 
 {{/*
 The image section for Grafana.
