@@ -2700,20 +2700,32 @@ components:
         enabled: true
 
     # Resources for VPA components (recommender, updater, admission controller).
-    # Left empty to use chart defaults. Uncomment to override.
-    resources: {}
-    #   requests:
-    #     cpu: 100m
-    #     memory: 128Mi
-    #   limits:
-    #     cpu: 500m
-    #     memory: 512Mi
+    # Standard resource limits for cluster-critical components.
+    resources:
+      requests:
+        cpu: 100m
+        memory: 128Mi
+      limits:
+        cpu: 500m
+        memory: 512Mi
 
-    nodeSelector: {}
+    nodeSelector:
+      kubernetes.io/os: linux
+      node.ssc-spc.gc.ca/purpose: system
 
-    tolerations: []
+    tolerations:
+      - key: CriticalAddonsOnly
+        operator: Exists
 
-    affinity: {}
+    affinity:
+      podAntiAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 1
+          podAffinityTerm:
+            topologyKey: kubernetes.io/hostname
+            labelSelector:
+              matchLabels:
+                app.kubernetes.io/name: vertical-pod-autoscaler
 
     # Priority class for VPA components. Set to empty string to omit.
     # Recommend platform-cluster-medium for cluster-critical workloads.
