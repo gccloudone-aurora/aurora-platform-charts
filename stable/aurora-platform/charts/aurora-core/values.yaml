@@ -2690,20 +2690,23 @@ components:
     helm:
       chart: vertical-pod-autoscaler
       repository: https://kubernetes.github.io/autoscaler
-      targetRevision: 0.12.0
+      targetRevision: 0.13.0
 
     # Prometheus metrics / ServiceMonitor for the recommender, updater and admission controller.
+    # VPA integrates with existing aurora-core Prometheus - enabled by default for metrics collection.
     prometheus:
-      enabled: false
-      servicemonitor:
-        enabled: false
+      enabled: true
+      serviceMonitor:
+        enabled: true
 
+    # Resources for VPA components (recommender, updater, admission controller).
+    # Left empty to use chart defaults. Uncomment to override.
     resources: {}
     #   requests:
     #     cpu: 100m
     #     memory: 128Mi
     #   limits:
-    #     cpu: 1000m
+    #     cpu: 500m
     #     memory: 512Mi
 
     nodeSelector: {}
@@ -2712,7 +2715,9 @@ components:
 
     affinity: {}
 
-    priorityClassName: ""
+    # Priority class for VPA components. Set to empty string to omit.
+    # Recommend platform-cluster-medium for cluster-critical workloads.
+    priorityClassName: "platform-cluster-medium"
 
     # Image tags are left empty so the VPA chart uses its packaged appVersion
     # (matching the pinned chart targetRevision above). Override to pin explicitly.
@@ -2721,19 +2726,19 @@ components:
         image:
           registry: registry.k8s.io
           repository: autoscaling/vpa-recommender
-          tag: "1.7.1"
-          # pullPolicy: IfNotPresent
+          tag: "1.8.0"
+          pullPolicy: IfNotPresent
 
       updater:
         image:
           registry: registry.k8s.io
           repository: autoscaling/vpa-updater
-          tag: "1.7.1"
-          # pullPolicy: IfNotPresent
+          tag: "1.8.0"
+          pullPolicy: IfNotPresent
 
       admissionController:
         image:
           registry: registry.k8s.io
           repository: autoscaling/vpa-admission-controller
-          tag: "1.7.1"
-          # pullPolicy: IfNotPresent
+          tag: "1.8.0"
+          pullPolicy: IfNotPresent
