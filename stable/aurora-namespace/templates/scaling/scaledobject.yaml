@@ -1,0 +1,30 @@
+{{- if .Values.offHoursScaling.enabled }}
+{{- $default := .Values.offHoursScaling.defaultSchedule }}
+{{- range .Values.offHoursScaling.workloads }}
+{{- $schedule := mergeOverwrite (deepCopy $default) (default dict .schedule) }}
+---
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: off-hours-{{ .name }}
+  namespace: {{ $.Release.Name }}
+  annotations:
+    kubernetes.io/description: Scales {{ .name }} down outside business hours and up during Mon-Fri business hours.
+  labels:
+    {{- include "aurora-namespace.labels" $ | nindent 4 }}
+    scaling.ssc-spc.gc.ca/policy: off-hours
+    scaling.ssc-spc.gc.ca/target: {{ .name }}
+spec:
+  scaleTargetRef:
+    kind: {{ default "Deployment" .kind }}
+    name: {{ .name }}
+  minReplicaCount: {{ $.Values.offHoursScaling.minReplicas }}
+  triggers:
+    - type: cron
+      metadata:
+        timezone: {{ $schedule.timezone | quote }}
+        start: {{ $schedule.start | quote }}
+        end: {{ $schedule.end | quote }}
+        desiredReplicas: {{ .businessHoursReplicas | default 1 | quote }}
+{{- end }}
+{{- end }}
