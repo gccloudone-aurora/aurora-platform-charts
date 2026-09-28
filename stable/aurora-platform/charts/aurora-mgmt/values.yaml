@@ -129,11 +129,14 @@ components:
       helm:
         # chart: argocd-instance
         # repository: https://gccloudone-aurora.github.io/aurora-platform-charts
-        targetRevision: 0.22.0
+        targetRevision: 0.23.0
 
       # disableAdmin: true
       # ingressDomain: ""
-
+      imageRegistry:
+        repository: "ssc-spc.gc.ca"
+      image:
+        name: argocd
       nodeSelector:
         kubernetes.io/os: linux
         node.ssc-spc.gc.ca/purpose: system
@@ -209,6 +212,7 @@ components:
         sourceNamespaces:
           - "/^gitops-((?!-system$).)*$/"       # starts with "gitops-" & does not end with "-system"
         scmProviders: []
+        command: "/usr/local/bin/argocd-applicationset-controller"
 
       redis:
         imageRegistry:
