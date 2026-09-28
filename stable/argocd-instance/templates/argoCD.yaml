@@ -44,13 +44,21 @@ spec:
     sharding: {}
     logLevel: {{ .Values.argocdInstance.logLevel }}
     resources:  {{ toYaml .Values.argocdInstance.controller.resources | nindent 6 }}
+    {{- if .Values.argocdInstance.controller.command }}
+    command:
+      {{- toYaml .Values.argocdInstance.controller.command | nindent 6 }}
+    {{- end }}
+
 
   applicationSet:
     image: {{ regexReplaceAll "//+" (printf "%s/%s/%s" .Values.argocdInstance.imageRegistry.host .Values.argocdInstance.imageRegistry.repository .Values.argocdInstance.image.name) "/" }}
     version: {{ .Values.argocdInstance.image.version }}
     resources:  {{ toYaml .Values.argocdInstance.applicationSet.resources | nindent 6 }}
     logLevel: {{ .Values.argocdInstance.logLevel }}
-
+    {{- if .Values.argocdInstance.applicationSet.command }}
+    command:
+      {{- toYaml .Values.argocdInstance.applicationSet.command | nindent 6 }}
+    {{- end }}
     {{- if .Values.argocdInstance.applicationSet.setTokenRefStrictMode }}
     env:
       - name: ARGOCD_APPLICATIONSET_CONTROLLER_TOKENREF_STRICT_MODE
@@ -64,6 +72,10 @@ spec:
     image: {{ regexReplaceAll "//+" (printf "%s/%s/%s" .Values.argocdInstance.redis.imageRegistry.host .Values.argocdInstance.redis.imageRegistry.repository .Values.argocdInstance.redis.image.name) "/" }}
     version: {{ .Values.argocdInstance.redis.image.version }}
     resources:  {{ toYaml .Values.argocdInstance.redis.resources | nindent 6 }}
+    {{- if .Values.argocdInstance.redis.command }}
+    command:
+      {{- toYaml .Values.argocdInstance.redis.command | nindent 6 }}
+    {{- end }}
 
   server:
     autoscale:
@@ -83,6 +95,10 @@ spec:
     service:
       type: {{ .Values.argocdInstance.server.service.type }}
     resources:  {{ toYaml .Values.argocdInstance.server.resources | nindent 6 }}
+    {{- if .Values.argocdInstance.server.command }}
+    command:
+      {{- toYaml .Values.argocdInstance.server.command | nindent 6 }}
+    {{- end }}
 
   notifications:
     enabled: {{ .Values.argocdInstance.notifications.enabled }}
