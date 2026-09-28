@@ -33,9 +33,6 @@ spec:
               # NOTE: Swaps out public endpoints to use our central private JFrog virtual registry path context.
               imageRegistry:
                 host: {{ .Values.global.container.registry | quote }}
-                repository: {{ .Values.components.argoSolution.argocdInstance.imageRegistry.repository | quote }}
-              image:
-                name: {{ .Values.components.argoSolution.argocdInstance.image.name | quote }}
               argocdVaultPlugin:
                 imageRegistry:
                   host: {{ .Values.global.container.registry | quote }}
@@ -93,7 +90,7 @@ spec:
                 resources: {{ toYaml .Values.components.argoSolution.argocdInstance.applicationSet.resources | nindent 18 }}
                 sourceNamespaces: {{ toYaml .Values.components.argoSolution.argocdInstance.applicationSet.sourceNamespaces | nindent 18 }}
                 scmProviders: {{ toYaml .Values.components.argoSolution.argocdInstance.applicationSet.scmProviders | nindent 18 }}
-                command: {{ toYaml .Values.components.argoSolution.argocdInstance.applicationSet.command | nindent 18 }}
+
               redis:
                 {{- if and .Values.global.container .Values.global.container.registry }}
                 # NOTE: Enforces full path configuration dynamically via values only when a global registry is defined.
