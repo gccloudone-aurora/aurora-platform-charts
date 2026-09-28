@@ -64,7 +64,9 @@ argocdInstance:
 
     sourceNamespaces: []
     scmProviders: []
-
+    volumes: []
+    volumeMounts: []
+    
   controller:
     resources: {}
       # limits:
