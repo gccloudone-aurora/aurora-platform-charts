@@ -2659,3 +2659,82 @@ components:
         # tag: "1.16.15"
 
     priorityClassName: platform-cluster-medium
+
+  ###########
+  ### VPA ###
+  ###########
+  vpa:
+    # Disabled by default. Enable per cluster via the GitOps config.yaml.
+    enabled: false
+
+    # VPA requires Metrics Server for resource usage metrics.
+    # Platform deploys Metrics Server by default (AWS EKS addon, or cloud provider default).
+    # No need to deploy a second instance here.
+
+    helm:
+      chart: vertical-pod-autoscaler
+      repository: https://kubernetes.github.io/autoscaler
+      targetRevision: 0.13.0
+
+    # Prometheus metrics / ServiceMonitor for the recommender, updater and admission controller.
+    # VPA integrates with existing aurora-core Prometheus - enabled by default for metrics collection.
+    prometheus:
+      enabled: true
+      serviceMonitor:
+        enabled: true
+
+    # Resources for VPA components (recommender, updater, admission controller).
+    # Standard resource limits for cluster-critical components.
+    resources:
+      requests:
+        cpu: 100m
+        memory: 128Mi
+      limits:
+        cpu: 500m
+        memory: 512Mi
+
+    nodeSelector:
+      kubernetes.io/os: linux
+      node.ssc-spc.gc.ca/purpose: system
+
+    tolerations:
+      - key: CriticalAddonsOnly
+        operator: Exists
+
+    affinity:
+      podAntiAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 1
+          podAffinityTerm:
+            topologyKey: kubernetes.io/hostname
+            labelSelector:
+              matchLabels:
+                app.kubernetes.io/name: vertical-pod-autoscaler
+
+    # Priority class for VPA components. Set to empty string to omit.
+    # Recommend platform-cluster-medium for cluster-critical workloads.
+    priorityClassName: "platform-cluster-medium"
+
+    # Image tags are left empty so the VPA chart uses its packaged appVersion
+    # (matching the pinned chart targetRevision above). Override to pin explicitly.
+    images:
+      recommender:
+        image:
+          registry: registry.k8s.io
+          repository: autoscaling/vpa-recommender
+          tag: "1.8.0"
+          pullPolicy: IfNotPresent
+
+      updater:
+        image:
+          registry: registry.k8s.io
+          repository: autoscaling/vpa-updater
+          tag: "1.8.0"
+          pullPolicy: IfNotPresent
+
+      admissionController:
+        image:
+          registry: registry.k8s.io
+          repository: autoscaling/vpa-admission-controller
+          tag: "1.8.0"
+          pullPolicy: IfNotPresent
