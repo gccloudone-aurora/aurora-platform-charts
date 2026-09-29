@@ -2648,7 +2648,8 @@ components:
         repository: bitnamilegacy/kubectl
         # tag: "1.16.15"
 
-    priorityClassName: platform-cluster-medium
+priorityClassName: platform-cluster-medium
+
   ###########
   ### VPA ###
   ###########
