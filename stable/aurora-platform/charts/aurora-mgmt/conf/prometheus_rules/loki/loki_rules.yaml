@@ -7,7 +7,7 @@ groups:
     rules:
       # report if write to bucket fails
       - expr: |
-          sum by(operation) (rate(loki_azure_blob_request_duration_seconds_count{status_Code!~"2.."}[10m]))
+          sum by(operation) (rate(loki_azure_blob_request_duration_seconds_count{status_code!~"2.."}[10m]))
             /
           sum by(operation) (rate(loki_azure_blob_request_duration_seconds_count[10m]))
         record: loki_azure_blob_request_failure_ratio
