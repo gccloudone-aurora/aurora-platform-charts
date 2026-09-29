@@ -44,22 +44,16 @@ spec:
         priorityClassName: {{ .Values.components.vpa.priorityClassName }}
         {{- end }}
 
+        {{- if .Values.components.vpa.prometheus.enabled }}
         prometheus:
           enabled: {{ .Values.components.vpa.prometheus.enabled }}
           serviceMonitor:
-            enabled: {{ .Values.components.vpa.prometheus.servicemonitor.enabled }}
-
-        # Metrics Server is required for VPA to function
-        {{ if .Values.components.vpa.metricsServer.enabled -}}
-        metricsServer:
-          enabled: true
-          image: {{- default "{}" (include "vpa.metricsServer.image" .) | nindent 12 }}
-          resources: {{ toYaml .Values.components.vpa.metricsServer.resources | nindent 12 }}
-          nodeSelector: {{ toYaml .Values.components.vpa.metricsServer.nodeSelector | nindent 12 }}
-          tolerations: {{ toYaml .Values.components.vpa.metricsServer.tolerations | nindent 12 }}
-          priorityClassName: {{ .Values.components.vpa.metricsServer.priorityClassName }}
-          args: {{ toYaml .Values.components.vpa.metricsServer.args | nindent 12 }}
+            enabled: {{ .Values.components.vpa.prometheus.serviceMonitor.enabled }}
         {{- end }}
+
+        # Metrics Server is required for VPA to function.
+        # Platform deploys Metrics Server by default (AWS EKS addon, or cloud provider default).
+        # No need to deploy a second instance here.
 
   destination:
     name: {{ .Values.global.cluster }}

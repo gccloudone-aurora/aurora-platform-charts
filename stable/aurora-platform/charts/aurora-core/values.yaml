@@ -2656,36 +2656,9 @@ components:
     # Disabled by default. Enable per cluster via the GitOps config.yaml.
     enabled: false
 
-    # Metrics Server is required for VPA to collect resource usage metrics.
-    # If not configured, VPA will not function properly.
-    metricsServer:
-      enabled: true
-      helm:
-        # chart: metrics-server
-        # repository: https://kubernetes-sigs.github.io/metrics-server
-        targetRevision: 3.12.0
-      image:
-        registry: registry.k8s.io
-        repository: metrics-server/metrics-server
-        tag: "v0.7.0"
-      resources:
-        requests:
-          cpu: 100m
-          memory: 128Mi
-        limits:
-          cpu: 500m
-          memory: 512Mi
-      nodeSelector:
-        kubernetes.io/os: linux
-        node.ssc-spc.gc.ca/purpose: system
-      tolerations:
-        - key: CriticalAddonsOnly
-          operator: Exists
-      args: {}
-        # - --kubelet-insecure-tls=true
-        # - --kubelet-preferred-address-types=InternalIP,ExternalIP,Hostname
-        # - --metric-resolution=15s
-      priorityClassName: platform-cluster-medium
+    # VPA requires Metrics Server for resource usage metrics.
+    # Platform deploys Metrics Server by default (AWS EKS addon, or cloud provider default).
+    # No need to deploy a second instance here.
 
     helm:
       chart: vertical-pod-autoscaler
