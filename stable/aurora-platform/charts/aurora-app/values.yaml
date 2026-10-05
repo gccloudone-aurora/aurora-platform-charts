@@ -286,6 +286,33 @@ components:
   istio:
     enabled: true
 
+    # Enable only after Gateway API CRDs are installed on the workload cluster.
+    gatewayAPI:
+      enabled: false
+      # Platform-owned Gateway in ingress-general-system; Istio provisions its data plane.
+      name: general
+      certificateSecretName: gateway-api-wildcard-tls
+      issuerName: letsencrypt
+      replicas:
+        min: 3
+        max: 5
+      resources:
+        requests:
+          cpu: 100m
+          memory: 128Mi
+      nodeSelector:
+        kubernetes.io/os: linux
+        node.ssc-spc.gc.ca/purpose: gateway
+      tolerations:
+        - key: node.ssc-spc.gc.ca/purpose
+          operator: Equal
+          value: gateway
+          effect: NoSchedule
+
+    # Disable separately after application traffic has moved to HTTPRoutes.
+    legacyGatewayEnabled: true
+    ingressIstioControllerEnabled: true
+
     imagePullSecrets: []
 
     base:

@@ -1,0 +1,188 @@
+{{- if and .Values.components.istio.enabled .Values.components.istio.gatewayAPI.enabled }}
+{{- $gateway := .Values.components.istio.gatewayAPI }}
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-gateway-api-general"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    chart: {{ .Values.global.raw.helm.chart }}
+    repoURL: {{ default .Values.global.helm.repository .Values.global.raw.helm.repository }}
+    targetRevision: {{ .Values.global.raw.helm.targetRevision }}
+    helm:
+      releaseName: gateway-api-general
+      values: |
+        resources:
+          # Istio overlays these settings on the Deployment and Service it generates.
+          - apiVersion: v1
+            kind: ConfigMap
+            metadata:
+              name: {{ $gateway.name }}-options
+              namespace: ingress-general-system
+            data:
+              service: |
+                metadata:
+                  annotations:
+                    {{- if eq .Values.global.provider "azure" }}
+                    service.beta.kubernetes.io/azure-load-balancer-internal: "true"
+                    service.beta.kubernetes.io/azure-load-balancer-internal-subnet: {{ required "global.load_balancer_subnet_name is required" .Values.global.load_balancer_subnet_name | quote }}
+                    {{- else if eq .Values.global.provider "aws" }}
+                    service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
+                    service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: "ip"
+                    {{- end }}
+                spec:
+                  type: LoadBalancer
+                  externalTrafficPolicy: Cluster
+              deployment: |
+                spec:
+                  template:
+                    spec:
+                      nodeSelector: {{ toYaml $gateway.nodeSelector | nindent 24 }}
+                      tolerations: {{ toYaml $gateway.tolerations | nindent 24 }}
+                      containers:
+                        - name: istio-proxy
+                          resources: {{ toYaml $gateway.resources | nindent 28 }}
+              horizontalPodAutoscaler: |
+                spec:
+                  minReplicas: {{ $gateway.replicas.min }}
+                  maxReplicas: {{ $gateway.replicas.max }}
+                  metrics:
+                    - type: Resource
+                      resource:
+                        name: cpu
+                        target:
+                          type: Utilization
+                          averageUtilization: 80
+          - apiVersion: cert-manager.io/v1
+            kind: Certificate
+            metadata:
+              name: {{ $gateway.name }}-tls
+              namespace: ingress-general-system
+              labels:
+                use-general-solver: "true"
+            spec:
+              secretName: {{ $gateway.certificateSecretName }}
+              dnsNames:
+                - "*.{{ .Values.global.ingressDomain }}"
+              issuerRef:
+                kind: ClusterIssuer
+                name: {{ $gateway.issuerName }}
+              privateKey:
+                rotationPolicy: Always
+          - apiVersion: gateway.networking.k8s.io/v1
+            kind: Gateway
+            metadata:
+              name: {{ $gateway.name }}
+              namespace: ingress-general-system
+            spec:
+              gatewayClassName: istio
+              infrastructure:
+                parametersRef:
+                  group: ""
+                  kind: ConfigMap
+                  name: {{ $gateway.name }}-options
+              listeners:
+                - name: http
+                  hostname: "*.{{ .Values.global.ingressDomain }}"
+                  port: 80
+                  protocol: HTTP
+                  allowedRoutes:
+                    namespaces:
+                      from: Same
+                - name: https
+                  hostname: "*.{{ .Values.global.ingressDomain }}"
+                  port: 443
+                  protocol: HTTPS
+                  tls:
+                    mode: Terminate
+                    certificateRefs:
+                      - group: ""
+                        kind: Secret
+                        name: {{ $gateway.certificateSecretName }}
+                  allowedRoutes:
+                    namespaces:
+                      from: Selector
+                      selector:
+                        matchLabels:
+                          namespace.ssc-spc.gc.ca/purpose: solution
+          - apiVersion: gateway.networking.k8s.io/v1
+            kind: HTTPRoute
+            metadata:
+              name: {{ $gateway.name }}-redirect
+              namespace: ingress-general-system
+            spec:
+              parentRefs:
+                - name: {{ $gateway.name }}
+                  sectionName: http
+              hostnames:
+                - "*.{{ .Values.global.ingressDomain }}"
+              rules:
+                - filters:
+                    - type: RequestRedirect
+                      requestRedirect:
+                        scheme: https
+                        statusCode: 301
+          - apiVersion: cilium.io/v2
+            kind: CiliumClusterwideNetworkPolicy
+            metadata:
+              name: allow-ingress-from-gateway-api-to-ns
+            spec:
+              endpointSelector:
+                matchExpressions:
+                  - key: k8s:io.kubernetes.pod.namespace
+                    operator: NotIn
+                    values:
+                      - kube-system
+                  - key: k8s:kubernetes.azure.com/managedby
+                    operator: DoesNotExist
+              ingress:
+                - fromEndpoints:
+                    - matchLabels:
+                        k8s:io.kubernetes.pod.namespace: ingress-general-system
+                        k8s:gateway.networking.k8s.io/gateway-name: {{ $gateway.name }}
+          - apiVersion: networking.k8s.io/v1
+            kind: NetworkPolicy
+            metadata:
+              name: allow-gateway-api-traffic
+              namespace: ingress-general-system
+            spec:
+              podSelector:
+                matchLabels:
+                  gateway.networking.k8s.io/gateway-name: {{ $gateway.name }}
+              policyTypes: [Ingress, Egress]
+              ingress:
+                - from:
+                    - ipBlock:
+                        cidr: 0.0.0.0/0
+                  ports:
+                    - port: 80
+                      protocol: TCP
+                    - port: 443
+                      protocol: TCP
+                    - port: 8080
+                      protocol: TCP
+                    - port: 8443
+                      protocol: TCP
+                    - port: 15021
+                      protocol: TCP
+                - from:
+                    - namespaceSelector:
+                        matchLabels:
+                          kubernetes.io/metadata.name: prometheus-system
+                  ports:
+                    - port: 15090
+                      protocol: TCP
+              egress:
+                - to:
+                    - namespaceSelector: {}
+  destination:
+    name: {{ .Values.global.cluster }}
+    namespace: platform-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+{{- end }}
