@@ -33,6 +33,10 @@ spec:
               # NOTE: Swaps out public endpoints to use our central private JFrog virtual registry path context.
               imageRegistry:
                 host: {{ .Values.global.container.registry | quote }}
+                repository: {{ .Values.components.argoFoundation.argocdInstance.imageRegistry.repository | quote }}
+              {{- if .Values.components.argoSolution.argocdInstance.image }}
+              image: {{ toYaml .Values.components.argoSolution.argocdInstance.image | nindent 16 }}
+              {{- end }}
               argocdVaultPlugin:
                 imageRegistry:
                   host: {{ .Values.global.container.registry | quote }}

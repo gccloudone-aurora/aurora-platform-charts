@@ -133,7 +133,10 @@ components:
 
       # disableAdmin: true
       # ingressDomain: ""
-
+      imageRegistry:
+        repository: "ssc-spc.gc.ca"
+      image:
+        name: "argocd"
       nodeSelector:
         kubernetes.io/os: linux
         node.ssc-spc.gc.ca/purpose: system
@@ -246,7 +249,10 @@ components:
 
       # disableAdmin: true
       # ingressDomain: ""
-
+      imageRegistry:
+        repository: "ssc-spc.gc.ca"
+      image:
+        name: "argocd"
       nodeSelector:
         kubernetes.io/os: linux
         node.ssc-spc.gc.ca/purpose: system
