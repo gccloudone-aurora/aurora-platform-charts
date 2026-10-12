@@ -101,6 +101,7 @@ core:
     # grafana: {}
     # kubebench: {}
     # kubecost: {}
+    # opencost: {}
     # ntp: {}
     # podtracker: {}
     # prometheus: {}
