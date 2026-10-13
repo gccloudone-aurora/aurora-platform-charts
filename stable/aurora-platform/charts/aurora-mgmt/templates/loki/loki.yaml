@@ -31,15 +31,15 @@ spec:
             deploymentMode: SimpleScalable
 
             gateway:
-              podSecurityContext:	
-                runAsNonRoot: true	
-                seccompProfile:	
-                  type: RuntimeDefault	
-              containerSecurityContext:	
-                allowPrivilegeEscalation: false	
-                capabilities:	
-                  drop: [ALL]	
-                seccompProfile:	
+              podSecurityContext:
+                runAsNonRoot: true
+                seccompProfile:
+                  type: RuntimeDefault
+              containerSecurityContext:
+                allowPrivilegeEscalation: false
+                capabilities:
+                  drop: [ALL]
+                seccompProfile:
                   type: RuntimeDefault
               nodeSelector: {{ toYaml .Values.components.loki.nodeSelector | nindent 16 }}
               tolerations: {{ toYaml .Values.components.loki.tolerations | nindent 16 }}
@@ -81,7 +81,7 @@ spec:
               analytics:
                 reporting_enabled: false
               auth_enabled: false
-              
+
               # MOVED: Now properly nested under 'loki' for 6.x
               canary:
                 enabled: false
@@ -90,7 +90,7 @@ spec:
                 working_directory: /var/loki/data/retention
                 compaction_interval: 10m
                 retention_enabled: true
-                retention_delete_delay: 10m 
+                retention_delete_delay: 10m
                 retention_delete_worker_count: 150
                 {{- if eq .Values.global.provider "azure" }}
                 delete_request_store: azure
@@ -108,7 +108,7 @@ spec:
                 retention_stream:
                 - selector: '{source="alloy-kubernetes-events"}'
                   priority: 1
-                  period: 336h 
+                  period: 336h
               schemaConfig:
                 configs:
                   - from: 2024-05-01
@@ -150,6 +150,8 @@ spec:
             # NEW: Enabled by default in 6.x to fix slow dashboards
             chunksCache:
               enabled: true
+              allocatedMemory: {{ .Values.components.loki.allocatedMemory }}
+              maxItemMemory: {{ .Values.components.loki.maxItemMemory }}
               nodeSelector: {{ toYaml .Values.components.loki.nodeSelector | nindent 16 }}
               tolerations: {{ toYaml .Values.components.loki.tolerations | nindent 16 }}
               memcached:
