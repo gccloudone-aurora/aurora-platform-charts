@@ -150,8 +150,8 @@ spec:
             # NEW: Enabled by default in 6.x to fix slow dashboards
             chunksCache:
               enabled: true
-              allocatedMemory: {{ .Values.components.loki.allocatedMemory }}
-              maxItemMemory: {{ .Values.components.loki.maxItemMemory }}
+              allocatedMemory: {{ .Values.components.loki.chunksCache.allocatedMemory }}
+              maxItemMemory: {{ .Values.components.loki.chunksCache.maxItemMemory }}
               nodeSelector: {{ toYaml .Values.components.loki.nodeSelector | nindent 16 }}
               tolerations: {{ toYaml .Values.components.loki.tolerations | nindent 16 }}
               memcached:
