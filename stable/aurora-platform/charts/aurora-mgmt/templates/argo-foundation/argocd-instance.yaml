@@ -47,7 +47,9 @@ spec:
 
               ingressDomain: "{{ .Values.components.argoFoundation.argocdInstance.ingressDomain }}"
               adminSecurityGroup: {{ .Values.components.argoFoundation.argocdInstance.adminSecurityGroup }}
-              extraPolicy: {{ toYaml .Values.components.argoFoundation.argocdInstance.extraPolicy | nindent 16 }}
+              {{- with .Values.components.argoFoundation.argocdInstance.extraPolicy }}
+              extraPolicy: {{ toYaml . | nindent 16 }}
+              {{- end }}
               disableAdmin: "{{ .Values.components.argoFoundation.argocdInstance.disableAdmin }}"
               oidcAuthSP:
                 tenantID: "{{ .Values.components.argoFoundation.argocdInstance.oidcAuthSP.credentials.tenantID }}"
