@@ -469,6 +469,10 @@ components:
       # chunkBucket: <gcp-bucket-name>
       # rulerBucket: <gcp-bucket-name>
 
+    chunksCache:
+      allocatedMemory: 2048
+      maxItemMemory: 5
+
     # scrape the backend via a servicemonitor. Pre-req for alerts below
     # without the service monitor, loki storage rules have no series to evaluate
     serviceMonitor:
