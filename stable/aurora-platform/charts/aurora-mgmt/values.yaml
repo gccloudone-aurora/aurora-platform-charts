@@ -129,11 +129,14 @@ components:
       helm:
         # chart: argocd-instance
         # repository: https://gccloudone-aurora.github.io/aurora-platform-charts
-        targetRevision: 0.22.0
+        targetRevision: 0.26.0
 
       # disableAdmin: true
       # ingressDomain: ""
-
+      imageRegistry:
+        repository: "ssc-spc.gc.ca"
+      image:
+        name: "argocd"
       nodeSelector:
         kubernetes.io/os: linux
         node.ssc-spc.gc.ca/purpose: system
@@ -242,11 +245,14 @@ components:
       helm:
         # chart: argocd-instance
         # repository: https://gccloudone-aurora.github.io/aurora-platform-charts
-        targetRevision: 0.22.0
+        targetRevision: 0.26.0
 
       # disableAdmin: true
       # ingressDomain: ""
-
+      imageRegistry:
+        repository: "ssc-spc.gc.ca"
+      image:
+        name: "argocd"
       nodeSelector:
         kubernetes.io/os: linux
         node.ssc-spc.gc.ca/purpose: system
@@ -603,4 +609,4 @@ components:
     # prometheus alert rules for the object storage that Thanos uses (e.g. Azure Blob Storage, GCP Cloud Storage)
     alerts:
       enabled: true
-      
+

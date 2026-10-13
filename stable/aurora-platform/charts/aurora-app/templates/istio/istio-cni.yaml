@@ -13,7 +13,7 @@ spec:
     {{- if .Values.components.istio.cni.helm.repository }}
     repoURL: {{ .Values.components.istio.cni.helm.repository }}
     {{- else }}
-    repoURL: {{ default "https://istio-release.storage.googleapis.com/charts" .Values.global.helm.repository }}
+    repoURL: {{ default "https://blob.istio.io/istio-release/charts" .Values.global.helm.repository }}
     {{- end }}
     targetRevision: {{ .Values.components.istio.cni.helm.targetRevision }}
     helm:
@@ -30,7 +30,7 @@ spec:
 
         {{- $defaultCniBinDir := ternary "/home/kubernetes/bin" "/opt/cni/bin" (eq .Values.global.provider "gcp") }}
         cniBinDir: {{ default $defaultCniBinDir .Values.components.istio.cni.cniBinDir | quote }}
-        
+
         global:
           priorityClassName: {{ .Values.components.istio.cni.priorityClassName }}
 
