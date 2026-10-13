@@ -48,6 +48,7 @@ spec:
               tolerations: {{ toYaml .Values.components.argoSolution.argocdInstance.tolerations | nindent 16 }}
 
               adminSecurityGroup: {{ .Values.components.argoSolution.argocdInstance.adminSecurityGroup }}
+              extraPolicy: {{ toYaml .Values.components.argoSolution.argocdInstance.extraPolicy | nindent 16 }}
               disableAdmin: "{{ .Values.components.argoSolution.argocdInstance.disableAdmin }}"
               oidcAuthSP:
                 tenantID: "{{ .Values.components.argoSolution.argocdInstance.oidcAuthSP.credentials.tenantID }}"

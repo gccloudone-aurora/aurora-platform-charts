@@ -1135,7 +1135,7 @@ components:
       # targetRevision: main
       # instanceSelector:
       #   matchLabels:
-      #     dashboards: aurora   
+      #     dashboards: aurora
 
     alerting:
       enabled: false
