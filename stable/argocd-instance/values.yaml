@@ -5,6 +5,16 @@ argocdInstance:
 
   disableAdmin: false
 
+  argocdInstance:
+    # adminSecurityGroup: ""
+    # extraPolicy: |
+    #   p, role:<PROJECT>, applications, get, *, allow
+    #   p, role:<PROJECT>, applicationsets, get, *, allow
+    #   p, role:<PROJECT>, projects, get, *, allow
+    #   p, role:<PROJECT>, logs, get, *, allow
+    #   p, role:<PROJECT>, clusters, get, *, allow
+    #   g, "<UUID>", role:<PROJECT>
+
   ingressDomain: ""
   certificate:
     clusterIssuer: "letsencrypt"
@@ -66,7 +76,7 @@ argocdInstance:
     scmProviders: []
     volumes: []
     volumeMounts: []
-    
+
   controller:
     resources: {}
       # limits:

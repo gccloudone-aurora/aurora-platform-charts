@@ -220,10 +220,12 @@ spec:
               clientSecret: {{ .Values.argocdInstance.dex.google.clientSecret }}
               issuer: https://accounts.google.com
   {{- end}}
+
   rbac:
     defaultPolicy: "role:none"
     policy: |
-      p, role:none, *, *, */*, deny 
+      # ADMIN
+      p, role:none, *, *, */*, deny
       p, role:org-admin, applications, *, */*, allow
       p, role:org-admin, applicationsets, get, */*, allow
       p, role:org-admin, clusters, get, *, allow
@@ -235,8 +237,12 @@ spec:
       p, role:org-admin, accounts, get, *, allow
       p, role:org-admin, accounts, update, *, allow
       g, {{ .Values.argocdInstance.adminSecurityGroup | quote }}, role:org-admin
-    scopes: '[groups]'
 
+      # CUSTOM
+      {{- with .Values.argocdInstance.extraPolicy }}
+      {{- . | nindent 6 }}
+      {{- end }}
+    scopes: '[groups]'
 
   resourceHealthChecks:
     - group: kiali.io
