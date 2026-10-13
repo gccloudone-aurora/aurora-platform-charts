@@ -232,11 +232,11 @@ Renovate runs from the `Renovate` GitHub Actions workflow because the hosted Ren
 - **Documentation:** [README](./stable/istio-custom-responses/README.md)
 
 ## istio-ingress-gateway
-- **Version:** 0.0.9
+- **Version:** 0.0.10
 - **Description:** This chart deploys an opinionated Istio Ingress Gateway.
 - **Documentation:** [README](./stable/istio-ingress-gateway/README.md)
 - **Dependencies:**
-  - gateway (https://istio-release.storage.googleapis.com/charts, version: 1.29.1)
+  - gateway (https://blob.istio.io/istio-release/charts, version: 1.29.1)
 
 ## raw
 - **Version:** 0.0.1
