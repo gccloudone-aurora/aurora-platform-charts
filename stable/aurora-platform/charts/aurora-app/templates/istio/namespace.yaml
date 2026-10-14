@@ -167,9 +167,9 @@ spec:
           # Quotas related to services and external traffic.
           services:
             # The maximum number of loadbalancers that can be configured.
-            loadbalancers: 1
+            loadbalancers: {{ if .Values.components.istio.gatewayAPI.enabled }}2{{ else }}1{{ end }}
             # The maximum number of NodePorts that can be configured.
-            nodeports: 3
+            nodeports: {{ if .Values.components.istio.gatewayAPI.enabled }}6{{ else }}3{{ end }}
           # The upper limit of storage that can be requested across all persistent volumes.
           # Expects a string value of a number with or without units (uses SI units).
           storage: '0'

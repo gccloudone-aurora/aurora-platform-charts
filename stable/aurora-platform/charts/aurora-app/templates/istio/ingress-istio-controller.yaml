@@ -1,4 +1,4 @@
-{{ if .Values.components.istio.enabled -}}
+{{ if and .Values.components.istio.enabled .Values.components.istio.ingressIstioControllerEnabled -}}
 
 apiVersion: argoproj.io/v1alpha1
 kind: Application

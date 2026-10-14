@@ -1,0 +1,24 @@
+{{- if and .Values.components.istio.enabled .Values.components.istio.gatewayAPI.enabled }}
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-istio-gateway-api-crds"
+  annotations:
+    argocd.argoproj.io/sync-wave: "-1"
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    repoURL: {{ .Values.components.istio.gatewayAPI.crds.repository }}
+    targetRevision: {{ .Values.components.istio.gatewayAPI.crds.version }}
+    path: config/crd/standard
+  destination:
+    name: {{ .Values.global.cluster }}
+    namespace: istio-system
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: true
+    syncOptions:
+      - ServerSideApply=true
+      - Prune=false
+{{- end }}
