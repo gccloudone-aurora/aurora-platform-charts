@@ -2096,7 +2096,7 @@ components:
       helm:
         # chart: prometheus-blackbox-exporter
         # repository: https://prometheus-community.github.io/helm-charts
-        targetRevision: 11.8.0
+        targetRevision: 11.20.0
       image:
         #registry: ""
         repository: prometheus/blackbox-exporter
