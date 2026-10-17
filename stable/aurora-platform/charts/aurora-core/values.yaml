@@ -115,7 +115,7 @@ components:
     helm:
       # chart: alloy
       # repository: https://grafana.github.io/helm-charts
-      targetRevision: 1.11.0
+      targetRevision: 1.13.1
 
     imagePullSecrets: []
       # - name: aurora-image-pull-secret
