@@ -31,11 +31,15 @@ spec:
               # NOTE: Swaps out public endpoints to use our central private JFrog virtual registry path context.
               imageRegistry:
                 host: {{ .Values.global.container.registry | quote }}
+                repository: {{ .Values.components.argoFoundation.argocdInstance.imageRegistry.repository | quote }}
+              {{- if .Values.components.argoFoundation.argocdInstance.image }}
+              image: {{ toYaml .Values.components.argoFoundation.argocdInstance.image | nindent 16 }}
+              {{- end }}
               argocdVaultPlugin:
                 imageRegistry:
                   host: {{ .Values.global.container.registry | quote }}
               {{- end }}
-              
+
               gateway: {{ toYaml .Values.components.argoFoundation.argocdInstance.gateway | nindent 16 }}
               nodeSelector: {{ toYaml .Values.components.argoFoundation.argocdInstance.nodeSelector | nindent 16 }}
               tolerations: {{ toYaml .Values.components.argoFoundation.argocdInstance.tolerations | nindent 16 }}
@@ -43,6 +47,9 @@ spec:
 
               ingressDomain: "{{ .Values.components.argoFoundation.argocdInstance.ingressDomain }}"
               adminSecurityGroup: {{ .Values.components.argoFoundation.argocdInstance.adminSecurityGroup }}
+              {{- with .Values.components.argoFoundation.argocdInstance.extraPolicy }}
+              extraPolicy: {{ toYaml . | nindent 16 }}
+              {{- end }}
               disableAdmin: "{{ .Values.components.argoFoundation.argocdInstance.disableAdmin }}"
               oidcAuthSP:
                 tenantID: "{{ .Values.components.argoFoundation.argocdInstance.oidcAuthSP.credentials.tenantID }}"
