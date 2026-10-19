@@ -2163,7 +2163,7 @@ components:
     helm:
       # chart: secrets-store-csi-driver
       # repository: https://kubernetes-sigs.github.io/secrets-store-csi-driver/charts
-      targetRevision: 1.6.0
+      targetRevision: 1.6.1
 
     images:
       driver:
