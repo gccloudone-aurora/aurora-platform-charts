@@ -2521,7 +2521,7 @@ components:
     helm:
       # chart: vault
       # repository: https://helm.releases.hashicorp.com
-      targetRevision: 0.22.0
+      targetRevision: 0.34.1
 
     imagePullSecrets: []
 
