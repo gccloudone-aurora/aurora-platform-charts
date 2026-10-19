@@ -28,12 +28,24 @@ namespace:
  # Extra labels to add to the namespace.
   labels: {}
   # The type of namespace.
-  # Can be one of [gateway, solution, system].
+  # Can be one of [gateway, solution, system, argocd-control-plane].
   type:                  # @schema type:[string];enum:[gateway, solution, system, argocd-control-plane];required:true
 
 # Network policy configurations.
 netpol:
-  allowSameNamespace: true
+  allowSameNamespace: true                    # @schema type:[boolean]
+  allowKeda: false                            # @schema type:[boolean]
+  keda:
+    metricsApi:
+      podSelector:
+        matchLabels:
+          app.kubernetes.io/name: keda-operator-metrics-apiserver   # @schema type:[object]
+      egressCidr: "0.0.0.0/0"                                     # @schema type:[string]
+    operator:
+      podSelector:
+        matchLabels:
+          app.kubernetes.io/name: keda-operator                     # @schema type:[object]
+      egressCidr: "0.0.0.0/0"                                     # @schema type:[string]
 
 # Policy configurations on the namespace.
 policies:
