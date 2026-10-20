@@ -90,11 +90,6 @@ echo "Testing on cluster: ${CLUSTER_NAME}"
 echo "Test namespace: ${NAMESPACE}"
 echo "API Server CIDR: ${API_SERVER_CIDR}"
 echo ""
-echo "KEDA requires:"
-echo "  - Ingress on port 443 to metrics API server (for API server to reach it)"
-echo "  - Egress from metrics API server to API server on port 443"
-echo "  - Pod port: 6443 (service port 443 -> pod port 6443)"
-echo ""
 
 echo "Creating namespace ${NAMESPACE} and applying network policies..."
 kubectl apply -f /tmp/keda-test-values.yaml
@@ -104,15 +99,20 @@ echo "Network policies applied:"
 kubectl get netpol -n ${NAMESPACE}
 
 echo ""
-echo "Test pod created for manual verification:"
+echo "Test pod created:"
 kubectl get pod -n ${NAMESPACE}
 
+# Wait for pod to be ready
 echo ""
-echo "To verify policies are applied correctly:"
-echo "  kubectl describe netpol -n ${NAMESPACE}"
+echo "Waiting for test pod to be ready..."
+kubectl wait --for=condition=Ready pod/curl-test -n ${NAMESPACE} --timeout=120s
+
 echo ""
-echo "To test connectivity from test pod (simulates API server):"
-echo "  kubectl exec -n ${NAMESPACE} curl-test -- curl -k https://10.20.225.11:443/apis/external.metrics.k8s.io/v1beta1"
+echo "Test pod is ready. Running connectivity test..."
+kubectl exec -n ${NAMESPACE} curl-test -- curl -s -k -w "\nHTTP Status: %{http_code}\n" https://10.20.225.11:443/apis/external.metrics.k8s.io/v1beta1 || echo "Connection failed (expected if API server IP is wrong or firewall blocks)"
+
 echo ""
-echo "Resources will be automatically cleaned up on exit."
 echo "============================================"
+echo "Test complete. Press Enter to cleanup..."
+read -r
+cleanup
