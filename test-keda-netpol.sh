@@ -22,40 +22,40 @@ trap cleanup EXIT
 
 # Create the netpol values file
 cat > /tmp/keda-netpol-values.yaml <<EOF
-resources:
-  - apiVersion: networking.k8s.io/v1
-    kind: NetworkPolicy
-    metadata:
-      name: allow-keda-metrics-apiserver
-      namespace: ${NAMESPACE}
-    spec:
-      podSelector:
-        matchLabels:
-          app.kubernetes.io/name: keda-operator-metrics-apiserver
-      ingress:
-        - ports:
-            - protocol: TCP
-              port: 443
-      policyTypes:
-        - Ingress
-  - apiVersion: networking.k8s.io/v1
-    kind: NetworkPolicy
-    metadata:
-      name: allow-keda-metrics-apiserver-egress
-      namespace: ${NAMESPACE}
-    spec:
-      podSelector:
-        matchLabels:
-          app.kubernetes.io/name: keda-operator-metrics-apiserver
-      egress:
-        - to:
-            - ipBlock:
-                cidr: ${API_SERVER_CIDR}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-keda-metrics-apiserver
+  namespace: ${NAMESPACE}
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: keda-operator-metrics-apiserver
+  ingress:
+    - ports:
+        - protocol: TCP
+          port: 443
+  policyTypes:
+    - Ingress
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-keda-metrics-apiserver-egress
+  namespace: ${NAMESPACE}
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: keda-operator-metrics-apiserver
+  egress:
+    - to:
+        - ipBlock:
+            cidr: ${API_SERVER_CIDR}
       ports:
         - protocol: TCP
           port: 443
-      policyTypes:
-        - Egress
+  policyTypes:
+    - Egress
 EOF
 
 echo "Testing KEDA network policies on cluster: ${CLUSTER_NAME}"
