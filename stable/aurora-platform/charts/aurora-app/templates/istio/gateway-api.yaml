@@ -1,5 +1,14 @@
 {{- if and .Values.components.istio.enabled .Values.components.istio.gatewayAPI.enabled }}
 {{- $gateway := .Values.components.istio.gatewayAPI }}
+{{- $proxyImage := $gateway.proxyImage }}
+{{- if and (not $proxyImage) .Values.global.container.registry }}
+{{- $proxyTag := default .Values.components.istio.istiod.helm.targetRevision (default .Values.components.istio.istiod.image.tag .Values.components.istio.istiod.proxy.image.tag) }}
+{{- $proxyVariant := default .Values.components.istio.istiod.image.variant .Values.components.istio.istiod.proxy.image.variant }}
+{{- if $proxyVariant }}
+{{- $proxyTag = printf "%s-%s" $proxyTag $proxyVariant }}
+{{- end }}
+{{- $proxyImage = printf "%s/istio/proxyv2:%s" (trimSuffix "/" .Values.global.container.registry) $proxyTag }}
+{{- end }}
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
@@ -42,6 +51,9 @@ spec:
                 spec:
                   template:
                     spec:
+                      {{- if .Values.components.istio.imagePullSecrets }}
+                      imagePullSecrets: {{ toYaml .Values.components.istio.imagePullSecrets | nindent 24 }}
+                      {{- end }}
                       nodeSelector: {{ toYaml $gateway.nodeSelector | nindent 24 }}
                       tolerations: {{ toYaml $gateway.tolerations | nindent 24 }}
                       containers:
@@ -79,6 +91,11 @@ spec:
             metadata:
               name: {{ $gateway.name }}
               namespace: ingress-general-system
+              {{- if $proxyImage }}
+              # The controller reads this annotation before applying Deployment overlays.
+              annotations:
+                sidecar.istio.io/proxyImage: {{ $proxyImage | quote }}
+              {{- end }}
             spec:
               gatewayClassName: istio
               infrastructure:
