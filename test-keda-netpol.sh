@@ -148,7 +148,7 @@ spec:
     image: nginx:alpine
     ports:
     - containerPort: 443
-    command: ["/bin/sh", "-c", "echo 'Listening on port 443...' && nginx -g 'daemon off;'"]
+    command: ["/bin/sh", "-c", "echo 'Starting nginx...' && nginx -g 'daemon off;'"]
 EOF
 
 echo "  Contents:"
@@ -175,6 +175,10 @@ kubectl wait --for=condition=Ready pod/curl-test -n ${NAMESPACE} --timeout=120s
 echo "  Command: kubectl wait --for=condition=Ready pod/keda-metrics-listener -n ${NAMESPACE} --timeout=120s"
 kubectl wait --for=condition=Ready pod/keda-metrics-listener -n ${NAMESPACE} --timeout=120s
 echo "  Result: Pods are ready!"
+
+# Give nginx a moment to start
+echo "  Waiting 5 seconds for nginx to start..."
+sleep 5
 
 echo ""
 echo "[STEP 5/5] Testing ingress connectivity to port 443..."
