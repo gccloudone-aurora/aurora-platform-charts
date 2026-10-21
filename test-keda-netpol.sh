@@ -2,16 +2,30 @@
 set -euo pipefail
 
 # Test script for KEDA network policies
-# This deploys ONLY the network policies to keda-test-system namespace
-# without installing KEDA itself
+# ========================================
+# This script tests network policies required for KEDA's external metrics API server.
+# 
+# Context: KEDA registers an APIService (v1beta1.external.metrics.k8s.io) with the
+# Kubernetes API server. The API server needs to reach KEDA's metrics API server
+# pod on port 443. This requires:
+#   - Ingress on port 443 to the metrics API server pod
+#   - Egress from the metrics API server pod to the Kubernetes API server
+#
+# Usage:
+#   ./test-keda-netpol.sh          # Run with defaults (auto-discovers cluster info)
+#   ./test-keda-netpol.sh cleanup  # Just cleanup, no test
+#
+# This script:
+#   1. Creates keda-test-system namespace
+#   2. Applies network policies allowing metrics API server traffic
+#   3. Creates a curl test pod to simulate API server connectivity
+#   4. Tests connectivity to the Kubernetes API server
+#   5. Auto-cleans up on exit or when Enter is pressed
 #
 # Per KEDA docs: https://docs.kedify.io/installation/networking/
-# Kubernetes API server -> KEDA metrics API server: 443 -> 6443 (service -> pod)
-# The API server (external to cluster) needs to reach the metrics server on port 443
+# Kubernetes API server -> KEDA metrics API server: 443 (service) -> 6443 (pod)
 
-CLUSTER_NAME="${1:-nddn}"
 NAMESPACE="keda-test-system"
-API_SERVER_CIDR="${2:-10.20.225.11/32}"
 
 # Cleanup function to remove the test resources and namespace
 cleanup() {
@@ -25,6 +39,34 @@ cleanup() {
 
 # Set trap to cleanup on exit or error
 trap cleanup EXIT
+
+# Handle cleanup-only mode
+if [ "${1:-}" = "cleanup" ]; then
+    cleanup
+    exit 0
+fi
+
+echo "============================================"
+echo "KEDA Network Policy Test"
+echo "============================================"
+
+# Get the Kubernetes API server IP from kubeconfig
+echo "Getting Kubernetes API server info..."
+API_SERVER_URL=$(kubectl config view -o jsonpath='{.clusters[?(@.name=="'$(kubectl config current-context)'")].cluster.server}')
+echo "API Server URL: ${API_SERVER_URL}"
+
+# Extract host and port from API server URL
+API_SERVER_HOST=$(echo ${API_SERVER_URL} | sed -e 's|^https://||' -e 's|:.*||')
+API_SERVER_PORT=$(echo ${API_SERVER_URL} | sed -e 's|^https://||' -e 's|^[^:]*:||' -e 's|/.*||')
+
+echo "API Server Host: ${API_SERVER_HOST}"
+echo "API Server Port: ${API_SERVER_PORT}"
+
+# Get cluster IP from kubernetes service
+KUBERNETES_SVC_IP=$(kubectl get service kubernetes -n default -o jsonpath='{.spec.clusterIP}')
+echo "Kubernetes Service ClusterIP: ${KUBERNETES_SVC_IP}"
+
+echo ""
 
 # Create namespace and netpol values file
 cat > /tmp/keda-test-values.yaml <<EOF
@@ -62,7 +104,7 @@ spec:
   egress:
     - to:
         - ipBlock:
-            cidr: ${API_SERVER_CIDR}
+            cidr: ${KUBERNETES_SVC_IP}/32
       ports:
         - protocol: TCP
           port: 443
@@ -83,33 +125,27 @@ spec:
     command: ["sleep", "infinity"]
 EOF
 
-echo "============================================"
-echo "KEDA Network Policy Test"
-echo "============================================"
-echo "Testing on cluster: ${CLUSTER_NAME}"
-echo "Test namespace: ${NAMESPACE}"
-echo "API Server CIDR: ${API_SERVER_CIDR}"
-echo ""
-
 echo "Creating namespace ${NAMESPACE} and applying network policies..."
 kubectl apply -f /tmp/keda-test-values.yaml
-
 echo ""
+
 echo "Network policies applied:"
 kubectl get netpol -n ${NAMESPACE}
-
 echo ""
+
 echo "Test pod created:"
 kubectl get pod -n ${NAMESPACE}
+echo ""
 
 # Wait for pod to be ready
-echo ""
-echo "Waiting for test pod to be ready..."
+echo "Waiting for test pod to be ready (120s timeout)..."
 kubectl wait --for=condition=Ready pod/curl-test -n ${NAMESPACE} --timeout=120s
-
 echo ""
+
 echo "Test pod is ready. Running connectivity test..."
-kubectl exec -n ${NAMESPACE} curl-test -- curl -s -k -w "\nHTTP Status: %{http_code}\n" https://10.20.225.11:443/apis/external.metrics.k8s.io/v1beta1 || echo "Connection failed (expected if API server IP is wrong or firewall blocks)"
+echo "Executing: curl -k https://${KUBERNETES_SVC_IP}:${API_SERVER_PORT}/apis/external.metrics.k8s.io/v1beta1"
+echo ""
+kubectl exec -n ${NAMESPACE} curl-test -- curl -s -k -w "\nHTTP Status: %{http_code}\n" "https://${KUBERNETES_SVC_IP}:${API_SERVER_PORT}/apis/external.metrics.k8s.io/v1beta1" || echo "Connection failed"
 
 echo ""
 echo "============================================"
