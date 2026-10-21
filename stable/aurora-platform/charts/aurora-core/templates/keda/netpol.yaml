@@ -16,6 +16,50 @@ spec:
       releaseName: keda-netpol
       values: |
         resources:
+          # Base policy: allow pods within keda-system namespace to communicate
+          # Required for KEDA operator to talk to metrics API server
+          - apiVersion: networking.k8s.io/v1
+            kind: NetworkPolicy
+            metadata:
+              name: allow-same-namespace
+              namespace: keda-system
+            spec:
+              podSelector: {}
+              ingress:
+                - from:
+                    - podSelector: {}
+              egress:
+                - to:
+                    - podSelector: {}
+              policyTypes:
+                - Ingress
+                - Egress
+          
+          # Allow DNS queries to kube-system (required for service discovery)
+          # Required for pods to resolve service names and do DNS lookups
+          - apiVersion: networking.k8s.io/v1
+            kind: NetworkPolicy
+            metadata:
+              name: allow-dns
+              namespace: keda-system
+            spec:
+              podSelector: {}
+              egress:
+                - to:
+                    - namespaceSelector:
+                        matchLabels:
+                          kubernetes.io/metadata.name: kube-system
+                  ports:
+                    - protocol: UDP
+                      port: 53
+                    - protocol: TCP
+                      port: 53
+              policyTypes:
+                - Egress
+          
+          # KEDA Metrics API Server: Allow ingress from anywhere on port 443
+          # This allows the Kubernetes API server to reach KEDA's metrics API
+          # CRITICAL: Without this, APIService shows FailedDiscoveryCheck
           - apiVersion: networking.k8s.io/v1
             kind: NetworkPolicy
             metadata:
@@ -31,6 +75,8 @@ spec:
                       port: 443
               policyTypes:
                 - Ingress
+          
+          # KEDA Metrics API Server egress: Allow outbound traffic
           - apiVersion: networking.k8s.io/v1
             kind: NetworkPolicy
             metadata:
@@ -54,6 +100,8 @@ spec:
                 {{- end }}
               policyTypes:
                 - Egress
+          
+          # KEDA Operator: Allow management ports
           - apiVersion: networking.k8s.io/v1
             kind: NetworkPolicy
             metadata:
@@ -71,6 +119,8 @@ spec:
                       port: 9090
               policyTypes:
                 - Ingress
+          
+          # KEDA Operator egress: Allow outbound traffic
           - apiVersion: networking.k8s.io/v1
             kind: NetworkPolicy
             metadata:

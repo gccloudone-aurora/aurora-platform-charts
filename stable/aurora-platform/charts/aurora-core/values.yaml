@@ -1304,6 +1304,17 @@ components:
 
     priorityClassName: ""
 
+    # Network policy configuration
+    netpol:
+      metricsApi:
+        # CIDR for metrics API server egress
+        # Default allows all outbound traffic
+        egressCidr: "0.0.0.0/0"
+      operator:
+        # CIDR for KEDA operator egress
+        # Default allows all outbound traffic
+        egressCidr: "0.0.0.0/0"
+
     # Image tags are left empty so the KEDA chart uses its packaged appVersion
     # (matching the pinned chart targetRevision above). Override to pin explicitly.
     images:
