@@ -54,6 +54,19 @@ spec:
                       {{- if .Values.components.istio.imagePullSecrets }}
                       imagePullSecrets: {{ toYaml .Values.components.istio.imagePullSecrets | nindent 24 }}
                       {{- end }}
+                      affinity:
+                        {{- if $gateway.affinity }}
+                        {{- toYaml $gateway.affinity | nindent 24 }}
+                        {{- else }}
+                        podAntiAffinity:
+                          preferredDuringSchedulingIgnoredDuringExecution:
+                            - weight: 100
+                              podAffinityTerm:
+                                labelSelector:
+                                  matchLabels:
+                                    gateway.networking.k8s.io/gateway-name: {{ $gateway.name }}
+                                topologyKey: kubernetes.io/hostname
+                        {{- end }}
                       nodeSelector: {{ toYaml $gateway.nodeSelector | nindent 24 }}
                       tolerations: {{ toYaml $gateway.tolerations | nindent 24 }}
                       containers:

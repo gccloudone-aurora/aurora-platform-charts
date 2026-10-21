@@ -299,6 +299,8 @@ components:
       # Optional full image reference. Empty derives registry/istio/proxyv2 with the
       # Istiod proxy tag (or control plane chart version) when a global registry is set.
       proxyImage: ""
+      # Empty uses preferred pod anti-affinity across nodes for this Gateway.
+      affinity: {}
       replicas:
         min: 3
         max: 5
