@@ -46,27 +46,27 @@ if [ "${1:-}" = "cleanup" ]; then
     exit 0
 fi
 
+echo ""
 echo "============================================"
 echo "KEDA Network Policy Test"
 echo "============================================"
 
-# Get the Kubernetes API server IP from kubeconfig
-echo "Getting Kubernetes API server info..."
+# Step 1: Get API server info
+echo ""
+echo "[STEP 1/5] Getting Kubernetes API server info from kubeconfig..."
 API_SERVER_URL=$(kubectl config view -o jsonpath='{.clusters[?(@.name=="'$(kubectl config current-context)'")].cluster.server}')
-echo "API Server URL: ${API_SERVER_URL}"
+echo "  API Server URL: ${API_SERVER_URL}"
 
-# Extract host and port from API server URL
 API_SERVER_HOST=$(echo ${API_SERVER_URL} | sed -e 's|^https://||' -e 's|:.*||')
 API_SERVER_PORT=$(echo ${API_SERVER_URL} | sed -e 's|^https://||' -e 's|^[^:]*:||' -e 's|/.*||')
+echo "  API Server Host: ${API_SERVER_HOST}"
+echo "  API Server Port: ${API_SERVER_PORT}"
 
-echo "API Server Host: ${API_SERVER_HOST}"
-echo "API Server Port: ${API_SERVER_PORT}"
-
-# Get cluster IP from kubernetes service
 KUBERNETES_SVC_IP=$(kubectl get service kubernetes -n default -o jsonpath='{.spec.clusterIP}')
-echo "Kubernetes Service ClusterIP: ${KUBERNETES_SVC_IP}"
+echo "  Kubernetes Service ClusterIP: ${KUBERNETES_SVC_IP}"
 
 echo ""
+echo "[STEP 2/5] Creating namespace and network policies..."
 
 # Create namespace and netpol values file
 cat > /tmp/keda-test-values.yaml <<EOF
@@ -125,27 +125,29 @@ spec:
     command: ["sleep", "infinity"]
 EOF
 
-echo "Creating namespace ${NAMESPACE} and applying network policies..."
+echo "  Creating namespace ${NAMESPACE}..."
 kubectl apply -f /tmp/keda-test-values.yaml
-echo ""
 
-echo "Network policies applied:"
+echo ""
+echo "[STEP 3/5] Verifying network policies..."
 kubectl get netpol -n ${NAMESPACE}
 echo ""
+echo "  NetworkPolicy details:"
+kubectl describe netpol -n ${NAMESPACE}
 
-echo "Test pod created:"
+echo ""
+echo "[STEP 4/5] Waiting for test pod to be ready (120s timeout)..."
 kubectl get pod -n ${NAMESPACE}
-echo ""
-
-# Wait for pod to be ready
-echo "Waiting for test pod to be ready (120s timeout)..."
 kubectl wait --for=condition=Ready pod/curl-test -n ${NAMESPACE} --timeout=120s
+echo "  Pod is ready!"
+
+echo ""
+echo "[STEP 5/5] Testing connectivity..."
+echo "  Executing: curl -k https://${KUBERNETES_SVC_IP}:${API_SERVER_PORT}/apis/external.metrics.k8s.io/v1beta1"
 echo ""
 
-echo "Test pod is ready. Running connectivity test..."
-echo "Executing: curl -k https://${KUBERNETES_SVC_IP}:${API_SERVER_PORT}/apis/external.metrics.k8s.io/v1beta1"
-echo ""
-kubectl exec -n ${NAMESPACE} curl-test -- curl -s -k -w "\nHTTP Status: %{http_code}\n" "https://${KUBERNETES_SVC_IP}:${API_SERVER_PORT}/apis/external.metrics.k8s.io/v1beta1" || echo "Connection failed"
+echo "  Testing from pod..."
+kubectl exec -n ${NAMESPACE} curl-test -- curl -v -k "https://${KUBERNETES_SVC_IP}:${API_SERVER_PORT}/apis/external.metrics.k8s.io/v1beta1" 2>&1 || echo "Connection failed with exit code $?"
 
 echo ""
 echo "============================================"
