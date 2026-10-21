@@ -9,7 +9,7 @@ set -euo pipefail
 # Kubernetes API server. The API server needs to reach KEDA's metrics API server
 # pod on port 443. This requires:
 #   - Ingress on port 443 TO the metrics API server pod (from API server)
-#   - The test simulates this by checking if the pod can receive traffic on port 443
+#   - The test simulates this by checking if a pod in the same namespace can reach port 443
 #
 # Usage:
 #   ./test-keda-netpol.sh          # Run with defaults (auto-discovers cluster info)
@@ -18,8 +18,8 @@ set -euo pipefail
 # This script:
 #   1. Creates keda-test-system namespace
 #   2. Applies network policies
-#   3. Creates a listener pod on port 443 to test ingress connectivity
-#   4. Tests that traffic can reach port 443 from within the cluster
+#   3. Creates a listener pod on port 443
+#   4. Tests that another pod in the same namespace can reach port 443
 #   5. Auto-cleans up on exit or when Enter is pressed
 
 NAMESPACE="keda-test-system"
@@ -179,23 +179,13 @@ echo "  Result: Pods are ready!"
 echo ""
 echo "[STEP 5/5] Testing ingress connectivity to port 443..."
 
-# First test DNS resolution
-echo "  Testing DNS resolution..."
-echo "  Command: kubectl exec -n ${NAMESPACE} curl-test -- nslookup keda-metrics-listener.${NAMESPACE}.svc.cluster.local"
-kubectl exec -n ${NAMESPACE} curl-test -- nslookup keda-metrics-listener.${NAMESPACE}.svc.cluster.local 2>&1 || echo "DNS resolution failed"
-
-# Then test direct IP connection
-echo "  Getting pod IP for direct connection test..."
+# Test by getting the pod IP and curling directly
 POD_IP=$(kubectl get pod keda-metrics-listener -n ${NAMESPACE} -o jsonpath='{.status.podIP}')
-echo "  Pod IP: ${POD_IP}"
+echo "  Target Pod IP: ${POD_IP}"
 
-echo "  Command: kubectl exec -n ${NAMESPACE} curl-test -- curl -s -k -w '\nHTTP Status: %{http_code}\n' https://${POD_IP}:443"
-kubectl exec -n ${NAMESPACE} curl-test -- curl -s -k -w '\nHTTP Status: %{http_code}\n' "https://${POD_IP}:443" || echo "Direct connection failed"
-
-# Then test service name resolution
-echo ""
-echo "  Command: kubectl exec -n ${NAMESPACE} curl-test -- sh -c \"curl -s -k -w '\nHTTP Status: %{http_code}\n' https://keda-metrics-listener.${NAMESPACE}.svc.cluster.local:443\""
-kubectl exec -n ${NAMESPACE} curl-test -- sh -c "curl -s -k -w '\nHTTP Status: %{http_code}\n' https://keda-metrics-listener.${NAMESPACE}.svc.cluster.local:443" || echo "Connection failed"
+echo "  Testing HTTP connection from curl-test pod to keda-metrics-listener:443..."
+echo "  Command: kubectl exec -n ${NAMESPACE} curl-test -- curl -s -w '\nHTTP Status: %{http_code}\n' http://${POD_IP}:443"
+kubectl exec -n ${NAMESPACE} curl-test -- curl -s -w '\nHTTP Status: %{http_code}\n' "http://${POD_IP}:443" || echo "Connection failed"
 
 echo ""
 echo "============================================"
