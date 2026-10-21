@@ -178,7 +178,22 @@ echo "  Result: Pods are ready!"
 
 echo ""
 echo "[STEP 5/5] Testing ingress connectivity to port 443..."
-echo "  From curl-test pod, testing connectivity to keda-metrics-listener:443..."
+
+# First test DNS resolution
+echo "  Testing DNS resolution..."
+echo "  Command: kubectl exec -n ${NAMESPACE} curl-test -- nslookup keda-metrics-listener.${NAMESPACE}.svc.cluster.local"
+kubectl exec -n ${NAMESPACE} curl-test -- nslookup keda-metrics-listener.${NAMESPACE}.svc.cluster.local 2>&1 || echo "DNS resolution failed"
+
+# Then test direct IP connection
+echo "  Getting pod IP for direct connection test..."
+POD_IP=$(kubectl get pod keda-metrics-listener -n ${NAMESPACE} -o jsonpath='{.status.podIP}')
+echo "  Pod IP: ${POD_IP}"
+
+echo "  Command: kubectl exec -n ${NAMESPACE} curl-test -- curl -s -k -w '\nHTTP Status: %{http_code}\n' https://${POD_IP}:443"
+kubectl exec -n ${NAMESPACE} curl-test -- curl -s -k -w '\nHTTP Status: %{http_code}\n' "https://${POD_IP}:443" || echo "Direct connection failed"
+
+# Then test service name resolution
+echo ""
 echo "  Command: kubectl exec -n ${NAMESPACE} curl-test -- sh -c \"curl -s -k -w '\nHTTP Status: %{http_code}\n' https://keda-metrics-listener.${NAMESPACE}.svc.cluster.local:443\""
 kubectl exec -n ${NAMESPACE} curl-test -- sh -c "curl -s -k -w '\nHTTP Status: %{http_code}\n' https://keda-metrics-listener.${NAMESPACE}.svc.cluster.local:443" || echo "Connection failed"
 
