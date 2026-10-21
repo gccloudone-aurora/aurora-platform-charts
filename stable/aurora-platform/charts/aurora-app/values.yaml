@@ -321,8 +321,10 @@ components:
           value: gateway
           effect: NoSchedule
 
-    # Disable separately after application traffic has moved to HTTPRoutes.
+    # Keeps the legacy data plane available while traffic moves to HTTPRoutes.
     legacyGatewayEnabled: true
+    # Controls Ingress-to-VirtualService reconciliation separately from the legacy
+    # data plane, so controller and Gateway changes can be staged independently.
     ingressIstioControllerEnabled: true
 
     imagePullSecrets: []
