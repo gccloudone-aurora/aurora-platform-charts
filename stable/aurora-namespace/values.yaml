@@ -28,8 +28,8 @@ namespace:
  # Extra labels to add to the namespace.
   labels: {}
   # The type of namespace.
-  # Can be one of [gateway, solution, system, argocd-control-plane].
-  type:                  # @schema type:[string];enum:[gateway, solution, system, argocd-control-plane];required:true
+  # Can be one of [gateway, solution, system].
+  type:                  # @schema type:[string];enum:[gateway, solution, system];required:true
 
 # Network policy configurations.
 netpol:
