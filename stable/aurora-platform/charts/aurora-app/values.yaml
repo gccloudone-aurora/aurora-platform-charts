@@ -299,6 +299,10 @@ components:
       # Optional full image reference. Empty derives registry/istio/proxyv2 with the
       # Istiod proxy tag (or control plane chart version) when a global registry is set.
       proxyImage: ""
+      # Add HTTP Strict Transport Security (HSTS) unless the response already has it.
+      hsts:
+        enabled: true
+        value: max-age=31536000
       # Empty uses preferred pod anti-affinity across nodes for this Gateway.
       affinity: {}
       replicas:

@@ -157,6 +157,39 @@ spec:
                       requestRedirect:
                         scheme: https
                         statusCode: 301
+          {{- if $gateway.hsts.enabled }}
+          - apiVersion: networking.istio.io/v1alpha3
+            kind: EnvoyFilter
+            metadata:
+              name: {{ $gateway.name }}-gateway-api-hsts
+              namespace: ingress-general-system
+            spec:
+              workloadSelector:
+                labels:
+                  gateway.networking.k8s.io/gateway-name: {{ $gateway.name }}
+              configPatches:
+                - applyTo: HTTP_FILTER
+                  match:
+                    context: GATEWAY
+                    listener:
+                      filterChain:
+                        filter:
+                          name: envoy.filters.network.http_connection_manager
+                          subFilter:
+                            name: envoy.filters.http.router
+                  patch:
+                    operation: INSERT_FIRST
+                    value:
+                      name: envoy.lua
+                      typed_config:
+                        '@type': type.googleapis.com/envoy.extensions.filters.http.lua.v3.Lua
+                        inlineCode: |
+                          function envoy_on_response(response_handle)
+                            if not response_handle:headers():get("strict-transport-security") then
+                              response_handle:headers():add("strict-transport-security", {{ $gateway.hsts.value | quote }})
+                            end
+                          end
+          {{- end }}
   destination:
     name: {{ .Values.global.cluster }}
     namespace: platform-system
