@@ -29,11 +29,11 @@ namespace:
   labels: {}
   # The type of namespace.
   # Can be one of [gateway, solution, system].
-  type:                  # @schema type:[string];enum:[gateway, solution, system];required:true
+  type:                  # @schema type:[string];enum:[gateway, solution, system, argocd-control-plane];required:true
 
 # Network policy configurations.
 netpol:
-  allowSameNamespace: true                    # @schema type:[boolean]
+  allowSameNamespace: true
 
 # Policy configurations on the namespace.
 policies:
