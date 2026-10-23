@@ -1,0 +1,81 @@
+{{ if .Values.components.keda.enabled -}}
+
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-keda-netpol"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    chart: {{ .Values.global.raw.helm.chart }}
+    repoURL: {{ default .Values.global.helm.repository .Values.global.raw.helm.repository }}
+    targetRevision: {{ .Values.global.raw.helm.targetRevision }}
+    helm:
+      releaseName: keda-netpol
+      values: |
+        resources:
+          - apiVersion: networking.k8s.io/v1
+            kind: NetworkPolicy
+            metadata:
+              name: allow-ingress-from-apiserver-to-keda
+              namespace: keda-system
+            spec:
+              podSelector:
+                matchLabels:
+                  app: keda-operator-metrics-apiserver
+              policyTypes:
+                - Ingress
+              ingress:
+                - from:
+                    - ipBlock:
+                        cidr: {{ required "global.apiServerCidr is required" .Values.global.apiServerCidr | quote }}
+                    - namespaceSelector:
+                        matchLabels:
+                          kubernetes.io/metadata.name: kube-system
+                      podSelector:
+                        matchLabels:
+                          {{- if eq .Values.global.provider "gcp" }}
+                          k8s-app: konnectivity-agent
+                          {{- else }}
+                          app: konnectivity-agent
+                          {{- end }}
+                  ports:
+                    - protocol: TCP
+                      port: 6443
+          - apiVersion: cilium.io/v2
+            kind: CiliumNetworkPolicy
+            metadata:
+              name: allow-ingress-from-apiserver-to-keda
+              namespace: keda-system
+            spec:
+              endpointSelector:
+                matchLabels:
+                  app: keda-operator-metrics-apiserver
+              ingress:
+                - fromEntities:
+                    - kube-apiserver
+                - fromCIDRSet:
+                    - cidr: {{ required "global.apiServerCidr is required" .Values.global.apiServerCidr | quote }}
+                - fromEndpoints:
+                    - matchLabels:
+                        "k8s:io.kubernetes.pod.namespace": kube-system
+                        {{- if eq .Values.global.provider "gcp" }}
+                        "k8s:k8s-app": konnectivity-agent
+                        {{- else }}
+                        "k8s:app": konnectivity-agent
+                        {{- end }}
+                  toPorts:
+                    - ports:
+                        - port: "6443"
+                          protocol: TCP
+  destination:
+    name: {{ .Values.global.cluster }}
+    namespace: platform-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+
+{{- end }}
