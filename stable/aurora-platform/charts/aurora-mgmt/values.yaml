@@ -129,7 +129,7 @@ components:
       helm:
         # chart: argocd-instance
         # repository: https://gccloudone-aurora.github.io/aurora-platform-charts
-        targetRevision: 0.22.0
+        targetRevision: 0.26.0
 
       # disableAdmin: true
       # ingressDomain: ""
@@ -242,7 +242,7 @@ components:
       helm:
         # chart: argocd-instance
         # repository: https://gccloudone-aurora.github.io/aurora-platform-charts
-        targetRevision: 0.22.0
+        targetRevision: 0.26.0
 
       # disableAdmin: true
       # ingressDomain: ""

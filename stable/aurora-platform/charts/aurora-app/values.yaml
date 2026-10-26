@@ -291,8 +291,12 @@ components:
       enabled: false
       # Platform-owned Gateway in ingress-general-system; Istio provisions its data plane.
       name: general
-      certificateSecretName: gateway-api-wildcard-tls
+      # Same Secret as the legacy gateway so dual-running does not issue a second wildcard.
+      certificateSecretName: wildcard-tls
       issuerName: letsencrypt
+      hsts:
+        enabled: true
+        value: max-age=31536000
       replicas:
         min: 3
         max: 5
@@ -309,9 +313,8 @@ components:
           value: gateway
           effect: NoSchedule
 
-    # Disable separately after application traffic has moved to HTTPRoutes.
+    # Also deploys the Ingress-to-VirtualService controller. Disable after traffic has moved to HTTPRoutes.
     legacyGatewayEnabled: true
-    ingressIstioControllerEnabled: true
 
     imagePullSecrets: []
 
