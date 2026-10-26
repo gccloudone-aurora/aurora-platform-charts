@@ -332,7 +332,7 @@ components:
     helm:
       # chart: cert-manager
       # repository: https://charts.jetstack.io
-      targetRevision: v1.20.3
+      targetRevision: v1.21.2
 
     imagePullSecrets: []
     image:
@@ -346,8 +346,6 @@ components:
       servicemonitor:
         enabled: true
         prometheusInstance: default
-        targetPort: 9402
-        path: /metrics
         interval: 60s
         scrapeTimeout: 30s
         labels: {}
@@ -1135,7 +1133,7 @@ components:
       # targetRevision: main
       # instanceSelector:
       #   matchLabels:
-      #     dashboards: aurora   
+      #     dashboards: aurora
 
     alerting:
       enabled: false
@@ -1280,7 +1278,7 @@ components:
     helm:
       # chart: keda
       # repository: https://kedacore.github.io/charts
-      targetRevision: 2.20.2
+      targetRevision: 2.21.0
 
     # Prometheus metrics / ServiceMonitor for the operator, metrics server and webhooks.
     prometheus:
@@ -1402,7 +1400,7 @@ components:
     helm:
       # chart: kubecost
       # repository: https://kubecost.github.io/kubecost/
-      targetRevision: 3.2.1
+      targetRevision: 3.3.1
 
     kubecostProductConfigs:
       clusterProfile: production
@@ -2390,7 +2388,7 @@ components:
     helm:
       # chart: tetragon
       # repository: https://helm.cilium.io
-      targetRevision: 1.6.0
+      targetRevision: 1.7.1
 
     imagePullSecrets: []
 
@@ -2585,7 +2583,7 @@ components:
     helm:
       # chart: velero
       # repository: https://vmware-tanzu.github.io/helm-charts
-      targetRevision: 12.1.0
+      targetRevision: 12.2.1
 
     imagePullSecrets: []
     image:

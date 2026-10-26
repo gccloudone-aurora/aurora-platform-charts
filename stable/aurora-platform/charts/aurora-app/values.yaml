@@ -321,13 +321,13 @@ components:
     base:
       helm:
         # chart: base
-        # repository: https://istio-release.storage.googleapis.com/charts
+        # repository: https://blob.istio.io/istio-release/charts
         targetRevision: 1.29.1
 
     cni:
       helm:
         # chart: cni
-        # repository: https://istio-release.storage.googleapis.com/charts
+        # repository: https://blob.istio.io/istio-release/charts
         targetRevision: 1.29.7
 
       image:
@@ -368,7 +368,7 @@ components:
       helm:
         # chart: istio-ingress-gateway
         # repository: https://gccloudone-aurora.github.io/aurora-platform-charts
-        targetRevision: 0.0.9
+        targetRevision: 0.0.10
 
       replicas: 3
       resources: {}
@@ -443,7 +443,7 @@ components:
     istiod:
       helm:
         # chart: istiod
-        # repository: https://istio-release.storage.googleapis.com/charts
+        # repository: https://blob.istio.io/istio-release/charts
         targetRevision: 1.29.7
 
       image:
@@ -521,7 +521,7 @@ components:
 
       helm:
         # chart: ztunnel
-        # repository: https://istio-release.storage.googleapis.com/charts
+        # repository: https://blob.istio.io/istio-release/charts
         targetRevision: 1.29.7
 
       image:

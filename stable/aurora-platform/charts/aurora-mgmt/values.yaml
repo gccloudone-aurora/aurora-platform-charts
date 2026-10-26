@@ -129,11 +129,14 @@ components:
       helm:
         # chart: argocd-instance
         # repository: https://gccloudone-aurora.github.io/aurora-platform-charts
-        targetRevision: 0.26.0
+        targetRevision: 0.27.0
 
       # disableAdmin: true
       # ingressDomain: ""
-
+      imageRegistry:
+        repository: "ssc-spc.gc.ca"
+      image:
+        name: "argocd"
       nodeSelector:
         kubernetes.io/os: linux
         node.ssc-spc.gc.ca/purpose: system
@@ -242,11 +245,14 @@ components:
       helm:
         # chart: argocd-instance
         # repository: https://gccloudone-aurora.github.io/aurora-platform-charts
-        targetRevision: 0.26.0
+        targetRevision: 0.27.0
 
       # disableAdmin: true
       # ingressDomain: ""
-
+      imageRegistry:
+        repository: "ssc-spc.gc.ca"
+      image:
+        name: "argocd"
       nodeSelector:
         kubernetes.io/os: linux
         node.ssc-spc.gc.ca/purpose: system
@@ -463,6 +469,10 @@ components:
       # chunkBucket: <gcp-bucket-name>
       # rulerBucket: <gcp-bucket-name>
 
+    chunksCache:
+      allocatedMemory: 2048
+      maxItemMemory: 5
+
     # scrape the backend via a servicemonitor. Pre-req for alerts below
     # without the service monitor, loki storage rules have no series to evaluate
     serviceMonitor:
@@ -603,4 +613,4 @@ components:
     # prometheus alert rules for the object storage that Thanos uses (e.g. Azure Blob Storage, GCP Cloud Storage)
     alerts:
       enabled: true
-      
+
