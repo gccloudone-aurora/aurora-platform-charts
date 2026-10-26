@@ -292,13 +292,13 @@ components:
       helm:
         # chart: base
         # repository: https://blob.istio.io/istio-release/charts
-        targetRevision: 1.29.1
+        targetRevision: 1.31.3
 
     cni:
       helm:
         # chart: cni
         # repository: https://blob.istio.io/istio-release/charts
-        targetRevision: 1.29.7
+        targetRevision: 1.31.3
 
       image:
         # registry: docker.io
@@ -414,7 +414,7 @@ components:
       helm:
         # chart: istiod
         # repository: https://blob.istio.io/istio-release/charts
-        targetRevision: 1.29.7
+        targetRevision: 1.31.3
 
       image:
         # registry: docker.io
@@ -492,7 +492,7 @@ components:
       helm:
         # chart: ztunnel
         # repository: https://blob.istio.io/istio-release/charts
-        targetRevision: 1.29.7
+        targetRevision: 1.31.3
 
       image:
         # registry: docker.io
