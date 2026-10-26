@@ -654,7 +654,7 @@ components:
     helm:
       # chart: solr-operator
       # repository: https://solr.apache.org/charts
-      targetRevision: 0.5.1
+      targetRevision: 0.9.1
 
     imagePullSecrets: []
     image:
