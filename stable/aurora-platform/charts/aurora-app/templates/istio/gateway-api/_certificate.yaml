@@ -1,0 +1,25 @@
+{{- define "gatewayAPI.certificate" -}}
+{{- $gateway := .Values.components.istio.gatewayAPI -}}
+{{- if not .Values.components.istio.legacyGatewayEnabled }}
+- apiVersion: cert-manager.io/v1
+  kind: Certificate
+  metadata:
+    name: {{ $gateway.name }}-tls
+    namespace: ingress-general-system
+    labels:
+      use-general-solver: "true"
+  spec:
+    commonName: "*.{{ .Values.global.ingressDomain }}"
+    secretName: {{ $gateway.certificateSecretName }}
+    dnsNames:
+      - "*.{{ .Values.global.ingressDomain }}"
+      {{- range .Values.components.istio.gateway.additionalDnsNames }}
+      - "{{ . }}"
+      {{- end }}
+    issuerRef:
+      kind: ClusterIssuer
+      name: {{ $gateway.issuerName }}
+    privateKey:
+      rotationPolicy: Always
+{{- end }}
+{{- end }}

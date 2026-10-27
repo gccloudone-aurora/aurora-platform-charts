@@ -129,7 +129,7 @@ components:
       helm:
         # chart: argocd-instance
         # repository: https://gccloudone-aurora.github.io/aurora-platform-charts
-        targetRevision: 0.26.0
+        targetRevision: 0.27.0
 
       # disableAdmin: true
       # ingressDomain: ""
@@ -245,7 +245,7 @@ components:
       helm:
         # chart: argocd-instance
         # repository: https://gccloudone-aurora.github.io/aurora-platform-charts
-        targetRevision: 0.26.0
+        targetRevision: 0.27.0
 
       # disableAdmin: true
       # ingressDomain: ""
@@ -468,6 +468,10 @@ components:
       # gcp configuration
       # chunkBucket: <gcp-bucket-name>
       # rulerBucket: <gcp-bucket-name>
+
+    chunksCache:
+      allocatedMemory: 2048
+      maxItemMemory: 5
 
     # scrape the backend via a servicemonitor. Pre-req for alerts below
     # without the service monitor, loki storage rules have no series to evaluate

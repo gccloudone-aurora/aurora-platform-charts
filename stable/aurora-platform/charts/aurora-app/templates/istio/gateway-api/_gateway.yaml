@@ -1,0 +1,39 @@
+{{- define "gatewayAPI.gateway" -}}
+{{- $gateway := .Values.components.istio.gatewayAPI -}}
+- apiVersion: gateway.networking.k8s.io/v1
+  kind: Gateway
+  metadata:
+    name: {{ $gateway.name }}
+    namespace: ingress-general-system
+  spec:
+    gatewayClassName: istio
+    infrastructure:
+      labels:
+        app: {{ $gateway.name }}
+        istio: {{ $gateway.name }}
+      parametersRef:
+        group: ""
+        kind: ConfigMap
+        name: {{ $gateway.name }}-options
+    listeners:
+      - name: http
+        hostname: "*.{{ .Values.global.ingressDomain }}"
+        port: 80
+        protocol: HTTP
+        allowedRoutes:
+          namespaces:
+            from: Same
+      - name: https
+        hostname: "*.{{ .Values.global.ingressDomain }}"
+        port: 443
+        protocol: HTTPS
+        tls:
+          mode: Terminate
+          certificateRefs:
+            - group: ""
+              kind: Secret
+              name: {{ $gateway.certificateSecretName }}
+        allowedRoutes:
+          namespaces:
+            from: All
+{{- end }}
