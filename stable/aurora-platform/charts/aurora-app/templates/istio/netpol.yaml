@@ -1,4 +1,8 @@
 {{ if .Values.components.istio.enabled -}}
+{{- $gateways := list (dict "suffix" "" "selector" (dict "istio" "general") "gatewayAPI" false) -}}
+{{- if .Values.components.istio.gatewayAPI.enabled -}}
+{{- $gateways = append $gateways (dict "suffix" "-gateway-api" "selector" (dict "gateway.networking.k8s.io/gateway-name" .Values.components.istio.gatewayAPI.name) "gatewayAPI" true) -}}
+{{- end }}
 
 apiVersion: argoproj.io/v1alpha1
 kind: Application
@@ -34,6 +38,11 @@ spec:
                     - matchLabels:
                         k8s:io.kubernetes.pod.namespace: ingress-general-system
                         k8s:app: general
+                    {{- if .Values.components.istio.gatewayAPI.enabled }}
+                    - matchLabels:
+                        k8s:io.kubernetes.pod.namespace: ingress-general-system
+                        k8s:gateway.networking.k8s.io/gateway-name: {{ .Values.components.istio.gatewayAPI.name }}
+                    {{- end }}
           - apiVersion: cilium.io/v2
             kind: CiliumClusterwideNetworkPolicy
             metadata:
@@ -105,28 +114,6 @@ spec:
           - apiVersion: networking.k8s.io/v1
             kind: NetworkPolicy
             metadata:
-              name: allow-prometheus-to-istio-gateway-metrics
-              namespace: ingress-general-system
-            spec:
-              ingress:
-                - from:
-                  - namespaceSelector:
-                      matchLabels:
-                        kubernetes.io/metadata.name: prometheus-system
-                    podSelector:
-                      matchLabels:
-                        app.kubernetes.io/name: prometheus
-                  ports:
-                    - protocol: TCP
-                      port: 15090
-              podSelector:
-                matchLabels:
-                  istio: general
-              policyTypes:
-              - Ingress
-          - apiVersion: networking.k8s.io/v1
-            kind: NetworkPolicy
-            metadata:
               name: allow-ingress-from-apiserver-to-general
               namespace: istio-system
             spec:
@@ -177,10 +164,32 @@ spec:
                   app: istiod
               policyTypes:
               - Egress
+          {{- range $gateway := $gateways }}
           - apiVersion: networking.k8s.io/v1
             kind: NetworkPolicy
             metadata:
-              name: allow-ingress-end-user-devices-to-ingress-general
+              name: allow-prometheus-to-istio-gateway-metrics{{ $gateway.suffix }}
+              namespace: ingress-general-system
+            spec:
+              ingress:
+                - from:
+                  - namespaceSelector:
+                      matchLabels:
+                        kubernetes.io/metadata.name: prometheus-system
+                    podSelector:
+                      matchLabels:
+                        app.kubernetes.io/name: prometheus
+                  ports:
+                    - protocol: TCP
+                      port: 15090
+              podSelector:
+                matchLabels: {{ toYaml $gateway.selector | nindent 18 }}
+              policyTypes:
+              - Ingress
+          - apiVersion: networking.k8s.io/v1
+            kind: NetworkPolicy
+            metadata:
+              name: allow-ingress-end-user-devices-to-ingress-general{{ $gateway.suffix }}
               namespace: ingress-general-system
             spec:
               ingress:
@@ -193,7 +202,11 @@ spec:
                   protocol: TCP
                 - port: 80
                   protocol: TCP
-                {{- range .Values.components.istio.networkPolicy.ingressGeneral.extraIngressPorts }}
+                {{- if $gateway.gatewayAPI }}
+                - port: 15021
+                  protocol: TCP
+                {{- end }}
+                {{- range $.Values.components.istio.networkPolicy.ingressGeneral.extraIngressPorts }}
                 - port: {{ .port }}
                   protocol: {{ .protocol | default "TCP" }}
                 {{- end }}
@@ -201,19 +214,17 @@ spec:
                 - ipBlock:
                     cidr: 0.0.0.0/0
               podSelector:
-                matchLabels:
-                  istio: general
+                matchLabels: {{ toYaml $gateway.selector | nindent 18 }}
               policyTypes:
               - Ingress
           - apiVersion: networking.k8s.io/v1
             kind: NetworkPolicy
             metadata:
-              name: allow-ingress-from-all-ns
+              name: allow-ingress-from-all-ns{{ $gateway.suffix }}
               namespace: ingress-general-system
             spec:
               podSelector:
-                matchLabels:
-                  istio: general
+                matchLabels: {{ toYaml $gateway.selector | nindent 18 }}
               ingress:
                 - ports:
                     - protocol: TCP
@@ -231,7 +242,7 @@ spec:
           - apiVersion: networking.k8s.io/v1
             kind: NetworkPolicy
             metadata:
-              name: allow-egress-to-ns-from-ingress
+              name: allow-egress-to-ns-from-ingress{{ $gateway.suffix }}
               namespace: ingress-general-system
             spec:
               egress:
@@ -239,10 +250,10 @@ spec:
                 - namespaceSelector:
                     matchLabels: {}
               podSelector:
-                matchLabels:
-                  istio: general
+                matchLabels: {{ toYaml $gateway.selector | nindent 18 }}
               policyTypes:
               - Egress
+          {{- end }}
   destination:
     name: {{ .Values.global.cluster }}
     namespace: platform-system

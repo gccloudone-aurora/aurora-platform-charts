@@ -286,7 +286,7 @@ components:
   istio:
     enabled: true
 
-    # Installs the pinned Gateway API CRDs and provisions an Istio Gateway.
+    # Enable to install the pinned Gateway API CRDs and provision an Istio Gateway.
     gatewayAPI:
       enabled: false
       crds:
