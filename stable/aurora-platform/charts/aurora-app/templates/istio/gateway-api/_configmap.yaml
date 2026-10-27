@@ -33,15 +33,7 @@
             {{- end }}
             nodeSelector: {{ toYaml $gateway.nodeSelector | nindent 14 }}
             tolerations: {{ toYaml $gateway.tolerations | nindent 14 }}
-            affinity:
-              podAntiAffinity:
-                preferredDuringSchedulingIgnoredDuringExecution:
-                  - weight: 1
-                    podAffinityTerm:
-                      topologyKey: kubernetes.io/hostname
-                      labelSelector:
-                        matchLabels:
-                          istio: {{ $gateway.name }}
+            affinity: {{ toYaml $gateway.affinity | nindent 14 }}
             containers:
               - name: istio-proxy
                 {{- with (include "gatewayAPI.proxyImage" . | trim) }}

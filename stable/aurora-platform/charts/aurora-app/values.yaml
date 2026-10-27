@@ -315,6 +315,15 @@ components:
           operator: Equal
           value: gateway
           effect: NoSchedule
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 1
+              podAffinityTerm:
+                topologyKey: kubernetes.io/hostname
+                labelSelector:
+                  matchLabels:
+                    istio: general
 
     # Also deploys the Ingress-to-VirtualService controller. Disable after traffic has moved to HTTPRoutes.
     legacyGatewayEnabled: true
