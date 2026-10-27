@@ -45,6 +45,9 @@
             containers:
               - name: istio-proxy
                 {{- with (include "gatewayAPI.proxyImage" . | trim) }}
+                 {{- /* WORKAROUND: The chart hardcodes 'image: auto' which ignores helm global.hub / image tags. */}}
+                 {{- /* Passing the registry path via annotation forces the chart engine to overwrite the repository  */}}
+                 {{- /* to JFrog while letting the control plane automatically append the correct version tag. */}}
                 image: {{ . | quote }}
                 {{- end }}
                 resources: {{ toYaml $gateway.resources | nindent 18 }}
@@ -52,4 +55,11 @@
       spec:
         minReplicas: {{ $gateway.replicas.min }}
         maxReplicas: {{ $gateway.replicas.max }}
+        metrics:
+          - type: Resource
+            resource:
+              name: cpu
+              target:
+                type: Utilization
+                averageUtilization: 80
 {{- end }}
