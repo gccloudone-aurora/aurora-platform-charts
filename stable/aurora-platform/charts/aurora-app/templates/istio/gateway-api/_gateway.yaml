@@ -35,8 +35,5 @@
               name: {{ $gateway.certificateSecretName }}
         allowedRoutes:
           namespaces:
-            from: Selector
-            selector:
-              matchLabels:
-                namespace.ssc-spc.gc.ca/purpose: solution
+            from: All
 {{- end }}

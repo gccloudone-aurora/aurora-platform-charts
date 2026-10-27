@@ -27,11 +27,10 @@
               # Match the legacy gateway so istio-netpol, PodMonitor, and custom-responses apply.
               app: {{ $gateway.name }}
               istio: {{ $gateway.name }}
-            {{- if and .Values.global.container .Values.global.container.registry }}
-            annotations:
-              sidecar.istio.io/proxyImage: "{{ .Values.global.container.registry }}/istio/proxyv2"
-            {{- end }}
           spec:
+            {{- with .Values.components.istio.imagePullSecrets }}
+            imagePullSecrets: {{ toYaml . | nindent 14 }}
+            {{- end }}
             nodeSelector: {{ toYaml $gateway.nodeSelector | nindent 14 }}
             tolerations: {{ toYaml $gateway.tolerations | nindent 14 }}
             affinity:
@@ -45,6 +44,9 @@
                           istio: {{ $gateway.name }}
             containers:
               - name: istio-proxy
+                {{- with (include "gatewayAPI.proxyImage" . | trim) }}
+                image: {{ . | quote }}
+                {{- end }}
                 resources: {{ toYaml $gateway.resources | nindent 18 }}
     horizontalPodAutoscaler: |
       spec:
