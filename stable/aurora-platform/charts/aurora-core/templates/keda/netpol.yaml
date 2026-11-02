@@ -16,12 +16,64 @@ spec:
       releaseName: keda-netpol
       values: |
         resources:
+          # --- POLICY 1: LOCAL NAMESPACE CIDR PROTECTION LAYER ---
+          - apiVersion: networking.k8s.io/v1
+            kind: NetworkPolicy
+            metadata:
+              name: allow-ingress-from-apiserver-to-keda
+              namespace: keda-system
+            spec:
+              podSelector:
+                matchLabels:
+                  app: keda-operator-metrics-apiserver
+              policyTypes:
+                - Ingress
+              ingress:
+                - from:
+                    - ipBlock:
+                        cidr: {{ required "global.apiServerCidr is required" .Values.global.apiServerCidr | quote }}
+                    - namespaceSelector:
+                        matchLabels:
+                          kubernetes.io/metadata.name: kube-system
+                      podSelector:
+                        matchLabels:
+                          app: konnectivity-agent
+                  ports:
+                    - protocol: TCP
+                      port: 6443
+
+          - apiVersion: cilium.io/v2
+            kind: CiliumNetworkPolicy
+            metadata:
+              name: allow-ingress-from-apiserver-to-keda
+              namespace: keda-system
+            spec:
+              endpointSelector:
+                matchLabels:
+                  app: keda-operator-metrics-apiserver
+              ingress:
+                - fromEntities:
+                    - kube-apiserver
+                - fromCIDRSet:
+                    - cidr: {{ required "global.apiServerCidr is required" .Values.global.apiServerCidr | quote }}
+                - fromEndpoints:
+                    - matchLabels:
+                        "k8s:io.kubernetes.pod.namespace": kube-system
+                        "k8s:app": konnectivity-agent
+                  toPorts:
+                    - ports:
+                        - port: "6443"
+                          protocol: TCP
+
+          # --- POLICY 2: GLOBAL WORKLOAD CROSS-NAMESPACE ROUTING ENGINE ---
           - apiVersion: "cilium.io/v2"
             kind: CiliumClusterwideNetworkPolicy
             metadata:
               name: clusterwide-keda-core-routing
             spec:
-              description: "Global platform policy unblocking KEDA outbound cross-namespace polling loops and inbound HPA metric collections"
+              description: >-
+                Global platform policy unblocking KEDA outbound cross-namespace polling
+                loops and inbound HPA metric collections
               endpointSelector:
                 matchExpressions:
                   - key: app
@@ -30,20 +82,26 @@ spec:
                       - keda-operator
                       - keda-operator-metrics-apiserver
               egress:
-                # 1. Unblocks outbound polling: Allows KEDA to initiate connection loops to any app/port across the cluster
+                # 1. Unblocks outbound polling to application workloads across namespaces
                 - toEndpoints:
                     - {}
+                # 2. Unblocks outbound communication path back to the control plane entities
+                - toEntities:
+                    - cluster
+                    - host
+                    - remote-node
               ingress:
-                # 2. Unblocks HPA metrics API: Allows control plane entities to safely read the extension endpoints
                 - fromEntities:
                     - cluster
                     - host
                     - remote-node
                   toPorts:
                     - ports:
-                        - port: "9666"
+                        - port: '9666'
                           protocol: TCP
-                        - port: "8080"
+                        - port: '8080'
+                          protocol: TCP
+                        - port: '6443'
                           protocol: TCP
   destination:
     name: {{ .Values.global.cluster }}
@@ -52,5 +110,4 @@ spec:
     automated:
       prune: true
       selfHeal: true
-
 {{- end }}
