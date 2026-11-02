@@ -16,59 +16,34 @@ spec:
       releaseName: keda-netpol
       values: |
         resources:
-          - apiVersion: networking.k8s.io/v1
-            kind: NetworkPolicy
+          - apiVersion: "cilium.io/v2"
+            kind: CiliumClusterwideNetworkPolicy
             metadata:
-              name: allow-ingress-from-apiserver-to-keda
-              namespace: keda-system
+              name: clusterwide-keda-core-routing
             spec:
-              podSelector:
-                matchLabels:
-                  app: keda-operator-metrics-apiserver
-              policyTypes:
-                - Ingress
-              ingress:
-                - from:
-                    - ipBlock:
-                        cidr: {{ required "global.apiServerCidr is required" .Values.global.apiServerCidr | quote }}
-                    - namespaceSelector:
-                        matchLabels:
-                          kubernetes.io/metadata.name: kube-system
-                      podSelector:
-                        matchLabels:
-                          {{- if eq .Values.global.provider "gcp" }}
-                          k8s-app: konnectivity-agent
-                          {{- else }}
-                          app: konnectivity-agent
-                          {{- end }}
-                  ports:
-                    - protocol: TCP
-                      port: 6443
-          - apiVersion: cilium.io/v2
-            kind: CiliumNetworkPolicy
-            metadata:
-              name: allow-ingress-from-apiserver-to-keda
-              namespace: keda-system
-            spec:
+              description: "Global platform policy unblocking KEDA outbound cross-namespace polling loops and inbound HPA metric collections"
               endpointSelector:
-                matchLabels:
-                  app: keda-operator-metrics-apiserver
+                matchExpressions:
+                  - key: app
+                    operator: In
+                    values:
+                      - keda-operator
+                      - keda-operator-metrics-apiserver
+              egress:
+                # 1. Unblocks outbound polling: Allows KEDA to initiate connection loops to any app/port across the cluster
+                - toEndpoints:
+                    - {}
               ingress:
+                # 2. Unblocks HPA metrics API: Allows control plane entities to safely read the extension endpoints
                 - fromEntities:
-                    - kube-apiserver
-                - fromCIDRSet:
-                    - cidr: {{ required "global.apiServerCidr is required" .Values.global.apiServerCidr | quote }}
-                - fromEndpoints:
-                    - matchLabels:
-                        "k8s:io.kubernetes.pod.namespace": kube-system
-                        {{- if eq .Values.global.provider "gcp" }}
-                        "k8s:k8s-app": konnectivity-agent
-                        {{- else }}
-                        "k8s:app": konnectivity-agent
-                        {{- end }}
+                    - cluster
+                    - host
+                    - remote-node
                   toPorts:
                     - ports:
-                        - port: "6443"
+                        - port: "9666"
+                          protocol: TCP
+                        - port: "8080"
                           protocol: TCP
   destination:
     name: {{ .Values.global.cluster }}
