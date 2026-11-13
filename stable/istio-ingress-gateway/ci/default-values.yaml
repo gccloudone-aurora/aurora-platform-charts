@@ -1,0 +1,20 @@
+# CI fixture for istio-ingress-gateway.
+# The chart enables HTTPS by default, which renders a cert-manager Certificate.
+# A valid Certificate needs at least one dnsName (used as the common name) and
+# a populated issuerRef, so those are supplied here for schema validation.
+gateway:
+  service:
+    type: LoadBalancer
+    annotations:
+      service.beta.kubernetes.io/azure-load-balancer-internal: "true"
+
+https:
+  enabled: true
+  hosts:
+    - www.example.ca
+  certificate:
+    dnsNames:
+      - www.example.ca
+    issuerRef:
+      kind: ClusterIssuer
+      name: letsencrypt
