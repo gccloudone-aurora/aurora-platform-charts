@@ -130,12 +130,16 @@ offHoursScaling:
   # set to 0 for a full off-hours shutdown.
   minReplicas: 1                       # @schema type:[integer];minimum:0
   # The workloads to place under off-hours scaling.
+  # Each entry requires a `name` (metadata.name of the target workload).
+  # Optional fields: `kind` (Deployment | StatefulSet, default: Deployment),
+  # `businessHoursReplicas` (default: 1), `schedule` (per-workload override).
+  # Example:
+  # workloads:
+  #   - name: my-api
+  #     kind: Deployment
+  #     businessHoursReplicas: 2
+  #     schedule:
+  #       start: "0 6 * * 1-5"
+  #       end: "0 20 * * 1-5"
+  #       timezone: "America/Toronto"
   workloads: []                        # @schema type:[array]
-    # - name: my-api                   # metadata.name of the target workload (required)
-    #   kind: Deployment               # Deployment | StatefulSet (default Deployment)
-    #   businessHoursReplicas: 2       # replicas during business hours (default 1)
-    #   # Optional per-workload window. Falls back to defaultSchedule if omitted.
-    #   schedule:
-    #     start: "0 6 * * 1-5"
-    #     end: "0 20 * * 1-5"
-    #     timezone: "America/Toronto"

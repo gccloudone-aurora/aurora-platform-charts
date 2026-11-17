@@ -134,17 +134,20 @@
                         "start": {
                             "type": [
                                 "string"
-                            ]
+                            ],
+                            "pattern": "^[0-9*,-/]+ [0-9*,-/]+ [0-9*,-/]+ [0-9*,-/]+ [0-9*,-/]+$"
                         },
                         "end": {
                             "type": [
                                 "string"
-                            ]
+                            ],
+                            "pattern": "^[0-9*,-/]+ [0-9*,-/]+ [0-9*,-/]+ [0-9*,-/]+ [0-9*,-/]+$"
                         },
                         "timezone": {
                             "type": [
                                 "string"
-                            ]
+                            ],
+                            "pattern": "^[A-Z][a-z]+/[A-Z][a-z]+$"
                         }
                     },
                     "type": "object"
@@ -184,17 +187,20 @@
                                     "start": {
                                         "type": [
                                             "string"
-                                        ]
+                                        ],
+                                        "pattern": "^[0-9*,-/]+ [0-9*,-/]+ [0-9*,-/]+ [0-9*,-/]+ [0-9*,-/]+$"
                                     },
                                     "end": {
                                         "type": [
                                             "string"
-                                        ]
+                                        ],
+                                        "pattern": "^[0-9*,-/]+ [0-9*,-/]+ [0-9*,-/]+ [0-9*,-/]+ [0-9*,-/]+$"
                                     },
                                     "timezone": {
                                         "type": [
                                             "string"
-                                        ]
+                                        ],
+                                        "pattern": "^[A-Z][a-z]+/[A-Z][a-z]+$"
                                     }
                                 },
                                 "type": "object"
@@ -202,7 +208,8 @@
                         },
                         "required": [
                             "name"
-                        ]
+                        ],
+                        "additionalProperties": false
                     }
                 }
             },

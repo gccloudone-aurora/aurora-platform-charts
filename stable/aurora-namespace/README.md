@@ -47,6 +47,10 @@ the `scaling.ssc-spc.gc.ca/policy: off-hours` label for identification. Note
 that once a `ScaledObject` binds a workload, KEDA manages its replica count; a
 static `replicas` value on the workload is superseded.
 
+The KEDA operator must be installed on the target cluster for these
+ScaledObjects to function. Without the operator, the resources will be created
+but will never scale workloads.
+
 ## Values
 
 | Key | Type | Default | Description |

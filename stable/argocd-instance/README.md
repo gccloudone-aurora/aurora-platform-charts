@@ -1,6 +1,6 @@
 # argocd-instance
 
-![Version: 0.19.0](https://img.shields.io/badge/Version-0.19.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v3.1.9](https://img.shields.io/badge/AppVersion-v3.1.9-informational?style=flat-square)
+![Version: 0.27.0](https://img.shields.io/badge/Version-0.27.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v3.1.9](https://img.shields.io/badge/AppVersion-v3.1.9-informational?style=flat-square)
 
 A Helm chart that configures Argo CD.
 
@@ -18,6 +18,8 @@ A Helm chart that configures Argo CD.
 | argocdInstance.applicationSet.scmProviders | list | `[]` |  |
 | argocdInstance.applicationSet.setTokenRefStrictMode | bool | `true` |  |
 | argocdInstance.applicationSet.sourceNamespaces | list | `[]` |  |
+| argocdInstance.applicationSet.volumeMounts | list | `[]` |  |
+| argocdInstance.applicationSet.volumes | list | `[]` |  |
 | argocdInstance.argocdVaultPlugin.configMapName | string | `"cmp-plugin"` |  |
 | argocdInstance.argocdVaultPlugin.enabled | bool | `true` |  |
 | argocdInstance.argocdVaultPlugin.env.ARGOCD_ENV_AVP_TYPE | string | `""` |  |
@@ -38,7 +40,7 @@ A Helm chart that configures Argo CD.
 | argocdInstance.gateway.ipName | string | `""` |  |
 | argocdInstance.globalProjects | list | `[]` |  |
 | argocdInstance.image.name | string | `"argoproj/argocd"` |  |
-| argocdInstance.image.version | string | `"v3.1.9"` |  |
+| argocdInstance.image.version | string | `"v3.1.16"` |  |
 | argocdInstance.imageRegistry.host | string | `"quay.io"` |  |
 | argocdInstance.imageRegistry.repository | string | `""` |  |
 | argocdInstance.ingressDomain | string | `""` |  |
@@ -55,6 +57,8 @@ A Helm chart that configures Argo CD.
 | argocdInstance.redis.imageRegistry.host | string | `"docker.io"` |  |
 | argocdInstance.redis.imageRegistry.repository | string | `""` |  |
 | argocdInstance.redis.resources | object | `{}` |  |
+| argocdInstance.repo.extraRepoCommandArgs[0] | string | `"--parallelismlimit"` |  |
+| argocdInstance.repo.extraRepoCommandArgs[1] | string | `"10"` |  |
 | argocdInstance.repo.labels | object | `{}` |  |
 | argocdInstance.repo.resources | object | `{}` |  |
 | argocdInstance.repo.serviceAccountAnnotations | object | `{}` |  |
