@@ -292,19 +292,14 @@ components:
       crds:
         repository: https://github.com/kubernetes-sigs/gateway-api.git
         version: v1.4.1
-      # Platform-owned Gateway in ingress-general-system; Istio provisions its data plane.
+      # Must stay "general" to match legacy labels and ingress-general-system netpols.
       name: general
-      certificateSecretName: gateway-api-wildcard-tls
+      # Same Secret as the legacy gateway so dual-running does not issue a second wildcard.
+      certificateSecretName: wildcard-tls
       issuerName: letsencrypt
-      # Optional full image reference. Empty derives registry/istio/proxyv2 with the
-      # Istiod proxy tag (or control plane chart version) when a global registry is set.
-      proxyImage: ""
-      # Add HTTP Strict Transport Security (HSTS) unless the response already has it.
       hsts:
         enabled: true
         value: max-age=31536000
-      # Empty uses preferred pod anti-affinity across nodes for this Gateway.
-      affinity: {}
       replicas:
         min: 3
         max: 5
@@ -320,12 +315,18 @@ components:
           operator: Equal
           value: gateway
           effect: NoSchedule
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 1
+              podAffinityTerm:
+                topologyKey: kubernetes.io/hostname
+                labelSelector:
+                  matchLabels:
+                    istio: general
 
-    # Keeps the legacy data plane available while traffic moves to HTTPRoutes.
+    # Also deploys the Ingress-to-VirtualService controller. Disable after traffic has moved to HTTPRoutes.
     legacyGatewayEnabled: true
-    # Controls Ingress-to-VirtualService reconciliation separately from the legacy
-    # data plane, so controller and Gateway changes can be staged independently.
-    ingressIstioControllerEnabled: true
 
     imagePullSecrets: []
 
