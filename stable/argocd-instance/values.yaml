@@ -110,6 +110,9 @@ argocdInstance:
       #   memory: ""
 
   repo:
+    extraRepoCommandArgs:
+      - "--parallelismlimit"
+      - "10"
     resources: {}
       # limits:
       #   cpu: ""
