@@ -1,0 +1,36 @@
+{{- define "gatewayAPI.hsts" -}}
+{{- $gateway := .Values.components.istio.gatewayAPI -}}
+{{- if and $gateway.hsts.enabled (not .Values.components.istio.legacyGatewayEnabled) }}
+- apiVersion: networking.istio.io/v1alpha3
+  kind: EnvoyFilter
+  metadata:
+    name: {{ $gateway.name }}-gateway-api-hsts
+    namespace: ingress-general-system
+  spec:
+    configPatches:
+      - applyTo: HTTP_FILTER
+        match:
+          context: GATEWAY
+          listener:
+            filterChain:
+              filter:
+                name: envoy.filters.network.http_connection_manager
+                subFilter:
+                  name: envoy.filters.http.router
+        patch:
+          operation: INSERT_FIRST
+          value:
+            name: envoy.lua
+            typed_config:
+              '@type': type.googleapis.com/envoy.extensions.filters.http.lua.v3.Lua
+              inlineCode: |
+                function envoy_on_response(response_handle)
+                  if not response_handle:headers():get("strict-transport-security") then
+                      response_handle:headers():add("strict-transport-security", "{{ $gateway.hsts.value }}")
+                    end
+                end
+    workloadSelector:
+      labels:
+        gateway.networking.k8s.io/gateway-name: {{ $gateway.name }}
+{{- end }}
+{{- end }}

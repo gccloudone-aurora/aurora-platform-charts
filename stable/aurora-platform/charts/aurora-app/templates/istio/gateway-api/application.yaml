@@ -1,0 +1,30 @@
+{{- if and .Values.components.istio.enabled .Values.components.istio.gatewayAPI.enabled }}
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "{{ .Values.global.cluster }}-gateway-api-general"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ .Values.global.project }}
+  source:
+    chart: {{ .Values.global.raw.helm.chart }}
+    repoURL: {{ default .Values.global.helm.repository .Values.global.raw.helm.repository }}
+    targetRevision: {{ .Values.global.raw.helm.targetRevision }}
+    helm:
+      releaseName: gateway-api-general
+      values: |
+        resources:
+          {{- include "gatewayAPI.configmap" . | nindent 10 }}
+          {{- include "gatewayAPI.certificate" . | nindent 10 }}
+          {{- include "gatewayAPI.gateway" . | nindent 10 }}
+          {{- include "gatewayAPI.httproute" . | nindent 10 }}
+          {{- include "gatewayAPI.hsts" . | nindent 10 }}
+  destination:
+    name: {{ .Values.global.cluster }}
+    namespace: platform-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+{{- end }}

@@ -1,0 +1,57 @@
+{{- define "gatewayAPI.configmap" -}}
+{{- $gateway := .Values.components.istio.gatewayAPI -}}
+# Overlay Istio applies to the Deployment, Service, and HPA it generates.
+- apiVersion: v1
+  kind: ConfigMap
+  metadata:
+    name: {{ $gateway.name }}-options
+    namespace: ingress-general-system
+  data:
+    service: |
+      metadata:
+        annotations:
+          {{- if eq .Values.global.provider "azure" }}
+          service.beta.kubernetes.io/azure-load-balancer-internal: "true"
+          service.beta.kubernetes.io/azure-load-balancer-internal-subnet: {{ required "global.load_balancer_subnet_name is required" .Values.global.load_balancer_subnet_name | quote }}
+          {{- else if eq .Values.global.provider "aws" }}
+          service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
+          service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: "ip"
+          {{- end }}
+      spec:
+        externalTrafficPolicy: Cluster
+    deployment: |
+      spec:
+        template:
+          metadata:
+            labels:
+              # Match the legacy gateway so istio-netpol, PodMonitor, and custom-responses apply.
+              app: {{ $gateway.name }}
+              istio: {{ $gateway.name }}
+          spec:
+            {{- with .Values.components.istio.imagePullSecrets }}
+            imagePullSecrets: {{ toYaml . | nindent 14 }}
+            {{- end }}
+            nodeSelector: {{ toYaml $gateway.nodeSelector | nindent 14 }}
+            tolerations: {{ toYaml $gateway.tolerations | nindent 14 }}
+            affinity: {{ toYaml $gateway.affinity | nindent 14 }}
+            containers:
+              - name: istio-proxy
+                {{- with (include "gatewayAPI.proxyImage" . | trim) }}
+                 {{- /* WORKAROUND: The chart hardcodes 'image: auto' which ignores helm global.hub / image tags. */}}
+                 {{- /* Passing the registry path via annotation forces the chart engine to overwrite the repository  */}}
+                 {{- /* to JFrog while letting the control plane automatically append the correct version tag. */}}
+                image: {{ . | quote }}
+                {{- end }}
+                resources: {{ toYaml $gateway.resources | nindent 18 }}
+    horizontalPodAutoscaler: |
+      spec:
+        minReplicas: {{ $gateway.replicas.min }}
+        maxReplicas: {{ $gateway.replicas.max }}
+        metrics:
+          - type: Resource
+            resource:
+              name: cpu
+              target:
+                type: Utilization
+                averageUtilization: 80
+{{- end }}

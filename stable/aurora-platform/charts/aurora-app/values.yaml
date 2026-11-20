@@ -286,6 +286,48 @@ components:
   istio:
     enabled: true
 
+    # Enable to install the pinned Gateway API CRDs and provision an Istio Gateway.
+    gatewayAPI:
+      enabled: false
+      crds:
+        repository: https://github.com/kubernetes-sigs/gateway-api.git
+        version: v1.4.1
+      # Must stay "general" to match legacy labels and ingress-general-system netpols.
+      name: general
+      # Same Secret as the legacy gateway so dual-running does not issue a second wildcard.
+      certificateSecretName: wildcard-tls
+      issuerName: letsencrypt
+      hsts:
+        enabled: true
+        value: max-age=31536000
+      replicas:
+        min: 3
+        max: 5
+      resources:
+        requests:
+          cpu: 100m
+          memory: 128Mi
+      nodeSelector:
+        kubernetes.io/os: linux
+        node.ssc-spc.gc.ca/purpose: gateway
+      tolerations:
+        - key: node.ssc-spc.gc.ca/purpose
+          operator: Equal
+          value: gateway
+          effect: NoSchedule
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 1
+              podAffinityTerm:
+                topologyKey: kubernetes.io/hostname
+                labelSelector:
+                  matchLabels:
+                    istio: general
+
+    # Also deploys the Ingress-to-VirtualService controller. Disable after traffic has moved to HTTPRoutes.
+    legacyGatewayEnabled: true
+
     imagePullSecrets: []
 
     base:
