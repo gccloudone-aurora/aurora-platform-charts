@@ -122,6 +122,99 @@
             },
             "type": "object"
         },
+        "offHoursScaling": {
+            "properties": {
+                "enabled": {
+                    "type": [
+                        "boolean"
+                    ]
+                },
+                "defaultSchedule": {
+                    "properties": {
+                        "start": {
+                            "type": [
+                                "string"
+                            ],
+                            "pattern": "^[0-9*,-/]+ [0-9*,-/]+ [0-9*,-/]+ [0-9*,-/]+ [0-9*,-/]+$"
+                        },
+                        "end": {
+                            "type": [
+                                "string"
+                            ],
+                            "pattern": "^[0-9*,-/]+ [0-9*,-/]+ [0-9*,-/]+ [0-9*,-/]+ [0-9*,-/]+$"
+                        },
+                        "timezone": {
+                            "type": [
+                                "string"
+                            ],
+                            "pattern": "^[A-Z][a-z]+/[A-Z][a-z]+$"
+                        }
+                    },
+                    "type": "object"
+                },
+                "minReplicas": {
+                    "minimum": 0,
+                    "type": [
+                        "integer"
+                    ]
+                },
+                "workloads": {
+                    "type": [
+                        "array"
+                    ],
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "name": {
+                                "type": [
+                                    "string"
+                                ]
+                            },
+                            "kind": {
+                                "enum": [
+                                    "Deployment",
+                                    "StatefulSet"
+                                ]
+                            },
+                            "businessHoursReplicas": {
+                                "minimum": 0,
+                                "type": [
+                                    "integer"
+                                ]
+                            },
+                            "schedule": {
+                                "properties": {
+                                    "start": {
+                                        "type": [
+                                            "string"
+                                        ],
+                                        "pattern": "^[0-9*,-/]+ [0-9*,-/]+ [0-9*,-/]+ [0-9*,-/]+ [0-9*,-/]+$"
+                                    },
+                                    "end": {
+                                        "type": [
+                                            "string"
+                                        ],
+                                        "pattern": "^[0-9*,-/]+ [0-9*,-/]+ [0-9*,-/]+ [0-9*,-/]+ [0-9*,-/]+$"
+                                    },
+                                    "timezone": {
+                                        "type": [
+                                            "string"
+                                        ],
+                                        "pattern": "^[A-Z][a-z]+/[A-Z][a-z]+$"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        },
+                        "required": [
+                            "name"
+                        ],
+                        "additionalProperties": false
+                    }
+                }
+            },
+            "type": "object"
+        },
         "policies": {
             "properties": {
                 "allowedHosts": {

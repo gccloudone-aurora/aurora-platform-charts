@@ -15,7 +15,9 @@ Aurora Platform - Management Components
 | components.argoFoundation.argocdInstance.controller.resources | object | `{}` |  |
 | components.argoFoundation.argocdInstance.dex.google | object | `{}` |  |
 | components.argoFoundation.argocdInstance.gateway.enabled | bool | `false` |  |
-| components.argoFoundation.argocdInstance.helm.targetRevision | string | `"0.19.0"` |  |
+| components.argoFoundation.argocdInstance.helm.targetRevision | string | `"0.27.0"` |  |
+| components.argoFoundation.argocdInstance.image.name | string | `"argocd"` |  |
+| components.argoFoundation.argocdInstance.imageRegistry.repository | string | `"ssc-spc.gc.ca"` |  |
 | components.argoFoundation.argocdInstance.metrics.serviceMonitor.enabled | bool | `true` |  |
 | components.argoFoundation.argocdInstance.metrics.serviceMonitor.interval | string | `"30s"` |  |
 | components.argoFoundation.argocdInstance.netpol | object | `{}` |  |
@@ -23,6 +25,9 @@ Aurora Platform - Management Components
 | components.argoFoundation.argocdInstance.nodeSelector."node.ssc-spc.gc.ca/purpose" | string | `"system"` |  |
 | components.argoFoundation.argocdInstance.notifications | object | `{}` |  |
 | components.argoFoundation.argocdInstance.oidcAuthSP.credentials | object | `{}` |  |
+| components.argoFoundation.argocdInstance.redis.image.name | string | `"redis"` |  |
+| components.argoFoundation.argocdInstance.redis.image.version | string | `"6.2.24"` |  |
+| components.argoFoundation.argocdInstance.redis.imageRegistry.repository | string | `"ssc-spc.gc.ca"` |  |
 | components.argoFoundation.argocdInstance.redis.resources | object | `{}` |  |
 | components.argoFoundation.argocdInstance.register.clusters | object | `{}` |  |
 | components.argoFoundation.argocdInstance.register.repositories | object | `{}` |  |
@@ -63,7 +68,9 @@ Aurora Platform - Management Components
 | components.argoSolution.argocdInstance.applicationSet.sourceNamespaces[0] | string | `"/^gitops-((?!-system$).)*$/"` |  |
 | components.argoSolution.argocdInstance.argocdVaultPlugin.env | object | `{}` |  |
 | components.argoSolution.argocdInstance.controller.resources | object | `{}` |  |
-| components.argoSolution.argocdInstance.helm.targetRevision | string | `"0.19.0"` |  |
+| components.argoSolution.argocdInstance.helm.targetRevision | string | `"0.27.0"` |  |
+| components.argoSolution.argocdInstance.image.name | string | `"argocd"` |  |
+| components.argoSolution.argocdInstance.imageRegistry.repository | string | `"ssc-spc.gc.ca"` |  |
 | components.argoSolution.argocdInstance.metrics.serviceMonitor.enabled | bool | `true` |  |
 | components.argoSolution.argocdInstance.metrics.serviceMonitor.interval | string | `"30s"` |  |
 | components.argoSolution.argocdInstance.netpol | object | `{}` |  |
@@ -71,6 +78,9 @@ Aurora Platform - Management Components
 | components.argoSolution.argocdInstance.nodeSelector."node.ssc-spc.gc.ca/purpose" | string | `"system"` |  |
 | components.argoSolution.argocdInstance.notifications | object | `{}` |  |
 | components.argoSolution.argocdInstance.oidcAuthSP.credentials | object | `{}` |  |
+| components.argoSolution.argocdInstance.redis.image.name | string | `"redis"` |  |
+| components.argoSolution.argocdInstance.redis.image.version | string | `"6.2.24"` |  |
+| components.argoSolution.argocdInstance.redis.imageRegistry.repository | string | `"ssc-spc.gc.ca"` |  |
 | components.argoSolution.argocdInstance.redis.resources | object | `{}` |  |
 | components.argoSolution.argocdInstance.register.clusters | object | `{}` |  |
 | components.argoSolution.argocdInstance.register.repositories | object | `{}` |  |
@@ -94,9 +104,12 @@ Aurora Platform - Management Components
 | components.billOfLanding.tolerations[0].operator | string | `"Exists"` |  |
 | components.loki.alerts.enabled | bool | `true` |  |
 | components.loki.basicAuth | object | `{}` |  |
+| components.loki.chunksCache.allocatedMemory | int | `2048` |  |
+| components.loki.chunksCache.maxItemMemory | int | `5` |  |
 | components.loki.enabled | bool | `false` |  |
 | components.loki.helm.targetRevision | string | `"6.55.0"` |  |
 | components.loki.image.repository | string | `"grafana/loki"` |  |
+| components.loki.imagePullSecrets | list | `[]` |  |
 | components.loki.logStorageLocation | object | `{}` |  |
 | components.loki.nodeSelector."kubernetes.io/os" | string | `"linux"` |  |
 | components.loki.nodeSelector."node.ssc-spc.gc.ca/purpose" | string | `"system"` |  |
@@ -108,7 +121,7 @@ Aurora Platform - Management Components
 | components.thanos.compactor.nodeSelector."kubernetes.io/os" | string | `"linux"` |  |
 | components.thanos.compactor.nodeSelector."node.ssc-spc.gc.ca/purpose" | string | `"system"` |  |
 | components.thanos.compactor.persistence.size | string | `"50Gi"` |  |
-| components.thanos.compactor.persistence.storageClassName | string | `"default"` |  |
+| components.thanos.compactor.persistence.storageClassName | string | `""` |  |
 | components.thanos.compactor.resources | object | `{}` |  |
 | components.thanos.compactor.retention.fiveMin | string | `"90d"` |  |
 | components.thanos.compactor.retention.oneHour | string | `"1y"` |  |
@@ -124,11 +137,14 @@ Aurora Platform - Management Components
 | components.thanos.image.tag | string | `"v0.41.0"` |  |
 | components.thanos.logLevel | string | `"info"` |  |
 | components.thanos.objectStorage.auth | string | `"workloadIdentity"` |  |
+| components.thanos.objectStorage.buckets[0].bucketName | string | `""` |  |
 | components.thanos.objectStorage.buckets[0].clientId | string | `""` |  |
 | components.thanos.objectStorage.buckets[0].containerName | string | `"thanos"` |  |
 | components.thanos.objectStorage.buckets[0].endpoint | string | `"blob.core.windows.net"` |  |
 | components.thanos.objectStorage.buckets[0].name | string | `"default"` |  |
+| components.thanos.objectStorage.buckets[0].serviceAccountEmail | string | `""` |  |
 | components.thanos.objectStorage.buckets[0].storageAccountName | string | `""` |  |
+| components.thanos.objectStorage.provider | string | `""` |  |
 | components.thanos.priorityClassName | string | `"platform-cluster-medium"` |  |
 | components.thanos.query.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].podAffinityTerm.labelSelector.matchLabels."app.kubernetes.io/name" | string | `"thanos-query"` |  |
 | components.thanos.query.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].podAffinityTerm.topologyKey | string | `"kubernetes.io/hostname"` |  |
@@ -147,7 +163,7 @@ Aurora Platform - Management Components
 | components.thanos.storeGateway.nodeSelector."kubernetes.io/os" | string | `"linux"` |  |
 | components.thanos.storeGateway.nodeSelector."node.ssc-spc.gc.ca/purpose" | string | `"system"` |  |
 | components.thanos.storeGateway.persistence.size | string | `"20Gi"` |  |
-| components.thanos.storeGateway.persistence.storageClassName | string | `"default"` |  |
+| components.thanos.storeGateway.persistence.storageClassName | string | `""` |  |
 | components.thanos.storeGateway.replicas | int | `1` |  |
 | components.thanos.storeGateway.resources | object | `{}` |  |
 | components.thanos.storeGateway.tolerations[0].key | string | `"CriticalAddonsOnly"` |  |
@@ -155,6 +171,7 @@ Aurora Platform - Management Components
 | data.mgmt.enabled | bool | `true` |  |
 | global.cluster | string | `"in-cluster"` |  |
 | global.container | object | `{}` |  |
+| global.defaultStorageClass | string | `"default"` |  |
 | global.helm | object | `{}` |  |
 | global.ingressDomain | string | `"example.ca"` |  |
 | global.namespace.helm.chart | string | `nil` |  |

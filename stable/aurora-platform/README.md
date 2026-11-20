@@ -1,6 +1,6 @@
 # aurora-platform
 
-![Version: 0.0.298](https://img.shields.io/badge/Version-0.0.298-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.0.0](https://img.shields.io/badge/AppVersion-2.0.0-informational?style=flat-square)
+![Version: 0.0.352](https://img.shields.io/badge/Version-0.0.352-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.0.0](https://img.shields.io/badge/AppVersion-2.0.0-informational?style=flat-square)
 
 Aurora Platform
 
@@ -31,6 +31,7 @@ Aurora Platform
 | global.azureMetadataApiCidr | string | `"169.254.169.254/32"` |  |
 | global.cluster | string | `"in-cluster"` |  |
 | global.container | object | `{}` |  |
+| global.defaultStorageClass | string | `"default"` |  |
 | global.helm | object | `{}` |  |
 | global.ingressDomain | string | `"example.ca"` |  |
 | global.loggingCidrs[0] | string | `"172.26.26.132/32"` |  |
