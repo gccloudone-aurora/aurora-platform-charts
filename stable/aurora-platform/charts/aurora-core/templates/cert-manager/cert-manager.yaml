@@ -1,4 +1,9 @@
 {{ if .Values.components.certManager.enabled -}}
+{{- /* The ServiceMonitor needs the Prometheus Operator CRDs, so only create it when Prometheus is enabled. */ -}}
+{{- $certManagerPrometheus := deepCopy .Values.components.certManager.prometheus -}}
+{{- if not .Values.components.prometheus.enabled -}}
+{{- $_ := set $certManagerPrometheus.servicemonitor "enabled" false -}}
+{{- end }}
 
 apiVersion: argoproj.io/v1alpha1
 kind: Application
@@ -71,7 +76,7 @@ spec:
         podDnsConfig:
           nameservers: {{ toYaml .Values.components.certManager.podDnsConfig.nameservers | nindent 12 }}
 
-        prometheus: {{ toYaml .Values.components.certManager.prometheus | nindent 10 }}
+        prometheus: {{ toYaml $certManagerPrometheus | nindent 10 }}
         {{- if eq .Values.global.provider "azure" }}
         serviceAccount:
           annotations:
