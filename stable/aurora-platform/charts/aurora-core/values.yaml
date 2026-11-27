@@ -115,7 +115,7 @@ components:
     helm:
       # chart: alloy
       # repository: https://grafana.github.io/helm-charts
-      targetRevision: 1.11.0
+      targetRevision: 1.16.0
 
     imagePullSecrets: []
       # - name: aurora-image-pull-secret
@@ -1714,7 +1714,7 @@ components:
     helm:
       # chart: kube-prometheus-stack
       # repository: https://prometheus-community.github.io/helm-charts
-      targetRevision: 91.3.0
+      targetRevision: 94.2.0
 
     imageRegistry: ""
     imagePullSecrets: []
@@ -1755,7 +1755,8 @@ components:
         image:
           # registry: quay.io
           repository: ssc-spc.gc.ca/prometheus-config-reloader
-          tag: "v0.94.0"
+          # Keep in step with the prometheus-operator version (appVersion of kube-prometheus-stack).
+          tag: "v0.95.2"
           # pullPolicy: IfNotPresent
 
         resources: {}
@@ -2094,7 +2095,7 @@ components:
       helm:
         # chart: prometheus-blackbox-exporter
         # repository: https://prometheus-community.github.io/helm-charts
-        targetRevision: 11.8.0
+        targetRevision: 12.0.0
       image:
         #registry: ""
         repository: prometheus/blackbox-exporter
@@ -2457,7 +2458,7 @@ components:
     helm:
       # chart: trust-manager
       # repository: https://charts.jetstack.io
-      targetRevision: v0.23.0
+      targetRevision: v0.26.0
 
     imagePullSecrets: []
     image:
