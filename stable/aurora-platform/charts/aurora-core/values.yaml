@@ -510,7 +510,7 @@ components:
     helm:
       # chart: cidr-allocator
       # repository: https://gccloudone-aurora.github.io/cidr-allocator
-      targetRevision: 0.0.1
+      targetRevision: 2.1.1
 
     imagePullSecrets:
       - name: cidr-allocator-image-pull-secret
