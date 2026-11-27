@@ -1278,7 +1278,7 @@ components:
     helm:
       # chart: keda
       # repository: https://kedacore.github.io/charts
-      targetRevision: 2.21.0
+      targetRevision: 2.21.1
 
     # Prometheus metrics / ServiceMonitor for the operator, metrics server and webhooks.
     prometheus:
@@ -1400,7 +1400,7 @@ components:
     helm:
       # chart: kubecost
       # repository: https://kubecost.github.io/kubecost/
-      targetRevision: 3.3.1
+      targetRevision: 3.3.2
 
     kubecostProductConfigs:
       clusterProfile: production
@@ -2162,7 +2162,7 @@ components:
     helm:
       # chart: secrets-store-csi-driver
       # repository: https://kubernetes-sigs.github.io/secrets-store-csi-driver/charts
-      targetRevision: 1.6.0
+      targetRevision: 1.6.2
 
     images:
       driver:
@@ -2584,7 +2584,7 @@ components:
     helm:
       # chart: velero
       # repository: https://vmware-tanzu.github.io/helm-charts
-      targetRevision: 12.2.1
+      targetRevision: 12.2.5
 
     imagePullSecrets: []
     image:
