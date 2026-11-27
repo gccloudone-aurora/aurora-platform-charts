@@ -1278,7 +1278,7 @@ components:
     helm:
       # chart: keda
       # repository: https://kedacore.github.io/charts
-      targetRevision: 2.21.0
+      targetRevision: 2.21.1
 
     # Prometheus metrics / ServiceMonitor for the operator, metrics server and webhooks.
     prometheus:
