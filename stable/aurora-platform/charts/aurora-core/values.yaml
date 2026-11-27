@@ -29,7 +29,7 @@ global:
       targetRevision:
       repository:
 
-  # azure or aws or gcp
+  # azure, aws, gcp or openstack
   provider: azure
 
   # Cluster name for the Application targets.
