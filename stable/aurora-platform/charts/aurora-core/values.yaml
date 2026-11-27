@@ -1153,7 +1153,7 @@ components:
     helm:
       # chart: grafana-operator
       # repository: oci://ghcr.io/grafana/helm-charts/grafana-operator
-      targetRevision: 5.25.0
+      targetRevision: 5.26.0
 
     image:
       # registry: ghcr.io
