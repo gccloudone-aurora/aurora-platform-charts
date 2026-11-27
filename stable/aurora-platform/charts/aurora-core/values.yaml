@@ -332,7 +332,7 @@ components:
     helm:
       # chart: cert-manager
       # repository: https://charts.jetstack.io
-      targetRevision: v1.21.2
+      targetRevision: v1.21.3
 
     imagePullSecrets: []
     image:
@@ -2211,7 +2211,7 @@ components:
     helm:
       # chart: trivy-operator
       # repository: https://aquasecurity.github.io/helm-charts
-      targetRevision: 0.36.0
+      targetRevision: 0.38.1
 
     # This enables Trivy to use the global secret distributed by Aurora Controller for scanning
     useAuroraImagePullSecret: false
@@ -2220,7 +2220,7 @@ components:
     image:
       # registry: docker.io
       repository: ssc-spc.gc.ca/trivy-operator
-      tag: "0.34.0-dev"
+      tag: "0.36.1-dev"
       pullPolicy: IfNotPresent
 
     # This enables creating the secret for pulling the image
@@ -2348,7 +2348,7 @@ components:
     server:
       image:
         repository: ssc-spc.gc.ca/trivy
-        tag: "0.74.0-dev"
+        tag: "0.76.2-dev"
       dbRegistry: "docker.io"
       javaDbRegistry: "docker.io"
       podSecurityContext:
