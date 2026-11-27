@@ -54,9 +54,10 @@ spec:
                   - kube-system
                 - key: k8s:io.cilium.k8s.namespace.labels.addonmanager.kubernetes.io/mode
                   operator: DoesNotExist
-              # No L7 DNS rule: DNS is not sent through the Cilium DNS proxy cluster-wide. Namespaces
-              # that use toFQDNs add their own rule. Matches bootstrap-platform's
-              # manifests/allow-egress-to-coredns.yaml, which creates this policy before Argo CD.
+              # The L7 DNS rule sends pod DNS through the Cilium DNS proxy, which toFQDNs policies
+              # need (for example the Alertmanager egress rules in prometheus/netpol.yaml). Keep
+              # identical to bootstrap-platform manifests/allow-egress-to-coredns-openstack.yaml,
+              # which creates this policy before Argo CD takes it over.
               egress:
                 - toEndpoints:
                     - matchLabels:
@@ -71,6 +72,9 @@ spec:
                           protocol: UDP
                         - port: "53"
                           protocol: TCP
+                      rules:
+                        dns:
+                          - matchPattern: "*"
           - apiVersion: cilium.io/v2
             kind: CiliumClusterwideNetworkPolicy
             metadata:
